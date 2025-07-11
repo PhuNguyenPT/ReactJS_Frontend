@@ -18,12 +18,14 @@ A modern React application built with Vite, TypeScript, and comprehensive ESLint
 ## 🛠️ Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/PhuNguyenPT/ReactJS_Frontend.git
 cd ReactJS_Frontend
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -31,6 +33,7 @@ npm install
 ## 🏃‍♂️ Development
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -40,6 +43,7 @@ The application will be available at `http://localhost:5173`
 ## 📦 Build
 
 Create a production build:
+
 ```bash
 npm run build
 ```
@@ -49,6 +53,7 @@ The built files will be in the `dist` directory.
 ## 🔍 Preview
 
 Preview the production build locally:
+
 ```bash
 npm run preview
 ```
@@ -56,6 +61,7 @@ npm run preview
 ## 🧹 Linting
 
 Run ESLint to check for code quality issues:
+
 ```bash
 npm run lint
 ```
@@ -80,13 +86,12 @@ reactjs-vite-frontend/
 
 ## 🔄 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
+| Command           | Description              |
+| ----------------- | ------------------------ |
+| `npm run dev`     | Start development server |
+| `npm run build`   | Build for production     |
 | `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-
+| `npm run lint`    | Run ESLint               |
 
 ## 🤝 Contributing
 
