@@ -1,5 +1,6 @@
 {
   "extends": "./tsconfig.app.json",
+  "types": ["@vitest/browser/providers/playwright"],
   "include": ["tests/**/*", "src/**/*"],
   "exclude": ["dist", "node_modules"]
 }
