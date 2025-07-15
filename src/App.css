@@ -1,7 +1,4 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -39,4 +36,100 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html,
+#root {
+  height: 100%;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+}
+
+/* Main Container */
+.landing-container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to bottom, #0f103f 0%, #3e2677 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Stars Background */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: transparent
+    url("src/assets/—Pngtree—vibrant watercolor galaxy a night_15248645.jpg");
+  background-size: cover;
+  opacity: 0.2;
+  z-index: 0;
+}
+
+/* Content */
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+}
+
+.content h1 {
+  font-size: 5vw;
+  line-height: 1.5;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: white;
+  letter-spacing: 1.5px;
+  font-family: "Audiowide", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.highlight {
+  color: #ff69b4;
+}
+
+/* Start Button */
+.start-button {
+  margin-top: 30px;
+  padding: 1rem 3rem;
+  font-size: 2rem;
+  background-color: #ff69b4;
+  border: none;
+  border-radius: 999px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.start-button:hover {
+  background-color: #ff4ba0;
+}
+
+/* Responsive text scaling */
+@media (max-width: 768px) {
+  .content h1 {
+    font-size: 5vw;
+  }
+
+  .start-button {
+    font-size: 1rem;
+    padding: 0.8rem 2.5rem;
+  }
 }
