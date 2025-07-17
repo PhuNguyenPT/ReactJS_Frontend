@@ -1,3 +1,4 @@
+// src/components/HelloWorld.tsx
 import { useState } from "react";
 
 export default function HelloWorld({ name }: { name: string }) {

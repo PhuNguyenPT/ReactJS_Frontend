@@ -14,7 +14,7 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["@vitest/browser/providers/playwright"],
+    "types": ["@testing-library/jest-dom"],
 
     /* Linting */
     "strict": true,
