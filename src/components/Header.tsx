@@ -8,6 +8,7 @@ function Header() {
         <div className="logo">
           <Link to="/" className="logo-link">
             UniGuide
+            <img src="/education.png" alt="Logo" className="logo-img" />
           </Link>
         </div>
         <ul className="nav-links">

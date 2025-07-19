@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function LandingSection() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <div className="background" />
@@ -12,15 +10,11 @@ export default function LandingSection() {
           <br />
           YOUR DREAM UNIVERSITY
         </h1>
-        <button
-          type="button"
-          className="start-button"
-          onClick={() => {
-            setCount((count) => count + 1);
-          }}
-        >
-          Count is {count}
-        </button>
+        <Link to="/firstForm">
+          <button className="start-button" type="button">
+            Start
+          </button>
+        </Link>
       </main>
     </>
   );

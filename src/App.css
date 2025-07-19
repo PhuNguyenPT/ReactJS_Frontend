@@ -120,6 +120,12 @@ html,
   height: 60px; 
 }
 
+.logo-img {
+  height: 30px; 
+  width: auto; 
+  align-items: center; 
+}
+
 .logo {
   font-size: 2rem;
   font-weight: bold;

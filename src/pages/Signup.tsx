@@ -13,7 +13,6 @@ export default function Signup() {
 
           <Box component="form" className="form" noValidate autoComplete="off">
             <TextField
-              label="Full Name"
               placeholder="Jane Doe"
               fullWidth
               required
@@ -22,7 +21,6 @@ export default function Signup() {
             />
 
             <TextField
-              label="Email Address"
               placeholder="jane.doe@example.com"
               fullWidth
               required
@@ -32,7 +30,6 @@ export default function Signup() {
             />
 
             <TextField
-              label="Phone Number"
               placeholder="+84 123 456 789"
               fullWidth
               required
@@ -42,7 +39,6 @@ export default function Signup() {
             />
 
             <TextField
-              label="Password"
               placeholder="At least 8 characters"
               fullWidth
               required
@@ -52,7 +48,6 @@ export default function Signup() {
               autoComplete="new-password"
             />
             <TextField
-              label="Confirm Password"
               placeholder="Repeat your password"
               fullWidth
               required
