@@ -1,13 +1,14 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import LandingSection from "./components/LandingSection";
-import "./App.css";
+import LandingPage from "./pages/LandingPage";
+
+import "./styles/App.css";
 
 function App() {
   return (
     <>
       <Header />
-      <LandingSection />
+      <LandingPage />
       <Footer />
     </>
   );
