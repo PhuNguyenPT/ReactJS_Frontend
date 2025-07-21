@@ -13,10 +13,12 @@ function Header() {
         </div>
         <ul className="nav-links">
           <li>
-            <a href="#about">About</a>
+            <a href="about">About</a>{" "}
+            {/* This link is not used in the current context */}
           </li>
           <li>
-            <a href="#login">Login</a>
+            <a href="login">Login</a>{" "}
+            {/* This link is not used in the current context */}
           </li>
           <li>
             <Link to="/signup">

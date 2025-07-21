@@ -1,31 +1,23 @@
-import { Link } from "react-router-dom";
+// src/pages/Login.tsx
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 import usePageTitle from "../hooks/usePageTitle";
 
-export default function Signup() {
-  usePageTitle("UniGuide | Sign Up");
+export default function Login() {
+  usePageTitle("UniGuide | Login");
+
   return (
     <>
       <div className="background" />
       <div className="signup-container">
         <div className="signup-card">
-          <h1 className="title">Get started with UniGuide</h1>
-          <p className="subtitle">Create your account now</p>
+          <h1 className="title">Welcome to UniGuide</h1>
+          <p className="subtitle">Login to your account</p>
 
           <Box component="form" className="form" noValidate autoComplete="off">
-            <label className="form-label" htmlFor="full-name">
-              Full Name
-            </label>
-            <TextField
-              placeholder="Jane Doe"
-              fullWidth
-              required
-              variant="outlined"
-              size="small"
-            />
             <label className="form-label" htmlFor="email">
               Email
             </label>
@@ -37,49 +29,26 @@ export default function Signup() {
               type="email"
               size="small"
             />
-            <label className="form-label" htmlFor="phone">
-              Phone Number
-            </label>
-            <TextField
-              placeholder="+84 123 456 789"
-              fullWidth
-              required
-              variant="outlined"
-              type="tel"
-              size="small"
-            />
+
             <label className="form-label" htmlFor="password">
               Password
             </label>
             <TextField
-              placeholder="At least 8 characters"
+              placeholder="Enter your password"
               fullWidth
               required
               variant="outlined"
               type="password"
-              autoComplete="new-password"
+              autoComplete="current-password"
               size="small"
             />
-            <label className="form-label" htmlFor="confirm-password">
-              Confirm Password
-            </label>
-            <TextField
-              placeholder="Repeat your password"
-              fullWidth
-              required
-              variant="outlined"
-              type="password"
-              autoComplete="new-password"
-              size="small"
-            />
-
             <Typography
               variant="body2"
               sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
             >
-              Already have an account?{" "}
+              Don't have an account?{" "}
               <Link
-                to="/login"
+                to="/signup"
                 style={{
                   color: "#1976d2",
                   textDecoration: "none",
@@ -88,7 +57,7 @@ export default function Signup() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
               >
-                Login here
+                Sign up here
               </Link>
             </Typography>
 
@@ -109,7 +78,7 @@ export default function Signup() {
                 },
               }}
             >
-              SIGN UP
+              LOGIN
             </Button>
           </Box>
         </div>
