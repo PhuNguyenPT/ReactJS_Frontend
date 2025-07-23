@@ -16,16 +16,6 @@ export default function Signup() {
           <p className="subtitle">Create your account now</p>
 
           <Box component="form" className="form" noValidate autoComplete="off">
-            <label className="form-label" htmlFor="full-name">
-              Full Name
-            </label>
-            <TextField
-              placeholder="Jane Doe"
-              fullWidth
-              required
-              variant="outlined"
-              size="small"
-            />
             <label className="form-label" htmlFor="email">
               Email
             </label>
@@ -35,17 +25,6 @@ export default function Signup() {
               required
               variant="outlined"
               type="email"
-              size="small"
-            />
-            <label className="form-label" htmlFor="phone">
-              Phone Number
-            </label>
-            <TextField
-              placeholder="+84 123 456 789"
-              fullWidth
-              required
-              variant="outlined"
-              type="tel"
               size="small"
             />
             <label className="form-label" htmlFor="password">

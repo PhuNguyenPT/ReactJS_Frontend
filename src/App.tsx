@@ -1,17 +1,8 @@
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import LandingPage from "./pages/LandingPage";
-
-import "./styles/App.css";
+// App.tsx
+import Layout from "./components/Layout";
 
 function App() {
-  return (
-    <>
-      <Header />
-      <LandingPage />
-      <Footer />
-    </>
-  );
+  return <Layout />;
 }
 
 export default App;
