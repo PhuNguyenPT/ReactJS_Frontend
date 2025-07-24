@@ -1,11 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./index.css";
-import Signup from "./pages/SignupPage";
-import Login from "./pages/LoginPage";
-import LandingPage from "./pages/LandingPage";
+import "./styles/index.css";
+import "./styles/App.css";
 import App from "./App";
+import Signup from "./components/pages/SignupPage/SignupPage";
+import Login from "./components/pages/LoginPage/LoginPage";
+import LandingPage from "./components/pages/LandingPage/LandingPage";
 
 const rootElement = document.getElementById("root");
 
