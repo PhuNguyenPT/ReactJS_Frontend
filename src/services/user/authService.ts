@@ -1,20 +1,19 @@
-// src/services/authService.ts
-import apiFetch from "../../utils/api";
+import apiFetch from "../../utils/apiFetch";
 
-interface RegisterPayload {
+interface AuthPayload {
   email: string;
   password: string;
 }
 
-export function register(payload: RegisterPayload) {
-  return apiFetch("/auth/register", {
+export function loginUser(payload: AuthPayload) {
+  return apiFetch<{ token: string }>("/auth/login", {
     method: "POST",
     body: payload,
   });
 }
 
-export function login(payload: RegisterPayload) {
-  return apiFetch("/auth/login", {
+export function signupUser(payload: AuthPayload) {
+  return apiFetch<{ token: string }>("/auth/signup", {
     method: "POST",
     body: payload,
   });

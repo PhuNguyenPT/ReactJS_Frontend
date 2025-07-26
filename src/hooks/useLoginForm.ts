@@ -1,7 +1,6 @@
-// hooks/useLoginForm.ts
 import { useState } from "react";
-import { login } from "../services/user/authService";
-import { AxiosError } from "axios";
+import { loginUser } from "../services/user/authService";
+import axios, { AxiosError } from "axios";
 
 export default function useLoginForm() {
   const [email, setEmail] = useState("");
@@ -20,6 +19,7 @@ export default function useLoginForm() {
       password: "",
     };
 
+    // Simple validations
     if (!email) newErrors.email = "Email is required";
     else if (!/^\S+@\S+\.\S+$/.test(email))
       newErrors.email = "Invalid email format";
@@ -32,21 +32,21 @@ export default function useLoginForm() {
 
     try {
       setLoading(true);
-      const response = await login({ email, password });
 
-      // You can handle success here (e.g. store token, redirect)
+      const response = await loginUser({ email, password });
       console.log("Login success:", response);
 
-      // Example: store token
+      // Example:
       // localStorage.setItem("token", response.token);
-
-      // Example: redirect (if using react-router)
       // navigate("/dashboard");
-    } catch (err) {
-      const axiosErr = err as AxiosError<{ message: string }>;
-      const message =
-        axiosErr.response?.data.message ??
-        "Incorrect E-mail, username or password";
+    } catch (error: unknown) {
+      let message = "Incorrect Email, Username or Password";
+
+      if (axios.isAxiosError(error)) {
+        const apiError = error as AxiosError<{ message?: string }>;
+        message = apiError.response?.data.message ?? message;
+      }
+
       setApiError(message);
     } finally {
       setLoading(false);
