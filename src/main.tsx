@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import Signup from "./pages/Signup.tsx";
+import './assets/fonts.css';
 
 const rootElement = document.getElementById("root");
 
