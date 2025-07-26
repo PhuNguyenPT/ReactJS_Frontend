@@ -3,13 +3,22 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
 import { Link } from "react-router-dom";
 import PasswordField from "../../common/PasswordField";
 import useLoginForm from "../../../hooks/useLoginForm";
 
 export default function LoginForm() {
-  const { email, password, setEmail, setPassword, errors, handleSubmit } =
-    useLoginForm();
+  const {
+    email,
+    password,
+    setEmail,
+    setPassword,
+    errors,
+    handleLogin,
+    loading,
+    apiError,
+  } = useLoginForm();
 
   return (
     <Box
@@ -17,7 +26,7 @@ export default function LoginForm() {
       className="form"
       noValidate
       autoComplete="off"
-      onSubmit={handleSubmit}
+      onSubmit={(e) => void handleLogin(e)}
     >
       <label className="form-label" htmlFor="email">
         Email
@@ -48,6 +57,13 @@ export default function LoginForm() {
         helperText={errors.password}
       />
 
+      {/* Show API error here */}
+      {apiError && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {apiError}
+        </Alert>
+      )}
+
       <Typography
         variant="body2"
         sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
@@ -72,6 +88,7 @@ export default function LoginForm() {
         variant="contained"
         color="primary"
         fullWidth
+        disabled={loading}
         sx={{
           mt: 2,
           backgroundColor: "#ff69b4",
@@ -84,7 +101,7 @@ export default function LoginForm() {
           },
         }}
       >
-        LOGIN
+        {loading ? "Logging in..." : "LOGIN"}
       </Button>
     </Box>
   );
