@@ -2,10 +2,16 @@ import { useState } from "react";
 import { loginUser } from "../services/user/authService";
 import axios, { AxiosError } from "axios";
 
+// Define the structure of your API error response
+interface ApiErrorResponse {
+  message?: string;
+  error?: string;
+  statusCode?: number;
+}
+
 export default function useLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -40,17 +46,37 @@ export default function useLoginForm() {
       // localStorage.setItem("token", response.token);
       // navigate("/dashboard");
     } catch (error: unknown) {
-      let message = "Incorrect Email, Username or Password";
+      let message = "An unexpected error occurred. Please try again.";
 
       if (axios.isAxiosError(error)) {
-        const apiError = error as AxiosError<{ message?: string }>;
-        message = apiError.response?.data.message ?? message;
+        const apiError = error as AxiosError<ApiErrorResponse>;
+
+        // Try to get the message from API response in order of preference
+        if (apiError.response?.data.message) {
+          // This will get the message from any API exception (including BadCredentialsException)
+          message = apiError.response.data.message;
+        } else if (apiError.response?.data.error) {
+          // Fallback to 'error' field if 'message' doesn't exist
+          message = apiError.response.data.error;
+        } else if (apiError.message) {
+          // Network errors or other axios errors
+          message = apiError.message;
+        }
+      } else if (error instanceof Error) {
+        // Handle non-Axios errors
+        message = error.message;
       }
 
       setApiError(message);
+      console.error("Login error:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to clear API error (useful for UI)
+  const clearApiError = () => {
+    setApiError("");
   };
 
   return {
@@ -62,5 +88,6 @@ export default function useLoginForm() {
     handleLogin,
     loading,
     apiError,
+    clearApiError,
   };
 }
