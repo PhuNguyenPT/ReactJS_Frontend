@@ -6,24 +6,19 @@ function Header() {
     <header className="landing-header">
       <Toolbar className="landing-header-toolbar">
         <div className="logo">
-          <Link to="/" className="logo-link">
-            UniGuide
-            <img src="/education.png" alt="Logo" className="logo-img" />
+          <Link to="/">
+            <img src="/unizylogo.png" alt="Logo" className="logo-img" />
+            <span className="logo-text">nizy</span>
           </Link>
         </div>
         <ul className="nav-links">
           <li>
-            <Link to="/about">About</Link>
-            {/* This link is not used in the current context */}
-          </li>
-          <li>
             <Link to="/login">Login</Link>
-            {/* This link is not used in the current context */}
           </li>
           <li>
             <Link to="/signup">
               <button className="signup-button" type="button">
-                Sign Up
+                Sign up
               </button>
             </Link>
           </li>

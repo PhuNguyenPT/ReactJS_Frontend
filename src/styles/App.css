@@ -26,14 +26,31 @@ html,
   overflow-x: hidden;
 }
 
+/* Responsive design */
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .content h1 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin-bottom: 1.5rem;
+  }
+
+  .start-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
 /* Background */
 .background {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: transparent url("..\\src\\assets\\images\\background.jpg");
+  background: transparent url("..\\src\\assets\\images\\background.png");
   background-size: cover;
-  opacity: 0.4;
+  opacity: 0.8;
   z-index: -1;
 }
 
@@ -57,7 +74,7 @@ html,
   font-weight: bold;
   color: white;
   letter-spacing: 1.5px;
-  font-family: "Audiowide", sans-serif;
+  font-family: "MJ-CS-Bogart", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
@@ -69,8 +86,7 @@ html,
 /* Start Button */
 .start-button {
   margin-top: 30px;
-  padding: 1rem 3rem;
-  font-size: 2rem;
+  padding: 0.5rem 5rem;
   background-color: #ff69b4;
   border: none;
   border-radius: 999px;
@@ -78,33 +94,22 @@ html,
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.3s;
+  font-family: "Neon80s", sans-serif;
+  font-size: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .start-button:hover {
   background-color: #ff4ba0;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .content {
-    padding: 1rem;
-  }
-
-  .content h1 {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
-    margin-bottom: 1.5rem;
-  }
-
-  .start-button {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-  }
+  box-shadow: 0 0 10px rgb(255, 255, 255);
 }
 
 /* HEADER */
 .landing-header {
   position: fixed;
-  top: 0;
   width: 100%;
   padding: 15px 30px;
   z-index: 10;
@@ -120,26 +125,26 @@ html,
 }
 
 .logo-img {
-  height: 30px;
+  height: 4rem;
   width: auto;
   align-items: center;
+  margin-top: 20px;
+  transition: transform 0.3s ease;
 }
 
-.logo {
-  font-size: 2rem;
-  font-weight: bold;
-  color: rgb(255, 255, 255);
-  line-height: 1;
-  margin: 0;
-  display: flex;
-  align-items: center;
+.logo-text {
+  position: absolute;
+  top: -10%;
+  left: 9.5%;
+  transform: translateX(-50%);
+  font-family: "Neon80s", sans-serif;
+  color: white;
+  z-index: 2;
+  font-size: 4rem;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #ff69b4);
-}
-
-.logo.react:hover {
+.logo-img:hover {
+  transform: scale(1.05);
   filter: drop-shadow(0 0 2em #ff69b4);
 }
 
@@ -150,6 +155,8 @@ html,
   margin: 0;
   padding: 0;
   align-items: center;
+  font-family: "Neon80s", sans-serif;
+  font-size: 2.5rem;
 }
 
 .nav-links li {
@@ -174,16 +181,20 @@ html,
 }
 
 .signup-button {
-  background-color: #ff69b4;
+  background-color: transparent;
   color: white;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 20px;
+  border: 1px solid #fff;
+  border-radius: 1000px;
+  padding: 8px 25px;
   font-weight: bold;
   cursor: pointer;
   transition:
     background-color 0.3s,
     transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .signup-button:hover {

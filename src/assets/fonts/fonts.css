@@ -4,7 +4,7 @@
 /* font header, start button */
 @font-face {
   font-family: "Neon80s";
-  src: url("../assets/Neon80s.ttf") format("truetype");
+  src: url("./Neon80s.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -12,7 +12,7 @@
 /*font hero title */
 @font-face {
   font-family: "MJ-CS-Bogart";
-  src: url("../assets/MJ-CS-Bogart.ttf") format("truetype");
+  src: url("./MJ-CS-Bogart.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }

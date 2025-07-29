@@ -14,7 +14,7 @@ export default function LandingPage() {
         </h1>
         <Link to="/firstForm">
           <button className="start-button" type="button">
-            Start
+            START
           </button>
         </Link>
       </main>
