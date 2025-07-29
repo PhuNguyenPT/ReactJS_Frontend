@@ -6,9 +6,6 @@ import "./styles/index.css";
 import "./styles/App.css";
 import "./assets/fonts.css";
 
-import "./styles/index.css";
-import "./styles/App.css";
-
 import App from "./App";
 import Signup from "./components/pages/SignupPage/SignupPage";
 import Login from "./components/pages/LoginPage/LoginPage";
