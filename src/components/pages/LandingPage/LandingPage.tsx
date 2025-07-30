@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import usePageTitle from "../../../hooks/usePageTitle";
+import { useTranslation } from "react-i18next";
 
 export default function LandingPage() {
   usePageTitle("UniGuide | Home");
+  const { t } = useTranslation();
   return (
     <>
       <div className="background" />
@@ -14,7 +16,7 @@ export default function LandingPage() {
         </h1>
         <Link to="/firstForm">
           <button className="start-button" type="button">
-            START
+            {t("buttons.start")}
           </button>
         </Link>
       </main>

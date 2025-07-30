@@ -26,6 +26,15 @@ html,
   overflow-x: hidden;
 }
 
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .content {
@@ -178,6 +187,12 @@ html,
 
 .nav-links li a:hover {
   color: #ff69b4;
+}
+
+.language-flag {
+  font-size: 1.2em;
+  line-height: 1;
+  color: rgb(0, 0, 0);
 }
 
 .signup-button {

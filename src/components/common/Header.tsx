@@ -1,7 +1,10 @@
 import { Toolbar } from "@mui/material";
 import { Link } from "react-router-dom";
+import LanguageSwitcher from "../common/Language Switch/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 function Header() {
+  const { t } = useTranslation();
   return (
     <header className="landing-header">
       <Toolbar className="landing-header-toolbar">
@@ -13,12 +16,15 @@ function Header() {
         </div>
         <ul className="nav-links">
           <li>
-            <Link to="/login">Login</Link>
+            <LanguageSwitcher />
+          </li>
+          <li>
+            <Link to="/login">{t("common.login")}</Link>
           </li>
           <li>
             <Link to="/signup">
               <button className="signup-button" type="button">
-                Sign up
+                {t("common.signup")}
               </button>
             </Link>
           </li>

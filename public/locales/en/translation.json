@@ -1,0 +1,48 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number"
+  },
+  "messages": {
+    "welcomeBack": "Welcome back!",
+    "pleaseLogin": "Please login to continue",
+    "invalidCredentials": "Invalid email or password",
+    "accountCreated": "Account created successfully"
+  },
+  "buttons": {
+    "add": "Add",
+    "update": "Update",
+    "delete": "Delete",
+    "view": "View",
+    "download": "Download",
+    "start": "Start",
+    "stop": "Stop"
+  }
+}

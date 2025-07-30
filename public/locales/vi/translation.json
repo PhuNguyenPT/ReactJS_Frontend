@@ -1,0 +1,48 @@
+{
+  "common": {
+    "welcome": "Chào mừng",
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ",
+    "login": "Đăng nhập",
+    "signup": "Đăng ký",
+    "logout": "Đăng xuất",
+    "submit": "Gửi",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "search": "Tìm kiếm",
+    "loading": "Đang tải...",
+    "error": "Đã xảy ra lỗi",
+    "success": "Thành công!"
+  },
+  "navigation": {
+    "dashboard": "Bảng điều khiển",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt"
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "phone": "Số điện thoại"
+  },
+  "messages": {
+    "welcomeBack": "Chào mừng trở lại!",
+    "pleaseLogin": "Vui lòng đăng nhập để tiếp tục",
+    "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+    "accountCreated": "Tài khoản đã được tạo thành công"
+  },
+  "buttons": {
+    "add": "Thêm",
+    "update": "Cập nhật",
+    "delete": "Xóa",
+    "view": "Xem",
+    "download": "Tải xuống",
+    "start": "Bắt đầu",
+    "stop": "Dừng"
+  }
+}
