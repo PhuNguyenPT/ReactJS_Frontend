@@ -9,6 +9,10 @@ interface PasswordFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
   helperText?: string;
+  disabled?: boolean;
+  // Optional external state management
+  showPassword?: boolean;
+  setShowPassword?: (show: boolean) => void;
 }
 
 const PasswordField = ({
@@ -17,8 +21,16 @@ const PasswordField = ({
   onChange,
   error,
   helperText,
+  disabled = false,
+  showPassword: externalShowPassword,
+  setShowPassword: externalSetShowPassword,
 }: PasswordFieldProps) => {
-  const [showPassword, setShowPassword] = useState(false);
+  // Internal state (used when external state is not provided)
+  const [internalShowPassword, setInternalShowPassword] = useState(false);
+
+  // Use external state if provided, otherwise use internal state
+  const showPassword = externalShowPassword ?? internalShowPassword;
+  const setShowPassword = externalSetShowPassword ?? setInternalShowPassword;
 
   return (
     <div>
@@ -34,6 +46,7 @@ const PasswordField = ({
         onChange={onChange}
         error={!!error}
         helperText={helperText}
+        disabled={disabled}
         slotProps={{
           input: {
             endAdornment: (
@@ -41,9 +54,10 @@ const PasswordField = ({
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={() => {
-                    setShowPassword((prev) => !prev);
+                    setShowPassword(!showPassword);
                   }}
                   edge="end"
+                  disabled={disabled}
                   disableRipple
                   disableFocusRipple
                   sx={{
@@ -52,7 +66,9 @@ const PasswordField = ({
                       outline: "none",
                     },
                     "&:hover": {
-                      backgroundColor: "transparent",
+                      backgroundColor: disabled
+                        ? "transparent"
+                        : "rgba(0, 0, 0, 0.04)",
                     },
                   }}
                 >

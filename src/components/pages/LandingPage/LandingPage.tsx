@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
 
 export default function LandingPage() {
-  usePageTitle("UniGuide | Home");
+  usePageTitle("Unizy | Home");
   const { t } = useTranslation();
+  const navigate = useNavigate();
   return (
     <>
       <div className="background" />
@@ -14,11 +15,13 @@ export default function LandingPage() {
           <br />
           YOUR DREAM UNIVERSITY
         </h1>
-        <Link to="/firstForm">
-          <button className="start-button" type="button">
-            {t("buttons.start")}
-          </button>
-        </Link>
+        <button
+          className="start-button"
+          type="button"
+          onClick={() => void navigate("/firstForm")}
+        >
+          {t("buttons.start")}
+        </button>
       </main>
     </>
   );
