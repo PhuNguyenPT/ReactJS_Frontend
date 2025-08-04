@@ -49,24 +49,14 @@ export default function useLoginForm() {
 
         // Try to get the message from API response in order of preference
         if (apiError.response?.data.validationErrors) {
-          // Handle validation errors
+          // Handle validation errors - validationErrors is directly an object with field errors
           const validationErrors = apiError.response.data.validationErrors;
-          // Check if it's a ValidationResponse with validationErrors property
-          if (
-            "validationErrors" in validationErrors &&
-            validationErrors.validationErrors
-          ) {
-            // Format validation errors into a readable string
-            const fieldErrors = Object.entries(
-              validationErrors.validationErrors,
-            )
-              .map(([field, error]) => `${field}: ${error}`)
-              .join(", ");
-            message = fieldErrors;
-          } else {
-            // It's an ErrorResponse, use its message
-            message = validationErrors.message;
-          }
+
+          // Format validation errors into a readable string
+          const fieldErrors = Object.entries(validationErrors)
+            .map(([field, errorMsg]) => `${field}: ${String(errorMsg)}`)
+            .join(", ");
+          message = fieldErrors;
         } else if (apiError.response?.data.message) {
           // This will get the message from any API exception (including BadCredentialsException)
           message = apiError.response.data.message;

@@ -44,5 +44,20 @@
     "download": "Download",
     "start": "Start",
     "stop": "Stop"
+  },
+  "contents": {
+    "highlight": "Guide",
+    "tilte1": "YOU TO",
+    "tilte2": "YOUR DREAM UNIVERSITY"
+  },
+  "loginForm": {
+    "tilte": "Welcome to Unizy",
+    "subTilte": "Login to your account",
+    "noAccount": "Don't have an account?",
+    "signupLink": "Sign up here",
+    "login": "LOGIN",
+    "logging_in": "Logging in...",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password"
   }
 }

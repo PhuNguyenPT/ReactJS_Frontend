@@ -29,7 +29,8 @@ export type TranslationKey =
   | "messages.welcomeBack"
   | "messages.pleaseLogin"
   | "messages.invalidCredentials"
-  | "messages.accountCreated";
+  | "messages.accountCreated"
+  | "contents.hightlight";
 
 // Custom hook with type-safe t
 export const useTranslation = () => {

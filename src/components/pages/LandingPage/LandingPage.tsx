@@ -11,9 +11,10 @@ export default function LandingPage() {
       <div className="background" />
       <main className="content">
         <h1>
-          <span className="highlight">GUIDING</span> YOU TO
+          <span className="highlight">{t("contents.highlight")}</span>{" "}
+          {t("contents.tilte1")}
           <br />
-          YOUR DREAM UNIVERSITY
+          {t("contents.tilte2")}
         </h1>
         <button
           className="start-button"

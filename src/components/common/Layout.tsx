@@ -5,7 +5,7 @@ import Footer from "./Footer";
 
 const Layout = () => {
   const location = useLocation();
-  const showFooter = location.pathname === "/" || location.pathname === ""; // Only show footer on landing page
+  const showFooter = location.pathname === "/" || location.pathname === "";
 
   return (
     <>
