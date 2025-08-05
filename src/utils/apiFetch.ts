@@ -9,6 +9,7 @@ interface RequestOptions<T> {
   body?: T;
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  requiresAuth?: boolean;
 }
 
 async function apiFetch<T = unknown, B = unknown>(

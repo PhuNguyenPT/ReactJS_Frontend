@@ -1,6 +1,5 @@
 import apiFetch from "../../utils/apiFetch";
 
-// More specific interfaces
 interface AuthPayload {
   email: string;
   password: string;
@@ -29,6 +28,7 @@ export async function loginUser(payload: AuthPayload): Promise<AuthResponse> {
   return apiFetch<AuthResponse>("/auth/login", {
     method: "POST",
     body: payload,
+    requiresAuth: false,
   });
 }
 
@@ -37,5 +37,6 @@ export async function signupUser(payload: AuthPayload): Promise<AuthResponse> {
   return apiFetch<AuthResponse>("/auth/register", {
     method: "POST",
     body: payload,
+    requiresAuth: false,
   });
 }

@@ -59,5 +59,8 @@
     "logging_in": "Đang đăng nhập...",
     "enterEmail": "Nhập email của bạn",
     "enterPassword": "Nhập mật khẩu của bạn"
+  },
+  "header": {
+    "viewHistory": "Xem Lịch Sử"
   }
 }
