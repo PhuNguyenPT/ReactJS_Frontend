@@ -26,11 +26,11 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (authResponse: AuthResponse) => void;
+  register: (authResponse: AuthResponse) => void;
   logout: () => void;
   displayName?: string;
 }
 
-// ✅ Export context only
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );

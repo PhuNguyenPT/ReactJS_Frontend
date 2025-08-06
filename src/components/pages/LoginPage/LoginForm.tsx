@@ -1,4 +1,11 @@
-import { Box, Button, TextField, Typography, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import PasswordField from "../../common/PasswordField";
 import useLoginForm from "../../../hooks/useLoginForm";
@@ -103,7 +110,14 @@ export default function LoginForm() {
           },
         }}
       >
-        {loading ? t("loginForm.logging_in") : t("loginForm.login")}
+        {loading ? (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <CircularProgress size={20} color="inherit" />
+            {t("loginForm.logging_in")}
+          </Box>
+        ) : (
+          t("loginForm.login")
+        )}
       </Button>
     </Box>
   );

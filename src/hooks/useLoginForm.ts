@@ -1,14 +1,11 @@
-// Updated useLoginForm.ts
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 import { loginUser } from "../services/user/authService";
 import axios, { AxiosError } from "axios";
 import type { ErrorDetails } from "../type/error.details";
 
 export default function useLoginForm() {
-  const navigate = useNavigate();
-  const { login } = useAuth(); // Get login function from context
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,16 +39,10 @@ export default function useLoginForm() {
 
       // Your loginUser already returns AuthResponse directly
       const authResponse = await loginUser({ email, password });
-
-      console.log("Login success:", authResponse);
-
       // Check if login was successful
       if (authResponse.success && authResponse.accessToken) {
-        // Use context login function - pass the entire response
         login(authResponse);
-
-        // Navigate to landing page (or wherever you want)
-        void navigate("/");
+        window.location.replace("/");
       } else {
         setApiError(authResponse.message || "Login failed");
       }

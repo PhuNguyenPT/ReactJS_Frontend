@@ -23,6 +23,11 @@ interface AuthResponse {
   user: User;
 }
 
+interface LogoutResponse {
+  success: boolean;
+  message: string;
+}
+
 /* Authenticates user with email and password*/
 export async function loginUser(payload: AuthPayload): Promise<AuthResponse> {
   return apiFetch<AuthResponse>("/auth/login", {
@@ -38,5 +43,13 @@ export async function signupUser(payload: AuthPayload): Promise<AuthResponse> {
     method: "POST",
     body: payload,
     requiresAuth: false,
+  });
+}
+
+/* Logs out the current user and invalidates tokens*/
+export async function logoutUser(): Promise<LogoutResponse> {
+  return apiFetch<LogoutResponse>("/auth/logout", {
+    method: "POST",
+    requiresAuth: true,
   });
 }

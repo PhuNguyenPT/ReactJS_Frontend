@@ -1,14 +1,14 @@
 import { Toolbar } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import LanguageSwitcher from "../common/Language Switch/LanguageSwitcher";
+import LanguageSwitcher from "../Language Switch/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
-import useAuth from "../../hooks/useAuth";
-import { AuthProvider } from "../../contexts/auth/AuthProvider";
+import useAuth from "../../../hooks/useAuth";
+import { AuthProvider } from "../../../contexts/auth/AuthProvider";
+import AccountMenu from "./AccountMenu";
 
 function Header() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const { isAuthenticated, displayName } = useAuth();
 
   return (
@@ -34,7 +34,7 @@ function Header() {
                 </li>
                 <li className="username-section">
                   {displayName}
-                  <div className="profile-circle"></div>
+                  <AccountMenu displayName={displayName} />
                 </li>
               </>
             ) : (
