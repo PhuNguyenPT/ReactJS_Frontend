@@ -10,8 +10,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
-import useAuth from "../../../hooks/useAuth";
-import { logoutUser } from "../../../services/user/authService";
+import useLogout from "../../../hooks/useLogout";
 
 interface AccountMenuProps {
   displayName?: string;
@@ -19,7 +18,8 @@ interface AccountMenuProps {
 
 export default function AccountMenu({ displayName }: AccountMenuProps) {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const logout = useLogout();
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -31,27 +31,12 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = async (action: string) => {
+  const handleMenuItemClick = (action: string) => {
     handleClose();
 
     switch (action) {
       case "profile":
         void navigate("/profile");
-        break;
-      case "logout":
-        try {
-          // Call the logout API to invalidate tokens on the server
-          await logoutUser();
-        } catch (error) {
-          console.error("Logout API error:", error);
-          // Continue with local logout even if API fails
-        } finally {
-          // Always clear local auth state regardless of API result
-          logout();
-          window.location.replace("/");
-        }
-        break;
-      default:
         break;
     }
   };
@@ -121,12 +106,16 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={() => void handleMenuItemClick("profile")}>
+        <MenuItem
+          onClick={() => {
+            handleMenuItemClick("profile");
+          }}
+        >
           <Avatar sx={{ width: 32, height: 32 }}>{getAvatarLetter()}</Avatar>
           My Profile
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => void handleMenuItemClick("logout")}>
+        <MenuItem onClick={() => void logout()}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
