@@ -1,4 +1,15 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import { useSignupForm } from "../../../hooks/useSignupForm";
 import PasswordField from "../../common/PasswordField";
@@ -11,102 +22,196 @@ export default function SignupForm() {
     setPassword,
     confirmPassword,
     setConfirmPassword,
-    emailError,
-    passwordError,
-    confirmPasswordError,
+    errors,
+    loading,
+    apiError,
+    showPassword,
+    setShowPassword,
+    showConfirmPassword,
+    setShowConfirmPassword,
     handleSubmit,
+    clearApiError,
+    showSuccessDialog,
+    handleDialogClose,
   } = useSignupForm();
 
   return (
-    <Box
-      component="form"
-      className="form"
-      noValidate
-      autoComplete="off"
-      onSubmit={handleSubmit}
-    >
-      {/* Email */}
-      <label className="form-label" htmlFor="email">
-        Email
-      </label>
-      <TextField
-        placeholder="E-mail"
-        fullWidth
-        required
-        variant="outlined"
-        type="email"
-        size="small"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-        error={!!emailError}
-        helperText={emailError}
-      />
-
-      {/* Password */}
-      <label className="form-label">Password</label>
-      <PasswordField
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-        error={!!passwordError}
-        helperText={passwordError}
-      />
-
-      {/* Confirm Password */}
-      <label className="form-label">Confirm Password</label>
-      <PasswordField
-        placeholder="Repeat your password"
-        value={confirmPassword}
-        onChange={(e) => {
-          setConfirmPassword(e.target.value);
-        }}
-        error={!!confirmPasswordError}
-        helperText={confirmPasswordError}
-      />
-
-      <Typography
-        variant="body2"
-        sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
+    <>
+      <Box
+        component="form"
+        className="form"
+        noValidate
+        autoComplete="off"
+        onSubmit={(e) => void handleSubmit(e)}
       >
-        Already have an account?{" "}
-        <Link
-          to="/login"
-          style={{
-            color: "#1976d2",
-            textDecoration: "none",
-            fontWeight: "bold",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
-        >
-          Login here
-        </Link>
-      </Typography>
+        {/* API Error Alert */}
+        {apiError && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={clearApiError}>
+            {apiError}
+          </Alert>
+        )}
 
-      {/* Submit button */}
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
+        {/* Email */}
+        <label className="form-label" htmlFor="email">
+          Email
+        </label>
+        <TextField
+          placeholder="E-mail"
+          fullWidth
+          required
+          variant="outlined"
+          type="email"
+          size="small"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (apiError) clearApiError();
+          }}
+          error={!!errors.email}
+          helperText={errors.email}
+          disabled={loading}
+        />
+
+        {/* Password */}
+        <label className="form-label">Password</label>
+        <PasswordField
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (apiError) clearApiError();
+          }}
+          error={!!errors.password}
+          helperText={errors.password}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          disabled={loading}
+        />
+
+        {/* Confirm Password */}
+        <label className="form-label">Confirm Password</label>
+        <PasswordField
+          placeholder="Repeat your password"
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            if (apiError) clearApiError();
+          }}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
+          showPassword={showConfirmPassword}
+          setShowPassword={setShowConfirmPassword}
+          disabled={loading}
+        />
+
+        <Typography
+          variant="body2"
+          sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
+        >
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            style={{
+              color: "#1976d2",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
+          >
+            Login here
+          </Link>
+        </Typography>
+
+        {/* Submit button */}
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={loading}
+          sx={{
+            mt: 2,
+            backgroundColor: loading ? "#ccc" : "#ff69b4",
+            textTransform: "none",
+            fontWeight: "bold",
+            borderRadius: "8px",
+            height: "43px",
+            "&:hover": {
+              backgroundColor: loading ? "#ccc" : "#e6418eff",
+            },
+            "&:disabled": {
+              backgroundColor: "#ccc",
+              color: "#666",
+            },
+          }}
+        >
+          {loading ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <CircularProgress size={20} color="inherit" />
+              SIGNING UP...
+            </Box>
+          ) : (
+            "SIGN UP"
+          )}
+        </Button>
+      </Box>
+
+      {/* Success Dialog */}
+      <Dialog
+        open={showSuccessDialog}
+        onClose={handleDialogClose}
+        maxWidth="sm"
         fullWidth
-        sx={{
-          mt: 2,
-          backgroundColor: "#ff69b4",
-          textTransform: "none",
-          fontWeight: "bold",
-          borderRadius: "8px",
-          height: "43px",
-          "&:hover": {
-            backgroundColor: "#e6418eff",
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "12px",
+              padding: "8px",
+            },
           },
         }}
       >
-        SIGN UP
-      </Button>
-    </Box>
+        <DialogTitle
+          sx={{
+            textAlign: "center",
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            color: "#4caf50",
+            pb: 1,
+          }}
+        >
+          🎉 REGISTRATION SUCCESSFUL!
+        </DialogTitle>
+
+        <DialogContent sx={{ textAlign: "center", pb: 2 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Your account has been created successfully!
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            You will be redirected to the login page to sign in with your new
+            credentials.
+          </Typography>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+          <Button
+            onClick={handleDialogClose}
+            variant="contained"
+            sx={{
+              backgroundColor: "#ff69b4",
+              textTransform: "none",
+              borderRadius: "8px",
+              minWidth: "120px",
+              "&:hover": {
+                backgroundColor: "#e6418eff",
+              },
+            }}
+          >
+            Continue
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

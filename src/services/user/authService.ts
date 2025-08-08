@@ -13,7 +13,7 @@ export function loginUser(payload: AuthPayload) {
 }
 
 export function signupUser(payload: AuthPayload) {
-  return apiFetch<{ token: string }>("/auth/signup", {
+  return apiFetch<{ token: string }>("/auth/register", {
     method: "POST",
     body: payload,
   });

@@ -2,7 +2,7 @@ import SignupForm from "./SignupForm";
 import usePageTitle from "../../../hooks/usePageTitle";
 
 export default function Signup() {
-  usePageTitle("UniGuide | Sign Up");
+  usePageTitle("Unizy | Sign Up");
 
   return (
     <>

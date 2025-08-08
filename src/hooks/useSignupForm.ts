@@ -1,14 +1,23 @@
-// src/hooks/useSignupForm.ts
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signupUser } from "../services/user/authService"; // Assuming you have this service
+import axios, { AxiosError } from "axios";
+import type { ErrorDetails } from "../type/error.details";
 
 export function useSignupForm() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -21,44 +30,108 @@ export function useSignupForm() {
       value,
     );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let isValid = true;
+    setApiError("");
 
-    setEmailError("");
-    setPasswordError("");
-    setConfirmPasswordError("");
+    const newErrors = {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
 
+    // Client-side validations
     if (!email.trim()) {
-      setEmailError("Email is required");
-      isValid = false;
+      newErrors.email = "Email is required";
     } else if (!validateEmail(email)) {
-      setEmailError("Invalid email format");
-      isValid = false;
+      newErrors.email = "Invalid email format";
     }
 
     if (!password) {
-      setPasswordError("Password is required");
-      isValid = false;
+      newErrors.password = "Password is required";
     } else if (!validatePassword(password)) {
-      setPasswordError(
-        "Password must be 8 to 128 characters and include uppercase, lowercase, number, and special character.",
-      );
-      isValid = false;
+      newErrors.password =
+        "Password must be 8 to 128 characters and include uppercase, lowercase, number, and special character.";
     }
 
     if (!confirmPassword) {
-      setConfirmPasswordError("Please confirm your password");
-      isValid = false;
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match");
-      isValid = false;
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
-    if (isValid) {
-      console.log("Submit:", { email, password });
-      // TODO: Connect to backend
+    setErrors(newErrors);
+    const hasError = Object.values(newErrors).some((msg) => msg !== "");
+    if (hasError) return;
+
+    try {
+      setLoading(true);
+
+      const response = await signupUser({ email, password });
+      console.log("Signup success:", response);
+
+      // Show success dialog instead of immediate redirect
+      setShowSuccessDialog(true);
+    } catch (error: unknown) {
+      let message = "An unexpected error occurred. Please try again.";
+
+      if (axios.isAxiosError(error)) {
+        const apiError = error as AxiosError<ErrorDetails>;
+
+        // Try to get the message from API response in order of preference
+        if (apiError.response?.data.validationErrors) {
+          // Handle validation errors
+          const validationErrors = apiError.response.data.validationErrors;
+
+          // Check if it's a ValidationResponse with validationErrors property
+          if (
+            "validationErrors" in validationErrors &&
+            validationErrors.validationErrors
+          ) {
+            // Format validation errors into a readable string
+            const fieldErrors = Object.entries(
+              validationErrors.validationErrors,
+            )
+              .map(([field, error]) => `${field}: ${error}`)
+              .join(", ");
+            message = fieldErrors;
+          } else {
+            // It's an ErrorResponse, use its message
+            message = validationErrors.message;
+          }
+        } else if (apiError.response?.data.message) {
+          // This will get the message from any API exception
+          message = apiError.response.data.message;
+        } else if (apiError.message) {
+          // Network errors or other axios errors
+          message = apiError.message;
+        }
+      } else if (error instanceof Error) {
+        // Handle non-Axios errors
+        message = error.message;
+      }
+
+      setApiError(message);
+      console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Function to clear API error (useful for UI)
+  const clearApiError = () => {
+    setApiError("");
+  };
+
+  // Handle success dialog close and redirect
+  const handleDialogClose = () => {
+    setShowSuccessDialog(false);
+    void navigate("/login", {
+      state: {
+        message:
+          "Account created successfully! Please login with your credentials.",
+      },
+    });
   };
 
   return {
@@ -68,13 +141,16 @@ export function useSignupForm() {
     setPassword,
     confirmPassword,
     setConfirmPassword,
-    emailError,
-    passwordError,
-    confirmPasswordError,
+    errors,
+    loading,
+    apiError,
     showPassword,
     setShowPassword,
     showConfirmPassword,
     setShowConfirmPassword,
     handleSubmit,
+    clearApiError,
+    showSuccessDialog,
+    handleDialogClose,
   };
 }

@@ -1,9 +1,4 @@
-// pages/Login/LoginForm.tsx
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
+import { Box, Button, TextField, Typography, Alert } from "@mui/material";
 import { Link } from "react-router-dom";
 import PasswordField from "../../common/PasswordField";
 import useLoginForm from "../../../hooks/useLoginForm";
@@ -18,6 +13,8 @@ export default function LoginForm() {
     handleLogin,
     loading,
     apiError,
+    showPassword,
+    setShowPassword,
   } = useLoginForm();
 
   return (
@@ -55,6 +52,9 @@ export default function LoginForm() {
         }}
         error={!!errors.password}
         helperText={errors.password}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        disabled={loading}
       />
 
       {/* Show API error here */}

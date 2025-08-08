@@ -1,31 +1,36 @@
 import { Toolbar } from "@mui/material";
 import { Link } from "react-router-dom";
+import LanguageSwitcher from "../common/Language Switch/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <header className="landing-header">
       <Toolbar className="landing-header-toolbar">
         <div className="logo">
-          <Link to="/" className="logo-link">
-            UniGuide
-            <img src="/education.png" alt="Logo" className="logo-img" />
+          <Link to="/">
+            <img src="/unizylogo.png" alt="Logo" className="logo-img" />
+            <span className="logo-text">nizy</span>
           </Link>
         </div>
         <ul className="nav-links">
           <li>
-            <Link to="/about">About</Link>
-            {/* This link is not used in the current context */}
+            <LanguageSwitcher />
           </li>
           <li>
-            <Link to="/login">Login</Link>
-            {/* This link is not used in the current context */}
+            <Link to="/login">{t("common.login")}</Link>
           </li>
           <li>
-            <Link to="/signup">
-              <button className="signup-button" type="button">
-                Sign Up
-              </button>
-            </Link>
+            <button
+              className="signup-button"
+              type="button"
+              onClick={() => void navigate("/signup")}
+            >
+              {t("common.signup")}
+            </button>
           </li>
         </ul>
       </Toolbar>
