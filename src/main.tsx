@@ -16,6 +16,9 @@ const Login = lazy(() => import("./components/pages/LoginPage/LoginPage"));
 const LandingPage = lazy(
   () => import("./components/pages/LandingPage/LandingPage"),
 );
+const FirstFormPage = lazy(
+  () => import("./components/pages/FirstForm/FirstFormPage"),
+);
 
 const rootElement = document.getElementById("root");
 
@@ -47,6 +50,14 @@ if (rootElement) {
                 element={
                   <Suspense fallback={<LoadingComponent />}>
                     <Login />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/firstForm"
+                element={
+                  <Suspense fallback={<LoadingComponent />}>
+                    <FirstFormPage />
                   </Suspense>
                 }
               />
