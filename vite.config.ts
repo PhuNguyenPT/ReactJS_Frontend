@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig({
   plugins: [react()],
+  assetsInclude: ["**/*.png", "**/*.jpg", "**/*.jpeg", "**/*.gif", "**/*.svg"],
   server: {
     proxy: {
       "/api": {
@@ -20,10 +21,13 @@ export default defineConfig({
           // React core
           "react-vendor": ["react", "react-dom"],
 
-          // Material-UI (your biggest dependency)
-          "mui-core": ["@mui/material"],
-          "mui-icons": ["@mui/icons-material"],
-          "mui-emotion": ["@emotion/react", "@emotion/styled"],
+          // ✅ Combine MUI, its icons, and Emotion into one chunk
+          "mui-vendor": [
+            "@mui/material",
+            "@mui/icons-material",
+            "@emotion/react",
+            "@emotion/styled",
+          ],
 
           // Router
           router: ["react-router-dom"],
@@ -36,16 +40,14 @@ export default defineConfig({
             "i18next-http-backend",
           ],
 
-          // HTTP client
+          // Other vendors
           http: ["axios"],
-
-          // Icons (if you're using both)
           icons: ["react-icons"],
         },
       },
     },
-    // Increase chunk size warning limit since you're now splitting properly
-    chunkSizeWarningLimit: 300,
+    // You might need to increase this limit for the new, larger mui-vendor chunk
+    chunkSizeWarningLimit: 600,
   },
   test: {
     environment: "jsdom",
