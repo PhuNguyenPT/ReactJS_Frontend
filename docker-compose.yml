@@ -1,0 +1,34 @@
+services:
+  frontend:
+    # Use the built image from Docker Hub
+    image: phunpt01/nodejs:frontend-latest
+    # Or build locally if you prefer:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Mount SSL certificates (adjust paths as needed)
+      - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
+      - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
+      - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # If you have a backend service, uncomment and configure:
+  # backend:
+  #   image: phunpt01/nodejs:backend-latest
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=production
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
