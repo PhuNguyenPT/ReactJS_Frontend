@@ -44,5 +44,23 @@
     "download": "Tải xuống",
     "start": "Bắt đầu",
     "stop": "Dừng"
+  },
+  "contents": {
+    "highlight": "HƯỚNG ",
+    "tilte1": "BẠN TỚI",
+    "tilte2": "NGÔI TRƯỜNG ĐẠI HỌC MƠ ƯỚC"
+  },
+  "loginForm": {
+    "tilte": "Chào mừng bạn tới Unizy",
+    "subTilte": "Đăng nhập vào tài khoản của bạn",
+    "noAccount": "Nếu bạn chưa có tài khoản?",
+    "signupLink": "Tạo ở đây",
+    "login": "ĐĂNG NHẬP",
+    "logging_in": "ĐANG ĐĂNG NHẬP...",
+    "enterEmail": "Nhập email của bạn",
+    "enterPassword": "Nhập mật khẩu của bạn"
+  },
+  "header": {
+    "viewHistory": "Xem Lịch Sử"
   }
 }

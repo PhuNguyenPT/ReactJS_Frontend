@@ -1,15 +1,17 @@
 import { useState } from "react";
+import useAuth from "./useAuth";
 import { loginUser } from "../services/user/authService";
 import axios, { AxiosError } from "axios";
 import type { ErrorDetails } from "../type/error.details";
 
 export default function useLoginForm() {
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,47 +37,33 @@ export default function useLoginForm() {
     try {
       setLoading(true);
 
-      const response = await loginUser({ email, password });
-      console.log("Login success:", response);
-
-      // Example:
-      // localStorage.setItem("token", response.token);
-      // navigate("/dashboard");
+      // Your loginUser already returns AuthResponse directly
+      const authResponse = await loginUser({ email, password });
+      // Check if login was successful
+      if (authResponse.success && authResponse.accessToken) {
+        login(authResponse);
+        window.location.replace("/");
+      } else {
+        setApiError(authResponse.message || "Login failed");
+      }
     } catch (error: unknown) {
       let message = "An unexpected error occurred. Please try again.";
 
       if (axios.isAxiosError(error)) {
         const apiError = error as AxiosError<ErrorDetails>;
 
-        // Try to get the message from API response in order of preference
         if (apiError.response?.data.validationErrors) {
-          // Handle validation errors
           const validationErrors = apiError.response.data.validationErrors;
-          // Check if it's a ValidationResponse with validationErrors property
-          if (
-            "validationErrors" in validationErrors &&
-            validationErrors.validationErrors
-          ) {
-            // Format validation errors into a readable string
-            const fieldErrors = Object.entries(
-              validationErrors.validationErrors,
-            )
-              .map(([field, error]) => `${field}: ${error}`)
-              .join(", ");
-            message = fieldErrors;
-          } else {
-            // It's an ErrorResponse, use its message
-            message = validationErrors.message;
-          }
+          const fieldErrors = Object.entries(validationErrors)
+            .map(([field, errorMsg]) => `${field}: ${String(errorMsg)}`)
+            .join(", ");
+          message = fieldErrors;
         } else if (apiError.response?.data.message) {
-          // This will get the message from any API exception (including BadCredentialsException)
           message = apiError.response.data.message;
         } else if (apiError.message) {
-          // Network errors or other axios errors
           message = apiError.message;
         }
       } else if (error instanceof Error) {
-        // Handle non-Axios errors
         message = error.message;
       }
 
@@ -86,7 +74,6 @@ export default function useLoginForm() {
     }
   };
 
-  // Function to clear API error (useful for UI)
   const clearApiError = () => {
     setApiError("");
   };

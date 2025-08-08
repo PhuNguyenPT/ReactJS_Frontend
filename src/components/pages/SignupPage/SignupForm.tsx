@@ -4,10 +4,6 @@ import {
   TextField,
   Typography,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Alert,
 } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -31,8 +27,6 @@ export default function SignupForm() {
     setShowConfirmPassword,
     handleSubmit,
     clearApiError,
-    showSuccessDialog,
-    handleDialogClose,
   } = useSignupForm();
 
   return (
@@ -44,13 +38,6 @@ export default function SignupForm() {
         autoComplete="off"
         onSubmit={(e) => void handleSubmit(e)}
       >
-        {/* API Error Alert */}
-        {apiError && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={clearApiError}>
-            {apiError}
-          </Alert>
-        )}
-
         {/* Email */}
         <label className="form-label" htmlFor="email">
           Email
@@ -123,6 +110,13 @@ export default function SignupForm() {
           </Link>
         </Typography>
 
+        {/* API Error Alert */}
+        {apiError && (
+          <Alert severity="error" sx={{ mt: 1 }} onClose={clearApiError}>
+            {apiError}
+          </Alert>
+        )}
+
         {/* Submit button */}
         <Button
           type="submit"
@@ -156,62 +150,6 @@ export default function SignupForm() {
           )}
         </Button>
       </Box>
-
-      {/* Success Dialog */}
-      <Dialog
-        open={showSuccessDialog}
-        onClose={handleDialogClose}
-        maxWidth="sm"
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              borderRadius: "12px",
-              padding: "8px",
-            },
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            textAlign: "center",
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            color: "#4caf50",
-            pb: 1,
-          }}
-        >
-          🎉 REGISTRATION SUCCESSFUL!
-        </DialogTitle>
-
-        <DialogContent sx={{ textAlign: "center", pb: 2 }}>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Your account has been created successfully!
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            You will be redirected to the login page to sign in with your new
-            credentials.
-          </Typography>
-        </DialogContent>
-
-        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-          <Button
-            onClick={handleDialogClose}
-            variant="contained"
-            sx={{
-              backgroundColor: "#ff69b4",
-              textTransform: "none",
-              borderRadius: "8px",
-              minWidth: "120px",
-              "&:hover": {
-                backgroundColor: "#e6418eff",
-              },
-            }}
-          >
-            Continue
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 }

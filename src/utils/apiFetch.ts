@@ -1,8 +1,4 @@
-import axios, {
-  AxiosError,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-} from "axios";
+import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
 const BASE_URL = "http://localhost:3000/api";
 
@@ -13,6 +9,7 @@ interface RequestOptions<T> {
   body?: T;
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  requiresAuth?: boolean;
 }
 
 async function apiFetch<T = unknown, B = unknown>(
@@ -37,14 +34,10 @@ async function apiFetch<T = unknown, B = unknown>(
     const response: AxiosResponse<T> = await axios(config);
     return response.data;
   } catch (error: unknown) {
-    let message = "API call failed";
-
     if (axios.isAxiosError(error)) {
-      const apiError = error as AxiosError<{ message?: string }>;
-      message = apiError.response?.data.message ?? message;
+      throw error;
     }
-
-    throw new Error(message);
+    throw new Error(error instanceof Error ? error.message : "API call failed");
   }
 }
 

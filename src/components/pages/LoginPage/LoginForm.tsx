@@ -1,9 +1,18 @@
-import { Box, Button, TextField, Typography, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import PasswordField from "../../common/PasswordField";
 import useLoginForm from "../../../hooks/useLoginForm";
+import { useTranslation } from "react-i18next";
 
 export default function LoginForm() {
+  const { t } = useTranslation();
   const {
     email,
     password,
@@ -29,7 +38,7 @@ export default function LoginForm() {
         Email
       </label>
       <TextField
-        placeholder="E-mail"
+        placeholder={t("loginForm.enterEmail")}
         fullWidth
         required
         variant="outlined"
@@ -43,9 +52,9 @@ export default function LoginForm() {
         helperText={errors.email}
       />
 
-      <label className="form-label">Password</label>
+      <label className="form-label">{t("forms.password")}</label>
       <PasswordField
-        placeholder="Enter your password"
+        placeholder={t("loginForm.enterPassword")}
         value={password}
         onChange={(e) => {
           setPassword(e.target.value);
@@ -68,7 +77,7 @@ export default function LoginForm() {
         variant="body2"
         sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
       >
-        Don't have an account?{" "}
+        {t("loginForm.noAccount")}{" "}
         <Link
           to="/signup"
           style={{
@@ -79,7 +88,7 @@ export default function LoginForm() {
           onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
         >
-          Sign up here
+          {t("loginForm.signupLink")}
         </Link>
       </Typography>
 
@@ -101,7 +110,14 @@ export default function LoginForm() {
           },
         }}
       >
-        {loading ? "Logging in..." : "LOGIN"}
+        {loading ? (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <CircularProgress size={20} color="inherit" />
+            {t("loginForm.logging_in")}
+          </Box>
+        ) : (
+          t("loginForm.login")
+        )}
       </Button>
     </Box>
   );
