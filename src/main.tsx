@@ -12,6 +12,7 @@ import Signup from "./components/pages/SignupPage/SignupPage";
 import Login from "./components/pages/LoginPage/LoginPage";
 import LandingPage from "./components/pages/LandingPage/LandingPage";
 import LoadingComponent from "./components/common/Language Switch/LoadingComponent";
+import FirstFormPage from "./components/pages/FirstForm/FirstFormPage";
 
 const rootElement = document.getElementById("root");
 
@@ -25,6 +26,7 @@ if (rootElement) {
               <Route path="/" element={<LandingPage />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/firstForm" element={<FirstFormPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

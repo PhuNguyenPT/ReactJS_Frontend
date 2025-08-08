@@ -301,3 +301,36 @@ html,
   text-align: left;
   margin-top: 20px;
 }
+
+/* FORM CONTAINER */
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  color: #a657ae;
+  background: #fff;
+  padding: 50px;
+  border-radius: 30px;
+  width: 550px;
+  height: 400px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+}
+
+.form-title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.form-subtitle {
+  font-size: 1.2rem;
+  font-style: italic;
+}
