@@ -62,5 +62,18 @@
   },
   "header": {
     "viewHistory": "View History"
+  },
+  "firstForm": {
+    "title": "About university location",
+    "subTitle": "Where do you want to study?",
+    "selectProvince": "Province/City",
+    "enterButton": "NEXT",
+    "errorWarning": "Please select a province/city"
+  },
+  "secondForm": {
+    "title": "About your preferred majors",
+    "subTitle": "Three majors that suit you best",
+    "major": "Major",
+    "errorWarning": "Please select a major"
   }
 }

@@ -62,5 +62,18 @@
   },
   "header": {
     "viewHistory": "Xem Lịch Sử"
+  },
+  "firstForm": {
+    "title": "Về vị trí của trường",
+    "subTitle": "Bạn mong muốn được học ở đâu?",
+    "selectProvince": "Tỉnh/Thành phố",
+    "enterDetails": "TIẾP THEO",
+    "errorWarning": "Vui lòng chọn Tỉnh/Thành phố"
+  },
+  "secondForm": {
+    "title": "Về ngành học của bạn",
+    "subTitle": "Ba nhóm ngành mà bạn thấymình phù hợp",
+    "major": "Ngành học",
+    "errorWarning": "Vui lòng chọn ngành học"
   }
 }

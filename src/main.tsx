@@ -17,7 +17,13 @@ const LandingPage = lazy(
   () => import("./components/pages/LandingPage/LandingPage"),
 );
 const FirstFormPage = lazy(
-  () => import("./components/pages/FirstForm/FirstFormPage"),
+  () => import("./components/pages/FirstFormPage/FirstFormPage"),
+);
+const SecondFormPage = lazy(
+  () => import("./components/pages/SecondFormPage/SecondFormPage"),
+);
+const ThirdFormPage = lazy(
+  () => import("./components/pages/ThirdFormPage/ThirdFormPage"),
 );
 
 const rootElement = document.getElementById("root");
@@ -58,6 +64,22 @@ if (rootElement) {
                 element={
                   <Suspense fallback={<LoadingComponent />}>
                     <FirstFormPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/secondForm"
+                element={
+                  <Suspense fallback={<LoadingComponent />}>
+                    <SecondFormPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/thirdForm"
+                element={
+                  <Suspense fallback={<LoadingComponent />}>
+                    <ThirdFormPage />
                   </Suspense>
                 }
               />

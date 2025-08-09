@@ -318,13 +318,40 @@ html,
   gap: 1rem;
   color: #a657ae;
   background: #fff;
-  padding: 50px;
+  padding: 30px;
   border-radius: 30px;
-  width: 550px;
-  height: 400px;
+  width: 600px;
+  height: 450px;
   box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
 }
 
+.form-2-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  color: #a657ae;
+  background: #fff;
+  padding: 30px;
+  border-radius: 30px;
+  width: 600px;
+  height: 450px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+}
+
+.form-3-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  color: #a657ae;
+  background: #fff;
+  padding: 30px;
+  border-radius: 30px;
+  width: 600px;
+  height: 450px;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+}
 .form-title {
   font-size: 2rem;
   font-weight: bold;
