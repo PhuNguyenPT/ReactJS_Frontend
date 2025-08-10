@@ -75,5 +75,16 @@
     "subTitle": "Ba nhóm ngành mà bạn thấymình phù hợp",
     "major": "Ngành học",
     "errorWarning": "Vui lòng chọn ngành học"
+  },
+  "thirdForm": {
+    "title": "Về kết quả thi của bạn",
+    "subTitle": "Nhập vào điểm thi THPT Quốc gia của bạn",
+    "errorWarning": "Vui lòng nhập điểm thi",
+    "optionalSubject": "Môn tự chọn",
+    "addDetails": "Thêm",
+    "score": "Điểm",
+    "chooseExam": "Chọn kỳ thi",
+    "firstTypo": "Nhập vào điểm thi",
+    "secondTypo": "của bạn. (nếu có)"
   }
 }

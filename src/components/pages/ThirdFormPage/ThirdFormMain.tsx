@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Box, TextField, Autocomplete, FormHelperText } from "@mui/material";
-//import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const allSubjects = [
@@ -15,29 +13,43 @@ const allSubjects = [
   "GDCD",
 ];
 
-export default function ThirdFormMain() {
-  //  const navigate = useNavigate();
+interface ThirdFormMainProps {
+  mathScore: string;
+  setMathScore: (value: string) => void;
+  literatureScore: string;
+  setLiteratureScore: (value: string) => void;
+  chosenSubjects: (string | null)[];
+  setChosenSubjects: (value: (string | null)[]) => void;
+  chosenScores: string[];
+  setChosenScores: (value: string[]) => void;
+  hasError: boolean;
+  setHasError: (value: boolean) => void;
+}
+
+export default function ThirdFormMain({
+  mathScore,
+  setMathScore,
+  literatureScore,
+  setLiteratureScore,
+  chosenSubjects,
+  setChosenSubjects,
+  chosenScores,
+  setChosenScores,
+  hasError,
+  setHasError,
+}: ThirdFormMainProps) {
   const { t } = useTranslation();
 
-  const [mathScore, setMathScore] = useState("");
-  const [literatureScore, setLiteratureScore] = useState("");
-  const [chosenSubjects, setChosenSubjects] = useState<(string | null)[]>([
-    null,
-    null,
-  ]);
-  const [chosenScores, setChosenScores] = useState<string[]>(["", ""]);
-  const [hasError, setHasError] = useState(false);
-
   const pillStyle = {
-    borderRadius: "25px",
+    borderRadius: "17px",
     height: "40px",
     "& .MuiOutlinedInput-root": {
       height: "40px",
       fontSize: "0.9rem",
-      borderRadius: "25px",
+      borderRadius: "17px",
       "& fieldset": {
         borderColor: "#A657AE",
-        borderRadius: "25px",
+        borderRadius: "17px",
       },
       "&:hover fieldset": {
         borderColor: "#8B4A8F",
@@ -47,44 +59,28 @@ export default function ThirdFormMain() {
       },
     },
     "& input": {
-      color: "#333",
       padding: "10px 16px",
+      color: "#A657AE",
     },
     "& .MuiInputBase-input.Mui-disabled": {
       WebkitTextFillColor: "#A657AE",
       color: "#A657AE",
       fontWeight: "500",
     },
+    "& .MuiOutlinedInput-root.Mui-disabled fieldset": {
+      borderColor: "#A657AE",
+    },
   };
 
   const subjectFieldStyle = {
     ...pillStyle,
-    width: "200px",
+    width: "190px",
   };
 
   const scoreFieldStyle = {
     ...pillStyle,
-    width: "180px",
+    width: "130px",
   };
-
-  //  const handleNext = () => {
-  //    const allFilled =
-  //      mathScore.trim() !== "" &&
-  //      literatureScore.trim() !== "" &&
-  //      chosenSubjects.every((s) => s && s.trim() !== "") &&
-  //      chosenScores.every((s) => s.trim() !== "");
-
-  //    if (allFilled) {
-  //      setHasError(false);
-  //      void navigate("/summary");
-  //    } else {
-  //      setHasError(true);
-  //    }
-  //  };
-
-  // const handlePrev = () => {
-  //   void navigate("/secondForm");
-  // };
 
   return (
     <Box
@@ -94,14 +90,14 @@ export default function ThirdFormMain() {
         flexDirection: "column",
         gap: 2,
         width: "100%",
-        maxWidth: "300px",
+        maxWidth: "400px",
       }}
     >
       {/* Math row */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField value="Toán" disabled sx={subjectFieldStyle} />
         <TextField
-          placeholder="Điểm"
+          placeholder={t("thirdForm.score")}
           slotProps={{
             htmlInput: { min: 0, max: 10, step: 0.1 },
           }}
@@ -115,7 +111,7 @@ export default function ThirdFormMain() {
         />
       </Box>
       {hasError && mathScore === "" && (
-        <FormHelperText error sx={{ ml: 1 }}>
+        <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
           {t("thirdForm.errorWarning", "Vui lòng nhập điểm")}
         </FormHelperText>
       )}
@@ -124,7 +120,7 @@ export default function ThirdFormMain() {
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField value="Ngữ Văn" disabled sx={subjectFieldStyle} />
         <TextField
-          placeholder="Điểm"
+          placeholder={t("thirdForm.score")}
           slotProps={{
             htmlInput: { min: 0, max: 10, step: 0.1 },
           }}
@@ -138,8 +134,8 @@ export default function ThirdFormMain() {
         />
       </Box>
       {hasError && literatureScore === "" && (
-        <FormHelperText error sx={{ ml: 1 }}>
-          {t("thirdForm.errorWarning", "Vui lòng nhập điểm")}
+        <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
+          {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
 
@@ -162,19 +158,20 @@ export default function ThirdFormMain() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  placeholder={`Môn tự chọn ${String(index + 1)}`}
+                  placeholder={`${t("thirdForm.optionalSubject")} ${String(index + 1)}`}
                   error={hasError && !chosenSubjects[index]}
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       height: "40px",
-                      borderRadius: "25px",
+                      width: "190px",
+                      borderRadius: "17px",
                       fontSize: "0.9rem",
                       "& fieldset": {
                         borderColor:
                           hasError && !chosenSubjects[index]
                             ? "#d32f2f"
                             : "#A657AE",
-                        borderRadius: "25px",
+                        borderRadius: "17px",
                       },
                       "&:hover fieldset": {
                         borderColor:
@@ -191,13 +188,14 @@ export default function ThirdFormMain() {
                     },
                     "& input": {
                       padding: "10px 16px",
+                      color: "#A657AE",
                     },
                   }}
                 />
               )}
             />
             <TextField
-              placeholder="Điểm"
+              placeholder={t("thirdForm.score")}
               slotProps={{
                 htmlInput: { min: 0, max: 10, step: 0.1 },
               }}
@@ -215,10 +213,7 @@ export default function ThirdFormMain() {
           {hasError &&
             (!chosenSubjects[index] || chosenScores[index] === "") && (
               <FormHelperText error sx={{ ml: 1 }}>
-                {t(
-                  "thirdForm.errorWarning",
-                  "Vui lòng chọn môn học và nhập điểm",
-                )}
+                {t("thirdForm.errorWarning")}
               </FormHelperText>
             )}
         </Box>

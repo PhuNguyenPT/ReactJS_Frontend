@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
 
 interface OptionalScore {
   id: string;
@@ -41,6 +42,8 @@ const subjectOptions = {
 };
 
 export default function ThirdFormOptional() {
+  const { t } = useTranslation();
+
   const [categories, setCategories] = useState<CategoryData[]>(
     optionalCategories.map((cat, index) => ({
       id: `category-${String(index + 1)}`,
@@ -153,7 +156,8 @@ export default function ThirdFormOptional() {
               toggleExpanded(category.id);
             }}
           >
-            Nhập vào điểm thi {category.name} của bạn. (nếu có)
+            {t("thirdForm.firstTypo")} {category.name}{" "}
+            {t("thirdForm.secondTypo")}
           </Typography>
 
           {/* Add Button */}
@@ -166,7 +170,7 @@ export default function ThirdFormOptional() {
             sx={{
               mb: 2,
               backgroundColor: "#9c27b0",
-              borderRadius: "20px",
+              borderRadius: "10px",
               textTransform: "none",
               alignSelf: "flex-start",
               "&:hover": {
@@ -174,7 +178,7 @@ export default function ThirdFormOptional() {
               },
             }}
           >
-            Thêm
+            {t("thirdForm.addDetails")}
           </Button>
 
           {/* Score Inputs */}
@@ -185,7 +189,7 @@ export default function ThirdFormOptional() {
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 2,
+                  gap: 1,
                   mb: 2,
                   justifyContent: "flex-start",
                 }}
@@ -204,12 +208,24 @@ export default function ThirdFormOptional() {
                     }}
                     displayEmpty
                     sx={{
-                      borderRadius: "25px",
-                      height: "45px",
+                      borderRadius: "17px",
+                      height: "40px",
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#ddd",
+                        borderColor: "#A657AE",
                       },
-                      "& .MuiSelect-select": { textAlign: "left" },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#8B4A8F",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#A657AE",
+                      },
+                      "& .MuiSelect-select": {
+                        textAlign: "left",
+                        color: "#A657AE",
+                      },
+                      "&:hover": {
+                        borderColor: "#8B4A8F",
+                      },
                     }}
                   >
                     <MenuItem
@@ -221,7 +237,7 @@ export default function ThirdFormOptional() {
                         justifyContent: "flex-start",
                       }}
                     >
-                      Chọn kỳ thi
+                      {t("thirdForm.chooseExam")}
                     </MenuItem>
                     {subjectOptions[
                       category.name as keyof typeof subjectOptions
@@ -244,21 +260,28 @@ export default function ThirdFormOptional() {
                       e.target.value,
                     );
                   }}
-                  placeholder="Điểm"
+                  placeholder={t("thirdForm.score")}
                   slotProps={{
                     htmlInput: { min: 0, max: 10, step: 0.1 },
                   }}
                   sx={{
-                    width: "100%",
+                    width: "150px",
                     "& .MuiOutlinedInput-root": {
-                      borderRadius: "25px",
+                      borderRadius: "17px",
                       height: "40px",
                     },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#8B4A8F",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#A657AE",
+                    },
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#ddd",
+                      borderColor: "#A657AE",
                     },
                     "& .MuiInputBase-input": {
                       textAlign: "left",
+                      color: "#A657AE",
                     },
                   }}
                 />

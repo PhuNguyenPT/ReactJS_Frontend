@@ -76,6 +76,7 @@ const SecondForm = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 999,
+                    color: "#A657AE",
                   },
                 }}
               />

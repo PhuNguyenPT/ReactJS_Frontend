@@ -351,7 +351,27 @@ html,
   width: 600px;
   height: 450px;
   box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+.form-3-content::-webkit-scrollbar {
+  width: 8px;
+}
+.form-3-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin-top: 90px;
+  margin-bottom: 90px;
+}
+.form-3-content::-webkit-scrollbar-thumb {
+  background: #a657ae;
+  border-radius: 4px;
+}
+.form-3-content::-webkit-scrollbar-thumb:hover {
+  background: #8b4a8f;
+}
+
 .form-title {
   font-size: 2rem;
   font-weight: bold;
