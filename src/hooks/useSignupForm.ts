@@ -2,7 +2,7 @@ import { useState } from "react";
 import useAuth from "./useAuth";
 import { signupUser } from "../services/user/authService";
 import axios, { AxiosError } from "axios";
-import type { ErrorDetails } from "../type/error.details";
+import type { ErrorDetails } from "../type/interface/error.details";
 
 export function useSignupForm() {
   const { register } = useAuth();

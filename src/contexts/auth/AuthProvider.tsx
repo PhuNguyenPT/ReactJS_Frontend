@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AuthContext, type AuthResponse, type User } from "./AuthContext";
+import { isTokenExpired } from "../../utils/tokenUtils";
 import axios from "axios";
 
 interface AuthProviderProps {
@@ -55,16 +56,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const savedUser = localStorage.getItem("user");
 
     if (savedToken && savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser) as User;
-        setToken(savedToken);
-        setRefreshToken(savedRefreshToken);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing saved user data:", error);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("user");
+      if (isTokenExpired(savedToken)) {
+        console.warn("Access token expired on load, logging out...");
+        logout();
+      } else {
+        try {
+          const parsedUser = JSON.parse(savedUser) as User;
+          setToken(savedToken);
+          setRefreshToken(savedRefreshToken);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error("Error parsing saved user data:", error);
+          logout();
+        }
       }
     }
     setIsLoading(false);

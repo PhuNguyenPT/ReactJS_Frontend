@@ -62,5 +62,29 @@
   },
   "header": {
     "viewHistory": "View History"
+  },
+  "firstForm": {
+    "title": "About university location",
+    "subTitle": "Where do you want to study?",
+    "selectProvince": "Province/City",
+    "enterButton": "NEXT",
+    "errorWarning": "Please select a province/city"
+  },
+  "secondForm": {
+    "title": "About your preferred majors",
+    "subTitle": "Three majors that suit you best",
+    "major": "Major",
+    "errorWarning": "Please select a major"
+  },
+  "thirdForm": {
+    "title": "About your exam results",
+    "subTitle": "Enter your National High School Exam scores",
+    "errorWarning": "Please enter your exam scores",
+    "optionalSubject": "Optional subject",
+    "addDetails": "Add",
+    "score": "Score",
+    "chooseExam": "Choose exam",
+    "firstTypo": "Enter your ",
+    "secondTypo": "exam scores of yours. (if any)"
   }
 }
