@@ -8,14 +8,12 @@ import "./assets/fonts/fonts.css";
 import "./i18n";
 
 import LoadingComponent from "./components/common/Language Switch/LoadingComponent";
+import { AuthProvider } from "./contexts/auth/AuthProvider";
 
-// Lazy load your components
-const App = lazy(() => import("./App"));
+import App from "./App";
+import LandingPage from "./components/pages/LandingPage/LandingPage";
 const Signup = lazy(() => import("./components/pages/SignupPage/SignupPage"));
 const Login = lazy(() => import("./components/pages/LoginPage/LoginPage"));
-const LandingPage = lazy(
-  () => import("./components/pages/LandingPage/LandingPage"),
-);
 const FirstFormPage = lazy(
   () => import("./components/pages/FirstFormPage/FirstFormPage"),
 );
@@ -34,70 +32,24 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <Suspense fallback={<LoadingComponent />}>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<App />}>
-              <Route
-                path="/"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <LandingPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/signup"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <Signup />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/login"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <Login />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/firstForm"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <FirstFormPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/secondForm"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <SecondFormPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/thirdForm"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <ThirdFormPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/fourthForm"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <FourthFormPage />
-                  </Suspense>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </Suspense>
+      <AuthProvider>
+        {" "}
+        <Suspense fallback={<LoadingComponent />}>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<App />}>
+                <Route index element={<LandingPage />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="login" element={<Login />} />
+                <Route path="firstForm" element={<FirstFormPage />} />
+                <Route path="secondForm" element={<SecondFormPage />} />
+                <Route path="thirdForm" element={<ThirdFormPage />} />
+                <Route path="fourthForm" element={<FourthFormPage />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </Suspense>
+      </AuthProvider>
     </StrictMode>,
   );
 }

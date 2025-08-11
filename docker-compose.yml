@@ -1,7 +1,7 @@
 services:
   frontend:
     # Use the built image from Docker Hub
-    image: phunpt01/nodejs:frontend-latest
+    image: phunpt01/react-frontend:latest
     # Or build locally if you prefer:
     # build:
     #   context: .
