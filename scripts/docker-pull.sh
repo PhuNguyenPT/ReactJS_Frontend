@@ -2,7 +2,7 @@
 
 # Simple script to update Docker container
 echo "Pulling latest image..."
-sudo docker pull phunpt01/nodejs:frontend-latest
+sudo docker pull phunpt01/react-frontend:latest
 
 echo "Stopping and removing container..."
 sudo docker compose stop frontend
