@@ -25,6 +25,9 @@ const SecondFormPage = lazy(
 const ThirdFormPage = lazy(
   () => import("./components/pages/ThirdFormPage/ThirdFormPage"),
 );
+const FourthFormPage = lazy(
+  () => import("./components/pages/FourthFormPage/FouthFormPage"),
+);
 
 const rootElement = document.getElementById("root");
 
@@ -80,6 +83,14 @@ if (rootElement) {
                 element={
                   <Suspense fallback={<LoadingComponent />}>
                     <ThirdFormPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/fourthForm"
+                element={
+                  <Suspense fallback={<LoadingComponent />}>
+                    <FourthFormPage />
                   </Suspense>
                 }
               />

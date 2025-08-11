@@ -69,12 +69,11 @@ export default function ThirdFormPage() {
 
         <Box
           sx={{
-            position: "absolute",
-            bottom: 176,
-            right: 487,
+            position: "relative",
             display: "flex",
             gap: 0.3,
-            zIndex: 1,
+            top: 181.5,
+            right: 106,
           }}
         >
           <IconButton

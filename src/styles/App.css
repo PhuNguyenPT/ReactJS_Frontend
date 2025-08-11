@@ -354,6 +354,7 @@ html,
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
+  margin-left: 83px;
 }
 .form-3-content::-webkit-scrollbar {
   width: 8px;
