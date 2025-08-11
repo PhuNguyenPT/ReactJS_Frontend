@@ -8,52 +8,33 @@ import "./assets/fonts/fonts.css";
 import "./i18n";
 
 import LoadingComponent from "./components/common/Language Switch/LoadingComponent";
+import { AuthProvider } from "./contexts/auth/AuthProvider"; // Add this import
 
-// Lazy load your components
-const App = lazy(() => import("./App"));
+import App from "./App";
 const Signup = lazy(() => import("./components/pages/SignupPage/SignupPage"));
 const Login = lazy(() => import("./components/pages/LoginPage/LoginPage"));
-const LandingPage = lazy(
-  () => import("./components/pages/LandingPage/LandingPage"),
-);
+import LandingPage from "./components/pages/LandingPage/LandingPage";
 
 const rootElement = document.getElementById("root");
 
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <Suspense fallback={<LoadingComponent />}>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<App />}>
-              <Route
-                path="/"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <LandingPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/signup"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <Signup />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/login"
-                element={
-                  <Suspense fallback={<LoadingComponent />}>
-                    <Login />
-                  </Suspense>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </Suspense>
+      <AuthProvider>
+        {" "}
+        {/* Move AuthProvider here */}
+        <Suspense fallback={<LoadingComponent />}>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<App />}>
+                <Route index element={<LandingPage />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="login" element={<Login />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </Suspense>
+      </AuthProvider>
     </StrictMode>,
   );
 }
