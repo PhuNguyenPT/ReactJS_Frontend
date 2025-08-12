@@ -5,8 +5,8 @@ import {
   Button,
   FormHelperText,
   TextField,
+  Autocomplete,
 } from "@mui/material";
-import { Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.provinces";
@@ -14,14 +14,16 @@ import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.province
 const FirstForm = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
+  const [selectedProvinces, setSelectedProvinces] = useState<string | null>(
+    null,
+  );
   const [hasError, setHasError] = useState(false);
 
   // Convert enum to array of values
   const provinces = useMemo(() => Object.values(VietnamSouthernProvinces), []);
 
   const handleNext = () => {
-    if (selectedProvinces.length > 0) {
+    if (selectedProvinces) {
       setHasError(false);
       void navigate("/secondForm");
     } else {
@@ -33,7 +35,6 @@ const FirstForm = () => {
     <Box component="form" className="first-form">
       <FormControl fullWidth error={hasError}>
         <Autocomplete
-          multiple
           options={provinces}
           value={selectedProvinces}
           onChange={(_, newValue) => {
@@ -48,12 +49,23 @@ const FirstForm = () => {
           renderInput={(params) => (
             <TextField
               {...params}
-              label={t("firstForm.selectProvince")}
               placeholder={t("firstForm.selectProvince")}
               error={hasError}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 999,
+                  "& fieldset": {
+                    borderColor: "#A657AE",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#8B4A8F",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#A657AE",
+                  },
+                },
+                "& input": {
+                  color: "#A657AE",
                 },
               }}
             />
@@ -68,14 +80,14 @@ const FirstForm = () => {
         variant="contained"
         sx={{
           mt: 4,
-          px: 4,
+          px: 3,
           py: 1,
           borderRadius: 2,
           fontSize: "1.1rem",
           backgroundColor: "#A657AE",
           textTransform: "none",
           fontWeight: "bold",
-          marginLeft: 16,
+          marginLeft: 18.5,
           marginTop: 22,
           "&:hover": {
             backgroundColor: "#8B4A8F",

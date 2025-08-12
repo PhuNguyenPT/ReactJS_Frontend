@@ -4,9 +4,7 @@ import {
   Typography,
   Button,
   IconButton,
-  MenuItem,
-  Select,
-  FormControl,
+  Autocomplete,
 } from "@mui/material";
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
@@ -136,7 +134,7 @@ export default function ThirdFormOptional() {
         <Box
           key={category.id}
           sx={{
-            mb: 3,
+            mb: 1,
             width: "100%",
             display: "flex",
             flexDirection: "column",
@@ -160,27 +158,6 @@ export default function ThirdFormOptional() {
             {t("thirdForm.secondTypo")}
           </Typography>
 
-          {/* Add Button */}
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              handleAddScore(category.id);
-            }}
-            sx={{
-              mb: 2,
-              backgroundColor: "#9c27b0",
-              borderRadius: "10px",
-              textTransform: "none",
-              alignSelf: "flex-start",
-              "&:hover": {
-                backgroundColor: "#7b1fa2",
-              },
-            }}
-          >
-            {t("thirdForm.addDetails")}
-          </Button>
-
           {/* Score Inputs */}
           {category.isExpanded &&
             category.scores.map((score) => (
@@ -190,64 +167,53 @@ export default function ThirdFormOptional() {
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
-                  mb: 2,
                   justifyContent: "flex-start",
+                  mb: 1,
                 }}
               >
-                {/* Subject Dropdown */}
-                <FormControl sx={{ minWidth: 200 }}>
-                  <Select
-                    value={score.subject}
-                    onChange={(e) => {
-                      handleScoreChange(
-                        category.id,
-                        score.id,
-                        "subject",
-                        e.target.value,
-                      );
-                    }}
-                    displayEmpty
-                    sx={{
-                      borderRadius: "17px",
-                      height: "40px",
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#A657AE",
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8B4A8F",
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#A657AE",
-                      },
-                      "& .MuiSelect-select": {
-                        textAlign: "left",
-                        color: "#A657AE",
-                      },
-                      "&:hover": {
-                        borderColor: "#8B4A8F",
-                      },
-                    }}
-                  >
-                    <MenuItem
-                      value=""
+                {/* Subject Autocomplete */}
+                <Autocomplete
+                  options={
+                    subjectOptions[category.name as keyof typeof subjectOptions]
+                  }
+                  value={score.subject || null}
+                  onChange={(_, newValue) => {
+                    handleScoreChange(
+                      category.id,
+                      score.id,
+                      "subject",
+                      newValue ?? "",
+                    );
+                  }}
+                  sx={{
+                    width: 200,
+                  }}
+                  filterSelectedOptions
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t("thirdForm.chooseExam")}
                       sx={{
-                        fontStyle: "italic",
-                        color: "#999",
-                        textAlign: "left",
-                        justifyContent: "flex-start",
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "17px",
+                          height: "40px",
+                          "& fieldset": {
+                            borderColor: "#A657AE",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#8B4A8F",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "#A657AE",
+                          },
+                        },
+                        "& input": {
+                          color: "#A657AE",
+                        },
                       }}
-                    >
-                      {t("thirdForm.chooseExam")}
-                    </MenuItem>
-                    {subjectOptions[
-                      category.name as keyof typeof subjectOptions
-                    ].map((subject) => (
-                      <MenuItem key={subject} value={subject}>
-                        {subject}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                    />
+                  )}
+                />
 
                 {/* Score Input */}
                 <TextField
@@ -305,6 +271,27 @@ export default function ThirdFormOptional() {
                 </IconButton>
               </Box>
             ))}
+
+          {/* Add Button */}
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              handleAddScore(category.id);
+            }}
+            sx={{
+              mb: 2,
+              backgroundColor: "#9c27b0",
+              borderRadius: "10px",
+              textTransform: "none",
+              alignSelf: "flex-start",
+              "&:hover": {
+                backgroundColor: "#7b1fa2",
+              },
+            }}
+          >
+            {t("buttons.add")}
+          </Button>
         </Box>
       ))}
     </Box>

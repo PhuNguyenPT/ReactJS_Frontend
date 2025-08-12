@@ -46,7 +46,7 @@
     "stop": "Stop"
   },
   "contents": {
-    "highlight": "Guide",
+    "highlight": "GUIDING",
     "tilte1": "YOU TO",
     "tilte2": "YOUR DREAM UNIVERSITY"
   },
@@ -81,7 +81,6 @@
     "subTitle": "Enter your National High School Exam scores",
     "errorWarning": "Please enter your exam scores",
     "optionalSubject": "Optional subject",
-    "addDetails": "Add",
     "score": "Score",
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",

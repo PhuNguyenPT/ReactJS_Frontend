@@ -25,18 +25,26 @@ const SecondForm = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [selectedMajors, setSelectedMajors] = useState<string[]>(["", "", ""]);
+  // Change from empty strings to null values
+  const [selectedMajors, setSelectedMajors] = useState<(string | null)[]>([
+    null,
+    null,
+    null,
+  ]);
   const [hasError, setHasError] = useState(false);
 
   const handleChange = (index: number, value: string | null) => {
     const updated = [...selectedMajors];
-    updated[index] = value ?? "";
+    updated[index] = value;
     setSelectedMajors(updated);
     setHasError(false);
   };
 
   const handleNext = () => {
-    if (selectedMajors.every((major) => major.trim() !== "")) {
+    // Check if all majors are selected (not null and not empty)
+    if (
+      selectedMajors.every((major) => major !== null && major.trim() !== "")
+    ) {
       setHasError(false);
       void navigate("/thirdForm");
     } else {
@@ -60,12 +68,15 @@ const SecondForm = () => {
         <FormControl
           key={index}
           fullWidth
-          error={hasError && selectedMajors[index] === ""}
+          error={
+            hasError &&
+            (selectedMajors[index] === null || selectedMajors[index] === "")
+          }
           sx={{ mb: 1, width: 450, marginRight: 50 }}
         >
           <Autocomplete
             options={majors}
-            value={selectedMajors[index] || ""}
+            value={selectedMajors[index]}
             onChange={(_, newValue) => {
               handleChange(index, newValue);
             }}
@@ -76,6 +87,17 @@ const SecondForm = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     borderRadius: 999,
+                    "& fieldset": {
+                      borderColor: "#A657AE",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#8B4A8F",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#A657AE",
+                    },
+                  },
+                  "& input": {
                     color: "#A657AE",
                   },
                 }}
@@ -83,7 +105,8 @@ const SecondForm = () => {
             )}
           />
           <FormHelperText sx={{ minHeight: "1.5em" }}>
-            {hasError && selectedMajors[index] === ""
+            {hasError &&
+            (selectedMajors[index] === null || selectedMajors[index] === "")
               ? t("secondForm.errorWarning")
               : " "}
           </FormHelperText>
