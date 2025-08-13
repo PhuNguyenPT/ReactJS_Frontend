@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AuthContext, type AuthResponse, type User } from "./AuthContext";
-import { isTokenExpired } from "../../utils/tokenUtils";
 import axios from "axios";
+import { isTokenExpired } from "../../utils/tokenUtils";
+import { useTokenRefresh } from "../../hooks/useTokenRefresh";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -13,28 +14,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const logout = () => {
+    setToken(null);
+    setRefreshToken(null);
+    setUser(null);
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+  };
+
+  useTokenRefresh({
+    accessToken: token,
+    refreshToken,
+    onTokenUpdate: (newTokens) => {
+      setToken(newTokens.accessToken);
+      setRefreshToken(newTokens.refreshToken);
+      setUser(newTokens.user);
+
+      localStorage.setItem("accessToken", newTokens.accessToken);
+      localStorage.setItem("refreshToken", newTokens.refreshToken);
+      localStorage.setItem("user", JSON.stringify(newTokens.user));
+    },
+    onRefreshFail: logout,
+    accessBufferTime: 60000, // 1 minute before expiry
+    refreshBufferTime: 24 * 60 * 60 * 1000, // 1 day before expiry
+  });
+
   useEffect(() => {
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        const storedToken = localStorage.getItem("accessToken");
+        if (storedToken) {
+          config.headers.Authorization = `Bearer ${storedToken}`;
         }
         return config;
       },
-      (error) => {
-        return Promise.reject(
+      (error) =>
+        Promise.reject(
           error instanceof Error ? error : new Error(String(error)),
-        );
-      },
+        ),
     );
 
-    // Response interceptor to handle 401 errors
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       (error: unknown) => {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
-          // Token might be expired, clear auth data
           logout();
         }
         return Promise.reject(
@@ -43,7 +67,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       },
     );
 
-    // Cleanup interceptors on unmount
     return () => {
       axios.interceptors.request.eject(requestInterceptor);
       axios.interceptors.response.eject(responseInterceptor);
@@ -61,10 +84,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         logout();
       } else {
         try {
-          const parsedUser = JSON.parse(savedUser) as User;
           setToken(savedToken);
           setRefreshToken(savedRefreshToken);
-          setUser(parsedUser);
+          setUser(JSON.parse(savedUser) as User);
         } catch (error) {
           console.error("Error parsing saved user data:", error);
           logout();
@@ -89,30 +111,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(newUser));
   };
 
-  const register = (authResponse: AuthResponse) => {
-    const {
-      accessToken,
-      refreshToken: newRefreshToken,
-      user: newUser,
-    } = authResponse;
-    setToken(accessToken);
-    setRefreshToken(newRefreshToken);
-    setUser(newUser);
-
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", newRefreshToken);
-    localStorage.setItem("user", JSON.stringify(newUser));
-  };
-
-  const logout = () => {
-    setToken(null);
-    setRefreshToken(null);
-    setUser(null);
-
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-  };
+  const register = login; // Same logic as login
 
   const displayName = user?.name ?? user?.email;
   const value = useMemo(
@@ -127,7 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       logout,
       displayName,
     }),
-    [user, token, refreshToken, isLoading, displayName],
+    [user, token, refreshToken, isLoading, register, displayName],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;

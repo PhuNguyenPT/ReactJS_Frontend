@@ -53,3 +53,13 @@ export async function logoutUser(): Promise<LogoutResponse> {
     requiresAuth: true,
   });
 }
+
+export async function refreshAccessToken(
+  refreshToken: string,
+): Promise<AuthResponse> {
+  return apiFetch<AuthResponse>("/auth/refresh", {
+    method: "POST",
+    body: { refreshToken },
+    requiresAuth: false,
+  });
+}
