@@ -25,7 +25,6 @@ export default function FourthFormPage() {
       <div className="form-container">
         <div className="form-3-content">
           <h1 className="form-title">4 → {t("fourthForm.title")}</h1>
-          <p className="form-subtitle">{t("fourthForm.subTitle")}</p>
           <FourthForm />
         </div>
 
@@ -34,7 +33,7 @@ export default function FourthFormPage() {
             position: "relative",
             display: "flex",
             gap: 0.3,
-            top: 181.5,
+            top: 181.6,
             right: 106,
           }}
         >

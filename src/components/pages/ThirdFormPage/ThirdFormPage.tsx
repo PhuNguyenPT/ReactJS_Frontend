@@ -72,7 +72,7 @@ export default function ThirdFormPage() {
             position: "relative",
             display: "flex",
             gap: 0.3,
-            top: 181.5,
+            top: 181.6,
             right: 106,
           }}
         >

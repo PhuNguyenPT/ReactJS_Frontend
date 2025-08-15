@@ -74,16 +74,27 @@
     "title": "Về ngành học của bạn",
     "subTitle": "Ba nhóm ngành mà bạn thấy mình phù hợp",
     "major": "Ngành học",
-    "errorWarning": "Vui lòng chọn ngành học"
+    "errorWarning": "Vui lòng chọn ít nhất một ngành học"
   },
   "thirdForm": {
     "title": "Về kết quả thi của bạn",
     "subTitle": "Nhập vào điểm thi THPT Quốc gia của bạn",
-    "errorWarning": "Vui lòng nhập điểm thi",
+    "errorWarning": "Vui lòng nhập điểm thi ",
     "optionalSubject": "Môn tự chọn",
     "score": "Điểm",
     "chooseExam": "Chọn kỳ thi",
     "firstTypo": "Nhập vào điểm thi",
     "secondTypo": "của bạn. (nếu có)"
+  },
+  "fourthForm": {
+    "title": "Về thành tích của bạn",
+    "cat1": "Bạn đã đạt giải Học sinh giỏi Quốc gia nào chưa?",
+    "cat2": " Bạn đã sở hữu chứng chỉ quốc tế nào chưa?",
+    "cat3": "Bạn đã sở hữu chứng chỉ ngoại ngữ nào chưa?",
+    "firstField": "Môn thi",
+    "secondField": "Loại chứng chỉ",
+    "thirdField": "Ngoại ngữ",
+    "award": "Giải thưởng",
+    "score": "Điểm"
   }
 }

@@ -10,6 +10,7 @@ import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
+import React from "react";
 
 interface AwardCertificate {
   id: string;
@@ -24,141 +25,165 @@ interface CategoryData {
   isExpanded: boolean;
   firstFieldLabel: string;
   secondFieldLabel: string;
+  categoryType: string; // Add this to identify category type
 }
-
-const categories = [
-  "National Student Award",
-  "International Certificate",
-  "Language Certificate",
-];
-
-// Options for each category
-const categoryOptions = {
-  "National Student Award": {
-    subjects: [
-      "Toán học",
-      "Ngữ văn",
-      "Tiếng Anh",
-      "Vật lý",
-      "Hóa học",
-      "Sinh học",
-      "Lịch sử",
-      "Địa lý",
-      "Giáo dục công dân",
-    ],
-    awards: [
-      "Giải Nhất",
-      "Giải Nhì",
-      "Giải Ba",
-      "Giải Khuyến khích",
-      "Giải Xuất sắc",
-    ],
-  },
-  "International Certificate": {
-    certificates: [
-      "IELTS",
-      "TOEFL",
-      "SAT",
-      "ACT",
-      "Cambridge English",
-      "DELF/DALF",
-      "JLPT",
-      "HSK",
-      "TOPIK",
-    ],
-    scores: [
-      "9.0",
-      "8.5",
-      "8.0",
-      "7.5",
-      "7.0",
-      "6.5",
-      "6.0",
-      "5.5",
-      "5.0", // IELTS
-      "120",
-      "110",
-      "100",
-      "90",
-      "80",
-      "70",
-      "60", // TOEFL
-      "1600",
-      "1500",
-      "1400",
-      "1300",
-      "1200",
-      "1100",
-      "1000", // SAT
-      "36",
-      "35",
-      "34",
-      "33",
-      "32",
-      "31",
-      "30",
-      "29",
-      "28", // ACT
-      "C2",
-      "C1",
-      "B2",
-      "B1",
-      "A2",
-      "A1", // Cambridge/CEFR
-      "N1",
-      "N2",
-      "N3",
-      "N4",
-      "N5", // JLPT
-      "Level 6",
-      "Level 5",
-      "Level 4",
-      "Level 3",
-      "Level 2",
-      "Level 1", // HSK/TOPIK
-    ],
-  },
-  "Language Certificate": {
-    subjects: [
-      "Tiếng Anh",
-      "Tiếng Nhật",
-      "Tiếng Hàn",
-      "Tiếng Trung",
-      "Tiếng Pháp",
-      "Tiếng Đức",
-      "Tiếng Tây Ban Nha",
-      "Tiếng Nga",
-    ],
-    awards: [
-      "A1",
-      "A2",
-      "B1",
-      "B2",
-      "C1",
-      "C2", // CEFR levels
-      "Beginner",
-      "Elementary",
-      "Intermediate",
-      "Upper-Intermediate",
-      "Advanced",
-      "Proficient",
-      "N1",
-      "N2",
-      "N3",
-      "N4",
-      "N5", // Japanese
-      "HSK 1",
-      "HSK 2",
-      "HSK 3",
-      "HSK 4",
-      "HSK 5",
-      "HSK 6", // Chinese
-    ],
-  },
-};
 
 export default function FourthForm() {
   const { t } = useTranslation();
+
+  const categories = [
+    t("fourthForm.cat1"),
+    t("fourthForm.cat2"),
+    t("fourthForm.cat3"),
+  ];
+
+  // Options for each category - use category types instead of translated names
+  const categoryOptions = {
+    national_award: {
+      subjects: [
+        "Toán học",
+        "Ngữ văn",
+        "Tiếng Anh",
+        "Vật lý",
+        "Hóa học",
+        "Sinh học",
+        "Lịch sử",
+        "Địa lý",
+        "Giáo dục công dân",
+      ],
+      awards: [
+        "Giải Nhất",
+        "Giải Nhì",
+        "Giải Ba",
+        "Giải Khuyến khích",
+        "Giải Xuất sắc",
+      ],
+    },
+    international_cert: {
+      certificates: [
+        "IELTS",
+        "TOEFL",
+        "SAT",
+        "ACT",
+        "Cambridge English",
+        "DELF/DALF",
+        "JLPT",
+        "HSK",
+        "TOPIK",
+      ],
+      scores: [
+        "9.0",
+        "8.5",
+        "8.0",
+        "7.5",
+        "7.0",
+        "6.5",
+        "6.0",
+        "5.5",
+        "5.0", // IELTS
+        "120",
+        "110",
+        "100",
+        "90",
+        "80",
+        "70",
+        "60", // TOEFL
+        "1600",
+        "1500",
+        "1400",
+        "1300",
+        "1200",
+        "1100",
+        "1000", // SAT
+        "36",
+        "35",
+        "34",
+        "33",
+        "32",
+        "31",
+        "30",
+        "29",
+        "28", // ACT
+        "C2",
+        "C1",
+        "B2",
+        "B1",
+        "A2",
+        "A1", // Cambridge/CEFR
+        "N1",
+        "N2",
+        "N3",
+        "N4",
+        "N5", // JLPT
+        "Level 6",
+        "Level 5",
+        "Level 4",
+        "Level 3",
+        "Level 2",
+        "Level 1", // HSK/TOPIK
+      ],
+    },
+    language_cert: {
+      subjects: [
+        "Tiếng Anh",
+        "Tiếng Nhật",
+        "Tiếng Hàn",
+        "Tiếng Trung",
+        "Tiếng Pháp",
+        "Tiếng Đức",
+        "Tiếng Tây Ban Nha",
+        "Tiếng Nga",
+      ],
+      awards: [
+        "A1",
+        "A2",
+        "B1",
+        "B2",
+        "C1",
+        "C2", // CEFR levels
+        "Beginner",
+        "Elementary",
+        "Intermediate",
+        "Upper-Intermediate",
+        "Advanced",
+        "Proficient",
+        "N1",
+        "N2",
+        "N3",
+        "N4",
+        "N5", // Japanese
+        "HSK 1",
+        "HSK 2",
+        "HSK 3",
+        "HSK 4",
+        "HSK 5",
+        "HSK 6", // Chinese
+      ],
+    },
+  };
+
+  // Update labels when translation changes
+  React.useEffect(() => {
+    const categories = [
+      t("fourthForm.cat1"),
+      t("fourthForm.cat2"),
+      t("fourthForm.cat3"),
+    ];
+    setCategoryData((prev) =>
+      prev.map((category, index) => ({
+        ...category,
+        name: categories[index],
+        firstFieldLabel:
+          index === 0
+            ? t("fourthForm.firstField")
+            : index === 1
+              ? t("fourthForm.secondField")
+              : t("fourthForm.thirdField"),
+        secondFieldLabel:
+          index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
+      })),
+    );
+  }, [t]);
 
   const [categoryData, setCategoryData] = useState<CategoryData[]>(
     categories.map((cat, index) => ({
@@ -166,13 +191,20 @@ export default function FourthForm() {
       name: cat,
       entries: [],
       isExpanded: false,
+      categoryType:
+        index === 0
+          ? "national_award"
+          : index === 1
+            ? "international_cert"
+            : "language_cert",
       firstFieldLabel:
-        cat === "National Student Award"
-          ? "Subject"
-          : cat === "International Certificate"
-            ? "Certificate Type"
-            : "Language",
-      secondFieldLabel: cat === "International Certificate" ? "Score" : "Award",
+        index === 0
+          ? t("fourthForm.firstField")
+          : index === 1
+            ? t("fourthForm.secondField")
+            : t("fourthForm.thirdField"),
+      secondFieldLabel:
+        index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
     })),
   );
 
@@ -180,37 +212,38 @@ export default function FourthForm() {
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
   const handleAddEntry = (categoryId: string) => {
-    const updated = categoryData.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          entries: [
-            ...category.entries,
-            { id: generateId(), firstField: "", secondField: "" },
-          ],
-          isExpanded: true,
-        };
-      }
-      return category;
-    });
-    setCategoryData(updated);
+    setCategoryData((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              entries: [
+                ...category.entries,
+                { id: generateId(), firstField: "", secondField: "" },
+              ],
+              isExpanded: true,
+            }
+          : category,
+      ),
+    );
   };
 
   const handleRemoveEntry = (categoryId: string, entryId: string) => {
-    const updated = categoryData.map((category) => {
-      if (category.id === categoryId) {
-        const newEntries = category.entries.filter(
-          (entry) => entry.id !== entryId,
-        );
-        return {
-          ...category,
-          entries: newEntries,
-          isExpanded: newEntries.length > 0,
-        };
-      }
-      return category;
-    });
-    setCategoryData(updated);
+    setCategoryData((prev) =>
+      prev.map((category) => {
+        if (category.id === categoryId) {
+          const newEntries = category.entries.filter(
+            (entry) => entry.id !== entryId,
+          );
+          return {
+            ...category,
+            entries: newEntries,
+            isExpanded: newEntries.length > 0,
+          };
+        }
+        return category;
+      }),
+    );
   };
 
   const handleEntryChange = (
@@ -219,54 +252,52 @@ export default function FourthForm() {
     field: "firstField" | "secondField",
     value: string,
   ) => {
-    const updated = categoryData.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          entries: category.entries.map((entry) => {
-            if (entry.id === entryId) {
-              return { ...entry, [field]: value };
+    setCategoryData((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              entries: category.entries.map((entry) =>
+                entry.id === entryId ? { ...entry, [field]: value } : entry,
+              ),
             }
-            return entry;
-          }),
-        };
-      }
-      return category;
-    });
-    setCategoryData(updated);
+          : category,
+      ),
+    );
   };
 
   const toggleExpanded = (categoryId: string) => {
-    const updated = categoryData.map((category) => {
-      if (category.id === categoryId) {
-        return { ...category, isExpanded: !category.isExpanded };
-      }
-      return category;
-    });
-    setCategoryData(updated);
+    setCategoryData((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? { ...category, isExpanded: !category.isExpanded }
+          : category,
+      ),
+    );
   };
 
-  const getFirstFieldOptions = (categoryName: string) => {
-    switch (categoryName) {
-      case "National Student Award":
-        return categoryOptions["National Student Award"].subjects;
-      case "International Certificate":
-        return categoryOptions["International Certificate"].certificates;
-      case "Language Certificate":
-        return categoryOptions["Language Certificate"].subjects;
+  // Options helper
+  const getFirstFieldOptions = (categoryType: string) => {
+    switch (categoryType) {
+      case "national_award":
+        return categoryOptions.national_award.subjects;
+      case "international_cert":
+        return categoryOptions.international_cert.certificates;
+      case "language_cert":
+        return categoryOptions.language_cert.subjects;
       default:
         return [];
     }
   };
 
-  const getSecondFieldOptions = (categoryName: string) => {
-    switch (categoryName) {
-      case "National Student Award":
-        return categoryOptions["National Student Award"].awards;
-      case "International Certificate":
-        return categoryOptions["International Certificate"].scores;
-      case "Language Certificate":
-        return categoryOptions["Language Certificate"].awards;
+  const getSecondFieldOptions = (categoryType: string) => {
+    switch (categoryType) {
+      case "national_award":
+        return categoryOptions.national_award.awards;
+      case "international_cert":
+        return categoryOptions.international_cert.scores;
+      case "language_cert":
+        return categoryOptions.language_cert.awards;
       default:
         return [];
     }
@@ -296,8 +327,7 @@ export default function FourthForm() {
             variant="body1"
             sx={{
               mb: 1,
-              color: "#9c27b0",
-              fontStyle: "italic",
+              color: "#A657AE",
               textAlign: "left",
               cursor: "pointer",
             }}
@@ -320,9 +350,9 @@ export default function FourthForm() {
                   mb: 1,
                 }}
               >
-                {/* First Field Autocomplete (Subject/Certificate and Type/Language) */}
+                {/* First Field Autocomplete */}
                 <Autocomplete
-                  options={getFirstFieldOptions(category.name)}
+                  options={getFirstFieldOptions(category.categoryType)}
                   value={entry.firstField || null}
                   onChange={(_, newValue) => {
                     handleEntryChange(
@@ -333,13 +363,13 @@ export default function FourthForm() {
                     );
                   }}
                   sx={{
-                    width: 200,
+                    width: 240,
                   }}
                   filterSelectedOptions
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder={`Choose ${category.firstFieldLabel}`}
+                      placeholder={category.firstFieldLabel}
                       sx={{
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "17px",
@@ -362,9 +392,9 @@ export default function FourthForm() {
                   )}
                 />
 
-                {/* Second Field Autocomplete (Award/Score) */}
+                {/* Second Field Autocomplete */}
                 <Autocomplete
-                  options={getSecondFieldOptions(category.name)}
+                  options={getSecondFieldOptions(category.categoryType)}
                   value={entry.secondField || null}
                   onChange={(_, newValue) => {
                     handleEntryChange(

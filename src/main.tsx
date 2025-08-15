@@ -26,6 +26,9 @@ const ThirdFormPage = lazy(
 const FourthFormPage = lazy(
   () => import("./components/pages/FourthFormPage/FouthFormPage"),
 );
+const FifthFormPage = lazy(
+  () => import("./components/pages/FifthFormPage/FifthFormPage"),
+);
 
 const rootElement = document.getElementById("root");
 
@@ -45,6 +48,7 @@ if (rootElement) {
                 <Route path="secondForm" element={<SecondFormPage />} />
                 <Route path="thirdForm" element={<ThirdFormPage />} />
                 <Route path="fourthForm" element={<FourthFormPage />} />
+                <Route path="fifthForm" element={<FifthFormPage />} />
               </Route>
             </Routes>
           </BrowserRouter>

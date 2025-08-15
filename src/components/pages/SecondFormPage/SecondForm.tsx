@@ -5,8 +5,8 @@ import {
   FormHelperText,
   TextField,
   IconButton,
+  Autocomplete,
 } from "@mui/material";
-import { Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -41,10 +41,12 @@ const SecondForm = () => {
   };
 
   const handleNext = () => {
-    // Check if all majors are selected (not null and not empty)
-    if (
-      selectedMajors.every((major) => major !== null && major.trim() !== "")
-    ) {
+    // Check if at least one major is selected (not null and not empty)
+    const hasAtLeastOneMajor = selectedMajors.some(
+      (major) => major !== null && major.trim() !== "",
+    );
+
+    if (hasAtLeastOneMajor) {
       setHasError(false);
       void navigate("/thirdForm");
     } else {
@@ -68,10 +70,7 @@ const SecondForm = () => {
         <FormControl
           key={index}
           fullWidth
-          error={
-            hasError &&
-            (selectedMajors[index] === null || selectedMajors[index] === "")
-          }
+          error={hasError}
           sx={{ mb: 1, width: 450, marginRight: 50 }}
         >
           <Autocomplete
@@ -105,10 +104,7 @@ const SecondForm = () => {
             )}
           />
           <FormHelperText sx={{ minHeight: "1.5em" }}>
-            {hasError &&
-            (selectedMajors[index] === null || selectedMajors[index] === "")
-              ? t("secondForm.errorWarning")
-              : " "}
+            {hasError && index === 0 ? t("secondForm.errorWarning") : " "}
           </FormHelperText>
         </FormControl>
       ))}

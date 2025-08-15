@@ -74,7 +74,7 @@
     "title": "About your preferred majors",
     "subTitle": "Three majors that suit you best",
     "major": "Major",
-    "errorWarning": "Please select a major"
+    "errorWarning": "Please select at least one major"
   },
   "thirdForm": {
     "title": "About your exam results",
@@ -85,5 +85,16 @@
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
     "secondTypo": "exam scores of yours. (if any)"
+  },
+  "fourthForm": {
+    "title": "About your achievements",
+    "cat1": "Have you received any National Student Award?",
+    "cat2": "Have you obtained any International Certificates?",
+    "cat3": "Have you obtained any Language Certificates?",
+    "firstField": "Subject",
+    "secondField": "Certificate Type",
+    "thirdField": "Language",
+    "award": "Award",
+    "score": "Score"
   }
 }
