@@ -96,5 +96,14 @@
     "thirdField": "Language",
     "award": "Award",
     "score": "Score"
+  },
+  "fifthForm": {
+    "title": "About your budget",
+    "subTitle1": "In a year, how much can your family spend",
+    "subTitle2": "on tuition fees?",
+    "highlight1": "minimum",
+    "highlight2": "maximum",
+    "placeholder": "In VND (e.g.: 10.000.000, 15.000.000,...)",
+    "errorWarning": "Please enter a valid amount"
   }
 }

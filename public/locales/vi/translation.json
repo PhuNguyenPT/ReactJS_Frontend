@@ -96,5 +96,14 @@
     "thirdField": "Ngoại ngữ",
     "award": "Giải thưởng",
     "score": "Điểm"
+  },
+  "fifthForm": {
+    "title": "Dự trù kinh phí",
+    "subTitle1": "Trong một năm, gia đình bạn có thể chi",
+    "subTitle2": "bao nhiêu tiền cho học phí?",
+    "highlight1": "tối thiểu",
+    "highlight2": "tối đa",
+    "placeholder": "Theo VNĐ (ví dụ: 10.000.000, 15.000.000,...)",
+    "errorWarning": "Vui lòng nhập số tiền"
   }
 }

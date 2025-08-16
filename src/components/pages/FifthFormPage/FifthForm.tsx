@@ -50,15 +50,15 @@ const FifthForm = () => {
         <Typography
           sx={{ color: "#A657AE", fontSize: "1rem", mb: 1, textAlign: "left" }}
         >
-          Trong một năm, gia đình bạn có thể chi <b>tối thiểu</b> bao nhiêu tiền
-          cho học phí?
+          {t("fifthForm.subTitle1")} <b>{t("fifthForm.highlight1")}</b>{" "}
+          {t("fifthForm.subTitle2")}
         </Typography>
         <TextField
           value={minCost}
           onChange={(e) => {
             setMinCost(e.target.value);
           }}
-          placeholder="Theo VNĐ (ví dụ: 1000000, 15000000,...)"
+          placeholder={t("fifthForm.placeholder")}
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 999,
@@ -91,15 +91,15 @@ const FifthForm = () => {
         <Typography
           sx={{ color: "#A657AE", fontSize: "1rem", mb: 1, textAlign: "left" }}
         >
-          Trong một năm, gia đình bạn có thể chi <b>tối đa</b> bao nhiêu tiền
-          cho học phí?
+          {t("fifthForm.subTitle1")} <b>{t("fifthForm.highlight2")}</b>{" "}
+          {t("fifthForm.subTitle2")}
         </Typography>
         <TextField
           value={maxCost}
           onChange={(e) => {
             setMaxCost(e.target.value);
           }}
-          placeholder="Theo VNĐ (ví dụ: 1000000, 15000000,...)"
+          placeholder={t("fifthForm.placeholder")}
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 999,
