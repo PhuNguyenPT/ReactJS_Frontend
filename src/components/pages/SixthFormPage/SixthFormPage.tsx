@@ -1,31 +1,32 @@
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
-import FourthForm from "./FourthForm";
+import SixthForm from "./SixthForm";
 import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 
-export default function FourthFormPage() {
-  usePageTitle("Unizy | Fourth Form");
+export default function SixthFormPage() {
+  usePageTitle("Unizy | Sixth Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleNext = () => {
-    void navigate("/fifthForm");
+    void navigate("/seventhForm");
   };
 
   const handlePrev = () => {
-    void navigate("/thirdForm");
+    void navigate("/fifthForm");
   };
 
   return (
     <>
       <div className="background" />
       <div className="form-container">
-        <div className="form-2-content">
-          <h1 className="form-title">4 → {t("fourthForm.title")}</h1>
-          <FourthForm />
+        <div className="form-2-content ">
+          <h1 className="form-title">6 → {t("sixthForm.title")}</h1>
+          <p className="form-subtitle">{t("sixthForm.subTitle")}</p>
+          <SixthForm />
         </div>
 
         <Box

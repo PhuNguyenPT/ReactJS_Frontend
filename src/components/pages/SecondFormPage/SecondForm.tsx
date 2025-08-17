@@ -1,16 +1,11 @@
-import { useState } from "react";
 import {
   Box,
   FormControl,
   FormHelperText,
   TextField,
-  IconButton,
   Autocomplete,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const majors = [
   "Khoa học máy tính",
@@ -21,42 +16,18 @@ const majors = [
   "Ngôn ngữ học",
 ];
 
-const SecondForm = () => {
-  const navigate = useNavigate();
+interface SecondFormProps {
+  selectedMajors: (string | null)[];
+  hasError: boolean;
+  onMajorChange: (index: number, value: string | null) => void;
+}
+
+const SecondForm = ({
+  selectedMajors,
+  hasError,
+  onMajorChange,
+}: SecondFormProps) => {
   const { t } = useTranslation();
-
-  // Change from empty strings to null values
-  const [selectedMajors, setSelectedMajors] = useState<(string | null)[]>([
-    null,
-    null,
-    null,
-  ]);
-  const [hasError, setHasError] = useState(false);
-
-  const handleChange = (index: number, value: string | null) => {
-    const updated = [...selectedMajors];
-    updated[index] = value;
-    setSelectedMajors(updated);
-    setHasError(false);
-  };
-
-  const handleNext = () => {
-    // Check if at least one major is selected (not null and not empty)
-    const hasAtLeastOneMajor = selectedMajors.some(
-      (major) => major !== null && major.trim() !== "",
-    );
-
-    if (hasAtLeastOneMajor) {
-      setHasError(false);
-      void navigate("/thirdForm");
-    } else {
-      setHasError(true);
-    }
-  };
-
-  const handlePrev = () => {
-    void navigate("/firstForm");
-  };
 
   return (
     <Box
@@ -77,7 +48,7 @@ const SecondForm = () => {
             options={majors}
             value={selectedMajors[index]}
             onChange={(_, newValue) => {
-              handleChange(index, newValue);
+              onMajorChange(index, newValue);
             }}
             renderInput={(params) => (
               <TextField
@@ -108,44 +79,6 @@ const SecondForm = () => {
           </FormHelperText>
         </FormControl>
       ))}
-
-      <Box
-        sx={{
-          position: "relative",
-          bottom: 0,
-          right: 0,
-          display: "flex",
-          gap: 0.3,
-          marginLeft: 58,
-        }}
-      >
-        <IconButton
-          onClick={handlePrev}
-          sx={{
-            height: 40,
-            width: 40,
-            backgroundColor: "#A657AE",
-            color: "white",
-            "&:hover": { backgroundColor: "#8B4A8F" },
-            borderRadius: 1,
-          }}
-        >
-          <ArrowBackIosNewIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          onClick={handleNext}
-          sx={{
-            height: 40,
-            width: 40,
-            backgroundColor: "#A657AE",
-            color: "white",
-            "&:hover": { backgroundColor: "#8B4A8F" },
-            borderRadius: 1,
-          }}
-        >
-          <ArrowForwardIosIcon fontSize="small" />
-        </IconButton>
-      </Box>
     </Box>
   );
 };

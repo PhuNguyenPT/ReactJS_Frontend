@@ -105,5 +105,13 @@
     "highlight2": "maximum",
     "placeholder": "In VND (e.g.: 10.000.000, 15.000.000,...)",
     "errorWarning": "Please enter a valid amount"
+  },
+  "sixthForm": {
+    "title": "Special Admission Categories",
+    "subTitle": "Do you belong to any of the following priority categories?",
+    "option1": "Labor Heroes, People's Armed Forces Heroes, National Emulation Soldiers",
+    "option2": "Specialized school students",
+    "option3": "Students from poor districts, extremely difficult areas",
+    "option4": "Ethnic minorities with very few people (Mong, La Ha,...)"
   }
 }

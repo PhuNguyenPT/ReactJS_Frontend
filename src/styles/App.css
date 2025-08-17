@@ -308,6 +308,7 @@ html,
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   height: 100vh;
   position: relative;
 }
@@ -321,12 +322,13 @@ html,
   background: #fff;
   padding: 30px;
   border-radius: 30px;
-  width: 600px;
+  width: 651px;
   height: 450px;
   box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+  position: relative;
 }
 
-.form-3-content {
+.form-2-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -335,7 +337,7 @@ html,
   background: #fff;
   padding: 30px;
   border-radius: 30px;
-  width: 600px;
+  width: 650px;
   height: 450px;
   box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
   position: relative;
@@ -343,31 +345,33 @@ html,
   overflow-x: hidden;
   margin-left: 83px;
 }
-.form-3-content::-webkit-scrollbar {
+.form-2-content::-webkit-scrollbar {
   width: 8px;
 }
-.form-3-content::-webkit-scrollbar-track {
+.form-2-content::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   margin-top: 90px;
   margin-bottom: 90px;
 }
-.form-3-content::-webkit-scrollbar-thumb {
+.form-2-content::-webkit-scrollbar-thumb {
   background: #a657ae;
   border-radius: 4px;
 }
-.form-3-content::-webkit-scrollbar-thumb:hover {
+.form-2-content::-webkit-scrollbar-thumb:hover {
   background: #8b4a8f;
 }
 
 .form-title {
   font-size: 2rem;
   font-weight: bold;
+  text-align: left;
 }
 
 .form-subtitle {
   font-size: 1.2rem;
   font-style: italic;
+  text-align: left;
 }
 
 /*SCROLL BAR STYLES */

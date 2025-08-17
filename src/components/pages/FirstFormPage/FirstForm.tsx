@@ -43,7 +43,7 @@ const FirstForm = () => {
           }}
           sx={{
             width: 450,
-            marginRight: 50,
+            marginRight: 63,
           }}
           filterSelectedOptions
           renderInput={(params) => (

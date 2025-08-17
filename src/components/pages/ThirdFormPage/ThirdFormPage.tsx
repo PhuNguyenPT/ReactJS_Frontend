@@ -46,7 +46,7 @@ export default function ThirdFormPage() {
     <>
       <div className="background" />
       <div className="form-container">
-        <div className="form-3-content">
+        <div className="form-2-content">
           <h1 className="form-title">3 → {t("thirdForm.title")}</h1>
           <p className="form-subtitle">{t("thirdForm.subTitle")}</p>
 

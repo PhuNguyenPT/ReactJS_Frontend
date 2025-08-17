@@ -105,5 +105,13 @@
     "highlight2": "tối đa",
     "placeholder": "Theo VNĐ (ví dụ: 10.000.000, 15.000.000,...)",
     "errorWarning": "Vui lòng nhập số tiền"
+  },
+  "sixthForm": {
+    "title": "Một số diện tuyển sinh đặc biệt",
+    "subTitle": "Bạn có thuộc một trong các diện ưu tiên sau không?",
+    "option1": "Anh hùng Lao động, Anh hùng Lực lượng vũ trang Nhân dân, Chiến sĩ thi đua toàn quốc",
+    "option2": "Học sinh trường chuyên",
+    "option3": "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
+    "option4": "Dân tộc thiểu số rất ít người (Mông, La Ha,...)"
   }
 }
