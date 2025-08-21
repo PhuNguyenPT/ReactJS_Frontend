@@ -9,9 +9,11 @@ import "./i18n";
 
 import LoadingComponent from "./components/common/Language Switch/LoadingComponent";
 import { AuthProvider } from "./contexts/auth/AuthProvider";
+import { FormDataProvider } from "./contexts/FormDataContext/FormDataProvider";
 
 import App from "./App";
 import LandingPage from "./components/pages/LandingPage/LandingPage";
+
 const Signup = lazy(() => import("./components/pages/SignupPage/SignupPage"));
 const Login = lazy(() => import("./components/pages/LoginPage/LoginPage"));
 const FirstFormPage = lazy(
@@ -45,26 +47,27 @@ if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
       <AuthProvider>
-        {" "}
-        <Suspense fallback={<LoadingComponent />}>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<App />}>
-                <Route index element={<LandingPage />} />
-                <Route path="signup" element={<Signup />} />
-                <Route path="login" element={<Login />} />
-                <Route path="firstForm" element={<FirstFormPage />} />
-                <Route path="secondForm" element={<SecondFormPage />} />
-                <Route path="thirdForm" element={<ThirdFormPage />} />
-                <Route path="fourthForm" element={<FourthFormPage />} />
-                <Route path="fifthForm" element={<FifthFormPage />} />
-                <Route path="sixthForm" element={<SixthFormPage />} />
-                <Route path="seventhForm" element={<SeventhFormPage />} />
-                <Route path="eighthForm" element={<EighthFormPage />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </Suspense>
+        <FormDataProvider>
+          <Suspense fallback={<LoadingComponent />}>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<App />}>
+                  <Route index element={<LandingPage />} />
+                  <Route path="signup" element={<Signup />} />
+                  <Route path="login" element={<Login />} />
+                  <Route path="firstForm" element={<FirstFormPage />} />
+                  <Route path="secondForm" element={<SecondFormPage />} />
+                  <Route path="thirdForm" element={<ThirdFormPage />} />
+                  <Route path="fourthForm" element={<FourthFormPage />} />
+                  <Route path="fifthForm" element={<FifthFormPage />} />
+                  <Route path="sixthForm" element={<SixthFormPage />} />
+                  <Route path="seventhForm" element={<SeventhFormPage />} />
+                  <Route path="eighthForm" element={<EighthFormPage />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </Suspense>
+        </FormDataProvider>
       </AuthProvider>
     </StrictMode>,
   );

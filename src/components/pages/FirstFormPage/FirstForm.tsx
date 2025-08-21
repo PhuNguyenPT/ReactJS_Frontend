@@ -10,12 +10,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.provinces";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 const FirstForm = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { formData, updateFormData } = useFormData();
+
   const [selectedProvinces, setSelectedProvinces] = useState<string | null>(
-    null,
+    formData.selectedProvince, // Initialize from context
   );
   const [hasError, setHasError] = useState(false);
 
@@ -25,6 +28,8 @@ const FirstForm = () => {
   const handleNext = () => {
     if (selectedProvinces) {
       setHasError(false);
+      // Save to context before navigating
+      updateFormData({ selectedProvince: selectedProvinces });
       void navigate("/secondForm");
     } else {
       setHasError(true);
@@ -40,6 +45,7 @@ const FirstForm = () => {
           onChange={(_, newValue) => {
             setSelectedProvinces(newValue);
             setHasError(false);
+            updateFormData({ selectedProvince: newValue });
           }}
           sx={{
             width: 450,

@@ -54,8 +54,9 @@ export default function useLoginForm() {
 
         if (apiError.response?.data.validationErrors) {
           const validationErrors = apiError.response.data.validationErrors;
-          const fieldErrors = Object.entries(validationErrors)
-            .map(([field, errorMsg]) => `${field}: ${String(errorMsg)}`)
+          // Extract only the error messages without field names
+          const fieldErrors = Object.values(validationErrors)
+            .map((errorMsg) => String(errorMsg))
             .join(", ");
           message = fieldErrors;
         } else if (apiError.response?.data.message) {
