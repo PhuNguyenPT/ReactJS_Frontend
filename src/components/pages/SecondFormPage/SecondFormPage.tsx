@@ -6,30 +6,19 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SecondForm from "./SecondForm";
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 export default function SecondFormPage() {
   usePageTitle("Unizy | Second Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { formData } = useFormData();
 
-  // Move state and validation logic here
-  const [selectedMajors, setSelectedMajors] = useState<(string | null)[]>([
-    null,
-    null,
-    null,
-  ]);
   const [hasError, setHasError] = useState(false);
 
-  const handleMajorChange = (index: number, value: string | null) => {
-    const updated = [...selectedMajors];
-    updated[index] = value;
-    setSelectedMajors(updated);
-    setHasError(false);
-  };
-
   const handleNext = () => {
-    // Check if at least one major is selected (not null and not empty)
-    const hasAtLeastOneMajor = selectedMajors.some(
+    // check if at least one major is selected
+    const hasAtLeastOneMajor = formData.secondFormMajors.some(
       (major) => major !== null && major.trim() !== "",
     );
 
@@ -52,11 +41,8 @@ export default function SecondFormPage() {
         <div className="form-2-content">
           <h1 className="form-title">2 → {t("secondForm.title")}</h1>
           <p className="form-subtitle">{t("secondForm.subTitle")}</p>
-          <SecondForm
-            selectedMajors={selectedMajors}
-            hasError={hasError}
-            onMajorChange={handleMajorChange}
-          />
+          {/* Pass only error state to SecondForm */}
+          <SecondForm hasError={hasError} />
         </div>
         <Box
           sx={{
@@ -67,30 +53,10 @@ export default function SecondFormPage() {
             right: 106,
           }}
         >
-          <IconButton
-            onClick={handlePrev}
-            sx={{
-              height: 40,
-              width: 40,
-              backgroundColor: "#A657AE",
-              color: "white",
-              "&:hover": { backgroundColor: "#8B4A8F" },
-              borderRadius: 1,
-            }}
-          >
+          <IconButton onClick={handlePrev} sx={buttonStyle}>
             <ArrowBackIosNewIcon fontSize="small" />
           </IconButton>
-          <IconButton
-            onClick={handleNext}
-            sx={{
-              height: 40,
-              width: 40,
-              backgroundColor: "#A657AE",
-              color: "white",
-              "&:hover": { backgroundColor: "#8B4A8F" },
-              borderRadius: 1,
-            }}
-          >
+          <IconButton onClick={handleNext} sx={buttonStyle}>
             <ArrowForwardIosIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -98,3 +64,12 @@ export default function SecondFormPage() {
     </>
   );
 }
+
+const buttonStyle = {
+  height: 40,
+  width: 40,
+  backgroundColor: "#A657AE",
+  color: "white",
+  "&:hover": { backgroundColor: "#8B4A8F" },
+  borderRadius: 1,
+};

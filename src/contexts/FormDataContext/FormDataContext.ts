@@ -2,9 +2,7 @@ import { createContext } from "react";
 
 export interface FormData {
   selectedProvince: string | null;
-  // Add other form fields as you create more forms
-  // secondFormData?: any;
-  // thirdFormData?: any;
+  secondFormMajors: (string | null)[];
 }
 
 export interface FormDataContextType {
@@ -20,4 +18,5 @@ export const FormDataContext = createContext<FormDataContextType | undefined>(
 
 export const initialFormData: FormData = {
   selectedProvince: null,
+  secondFormMajors: [null, null, null],
 };
