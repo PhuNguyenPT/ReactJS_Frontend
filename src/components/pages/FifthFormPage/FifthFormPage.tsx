@@ -1,33 +1,39 @@
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
-import FourthForm from "./FourthForm";
+import FifthForm, { type FifthFormRef } from "./FifthForm";
 import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
-export default function FourthFormPage() {
-  usePageTitle("Unizy | Fourth Form");
+export default function FifthFormPage() {
+  usePageTitle("Unizy | Fifth Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const formRef = useRef<FifthFormRef>(null);
+
   const handleNext = () => {
-    void navigate("/fifthForm");
+    if (formRef.current?.validate()) {
+      void navigate("/sixthForm");
+    }
   };
 
   const handlePrev = () => {
-    void navigate("/thirdForm");
+    void navigate("/fourthForm");
   };
 
   return (
     <>
       <div className="background" />
       <div className="form-container">
-        <div className="form-2-content">
-          <h1 className="form-title">4 → {t("fourthForm.title")}</h1>
-          <FourthForm />
+        <div className="form-2-content ">
+          <h1 className="form-title">5 → {t("fifthForm.title")}</h1>
+          <FifthForm ref={formRef} />
         </div>
 
+        {/* Navigation buttons */}
         <Box
           sx={{
             position: "relative",
