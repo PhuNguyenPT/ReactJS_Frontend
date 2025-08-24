@@ -8,29 +8,62 @@ import {
 export function FormDataProvider({ children }: { children: ReactNode }) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  // Memoize functions to prevent unnecessary re-renders
+  // General form data update
   const updateFormData = useCallback((data: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   }, []);
+
+  // Specific third form update function
+  const updateThirdForm = useCallback(
+    (thirdFormData: Partial<FormData["thirdForm"]>) => {
+      setFormData((prev) => ({
+        ...prev,
+        thirdForm: { ...prev.thirdForm, ...thirdFormData },
+      }));
+    },
+    [],
+  );
 
   const resetFormData = useCallback(() => {
     setFormData(initialFormData);
   }, []);
 
   const isFormDataComplete = useCallback(() => {
-    return formData.selectedProvince !== null;
-    // Add more validation as you add more forms
-  }, [formData.selectedProvince]);
+    const { selectedProvince, secondFormMajors, thirdForm } = formData;
+
+    // Check if previous forms are complete
+    const previousFormsComplete =
+      selectedProvince !== null &&
+      secondFormMajors.every((major) => major !== null);
+
+    // Check if third form main subjects are complete
+    const thirdFormMainComplete =
+      thirdForm.mathScore.trim() !== "" &&
+      thirdForm.literatureScore.trim() !== "" &&
+      thirdForm.chosenSubjects.every(
+        (subject) => subject && subject.trim() !== "",
+      ) &&
+      thirdForm.chosenScores.every((score) => score.trim() !== "");
+
+    return previousFormsComplete && thirdFormMainComplete;
+  }, [formData]);
 
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
       formData,
       updateFormData,
+      updateThirdForm,
       resetFormData,
       isFormDataComplete,
     }),
-    [formData, updateFormData, resetFormData, isFormDataComplete],
+    [
+      formData,
+      updateFormData,
+      updateThirdForm,
+      resetFormData,
+      isFormDataComplete,
+    ],
   );
 
   return <FormDataContext value={contextValue}>{children}</FormDataContext>;

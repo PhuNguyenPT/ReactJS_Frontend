@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import ThirdFormMain from "./ThirdFormMain";
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
@@ -7,21 +7,56 @@ import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData"; // Adjust path as needed
 
 export default function ThirdFormPage() {
   usePageTitle("Unizy | Third Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { formData, updateThirdForm, isFormDataComplete } = useFormData();
 
-  // Lifted state from ThirdFormMain
-  const [mathScore, setMathScore] = useState("");
-  const [literatureScore, setLiteratureScore] = useState("");
-  const [chosenSubjects, setChosenSubjects] = useState<(string | null)[]>([
-    null,
-    null,
-  ]);
-  const [chosenScores, setChosenScores] = useState<string[]>(["", ""]);
-  const [hasError, setHasError] = useState(false);
+  // Get current third form data from context
+  const {
+    mathScore,
+    literatureScore,
+    chosenSubjects,
+    chosenScores,
+    optionalCategories,
+  } = formData.thirdForm;
+
+  // Update functions that sync with context
+  const setMathScore = (value: string) => {
+    updateThirdForm({ mathScore: value });
+  };
+
+  const setLiteratureScore = (value: string) => {
+    updateThirdForm({ literatureScore: value });
+  };
+
+  const setChosenSubjects = (value: (string | null)[]) => {
+    updateThirdForm({ chosenSubjects: value });
+  };
+
+  const setChosenScores = (value: string[]) => {
+    updateThirdForm({ chosenScores: value });
+  };
+
+  const setOptionalCategories = (value: typeof optionalCategories) => {
+    updateThirdForm({ optionalCategories: value });
+  };
+
+  // Validation state - derived from context data
+  const hasError =
+    !isFormDataComplete() &&
+    (mathScore.trim() !== "" ||
+      literatureScore.trim() !== "" ||
+      chosenSubjects.some((s) => s) ||
+      chosenScores.some((s) => s.trim() !== ""));
+
+  const setHasError = () => {
+    // This is handled by the validation logic above
+    // You could add a separate error state in context if needed
+  };
 
   const handleNext = () => {
     const allFilled =
@@ -31,16 +66,21 @@ export default function ThirdFormPage() {
       chosenScores.every((s) => s.trim() !== "");
 
     if (allFilled) {
-      setHasError(false);
+      console.log("Form data saved:", formData); // Debug: see saved data
       void navigate("/fourthForm");
     } else {
-      setHasError(true);
+      // You could add an error state to context if needed
+      // For now, the hasError logic above will handle display
     }
   };
 
   const handlePrev = () => {
     void navigate("/secondForm");
   };
+
+  useEffect(() => {
+    console.log("Third form data updated:", formData.thirdForm);
+  }, [formData.thirdForm]);
 
   return (
     <>
@@ -50,7 +90,7 @@ export default function ThirdFormPage() {
           <h1 className="form-title">3 → {t("thirdForm.title")}</h1>
           <p className="form-subtitle">{t("thirdForm.subTitle")}</p>
 
-          {/* Pass state and setters as props */}
+          {/* Pass context-managed state and setters as props */}
           <ThirdFormMain
             mathScore={mathScore}
             setMathScore={setMathScore}
@@ -64,7 +104,10 @@ export default function ThirdFormPage() {
             setHasError={setHasError}
           />
 
-          <ThirdFormOptional />
+          <ThirdFormOptional
+            categories={optionalCategories}
+            setCategories={setOptionalCategories}
+          />
         </div>
 
         <Box

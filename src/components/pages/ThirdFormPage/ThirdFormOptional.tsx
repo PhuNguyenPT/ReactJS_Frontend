@@ -6,10 +6,10 @@ import {
   IconButton,
   Autocomplete,
 } from "@mui/material";
-import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
+import { getOptionalCategorySubjects } from "../../../type/enum/combineUtil";
 
 interface OptionalScore {
   id: string;
@@ -24,32 +24,16 @@ interface CategoryData {
   isExpanded: boolean;
 }
 
-const optionalCategories = ["ĐGNL", "V-SAT", "Năng khiếu"];
+interface ThirdFormOptionalProps {
+  categories: CategoryData[];
+  setCategories: (categories: CategoryData[]) => void;
+}
 
-// Sample subjects for each category
-const subjectOptions = {
-  ĐGNL: [
-    "Toán học",
-    "Ngữ văn",
-    "Tiếng Anh",
-    "Khoa học tự nhiên",
-    "Khoa học xã hội",
-  ],
-  "V-SAT": ["Toán", "Đọc hiểu", "Viết", "Khoa học", "Lịch sử"],
-  "Năng khiếu": ["Âm nhạc", "Mỹ thuật", "Thể thao", "Khiêu vũ", "Diễn xuất"],
-};
-
-export default function ThirdFormOptional() {
+export default function ThirdFormOptional({
+  categories,
+  setCategories,
+}: ThirdFormOptionalProps) {
   const { t } = useTranslation();
-
-  const [categories, setCategories] = useState<CategoryData[]>(
-    optionalCategories.map((cat, index) => ({
-      id: `category-${String(index + 1)}`,
-      name: cat,
-      scores: [],
-      isExpanded: false,
-    })),
-  );
 
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -121,6 +105,24 @@ export default function ThirdFormOptional() {
     setCategories(updated);
   };
 
+  // Get available subjects for a specific category and exclude already selected ones
+  const getAvailableSubjects = (
+    categoryName: string,
+    currentScoreId: string,
+  ): string[] => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    const allSubjects = getOptionalCategorySubjects(categoryName);
+
+    if (!category) return allSubjects;
+
+    // Filter out subjects that are already selected in this category
+    const selectedSubjects = category.scores
+      .filter((score) => score.id !== currentScoreId && score.subject)
+      .map((score) => score.subject);
+
+    return allSubjects.filter((subject) => !selectedSubjects.includes(subject));
+  };
+
   return (
     <Box
       sx={{
@@ -149,6 +151,7 @@ export default function ThirdFormOptional() {
               color: "#9c27b0",
               fontStyle: "italic",
               textAlign: "left",
+              cursor: "pointer",
             }}
             onClick={() => {
               toggleExpanded(category.id);
@@ -173,9 +176,7 @@ export default function ThirdFormOptional() {
               >
                 {/* Subject Autocomplete */}
                 <Autocomplete
-                  options={
-                    subjectOptions[category.name as keyof typeof subjectOptions]
-                  }
+                  options={getAvailableSubjects(category.name, score.id)}
                   value={score.subject || null}
                   onChange={(_, newValue) => {
                     handleScoreChange(
