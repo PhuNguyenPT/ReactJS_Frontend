@@ -1,11 +1,5 @@
 import { useState, useImperativeHandle } from "react";
-import {
-  Box,
-  FormControl,
-  FormHelperText,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, FormControl, Slider, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 export interface FifthFormRef {
@@ -19,111 +13,95 @@ interface FifthFormProps {
 const FifthForm = ({ ref }: FifthFormProps) => {
   const { t } = useTranslation();
 
-  const [minCost, setMinCost] = useState("");
-  const [maxCost, setMaxCost] = useState("");
-  const [hasError, setHasError] = useState(false);
+  const [costRange, setCostRange] = useState<number[]>([0, 500]);
 
   // Expose validate() to parent
   useImperativeHandle(ref, () => ({
     validate: () => {
-      if (minCost.trim() && maxCost.trim()) {
-        setHasError(false);
-        return true;
-      } else {
-        setHasError(true);
-        return false;
-      }
+      return true;
     },
   }));
 
-  return (
-    <Box
-      component="form"
-      className="fifth-form"
-      sx={{
-        position: "relative",
-      }}
-    >
-      {/* Min cost */}
-      <FormControl
-        fullWidth
-        error={hasError && !minCost.trim()}
-        sx={{ mb: 3, width: 450, marginRight: 50 }}
-      >
-        <Typography
-          sx={{ color: "#A657AE", fontSize: "1rem", mb: 1, textAlign: "left" }}
-        >
-          {t("fifthForm.subTitle1")} <b>{t("fifthForm.highlight1")}</b>{" "}
-          {t("fifthForm.subTitle2")}
-        </Typography>
-        <TextField
-          value={minCost}
-          onChange={(e) => {
-            setMinCost(e.target.value);
-          }}
-          placeholder={t("fifthForm.placeholder")}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 999,
-              "& fieldset": {
-                borderColor: "#A657AE",
-              },
-              "&:hover fieldset": {
-                borderColor: "#8B4A8F",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#A657AE",
-              },
-            },
-            "& input": {
-              color: "#A657AE",
-            },
-          }}
-        />
-        <FormHelperText sx={{ minHeight: "1.5em" }}>
-          {hasError && !minCost.trim() ? t("fifthForm.errorWarning") : " "}
-        </FormHelperText>
-      </FormControl>
+  const handleSliderChange = (_: Event, newValue: number | number[]) => {
+    setCostRange(newValue as number[]);
+  };
 
-      {/* Max cost */}
-      <FormControl
-        fullWidth
-        error={hasError && !maxCost.trim()}
-        sx={{ mb: 1, width: 450, marginRight: 50 }}
-      >
+  const formatValue = (value: number) => {
+    return `${String(value)} triệu VND`;
+  };
+
+  return (
+    <Box component="form" className="fifth-form" sx={{ position: "relative" }}>
+      <FormControl fullWidth sx={{ mb: 3, width: 550, marginRight: 50 }}>
         <Typography
-          sx={{ color: "#A657AE", fontSize: "1rem", mb: 1, textAlign: "left" }}
-        >
-          {t("fifthForm.subTitle1")} <b>{t("fifthForm.highlight2")}</b>{" "}
-          {t("fifthForm.subTitle2")}
-        </Typography>
-        <TextField
-          value={maxCost}
-          onChange={(e) => {
-            setMaxCost(e.target.value);
-          }}
-          placeholder={t("fifthForm.placeholder")}
           sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 999,
-              "& fieldset": {
-                borderColor: "#A657AE",
-              },
-              "&:hover fieldset": {
-                borderColor: "#8B4A8F",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#A657AE",
-              },
-            },
-            "& input": {
-              color: "#A657AE",
-            },
+            color: "#A657AE",
+            fontSize: "1.2rem",
+            mb: 3,
+            textAlign: "left",
           }}
-        />
-        <FormHelperText sx={{ minHeight: "1.5em" }}>
-          {hasError && !maxCost.trim() ? t("fifthForm.errorWarning") : " "}
-        </FormHelperText>
+        >
+          {t("fifthForm.subTitle1")}
+        </Typography>
+
+        <Box sx={{ px: 2 }}>
+          <Slider
+            value={costRange}
+            onChange={handleSliderChange}
+            valueLabelFormat={formatValue}
+            min={0}
+            max={500}
+            sx={{
+              color: "#A657AE",
+              maxWidth: "450px",
+              height: 8,
+              "& .MuiSlider-track": {
+                border: "none",
+                backgroundColor: "#A657AE",
+              },
+              "& .MuiSlider-rail": {
+                backgroundColor: "#E0C4E2",
+              },
+              "& .MuiSlider-thumb": {
+                height: 24,
+                width: 24,
+                backgroundColor: "#A657AE",
+                border: "2px solid #fff",
+                boxShadow: "0 2px 6px rgba(166, 87, 174, 0.3)",
+                "&:focus, &:hover, &.Mui-active, &.Mui-focusVisible": {
+                  boxShadow: "0 4px 12px rgba(166, 87, 174, 0.4)",
+                },
+                "&::before": { display: "none" },
+              },
+            }}
+          />
+
+          {/* Min - Max labels */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mt: 1,
+              color: "#A657AE",
+              fontSize: "0.875rem",
+              maxWidth: "550px",
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "#A657AE" }}>
+              {formatValue(costRange[0])}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#A657AE" }}>
+              {formatValue(costRange[1])}
+            </Typography>
+          </Box>
+
+          {/* Centered result text */}
+          <Box sx={{ mt: 2, textAlign: "center" }}>
+            <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
+              {`${String(costRange[0])} - ${String(costRange[1])} triệu VND / năm`}
+            </Typography>
+          </Box>
+        </Box>
       </FormControl>
     </Box>
   );
