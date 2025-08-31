@@ -5,15 +5,15 @@ import {
   Autocomplete,
   FormHelperText,
 } from "@mui/material";
-//import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 interface GradeValues {
-  hanhKiem: string;
+  kqrl: string;
   hocLuc: string;
 }
 
 interface GradeErrors {
-  hanhKiem: boolean;
+  kqrl: boolean;
   hocLuc: boolean;
 }
 
@@ -32,23 +32,23 @@ export default function SeventhForm({
   values,
   shouldValidate = false,
 }: SeventhFormProps) {
-  //const { t } = useTranslation();
+  const { t } = useTranslation();
 
-  const hanhKiemOptions = ["Tốt", "Khá", "Trung bình", "Yếu"];
+  const kqrlOptions = ["Tốt", "Khá", "Đạt", "Chưa đạt"];
   const hocLucOptions = ["Giỏi", "Khá", "Trung bình", "Yếu", "Kém"];
 
   const grades = [
     {
       key: "10" as GradeKey,
-      label: "Vui lòng nhập hạnh kiểm và học lực năm lớp 10 của bạn",
+      label: t("seventhForm.subTitle10"),
     },
     {
       key: "11" as GradeKey,
-      label: "Vui lòng nhập hạnh kiểm và học lực năm lớp 11 của bạn",
+      label: t("seventhForm.subTitle11"),
     },
     {
       key: "12" as GradeKey,
-      label: "Vui lòng nhập hạnh kiểm và học lực năm lớp 12 của bạn",
+      label: t("seventhForm.subTitle12"),
     },
   ];
 
@@ -82,40 +82,40 @@ export default function SeventhForm({
           </Typography>
 
           {/* Dropdowns */}
-          <Box sx={{ display: "flex", gap: 2 }}>
-            {/* Hạnh kiểm */}
+          <Box sx={{ display: "flex", gap: 5 }}>
+            {/* Kết quả rèn luyện*/}
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Autocomplete
-                options={hanhKiemOptions}
-                value={values[grade.key].hanhKiem || null}
+                options={kqrlOptions}
+                value={values[grade.key].kqrl || null}
                 onChange={(_, newValue) => {
-                  onChange(grade.key, "hanhKiem", newValue ?? "");
+                  onChange(grade.key, "kqrl", newValue ?? "");
                 }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder="Hạnh kiểm"
-                    error={errors[grade.key].hanhKiem && shouldValidate}
+                    placeholder={t("seventhForm.practiceResults")}
+                    error={errors[grade.key].kqrl && shouldValidate}
                     sx={{
-                      width: 150,
+                      width: 190,
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
                         height: "40px",
                         "& fieldset": {
                           borderColor:
-                            errors[grade.key].hanhKiem && shouldValidate
+                            errors[grade.key].kqrl && shouldValidate
                               ? "#d32f2f"
                               : "#A657AE",
                         },
                         "&:hover fieldset": {
                           borderColor:
-                            errors[grade.key].hanhKiem && shouldValidate
+                            errors[grade.key].kqrl && shouldValidate
                               ? "#d32f2f"
                               : "#8B4A8F",
                         },
                         "&.Mui-focused fieldset": {
                           borderColor:
-                            errors[grade.key].hanhKiem && shouldValidate
+                            errors[grade.key].kqrl && shouldValidate
                               ? "#d32f2f"
                               : "#A657AE",
                         },
@@ -125,9 +125,9 @@ export default function SeventhForm({
                   />
                 )}
               />
-              {errors[grade.key].hanhKiem && shouldValidate && (
+              {errors[grade.key].kqrl && shouldValidate && (
                 <FormHelperText error sx={{ ml: 0 }}>
-                  Bạn phải chọn hạnh kiểm
+                  {t("seventhForm.errorWarning2")}
                 </FormHelperText>
               )}
             </Box>
@@ -143,10 +143,10 @@ export default function SeventhForm({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder="Học lực"
+                    placeholder={t("seventhForm.academicScore")}
                     error={errors[grade.key].hocLuc && shouldValidate}
                     sx={{
-                      width: 150,
+                      width: 190,
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
                         height: "40px",
@@ -176,7 +176,7 @@ export default function SeventhForm({
               />
               {errors[grade.key].hocLuc && shouldValidate && (
                 <FormHelperText error sx={{ ml: 0 }}>
-                  Bạn phải chọn học lực
+                  {t("seventhForm.errorWarning1")}
                 </FormHelperText>
               )}
             </Box>

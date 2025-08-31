@@ -43,7 +43,9 @@
     "view": "Xem",
     "download": "Tải xuống",
     "start": "Bắt đầu",
-    "stop": "Dừng"
+    "stop": "Dừng",
+    "next": "Tiếp theo",
+    "back": "Quay lại"
   },
   "contents": {
     "highlight": "HƯỚNG ",
@@ -108,5 +110,23 @@
     "option2": "Học sinh trường chuyên",
     "option3": "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
     "option4": "Dân tộc thiểu số rất ít người (Mông, La Ha,...)"
+  },
+  "seventhForm": {
+    "title": "Về học lực của bạn",
+    "subTitle10": "Vui lòng nhập kết quả rèn luyện và học lực của bạn trong lớp 10",
+    "subTitle11": "Vui lòng nhập kết quả rèn luyện và học lực của bạn trong lớp 11",
+    "subTitle12": "Vui lòng nhập kết quả rèn luyện và học lực của bạn trong lớp 12",
+    "practiceResults": "Kết quả rèn luyện",
+    "academicScore": "Học lực",
+    "errorWarning1": "Vui lòng nhập điểm số học lực của bạn",
+    "errorWarning2": "Vui lòng nhập kết quả rèn luyện của bạn"
+  },
+  "eighthForm": {
+    "title": "Vui lòng đăng tải bảng điểm của bạn với đầy đủ 6 học kỳ (3 năm ở THPT) vào các ô bên dưới",
+    "helper1": "(Bạn có thể click vào ",
+    "helper2": " để nhập điểm của bạn một cách thủ công nếu bạn không có bảng điểm hoặc để kiểm tra lại.)",
+    "grade": "Lớp",
+    "semester1": "Học kỳ 1",
+    "semester2": "Học kỳ 2"
   }
 }

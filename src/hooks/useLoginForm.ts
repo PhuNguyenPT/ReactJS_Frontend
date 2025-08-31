@@ -3,13 +3,18 @@ import useAuth from "./useAuth";
 import { loginUser } from "../services/user/authService";
 import axios, { AxiosError } from "axios";
 import type { ErrorDetails } from "../type/interface/error.details";
+import { LoginDto } from "../dto/loginDto";
+import { validateDTO } from "../utils/validation";
+import { plainToInstance } from "class-transformer";
 
 export default function useLoginForm() {
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,28 +23,20 @@ export default function useLoginForm() {
     e.preventDefault();
     setApiError("");
 
-    const newErrors = {
-      email: "",
-      password: "",
-    };
+    // ✅ Use class-validator instead of manual checks
+    const dto = plainToInstance(LoginDto, { email, password });
+    const validationErrors = await validateDTO(dto);
 
-    // Simple validations
-    if (!email) newErrors.email = "Email is required";
-    else if (!/^\S+@\S+\.\S+$/.test(email))
-      newErrors.email = "Invalid email format";
-
-    if (!password) newErrors.password = "Password is required";
-
-    setErrors(newErrors);
-    const hasError = Object.values(newErrors).some((msg) => msg !== "");
-    if (hasError) return;
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({}); // clear previous errors
 
     try {
       setLoading(true);
 
-      // Your loginUser already returns AuthResponse directly
       const authResponse = await loginUser({ email, password });
-      // Check if login was successful
       if (authResponse.success && authResponse.accessToken) {
         login(authResponse);
         window.location.replace("/");
@@ -51,10 +48,8 @@ export default function useLoginForm() {
 
       if (axios.isAxiosError(error)) {
         const apiError = error as AxiosError<ErrorDetails>;
-
         if (apiError.response?.data.validationErrors) {
           const validationErrors = apiError.response.data.validationErrors;
-          // Extract only the error messages without field names
           const fieldErrors = Object.values(validationErrors)
             .map((errorMsg) => String(errorMsg))
             .join(", ");
@@ -75,10 +70,6 @@ export default function useLoginForm() {
     }
   };
 
-  const clearApiError = () => {
-    setApiError("");
-  };
-
   return {
     email,
     password,
@@ -88,7 +79,9 @@ export default function useLoginForm() {
     handleLogin,
     loading,
     apiError,
-    clearApiError,
+    clearApiError: () => {
+      setApiError("");
+    },
     showPassword,
     setShowPassword,
   };

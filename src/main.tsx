@@ -6,6 +6,7 @@ import "./styles/index.css";
 import "./styles/App.css";
 import "./assets/fonts/fonts.css";
 import "./i18n";
+import "reflect-metadata";
 
 import LoadingComponent from "./components/common/Language Switch/LoadingComponent";
 import { AuthProvider } from "./contexts/auth/AuthProvider";

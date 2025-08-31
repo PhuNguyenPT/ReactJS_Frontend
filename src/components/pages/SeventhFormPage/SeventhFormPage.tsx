@@ -9,12 +9,12 @@ import { useState } from "react";
 
 // Define types for form values and errors
 interface GradeValues {
-  hanhKiem: string;
+  kqrl: string;
   hocLuc: string;
 }
 
 interface GradeErrors {
-  hanhKiem: boolean;
+  kqrl: boolean;
   hocLuc: boolean;
 }
 
@@ -26,15 +26,15 @@ export default function SeventhFormPage() {
   const navigate = useNavigate();
 
   const [formValues, setFormValues] = useState<Record<GradeKey, GradeValues>>({
-    "10": { hanhKiem: "", hocLuc: "" },
-    "11": { hanhKiem: "", hocLuc: "" },
-    "12": { hanhKiem: "", hocLuc: "" },
+    "10": { kqrl: "", hocLuc: "" },
+    "11": { kqrl: "", hocLuc: "" },
+    "12": { kqrl: "", hocLuc: "" },
   });
 
   const [errors, setErrors] = useState<Record<GradeKey, GradeErrors>>({
-    "10": { hanhKiem: false, hocLuc: false },
-    "11": { hanhKiem: false, hocLuc: false },
-    "12": { hanhKiem: false, hocLuc: false },
+    "10": { kqrl: false, hocLuc: false },
+    "11": { kqrl: false, hocLuc: false },
+    "12": { kqrl: false, hocLuc: false },
   });
 
   // Add validation trigger state
@@ -72,15 +72,15 @@ export default function SeventhFormPage() {
 
     const newErrors: Record<GradeKey, GradeErrors> = {
       "10": {
-        hanhKiem: formValues["10"].hanhKiem === "",
+        kqrl: formValues["10"].kqrl === "",
         hocLuc: formValues["10"].hocLuc === "",
       },
       "11": {
-        hanhKiem: formValues["11"].hanhKiem === "",
+        kqrl: formValues["11"].kqrl === "",
         hocLuc: formValues["11"].hocLuc === "",
       },
       "12": {
-        hanhKiem: formValues["12"].hanhKiem === "",
+        kqrl: formValues["12"].kqrl === "",
         hocLuc: formValues["12"].hocLuc === "",
       },
     };
@@ -89,7 +89,7 @@ export default function SeventhFormPage() {
 
     // Only navigate if all fields are filled
     const allFilled = Object.values(newErrors).every(
-      (e) => !e.hanhKiem && !e.hocLuc,
+      (e) => !e.kqrl && !e.hocLuc,
     );
 
     if (allFilled) {
@@ -107,9 +107,7 @@ export default function SeventhFormPage() {
       <div className="background" />
       <div className="form-container">
         <div className="form-2-content">
-          <h1 className="form-title">
-            7 → {t("seventhForm.title", "Về học lực của bạn")}
-          </h1>
+          <h1 className="form-title">7 → {t("seventhForm.title")}</h1>
           <SeventhForm
             onChange={handleFormChange}
             errors={errors}

@@ -1,10 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import { useTranslation } from "react-i18next";
 
 export default function EighthForm() {
+  const { t } = useTranslation();
   const grades = ["10", "11", "12"];
-  const semesters = ["Semester 1:", "Semester 2:"];
+  const semesters = [t("eighthForm.semester1"), t("eighthForm.semester2")];
 
   // State: { grade: [File|null, File|null] }
   const [files, setFiles] = useState<Record<string, (File | null)[]>>({
@@ -38,7 +40,7 @@ export default function EighthForm() {
               className="grade-title"
               sx={{ mb: 2, marginLeft: "110px" }}
             >
-              Grade {grade}
+              {t("eighthForm.grade")} {grade}
             </Typography>
 
             {/* Two upload rows with semester labels */}
@@ -120,8 +122,8 @@ export default function EighthForm() {
         variant="body2"
         sx={{ color: "white", textAlign: "center", marginLeft: "275px" }}
       >
-        (You can click on <strong>Next</strong> to input your score manually if
-        you don’t have the score board or to check it again.)
+        {t("eighthForm.helper1")} <strong>{t("buttons.next")}</strong>{" "}
+        {t("eighthForm.helper2")}
       </Typography>
     </Box>
   );
