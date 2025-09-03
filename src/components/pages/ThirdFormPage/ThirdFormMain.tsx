@@ -128,7 +128,7 @@ export default function ThirdFormMain({
       {/* Literature row - Fixed as VAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={VietnameseSubject.VAN}
+          value={VietnameseSubject.NGU_VAN}
           disabled
           sx={subjectFieldStyle}
         />

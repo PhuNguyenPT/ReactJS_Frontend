@@ -11,6 +11,9 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { CCNNType, CCQTType } from "../../../type/enum/exam";
+import { VietnameseSubject } from "../../../type/enum/subject";
+import { Rank } from "../../../type/enum/ranks";
 
 interface AwardCertificate {
   id: string;
@@ -25,7 +28,7 @@ interface CategoryData {
   isExpanded: boolean;
   firstFieldLabel: string;
   secondFieldLabel: string;
-  categoryType: string; // Add this to identify category type
+  categoryType: string; // category identifier
 }
 
 export default function FourthForm() {
@@ -37,128 +40,23 @@ export default function FourthForm() {
     t("fourthForm.cat3"),
   ];
 
-  // Options for each category - use category types instead of translated names
+  const ccqtOptions = Object.values(CCQTType);
+  const ccnnOptions = Object.values(CCNNType);
+  const hsgOptions = Object.values(VietnameseSubject);
+  const rankOptions = Object.values(Rank);
+
+  // Options for each category
   const categoryOptions = {
     national_award: {
-      subjects: [
-        "Toán học",
-        "Ngữ văn",
-        "Tiếng Anh",
-        "Vật lý",
-        "Hóa học",
-        "Sinh học",
-        "Lịch sử",
-        "Địa lý",
-        "Giáo dục công dân",
-      ],
-      awards: [
-        "Giải Nhất",
-        "Giải Nhì",
-        "Giải Ba",
-        "Giải Khuyến khích",
-        "Giải Xuất sắc",
-      ],
+      subjects: hsgOptions,
+      awards: rankOptions,
     },
     international_cert: {
-      certificates: [
-        "IELTS",
-        "TOEFL",
-        "SAT",
-        "ACT",
-        "Cambridge English",
-        "DELF/DALF",
-        "JLPT",
-        "HSK",
-        "TOPIK",
-      ],
-      scores: [
-        "9.0",
-        "8.5",
-        "8.0",
-        "7.5",
-        "7.0",
-        "6.5",
-        "6.0",
-        "5.5",
-        "5.0", // IELTS
-        "120",
-        "110",
-        "100",
-        "90",
-        "80",
-        "70",
-        "60", // TOEFL
-        "1600",
-        "1500",
-        "1400",
-        "1300",
-        "1200",
-        "1100",
-        "1000", // SAT
-        "36",
-        "35",
-        "34",
-        "33",
-        "32",
-        "31",
-        "30",
-        "29",
-        "28", // ACT
-        "C2",
-        "C1",
-        "B2",
-        "B1",
-        "A2",
-        "A1", // Cambridge/CEFR
-        "N1",
-        "N2",
-        "N3",
-        "N4",
-        "N5", // JLPT
-        "Level 6",
-        "Level 5",
-        "Level 4",
-        "Level 3",
-        "Level 2",
-        "Level 1", // HSK/TOPIK
-      ],
+      certificates: ccqtOptions,
+      scores: rankOptions,
     },
     language_cert: {
-      subjects: [
-        "Tiếng Anh",
-        "Tiếng Nhật",
-        "Tiếng Hàn",
-        "Tiếng Trung",
-        "Tiếng Pháp",
-        "Tiếng Đức",
-        "Tiếng Tây Ban Nha",
-        "Tiếng Nga",
-      ],
-      awards: [
-        "A1",
-        "A2",
-        "B1",
-        "B2",
-        "C1",
-        "C2", // CEFR levels
-        "Beginner",
-        "Elementary",
-        "Intermediate",
-        "Upper-Intermediate",
-        "Advanced",
-        "Proficient",
-        "N1",
-        "N2",
-        "N3",
-        "N4",
-        "N5", // Japanese
-        "HSK 1",
-        "HSK 2",
-        "HSK 3",
-        "HSK 4",
-        "HSK 5",
-        "HSK 6", // Chinese
-      ],
+      certificates: ccnnOptions,
     },
   };
 
@@ -284,7 +182,7 @@ export default function FourthForm() {
       case "international_cert":
         return categoryOptions.international_cert.certificates;
       case "language_cert":
-        return categoryOptions.language_cert.subjects;
+        return categoryOptions.language_cert.certificates; // ✅ fixed
       default:
         return [];
     }
@@ -296,8 +194,6 @@ export default function FourthForm() {
         return categoryOptions.national_award.awards;
       case "international_cert":
         return categoryOptions.international_cert.scores;
-      case "language_cert":
-        return categoryOptions.language_cert.awards;
       default:
         return [];
     }
@@ -362,9 +258,7 @@ export default function FourthForm() {
                       newValue ?? "",
                     );
                   }}
-                  sx={{
-                    width: 240,
-                  }}
+                  sx={{ width: 240 }}
                   filterSelectedOptions
                   renderInput={(params) => (
                     <TextField
@@ -374,65 +268,77 @@ export default function FourthForm() {
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "17px",
                           height: "40px",
-                          "& fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#8B4A8F",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#A657AE",
-                          },
+                          "& fieldset": { borderColor: "#A657AE" },
+                          "&:hover fieldset": { borderColor: "#8B4A8F" },
+                          "&.Mui-focused fieldset": { borderColor: "#A657AE" },
                         },
-                        "& input": {
-                          color: "#A657AE",
-                        },
+                        "& input": { color: "#A657AE" },
                       }}
                     />
                   )}
                 />
 
-                {/* Second Field Autocomplete */}
-                <Autocomplete
-                  options={getSecondFieldOptions(category.categoryType)}
-                  value={entry.secondField || null}
-                  onChange={(_, newValue) => {
-                    handleEntryChange(
-                      category.id,
-                      entry.id,
-                      "secondField",
-                      newValue ?? "",
-                    );
-                  }}
-                  sx={{
-                    width: 150,
-                  }}
-                  filterSelectedOptions
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={category.secondFieldLabel}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "17px",
-                          height: "40px",
-                          "& fieldset": {
-                            borderColor: "#A657AE",
+                {/* Second Field */}
+                {category.categoryType === "language_cert" ? (
+                  // ✅ Free text input for language cert score
+                  <TextField
+                    value={entry.secondField}
+                    onChange={(e) => {
+                      handleEntryChange(
+                        category.id,
+                        entry.id,
+                        "secondField",
+                        e.target.value,
+                      );
+                    }}
+                    placeholder={category.secondFieldLabel}
+                    sx={{
+                      width: 150,
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "17px",
+                        height: "40px",
+                        "& fieldset": { borderColor: "#A657AE" },
+                        "&:hover fieldset": { borderColor: "#8B4A8F" },
+                        "&.Mui-focused fieldset": { borderColor: "#A657AE" },
+                      },
+                      "& input": { color: "#A657AE" },
+                    }}
+                  />
+                ) : (
+                  // Autocomplete for other categories
+                  <Autocomplete
+                    options={getSecondFieldOptions(category.categoryType)}
+                    value={entry.secondField || null}
+                    onChange={(_, newValue) => {
+                      handleEntryChange(
+                        category.id,
+                        entry.id,
+                        "secondField",
+                        newValue ?? "",
+                      );
+                    }}
+                    sx={{ width: 150 }}
+                    filterSelectedOptions
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={category.secondFieldLabel}
+                        sx={{
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "17px",
+                            height: "40px",
+                            "& fieldset": { borderColor: "#A657AE" },
+                            "&:hover fieldset": { borderColor: "#8B4A8F" },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#A657AE",
+                            },
                           },
-                          "&:hover fieldset": {
-                            borderColor: "#8B4A8F",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                        },
-                        "& input": {
-                          color: "#A657AE",
-                        },
-                      }}
-                    />
-                  )}
-                />
+                          "& input": { color: "#A657AE" },
+                        }}
+                      />
+                    )}
+                  />
+                )}
 
                 {/* Remove Button */}
                 <IconButton
@@ -467,9 +373,7 @@ export default function FourthForm() {
               borderRadius: "10px",
               textTransform: "none",
               alignSelf: "flex-start",
-              "&:hover": {
-                backgroundColor: "#7b1fa2",
-              },
+              "&:hover": { backgroundColor: "#7b1fa2" },
             }}
           >
             {t("buttons.add")}

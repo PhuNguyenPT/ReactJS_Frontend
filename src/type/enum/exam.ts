@@ -17,7 +17,7 @@ export const CCQTType = {
   IB: "IB",
   OSSD: "OSSD",
   OTHER: "Other",
-  PTE: "PTE",
+  PTE_Academic: "PTE Academic",
   SAT: "SAT",
 } as const;
 
