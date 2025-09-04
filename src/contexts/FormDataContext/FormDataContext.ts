@@ -13,6 +13,23 @@ export interface CategoryData {
   isExpanded: boolean;
 }
 
+// Fourth form specific interfaces
+export interface AwardCertificate {
+  id: string;
+  firstField: string;
+  secondField: string;
+}
+
+export interface FourthFormCategoryData {
+  id: string;
+  name: string;
+  entries: AwardCertificate[];
+  isExpanded: boolean;
+  firstFieldLabel: string;
+  secondFieldLabel: string;
+  categoryType: string; // category identifier
+}
+
 export interface FormData {
   selectedProvince: string | null;
   secondFormMajors: (string | null)[];
@@ -23,12 +40,20 @@ export interface FormData {
     chosenScores: string[];
     optionalCategories: CategoryData[];
   };
+  fourthForm: {
+    categories: FourthFormCategoryData[];
+  };
+  fifthForm: {
+    costRange: number[];
+  };
 }
 
 export interface FormDataContextType {
   formData: FormData;
   updateFormData: (data: Partial<FormData>) => void;
   updateThirdForm: (thirdFormData: Partial<FormData["thirdForm"]>) => void;
+  updateFourthForm: (fourthFormData: Partial<FormData["fourthForm"]>) => void;
+  updateFifthForm: (fifthFormData: Partial<FormData["fifthForm"]>) => void;
   resetFormData: () => void;
   isFormDataComplete: () => boolean;
 }
@@ -65,5 +90,39 @@ export const initialFormData: FormData = {
         isExpanded: false,
       },
     ],
+  },
+  fourthForm: {
+    categories: [
+      {
+        id: "category-1",
+        name: "", // Will be set by translation
+        entries: [],
+        isExpanded: false,
+        categoryType: "national_award",
+        firstFieldLabel: "",
+        secondFieldLabel: "",
+      },
+      {
+        id: "category-2",
+        name: "", // Will be set by translation
+        entries: [],
+        isExpanded: false,
+        categoryType: "international_cert",
+        firstFieldLabel: "",
+        secondFieldLabel: "",
+      },
+      {
+        id: "category-3",
+        name: "", // Will be set by translation
+        entries: [],
+        isExpanded: false,
+        categoryType: "language_cert",
+        firstFieldLabel: "",
+        secondFieldLabel: "",
+      },
+    ],
+  },
+  fifthForm: {
+    costRange: [0, 500],
   },
 };

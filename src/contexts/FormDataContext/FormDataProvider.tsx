@@ -24,6 +24,28 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  // Specific fourth form update function
+  const updateFourthForm = useCallback(
+    (fourthFormData: Partial<FormData["fourthForm"]>) => {
+      setFormData((prev) => ({
+        ...prev,
+        fourthForm: { ...prev.fourthForm, ...fourthFormData },
+      }));
+    },
+    [],
+  );
+
+  // ✅ New: Specific fifth form update function
+  const updateFifthForm = useCallback(
+    (fifthFormData: Partial<FormData["fifthForm"]>) => {
+      setFormData((prev) => ({
+        ...prev,
+        fifthForm: { ...prev.fifthForm, ...fifthFormData },
+      }));
+    },
+    [],
+  );
+
   const resetFormData = useCallback(() => {
     setFormData(initialFormData);
   }, []);
@@ -54,6 +76,8 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       formData,
       updateFormData,
       updateThirdForm,
+      updateFourthForm,
+      updateFifthForm, // ✅ now defined
       resetFormData,
       isFormDataComplete,
     }),
@@ -61,6 +85,8 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       formData,
       updateFormData,
       updateThirdForm,
+      updateFourthForm,
+      updateFifthForm,
       resetFormData,
       isFormDataComplete,
     ],

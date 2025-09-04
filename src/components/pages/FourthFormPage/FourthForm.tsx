@@ -6,7 +6,6 @@ import {
   IconButton,
   Autocomplete,
 } from "@mui/material";
-import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
@@ -14,31 +13,11 @@ import React from "react";
 import { CCNNType, CCQTType } from "../../../type/enum/exam";
 import { VietnameseSubject } from "../../../type/enum/subject";
 import { Rank } from "../../../type/enum/ranks";
-
-interface AwardCertificate {
-  id: string;
-  firstField: string;
-  secondField: string;
-}
-
-interface CategoryData {
-  id: string;
-  name: string;
-  entries: AwardCertificate[];
-  isExpanded: boolean;
-  firstFieldLabel: string;
-  secondFieldLabel: string;
-  categoryType: string; // category identifier
-}
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 export default function FourthForm() {
   const { t } = useTranslation();
-
-  const categories = [
-    t("fourthForm.cat1"),
-    t("fourthForm.cat2"),
-    t("fourthForm.cat3"),
-  ];
+  const { formData, updateFourthForm } = useFormData();
 
   const ccqtOptions = Object.values(CCQTType);
   const ccnnOptions = Object.values(CCNNType);
@@ -62,86 +41,89 @@ export default function FourthForm() {
 
   // Update labels when translation changes
   React.useEffect(() => {
-    const categories = [
+    const translatedCategories = [
       t("fourthForm.cat1"),
       t("fourthForm.cat2"),
       t("fourthForm.cat3"),
     ];
-    setCategoryData((prev) =>
-      prev.map((category, index) => ({
-        ...category,
-        name: categories[index],
-        firstFieldLabel:
+
+    // Check if translations have actually changed to avoid unnecessary updates
+    const needsUpdate = formData.fourthForm.categories.some(
+      (category, index) => {
+        const expectedName = translatedCategories[index];
+        const expectedFirstLabel =
           index === 0
             ? t("fourthForm.firstField")
             : index === 1
               ? t("fourthForm.secondField")
-              : t("fourthForm.thirdField"),
-        secondFieldLabel:
-          index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
-      })),
-    );
-  }, [t]);
+              : t("fourthForm.thirdField");
+        const expectedSecondLabel =
+          index === 1 ? t("fourthForm.score") : t("fourthForm.award");
 
-  const [categoryData, setCategoryData] = useState<CategoryData[]>(
-    categories.map((cat, index) => ({
-      id: `category-${String(index + 1)}`,
-      name: cat,
-      entries: [],
-      isExpanded: false,
-      categoryType:
-        index === 0
-          ? "national_award"
-          : index === 1
-            ? "international_cert"
-            : "language_cert",
-      firstFieldLabel:
-        index === 0
-          ? t("fourthForm.firstField")
-          : index === 1
-            ? t("fourthForm.secondField")
-            : t("fourthForm.thirdField"),
-      secondFieldLabel:
-        index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
-    })),
-  );
+        return (
+          category.name !== expectedName ||
+          category.firstFieldLabel !== expectedFirstLabel ||
+          category.secondFieldLabel !== expectedSecondLabel
+        );
+      },
+    );
+
+    if (needsUpdate) {
+      const updatedCategories = formData.fourthForm.categories.map(
+        (category, index) => ({
+          ...category,
+          name: translatedCategories[index],
+          firstFieldLabel:
+            index === 0
+              ? t("fourthForm.firstField")
+              : index === 1
+                ? t("fourthForm.secondField")
+                : t("fourthForm.thirdField"),
+          secondFieldLabel:
+            index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
+        }),
+      );
+
+      updateFourthForm({ categories: updatedCategories });
+    }
+  }, [t, updateFourthForm, formData.fourthForm.categories]);
 
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
   const handleAddEntry = (categoryId: string) => {
-    setCategoryData((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              entries: [
-                ...category.entries,
-                { id: generateId(), firstField: "", secondField: "" },
-              ],
-              isExpanded: true,
-            }
-          : category,
-      ),
+    const updatedCategories = formData.fourthForm.categories.map((category) =>
+      category.id === categoryId
+        ? {
+            ...category,
+            entries: [
+              ...category.entries,
+              { id: generateId(), firstField: "", secondField: "" },
+            ],
+            isExpanded: true,
+          }
+        : category,
     );
+
+    updateFourthForm({ categories: updatedCategories });
   };
 
   const handleRemoveEntry = (categoryId: string, entryId: string) => {
-    setCategoryData((prev) =>
-      prev.map((category) => {
-        if (category.id === categoryId) {
-          const newEntries = category.entries.filter(
-            (entry) => entry.id !== entryId,
-          );
-          return {
-            ...category,
-            entries: newEntries,
-            isExpanded: newEntries.length > 0,
-          };
-        }
-        return category;
-      }),
-    );
+    const updatedCategories = formData.fourthForm.categories.map((category) => {
+      if (category.id === categoryId) {
+        const newEntries = category.entries.filter(
+          (entry) => entry.id !== entryId,
+        );
+        return {
+          ...category,
+          entries: newEntries,
+          isExpanded: newEntries.length > 0,
+        };
+      }
+      return category;
+    });
+
+    updateFourthForm({ categories: updatedCategories });
   };
 
   const handleEntryChange = (
@@ -150,28 +132,18 @@ export default function FourthForm() {
     field: "firstField" | "secondField",
     value: string,
   ) => {
-    setCategoryData((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              entries: category.entries.map((entry) =>
-                entry.id === entryId ? { ...entry, [field]: value } : entry,
-              ),
-            }
-          : category,
-      ),
+    const updatedCategories = formData.fourthForm.categories.map((category) =>
+      category.id === categoryId
+        ? {
+            ...category,
+            entries: category.entries.map((entry) =>
+              entry.id === entryId ? { ...entry, [field]: value } : entry,
+            ),
+          }
+        : category,
     );
-  };
 
-  const toggleExpanded = (categoryId: string) => {
-    setCategoryData((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? { ...category, isExpanded: !category.isExpanded }
-          : category,
-      ),
-    );
+    updateFourthForm({ categories: updatedCategories });
   };
 
   // Options helper
@@ -182,7 +154,7 @@ export default function FourthForm() {
       case "international_cert":
         return categoryOptions.international_cert.certificates;
       case "language_cert":
-        return categoryOptions.language_cert.certificates; // ✅ fixed
+        return categoryOptions.language_cert.certificates;
       default:
         return [];
     }
@@ -207,7 +179,7 @@ export default function FourthForm() {
         alignItems: "flex-start",
       }}
     >
-      {categoryData.map((category) => (
+      {formData.fourthForm.categories.map((category) => (
         <Box
           key={category.id}
           sx={{
@@ -225,10 +197,6 @@ export default function FourthForm() {
               mb: 1,
               color: "#A657AE",
               textAlign: "left",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              toggleExpanded(category.id);
             }}
           >
             {category.name}
@@ -258,7 +226,7 @@ export default function FourthForm() {
                       newValue ?? "",
                     );
                   }}
-                  sx={{ width: 240 }}
+                  sx={{ width: 200 }}
                   filterSelectedOptions
                   renderInput={(params) => (
                     <TextField
@@ -280,7 +248,7 @@ export default function FourthForm() {
 
                 {/* Second Field */}
                 {category.categoryType === "language_cert" ? (
-                  // ✅ Free text input for language cert score
+                  // Free text input for language cert score
                   <TextField
                     value={entry.secondField}
                     onChange={(e) => {
@@ -293,7 +261,7 @@ export default function FourthForm() {
                     }}
                     placeholder={category.secondFieldLabel}
                     sx={{
-                      width: 150,
+                      width: 170,
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
                         height: "40px",
@@ -317,7 +285,7 @@ export default function FourthForm() {
                         newValue ?? "",
                       );
                     }}
-                    sx={{ width: 150 }}
+                    sx={{ width: 170 }}
                     filterSelectedOptions
                     renderInput={(params) => (
                       <TextField

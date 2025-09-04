@@ -1,6 +1,7 @@
-import { useState, useImperativeHandle } from "react";
+import { useImperativeHandle } from "react";
 import { Box, FormControl, Slider, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 export interface FifthFormRef {
   validate: () => boolean;
@@ -12,8 +13,7 @@ interface FifthFormProps {
 
 const FifthForm = ({ ref }: FifthFormProps) => {
   const { t } = useTranslation();
-
-  const [costRange, setCostRange] = useState<number[]>([0, 500]);
+  const { formData, updateFifthForm } = useFormData();
 
   // Expose validate() to parent
   useImperativeHandle(ref, () => ({
@@ -23,12 +23,14 @@ const FifthForm = ({ ref }: FifthFormProps) => {
   }));
 
   const handleSliderChange = (_: Event, newValue: number | number[]) => {
-    setCostRange(newValue as number[]);
+    updateFifthForm({ costRange: newValue as number[] });
   };
 
   const formatValue = (value: number) => {
     return `${String(value)} triệu VND`;
   };
+
+  const { costRange } = formData.fifthForm;
 
   return (
     <Box component="form" className="fifth-form" sx={{ position: "relative" }}>

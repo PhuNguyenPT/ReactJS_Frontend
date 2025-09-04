@@ -95,16 +95,6 @@ export default function ThirdFormOptional({
     setCategories(updated);
   };
 
-  const toggleExpanded = (categoryId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        return { ...category, isExpanded: !category.isExpanded };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
   // Get available subjects for a specific category and exclude already selected ones
   const getAvailableSubjects = (
     categoryName: string,
@@ -151,10 +141,6 @@ export default function ThirdFormOptional({
               color: "#9c27b0",
               fontStyle: "italic",
               textAlign: "left",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              toggleExpanded(category.id);
             }}
           >
             {t("thirdForm.firstTypo")} {category.name}{" "}
