@@ -18,6 +18,7 @@ export interface AwardCertificate {
   id: string;
   firstField: string;
   secondField: string;
+  firstFieldOther?: string;
 }
 
 export interface FourthFormCategoryData {
@@ -46,6 +47,9 @@ export interface FormData {
   fifthForm: {
     costRange: number[];
   };
+  sixthForm: {
+    specialStudentCases: string[]; // Array of selected special student case values
+  };
 }
 
 export interface FormDataContextType {
@@ -54,6 +58,7 @@ export interface FormDataContextType {
   updateThirdForm: (thirdFormData: Partial<FormData["thirdForm"]>) => void;
   updateFourthForm: (fourthFormData: Partial<FormData["fourthForm"]>) => void;
   updateFifthForm: (fifthFormData: Partial<FormData["fifthForm"]>) => void;
+  updateSixthForm: (sixthFormData: Partial<FormData["sixthForm"]>) => void;
   resetFormData: () => void;
   isFormDataComplete: () => boolean;
 }
@@ -124,5 +129,8 @@ export const initialFormData: FormData = {
   },
   fifthForm: {
     costRange: [0, 500],
+  },
+  sixthForm: {
+    specialStudentCases: [],
   },
 };

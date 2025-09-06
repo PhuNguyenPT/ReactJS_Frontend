@@ -96,6 +96,7 @@
     "firstField": "Subject",
     "secondField": "Certificate Type",
     "thirdField": "Language",
+    "enterOther": "Enter your other option",
     "award": "Award",
     "score": "Score"
   },

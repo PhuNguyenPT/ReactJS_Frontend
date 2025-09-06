@@ -19,8 +19,8 @@ export default function FourthForm() {
   const { t } = useTranslation();
   const { formData, updateFourthForm } = useFormData();
 
-  const ccqtOptions = Object.values(CCQTType);
-  const ccnnOptions = Object.values(CCNNType);
+  const ccqtOptions = [...Object.values(CCQTType), "Other"];
+  const ccnnOptions = [...Object.values(CCNNType), "Other"];
   const hsgOptions = Object.values(VietnameseSubject);
   const rankOptions = Object.values(Rank);
 
@@ -47,7 +47,6 @@ export default function FourthForm() {
       t("fourthForm.cat3"),
     ];
 
-    // Check if translations have actually changed to avoid unnecessary updates
     const needsUpdate = formData.fourthForm.categories.some(
       (category, index) => {
         const expectedName = translatedCategories[index];
@@ -98,7 +97,12 @@ export default function FourthForm() {
             ...category,
             entries: [
               ...category.entries,
-              { id: generateId(), firstField: "", secondField: "" },
+              {
+                id: generateId(),
+                firstField: "",
+                firstFieldOther: "",
+                secondField: "",
+              },
             ],
             isExpanded: true,
           }
@@ -129,7 +133,7 @@ export default function FourthForm() {
   const handleEntryChange = (
     categoryId: string,
     entryId: string,
-    field: "firstField" | "secondField",
+    field: "firstField" | "firstFieldOther" | "secondField",
     value: string,
   ) => {
     const updatedCategories = formData.fourthForm.categories.map((category) =>
@@ -203,95 +207,81 @@ export default function FourthForm() {
           </Typography>
 
           {category.isExpanded &&
-            category.entries.map((entry) => (
-              <Box
-                key={entry.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  justifyContent: "flex-start",
-                  mb: 1,
-                }}
-              >
-                {/* First Field Autocomplete */}
-                <Autocomplete
-                  options={getFirstFieldOptions(category.categoryType)}
-                  value={entry.firstField || null}
-                  onChange={(_, newValue) => {
-                    handleEntryChange(
-                      category.id,
-                      entry.id,
-                      "firstField",
-                      newValue ?? "",
-                    );
-                  }}
-                  sx={{ width: 200 }}
-                  filterSelectedOptions
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={category.firstFieldLabel}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "17px",
-                          height: "40px",
-                          "& fieldset": { borderColor: "#A657AE" },
-                          "&:hover fieldset": { borderColor: "#8B4A8F" },
-                          "&.Mui-focused fieldset": { borderColor: "#A657AE" },
-                        },
-                        "& input": { color: "#A657AE" },
-                      }}
-                    />
-                  )}
-                />
+            category.entries.map((entry) => {
+              const isOtherSelected =
+                entry.firstField === "Other" &&
+                (category.categoryType === "international_cert" ||
+                  category.categoryType === "language_cert");
 
-                {/* Second Field */}
-                {category.categoryType === "language_cert" ? (
-                  // Free text input for language cert score
-                  <TextField
-                    value={entry.secondField}
-                    onChange={(e) => {
-                      handleEntryChange(
-                        category.id,
-                        entry.id,
-                        "secondField",
-                        e.target.value,
-                      );
-                    }}
-                    placeholder={category.secondFieldLabel}
+              return (
+                <Box
+                  key={entry.id}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    mb: 2,
+                    gap: 1,
+                  }}
+                >
+                  {/* Main row with dropdown, second field, and remove button */}
+                  <Box
                     sx={{
-                      width: 170,
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "17px",
-                        height: "40px",
-                        "& fieldset": { borderColor: "#A657AE" },
-                        "&:hover fieldset": { borderColor: "#8B4A8F" },
-                        "&.Mui-focused fieldset": { borderColor: "#A657AE" },
-                      },
-                      "& input": { color: "#A657AE" },
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      justifyContent: "flex-start",
                     }}
-                  />
-                ) : (
-                  // Autocomplete for other categories
-                  <Autocomplete
-                    options={getSecondFieldOptions(category.categoryType)}
-                    value={entry.secondField || null}
-                    onChange={(_, newValue) => {
-                      handleEntryChange(
-                        category.id,
-                        entry.id,
-                        "secondField",
-                        newValue ?? "",
-                      );
-                    }}
-                    sx={{ width: 170 }}
-                    filterSelectedOptions
-                    renderInput={(params) => (
+                  >
+                    {/* First Field Autocomplete */}
+                    <Autocomplete
+                      options={getFirstFieldOptions(category.categoryType)}
+                      value={entry.firstField || null}
+                      onChange={(_, newValue) => {
+                        handleEntryChange(
+                          category.id,
+                          entry.id,
+                          "firstField",
+                          newValue ?? "",
+                        );
+                      }}
+                      sx={{ width: 200 }}
+                      filterSelectedOptions
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={category.firstFieldLabel}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "17px",
+                              height: "40px",
+                              "& fieldset": { borderColor: "#A657AE" },
+                              "&:hover fieldset": { borderColor: "#8B4A8F" },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#A657AE",
+                              },
+                            },
+                            "& input": { color: "#A657AE" },
+                          }}
+                        />
+                      )}
+                    />
+
+                    {/* Second Field */}
+                    {category.categoryType === "language_cert" ? (
                       <TextField
-                        {...params}
+                        value={entry.secondField}
+                        onChange={(e) => {
+                          handleEntryChange(
+                            category.id,
+                            entry.id,
+                            "secondField",
+                            e.target.value,
+                          );
+                        }}
                         placeholder={category.secondFieldLabel}
                         sx={{
+                          width: 170,
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "17px",
                             height: "40px",
@@ -304,29 +294,99 @@ export default function FourthForm() {
                           "& input": { color: "#A657AE" },
                         }}
                       />
+                    ) : (
+                      <Autocomplete
+                        options={getSecondFieldOptions(category.categoryType)}
+                        value={entry.secondField || null}
+                        onChange={(_, newValue) => {
+                          handleEntryChange(
+                            category.id,
+                            entry.id,
+                            "secondField",
+                            newValue ?? "",
+                          );
+                        }}
+                        sx={{ width: 170 }}
+                        filterSelectedOptions
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={category.secondFieldLabel}
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "17px",
+                                height: "40px",
+                                "& fieldset": { borderColor: "#A657AE" },
+                                "&:hover fieldset": { borderColor: "#8B4A8F" },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: "#A657AE",
+                                },
+                              },
+                              "& input": { color: "#A657AE" },
+                            }}
+                          />
+                        )}
+                      />
                     )}
-                  />
-                )}
 
-                {/* Remove Button */}
-                <IconButton
-                  onClick={() => {
-                    handleRemoveEntry(category.id, entry.id);
-                  }}
-                  sx={{
-                    backgroundColor: "#f44336",
-                    color: "white",
-                    width: "35px",
-                    height: "35px",
-                    "&:hover": {
-                      backgroundColor: "#d32f2f",
-                    },
-                  }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            ))}
+                    {/* Remove Button */}
+                    <IconButton
+                      onClick={() => {
+                        handleRemoveEntry(category.id, entry.id);
+                      }}
+                      sx={{
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        width: "35px",
+                        height: "35px",
+                        "&:hover": {
+                          backgroundColor: "#d32f2f",
+                        },
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+
+                  {/* "Other" input field - appears below the main row */}
+                  {isOtherSelected && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        ml: 0, // Align with the first dropdown
+                      }}
+                    >
+                      <TextField
+                        value={entry.firstFieldOther ?? ""}
+                        onChange={(e) => {
+                          handleEntryChange(
+                            category.id,
+                            entry.id,
+                            "firstFieldOther",
+                            e.target.value,
+                          );
+                        }}
+                        placeholder={t("fourthForm.enterOther")}
+                        sx={{
+                          width: 200, // Same width as the dropdown above
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "17px",
+                            height: "40px",
+                            "& fieldset": { borderColor: "#A657AE" },
+                            "&:hover fieldset": { borderColor: "#8B4A8F" },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#A657AE",
+                            },
+                          },
+                          "& input": { color: "#A657AE" },
+                        }}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              );
+            })}
 
           {/* Add Button */}
           <Button
