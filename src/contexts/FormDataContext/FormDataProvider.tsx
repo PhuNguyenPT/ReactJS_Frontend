@@ -3,6 +3,8 @@ import {
   FormDataContext,
   initialFormData,
   type FormData,
+  type GradeKey,
+  type GradeValues,
 } from "./FormDataContext";
 
 export function FormDataProvider({ children }: { children: ReactNode }) {
@@ -57,6 +59,45 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  // Specific seventh form update function
+  const updateSeventhForm = useCallback(
+    (seventhFormData: Partial<FormData["seventhForm"]>) => {
+      setFormData((prev) => ({
+        ...prev,
+        seventhForm: { ...prev.seventhForm, ...seventhFormData },
+      }));
+    },
+    [],
+  );
+
+  // Specific seventh form grade update function
+  const updateSeventhFormGrade = useCallback(
+    (grade: GradeKey, field: keyof GradeValues, value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        seventhForm: {
+          ...prev.seventhForm,
+          grades: {
+            ...prev.seventhForm.grades,
+            [grade]: {
+              ...prev.seventhForm.grades[grade],
+              [field]: value,
+            },
+          },
+          // Clear error when user inputs a value
+          errors: {
+            ...prev.seventhForm.errors,
+            [grade]: {
+              ...prev.seventhForm.errors[grade],
+              [field]: value.trim() === "",
+            },
+          },
+        },
+      }));
+    },
+    [],
+  );
+
   const resetFormData = useCallback(() => {
     setFormData(initialFormData);
   }, []);
@@ -90,6 +131,8 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       updateFourthForm,
       updateFifthForm,
       updateSixthForm,
+      updateSeventhForm,
+      updateSeventhFormGrade,
       resetFormData,
       isFormDataComplete,
     }),
@@ -100,6 +143,8 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       updateFourthForm,
       updateFifthForm,
       updateSixthForm,
+      updateSeventhForm,
+      updateSeventhFormGrade,
       resetFormData,
       isFormDataComplete,
     ],

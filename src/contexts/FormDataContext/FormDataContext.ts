@@ -31,6 +31,19 @@ export interface FourthFormCategoryData {
   categoryType: string; // category identifier
 }
 
+// Seventh form specific interfaces
+export interface GradeValues {
+  conduct: string;
+  academicPerformance: string;
+}
+
+export interface GradeErrors {
+  conduct: boolean;
+  academicPerformance: boolean;
+}
+
+export type GradeKey = "10" | "11" | "12";
+
 export interface FormData {
   selectedProvince: string | null;
   secondFormMajors: (string | null)[];
@@ -50,6 +63,10 @@ export interface FormData {
   sixthForm: {
     specialStudentCases: string[]; // Array of selected special student case values
   };
+  seventhForm: {
+    grades: Record<GradeKey, GradeValues>;
+    errors: Record<GradeKey, GradeErrors>;
+  };
 }
 
 export interface FormDataContextType {
@@ -59,6 +76,14 @@ export interface FormDataContextType {
   updateFourthForm: (fourthFormData: Partial<FormData["fourthForm"]>) => void;
   updateFifthForm: (fifthFormData: Partial<FormData["fifthForm"]>) => void;
   updateSixthForm: (sixthFormData: Partial<FormData["sixthForm"]>) => void;
+  updateSeventhForm: (
+    seventhFormData: Partial<FormData["seventhForm"]>,
+  ) => void;
+  updateSeventhFormGrade: (
+    grade: GradeKey,
+    field: keyof GradeValues,
+    value: string,
+  ) => void;
   resetFormData: () => void;
   isFormDataComplete: () => boolean;
 }
@@ -132,5 +157,17 @@ export const initialFormData: FormData = {
   },
   sixthForm: {
     specialStudentCases: [],
+  },
+  seventhForm: {
+    grades: {
+      "10": { conduct: "", academicPerformance: "" },
+      "11": { conduct: "", academicPerformance: "" },
+      "12": { conduct: "", academicPerformance: "" },
+    },
+    errors: {
+      "10": { conduct: false, academicPerformance: false },
+      "11": { conduct: false, academicPerformance: false },
+      "12": { conduct: false, academicPerformance: false },
+    },
   },
 };

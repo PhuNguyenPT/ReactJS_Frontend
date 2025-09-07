@@ -129,5 +129,12 @@
     "grade": "Lớp",
     "semester1": "Học kỳ 1",
     "semester2": "Học kỳ 2"
+  },
+  "ninthForm": {
+    "title": "KIỂM TRA VÀ BỔ SUNG BẢNG ĐIỂM",
+    "grade": "Bảng điểm lớp",
+    "semester1": "Học kỳ 1",
+    "semester2": "Học kỳ 2",
+    "score": "Điểm"
   }
 }

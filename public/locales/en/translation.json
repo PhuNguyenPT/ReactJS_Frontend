@@ -129,5 +129,12 @@
     "grade": "Grade",
     "semester1": "Semester 1",
     "semester2": "Semester 2"
+  },
+  "ninthForm": {
+    "title": "CHECK AND SUPPLEMENT YOUR SCORE BOARD",
+    "grade": "Score board in Grade",
+    "semester1": "Semester 1",
+    "semester2": "Semester 2",
+    "score": "Score"
   }
 }

@@ -38,7 +38,7 @@ export default function EighthForm() {
             <Typography
               variant="h5"
               className="grade-title"
-              sx={{ mb: 2, marginLeft: "110px" }}
+              sx={{ mb: 1, marginLeft: "110px" }}
             >
               {t("eighthForm.grade")} {grade}
             </Typography>
@@ -117,14 +117,6 @@ export default function EighthForm() {
           </Box>
         ))}
       </Box>
-
-      <Typography
-        variant="body2"
-        sx={{ color: "white", textAlign: "center", marginLeft: "275px" }}
-      >
-        {t("eighthForm.helper1")} <strong>{t("buttons.next")}</strong>{" "}
-        {t("eighthForm.helper2")}
-      </Typography>
     </Box>
   );
 }

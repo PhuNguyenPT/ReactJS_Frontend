@@ -1,27 +1,27 @@
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
-import EighthForm from "./EighthForm";
+import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
 
-export default function EighthFormPage() {
-  usePageTitle("Unizy | Eighth Form");
+export default function NinthFormPage() {
+  usePageTitle("Unizy | Ninth Form");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleNext = () => {
-    void navigate("/ninthForm");
+    void navigate("/tenthForm");
   };
 
   const handlePrev = () => {
-    void navigate("/seventhForm");
+    void navigate("/eighthForm");
   };
 
   return (
     <>
       <div className="background" />
       <Box
-        className="eighth-form-page"
+        className="ninth-form-page"
         sx={{
           pb: 10,
           display: "flex",
@@ -29,23 +29,28 @@ export default function EighthFormPage() {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          paddingTop: "6rem",
+          paddingTop: "4rem",
           paddingX: "1rem",
         }}
       >
-        {/* Title */}
-        <Typography variant="h4" className="eighth-title">
-          {t("eighthForm.title")}
+        {/* Title above form */}
+        <Typography
+          variant="h3"
+          className="ninth-title"
+          sx={{
+            textAlign: "center",
+            fontWeight: "bold",
+            color: "white",
+            mb: 5,
+            marginTop: "2rem", // Additional space from top if needed
+          }}
+        >
+          {t("ninthForm.title")}
         </Typography>
 
-        <EighthForm />
-        <Typography
-          variant="body2"
-          sx={{ color: "white", textAlign: "left", paddingTop: "2rem" }}
-        >
-          {t("eighthForm.helper1")} <strong>{t("buttons.next")}</strong>{" "}
-          {t("eighthForm.helper2")}
-        </Typography>
+        <NinthForm />
+
+        {/* Buttons */}
         <Button
           variant="contained"
           onClick={handlePrev}
@@ -58,14 +63,12 @@ export default function EighthFormPage() {
             borderRadius: "20px",
             px: 5,
             fontSize: "1.5rem",
-            zIndex: 1000, // Ensure button is on top
-            "&:hover": {
-              backgroundColor: "#f0f0f0",
-            },
+            zIndex: 1000,
+            "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
           }}
         >
-          {t("buttons.back")}
+          {t("buttons.back", "BACK")}
         </Button>
         <Button
           variant="contained"
@@ -79,14 +82,12 @@ export default function EighthFormPage() {
             borderRadius: "20px",
             px: 5,
             fontSize: "1.5rem",
-            zIndex: 1000, // Ensure button is on top
-            "&:hover": {
-              backgroundColor: "#8B4A8F",
-            },
+            zIndex: 1000,
+            "&:hover": { backgroundColor: "#8B4A8F" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
           }}
         >
-          {t("buttons.next")}
+          {t("common.submit", "SUBMIT")}
         </Button>
       </Box>
     </>
