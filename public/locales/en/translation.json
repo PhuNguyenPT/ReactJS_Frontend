@@ -15,7 +15,8 @@
     "search": "Search",
     "loading": "Loading...",
     "error": "An error occurred",
-    "success": "Success!"
+    "success": "Success!",
+    "skip": "Skip"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -86,7 +87,8 @@
     "score": "Score",
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
-    "secondTypo": "exam scores of yours. (if any)"
+    "secondTypo": "exam scores of yours. (if any)",
+    "enterOther": "Enter your other option"
   },
   "fourthForm": {
     "title": "About your achievements",
@@ -136,5 +138,11 @@
     "semester1": "Semester 1",
     "semester2": "Semester 2",
     "score": "Score"
+  },
+  "popup": {
+    "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?",
+    "subTitle": "Make sure all details are correct before submitting",
+    "confirmButton": "CONFIRM",
+    "editButton": "EDIT"
   }
 }

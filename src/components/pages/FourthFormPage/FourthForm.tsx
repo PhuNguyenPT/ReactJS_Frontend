@@ -39,7 +39,6 @@ export default function FourthForm() {
     },
   };
 
-  // Update labels when translation changes
   React.useEffect(() => {
     const translatedCategories = [
       t("fourthForm.cat1"),
@@ -354,7 +353,7 @@ export default function FourthForm() {
                       sx={{
                         display: "flex",
                         justifyContent: "flex-start",
-                        ml: 0, // Align with the first dropdown
+                        ml: 0,
                       }}
                     >
                       <TextField
@@ -369,7 +368,7 @@ export default function FourthForm() {
                         }}
                         placeholder={t("fourthForm.enterOther")}
                         sx={{
-                          width: 200, // Same width as the dropdown above
+                          width: 200,
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "17px",
                             height: "40px",
