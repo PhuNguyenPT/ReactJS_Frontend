@@ -25,7 +25,7 @@ export const MajorGroup = {
     "Du lịch, khách sạn, thể thao và dịch vụ cá nhân",
   TRANSPORT_SERVICES: "Dịch vụ vận tải",
   VETERINARY: "Thú y",
-} as const;
+};
 
 // Type for major group keys
 export type MajorGroupKey = keyof typeof MajorGroup;

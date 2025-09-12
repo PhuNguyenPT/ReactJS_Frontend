@@ -11,7 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { CCNNType, CCQTType } from "../../../type/enum/exam";
-import { VietnameseSubject } from "../../../type/enum/subject";
+import { NationalExcellentStudentExamSubject } from "../../../type/enum/national.excellent.exam";
 import { Rank } from "../../../type/enum/ranks";
 import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
@@ -21,7 +21,7 @@ export default function FourthForm() {
 
   const ccqtOptions = [...Object.values(CCQTType), "Other"];
   const ccnnOptions = [...Object.values(CCNNType), "Other"];
-  const hsgOptions = Object.values(VietnameseSubject);
+  const hsgOptions = Object.values(NationalExcellentStudentExamSubject);
   const rankOptions = Object.values(Rank);
 
   // Options for each category

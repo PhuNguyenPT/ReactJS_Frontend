@@ -7,17 +7,17 @@
  */
 export const VietnamSouthernProvinces = {
   AN_GIANG: "An Giang",
-  BA_RIA_VUNG_TAU: "Bà Rịa - Vũng Tàu",
   BAC_LIEU: "Bạc Liêu",
   BEN_TRE: "Bến Tre",
   BINH_DUONG: "Bình Dương",
   BINH_PHUOC: "Bình Phước",
   CA_MAU: "Cà Mau",
   CAN_THO: "Cần Thơ",
-  DONG_NAI: "Đồng Nai",
+  DA_LAT: "Đà Lạt",
+  DONG_NAI: "Ðồng Nai",
   DONG_THAP: "Đồng Tháp",
   HAU_GIANG: "Hậu Giang",
-  HO_CHI_MINH: "Hồ Chí Minh",
+  HO_CHI_MINH: "TP. Hồ Chí Minh",
   KIEN_GIANG: "Kiên Giang",
   LONG_AN: "Long An",
   SOC_TRANG: "Sóc Trăng",
@@ -25,7 +25,5 @@ export const VietnamSouthernProvinces = {
   TIEN_GIANG: "Tiền Giang",
   TRA_VINH: "Trà Vinh",
   VINH_LONG: "Vĩnh Long",
-} as const;
-
-export type VietnamSouthernProvincesType =
-  (typeof VietnamSouthernProvinces)[keyof typeof VietnamSouthernProvinces];
+  VUNG_TAU: "Vũng Tàu",
+};
