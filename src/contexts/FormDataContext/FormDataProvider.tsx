@@ -1,4 +1,10 @@
-import { useState, useCallback, useMemo, type ReactNode } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  type ReactNode,
+} from "react";
 import {
   FormDataContext,
   initialFormData,
@@ -7,8 +13,58 @@ import {
   type GradeValues,
 } from "./FormDataContext";
 
+const FORM_DATA_STORAGE_KEY = "form_data";
+
+// Helper function to validate stored form data
+function isValidFormData(data: unknown): data is FormData {
+  if (typeof data !== "object" || data === null) return false;
+
+  const formData = data as Record<string, unknown>;
+
+  // Check if it has the required top-level properties
+  return (
+    (typeof formData.selectedProvince === "string" ||
+      formData.selectedProvince === null) &&
+    Array.isArray(formData.secondFormMajors) &&
+    typeof formData.thirdForm === "object" &&
+    typeof formData.fourthForm === "object" &&
+    typeof formData.fifthForm === "object" &&
+    typeof formData.sixthForm === "object" &&
+    typeof formData.seventhForm === "object"
+  );
+}
+
 export function FormDataProvider({ children }: { children: ReactNode }) {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  // Initialize state from localStorage if available
+  const [formData, setFormData] = useState<FormData>(() => {
+    try {
+      const storedData = localStorage.getItem(FORM_DATA_STORAGE_KEY);
+      if (storedData) {
+        const parsedData = JSON.parse(storedData) as unknown;
+
+        // Validate that the stored data has the correct structure
+        if (isValidFormData(parsedData)) {
+          return { ...initialFormData, ...parsedData };
+        } else {
+          console.warn(
+            "Stored form data has invalid structure, using initial data",
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error loading form data from localStorage:", error);
+    }
+    return initialFormData;
+  });
+
+  // Save to localStorage whenever formData changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(formData));
+    } catch (error) {
+      console.error("Error saving form data to localStorage:", error);
+    }
+  }, [formData]);
 
   // General form data update
   const updateFormData = useCallback((data: Partial<FormData>) => {
@@ -84,14 +140,6 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
               [field]: value,
             },
           },
-          // Clear error when user inputs a value
-          errors: {
-            ...prev.seventhForm.errors,
-            [grade]: {
-              ...prev.seventhForm.errors[grade],
-              [field]: value.trim() === "",
-            },
-          },
         },
       }));
     },
@@ -100,6 +148,21 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
 
   const resetFormData = useCallback(() => {
     setFormData(initialFormData);
+    // Also clear from localStorage
+    try {
+      localStorage.removeItem(FORM_DATA_STORAGE_KEY);
+    } catch (error) {
+      console.error("Error removing form data from localStorage:", error);
+    }
+  }, []);
+
+  // Clear form data from localStorage (useful when form is completed)
+  const clearStoredFormData = useCallback(() => {
+    try {
+      localStorage.removeItem(FORM_DATA_STORAGE_KEY);
+    } catch (error) {
+      console.error("Error removing form data from localStorage:", error);
+    }
   }, []);
 
   const isFormDataComplete = useCallback(() => {
@@ -134,6 +197,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       updateSeventhForm,
       updateSeventhFormGrade,
       resetFormData,
+      clearStoredFormData,
       isFormDataComplete,
     }),
     [
@@ -146,6 +210,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       updateSeventhForm,
       updateSeventhFormGrade,
       resetFormData,
+      clearStoredFormData,
       isFormDataComplete,
     ],
   );

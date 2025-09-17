@@ -103,22 +103,6 @@ export default function NinthFormPage() {
         >
           {t("ninthForm.title")}
         </Typography>
-
-        {/* Optional: Show welcome message if user is logged in */}
-        {isAuthenticated && user && (
-          <Typography
-            variant="subtitle1"
-            sx={{
-              textAlign: "center",
-              color: "white",
-              mb: 2,
-              opacity: 0.8,
-            }}
-          >
-            {t("welcome.message", `Welcome back, ${user.name || user.email}!`)}
-          </Typography>
-        )}
-
         <NinthForm />
 
         {/* Back button */}

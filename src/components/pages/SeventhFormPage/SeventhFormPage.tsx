@@ -7,56 +7,28 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useFormData } from "../../../contexts/FormDataContext/useFormData";
-import type { GradeKey } from "../../../contexts/FormDataContext/FormDataContext";
 
 export default function SeventhFormPage() {
   usePageTitle("Unizy | Seventh Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { formData, updateSeventhForm } = useFormData();
+  const { formData } = useFormData();
 
-  // Add validation trigger state
   const [shouldValidate, setShouldValidate] = useState(false);
 
-  // Validate all seventh form fields
+  // Validate all seventh form fields (just check empties)
   const validateSeventhForm = () => {
     const { grades } = formData.seventhForm;
-    const newErrors: Record<
-      GradeKey,
-      { conduct: boolean; academicPerformance: boolean }
-    > = {
-      "10": {
-        conduct: grades["10"].conduct === "",
-        academicPerformance: grades["10"].academicPerformance === "",
-      },
-      "11": {
-        conduct: grades["11"].conduct === "",
-        academicPerformance: grades["11"].academicPerformance === "",
-      },
-      "12": {
-        conduct: grades["12"].conduct === "",
-        academicPerformance: grades["12"].academicPerformance === "",
-      },
-    };
-
-    // Update errors in context
-    updateSeventhForm({ errors: newErrors });
-
-    // Check if all fields are filled
-    const allFilled = Object.values(newErrors).every(
-      (error) => !error.conduct && !error.academicPerformance,
+    const allFilled = Object.values(grades).every(
+      (grade) => grade.conduct !== "" && grade.academicPerformance !== "",
     );
-
     return allFilled;
   };
 
   const handleNext = () => {
-    // Trigger validation
     setShouldValidate(true);
 
-    // Validate the form
     const isValid = validateSeventhForm();
-
     if (isValid) {
       setShouldValidate(false); // Reset validation trigger
       void navigate("/eighthForm");
@@ -64,7 +36,6 @@ export default function SeventhFormPage() {
   };
 
   const handlePrev = () => {
-    // Reset validation when going back
     setShouldValidate(false);
     void navigate("/sixthForm");
   };

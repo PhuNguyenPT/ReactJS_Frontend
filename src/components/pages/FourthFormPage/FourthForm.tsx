@@ -19,8 +19,8 @@ export default function FourthForm() {
   const { t } = useTranslation();
   const { formData, updateFourthForm } = useFormData();
 
-  const ccqtOptions = [...Object.values(CCQTType), "Other"];
-  const ccnnOptions = [...Object.values(CCNNType), "Other"];
+  const ccqtOptions = [...Object.values(CCQTType)];
+  const ccnnOptions = [...Object.values(CCNNType)];
   const hsgOptions = Object.values(NationalExcellentStudentExamSubject);
   const rankOptions = Object.values(Rank);
 

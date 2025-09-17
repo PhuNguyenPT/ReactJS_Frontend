@@ -37,11 +37,6 @@ export interface GradeValues {
   academicPerformance: string;
 }
 
-export interface GradeErrors {
-  conduct: boolean;
-  academicPerformance: boolean;
-}
-
 export type GradeKey = "10" | "11" | "12";
 
 export interface FormData {
@@ -65,7 +60,6 @@ export interface FormData {
   };
   seventhForm: {
     grades: Record<GradeKey, GradeValues>;
-    errors: Record<GradeKey, GradeErrors>;
   };
 }
 
@@ -163,11 +157,6 @@ export const initialFormData: FormData = {
       "10": { conduct: "", academicPerformance: "" },
       "11": { conduct: "", academicPerformance: "" },
       "12": { conduct: "", academicPerformance: "" },
-    },
-    errors: {
-      "10": { conduct: false, academicPerformance: false },
-      "11": { conduct: false, academicPerformance: false },
-      "12": { conduct: false, academicPerformance: false },
     },
   },
 };

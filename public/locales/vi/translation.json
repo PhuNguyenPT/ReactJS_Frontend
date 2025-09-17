@@ -15,7 +15,8 @@
     "search": "Tìm kiếm",
     "loading": "Đang tải...",
     "error": "Đã xảy ra lỗi",
-    "success": "Thành công!"
+    "success": "Thành công!",
+    "skip": "Bỏ qua"
   },
   "navigation": {
     "dashboard": "Bảng điều khiển",
@@ -49,12 +50,13 @@
   },
   "contents": {
     "highlight": "HƯỚNG ",
-    "tilte1": "BẠN TỚI",
-    "tilte2": "NGÔI TRƯỜNG ĐẠI HỌC MƠ ƯỚC"
+    "title1": "BẠN TỚI",
+    "title2": "NGÔI TRƯỜNG ĐẠI HỌC MƠ ƯỚC",
+    "start": "BẮT ĐẦU"
   },
   "loginForm": {
-    "tilte": "Chào mừng bạn tới Unizy",
-    "subTilte": "Đăng nhập vào tài khoản của bạn",
+    "title": "Chào mừng bạn tới Unizy",
+    "subTitle": "Đăng nhập vào tài khoản của bạn",
     "noAccount": "Nếu bạn chưa có tài khoản?",
     "signupLink": "Tạo ở đây",
     "login": "ĐĂNG NHẬP",
@@ -136,6 +138,10 @@
     "grade": "Bảng điểm lớp",
     "semester1": "Học kỳ 1",
     "semester2": "Học kỳ 2",
-    "score": "Điểm"
+    "score": "Điểm",
+    "chooseSubject": "Môn học"
+  },
+  "popup": {
+    "saveResultMessage": "Bạn có muốn lưu kết quả bằng cách đăng nhập để xem lại lần sau không?"
   }
 }

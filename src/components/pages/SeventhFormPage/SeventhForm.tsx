@@ -25,22 +25,12 @@ export default function SeventhForm({
   const academicPerformanceOptions = Object.values(AcademicPerformance);
 
   const grades = [
-    {
-      key: "10" as GradeKey,
-      label: t("seventhForm.subTitle10"),
-    },
-    {
-      key: "11" as GradeKey,
-      label: t("seventhForm.subTitle11"),
-    },
-    {
-      key: "12" as GradeKey,
-      label: t("seventhForm.subTitle12"),
-    },
+    { key: "10" as GradeKey, label: t("seventhForm.subTitle10") },
+    { key: "11" as GradeKey, label: t("seventhForm.subTitle11") },
+    { key: "12" as GradeKey, label: t("seventhForm.subTitle12") },
   ];
 
-  // Get values and errors from context
-  const { grades: values, errors } = formData.seventhForm;
+  const { grades: values } = formData.seventhForm;
 
   return (
     <Box
@@ -52,142 +42,135 @@ export default function SeventhForm({
         width: "100%",
       }}
     >
-      {grades.map((grade) => (
-        <Box
-          key={grade.key}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: 1,
-            width: "100%",
-          }}
-        >
-          {/* Subtitle */}
-          <Typography
-            variant="body1"
-            sx={{ mb: 1, color: "#A657AE", textAlign: "left" }}
+      {grades.map((grade) => {
+        const conductEmpty = shouldValidate && values[grade.key].conduct === "";
+        const performanceEmpty =
+          shouldValidate && values[grade.key].academicPerformance === "";
+
+        return (
+          <Box
+            key={grade.key}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: 1,
+              width: "100%",
+            }}
           >
-            {grade.label}
-          </Typography>
+            {/* Subtitle */}
+            <Typography
+              variant="body1"
+              sx={{ mb: 1, color: "#A657AE", textAlign: "left" }}
+            >
+              {grade.label}
+            </Typography>
 
-          {/* Dropdowns */}
-          <Box sx={{ display: "flex", gap: 3 }}>
-            {/* Conduct (Kết quả rèn luyện) */}
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Autocomplete
-                options={conductOptions}
-                value={values[grade.key].conduct || null}
-                onChange={(_, newValue) => {
-                  updateSeventhFormGrade(grade.key, "conduct", newValue ?? "");
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder={t("seventhForm.practiceResults")}
-                    error={errors[grade.key].conduct && shouldValidate}
-                    sx={{
-                      width: 230,
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "17px",
-                        height: "40px",
-                        "& fieldset": {
-                          borderColor:
-                            errors[grade.key].conduct && shouldValidate
+            {/* Dropdowns */}
+            <Box sx={{ display: "flex", gap: 3 }}>
+              {/* Conduct (Kết quả rèn luyện) */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Autocomplete
+                  options={conductOptions}
+                  value={values[grade.key].conduct || null}
+                  onChange={(_, newValue) => {
+                    updateSeventhFormGrade(
+                      grade.key,
+                      "conduct",
+                      newValue ?? "",
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t("seventhForm.practiceResults")}
+                      error={conductEmpty}
+                      sx={{
+                        width: 230,
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "17px",
+                          height: "40px",
+                          "& fieldset": {
+                            borderColor: conductEmpty ? "#d32f2f" : "#A657AE",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: conductEmpty ? "#d32f2f" : "#8B4A8F",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: conductEmpty ? "#d32f2f" : "#A657AE",
+                          },
+                        },
+                        "& input": { color: "#A657AE" },
+                      }}
+                    />
+                  )}
+                />
+                {conductEmpty && (
+                  <FormHelperText
+                    error
+                    sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
+                  >
+                    {t("seventhForm.errorWarning2")}
+                  </FormHelperText>
+                )}
+              </Box>
+
+              {/* Academic Performance (Học lực) */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Autocomplete
+                  options={academicPerformanceOptions}
+                  value={values[grade.key].academicPerformance || null}
+                  onChange={(_, newValue) => {
+                    updateSeventhFormGrade(
+                      grade.key,
+                      "academicPerformance",
+                      newValue ?? "",
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t("seventhForm.academicScore")}
+                      error={performanceEmpty}
+                      sx={{
+                        width: 240,
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "17px",
+                          height: "40px",
+                          "& fieldset": {
+                            borderColor: performanceEmpty
                               ? "#d32f2f"
                               : "#A657AE",
-                        },
-                        "&:hover fieldset": {
-                          borderColor:
-                            errors[grade.key].conduct && shouldValidate
+                          },
+                          "&:hover fieldset": {
+                            borderColor: performanceEmpty
                               ? "#d32f2f"
                               : "#8B4A8F",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor:
-                            errors[grade.key].conduct && shouldValidate
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: performanceEmpty
                               ? "#d32f2f"
                               : "#A657AE",
+                          },
                         },
-                      },
-                      "& input": { color: "#A657AE" },
-                    }}
-                  />
+                        "& input": { color: "#A657AE" },
+                      }}
+                    />
+                  )}
+                />
+                {performanceEmpty && (
+                  <FormHelperText
+                    error
+                    sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
+                  >
+                    {t("seventhForm.errorWarning1")}
+                  </FormHelperText>
                 )}
-              />
-              {errors[grade.key].conduct && shouldValidate && (
-                <FormHelperText
-                  error
-                  sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
-                >
-                  {t("seventhForm.errorWarning2")}
-                </FormHelperText>
-              )}
-            </Box>
-
-            {/* Academic Performance (Học lực) */}
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Autocomplete
-                options={academicPerformanceOptions}
-                value={values[grade.key].academicPerformance || null}
-                onChange={(_, newValue) => {
-                  updateSeventhFormGrade(
-                    grade.key,
-                    "academicPerformance",
-                    newValue ?? "",
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder={t("seventhForm.academicScore")}
-                    error={
-                      errors[grade.key].academicPerformance && shouldValidate
-                    }
-                    sx={{
-                      width: 240,
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "17px",
-                        height: "40px",
-                        "& fieldset": {
-                          borderColor:
-                            errors[grade.key].academicPerformance &&
-                            shouldValidate
-                              ? "#d32f2f"
-                              : "#A657AE",
-                        },
-                        "&:hover fieldset": {
-                          borderColor:
-                            errors[grade.key].academicPerformance &&
-                            shouldValidate
-                              ? "#d32f2f"
-                              : "#8B4A8F",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor:
-                            errors[grade.key].academicPerformance &&
-                            shouldValidate
-                              ? "#d32f2f"
-                              : "#A657AE",
-                        },
-                      },
-                      "& input": { color: "#A657AE" },
-                    }}
-                  />
-                )}
-              />
-              {errors[grade.key].academicPerformance && shouldValidate && (
-                <FormHelperText
-                  error
-                  sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
-                >
-                  {t("seventhForm.errorWarning1")}
-                </FormHelperText>
-              )}
+              </Box>
             </Box>
           </Box>
-        </Box>
-      ))}
+        );
+      })}
     </Box>
   );
 }

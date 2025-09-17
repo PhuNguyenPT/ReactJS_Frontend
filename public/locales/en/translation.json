@@ -50,8 +50,9 @@
   },
   "contents": {
     "highlight": "GUIDING",
-    "tilte1": "YOU TO",
-    "tilte2": "YOUR DREAM UNIVERSITY"
+    "title1": "YOU TO",
+    "title2": "YOUR DREAM UNIVERSITY",
+    "start": "START"
   },
   "loginForm": {
     "tilte": "Welcome to Unizy",
@@ -137,12 +138,10 @@
     "grade": "Score board in Grade",
     "semester1": "Semester 1",
     "semester2": "Semester 2",
-    "score": "Score"
+    "score": "Score",
+    "chooseSubject": "Subject"
   },
   "popup": {
-    "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?",
-    "subTitle": "Make sure all details are correct before submitting",
-    "confirmButton": "CONFIRM",
-    "editButton": "EDIT"
+    "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?"
   }
 }

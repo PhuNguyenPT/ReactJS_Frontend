@@ -12,16 +12,16 @@ export default function LandingPage() {
       <main className="content">
         <h1>
           <span className="highlight">{t("contents.highlight")}</span>{" "}
-          {t("contents.tilte1")}
+          {t("contents.title1")}
           <br />
-          {t("contents.tilte2")}
+          {t("contents.title2")}
         </h1>
         <button
           className="start-button"
           type="button"
           onClick={() => void navigate("/firstForm")}
         >
-          {t("buttons.start")}
+          {t("contents.start")}
         </button>
       </main>
     </>
