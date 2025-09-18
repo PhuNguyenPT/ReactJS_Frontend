@@ -14,6 +14,11 @@ import {
 } from "./FormDataContext";
 
 const FORM_DATA_STORAGE_KEY = "form_data";
+const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
+
+// Set expiration time (in milliseconds)
+// 2 hours = 2 * 60 * 60 * 1000
+const FORM_DATA_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
 
 // Helper function to validate stored form data
 function isValidFormData(data: unknown): data is FormData {
@@ -34,16 +39,55 @@ function isValidFormData(data: unknown): data is FormData {
   );
 }
 
+// Helper function to check if stored data is expired
+function isFormDataExpired(): boolean {
+  try {
+    const timestamp = localStorage.getItem(FORM_DATA_TIMESTAMP_KEY);
+    if (!timestamp) return true;
+
+    const savedTime = parseInt(timestamp);
+    const currentTime = Date.now();
+    const isExpired = currentTime - savedTime > FORM_DATA_EXPIRATION_TIME;
+
+    if (isExpired) {
+      console.log("Form data has expired, clearing storage");
+      localStorage.removeItem(FORM_DATA_STORAGE_KEY);
+      localStorage.removeItem(FORM_DATA_TIMESTAMP_KEY);
+    }
+
+    return isExpired;
+  } catch (error) {
+    console.error("Error checking form data expiration:", error);
+    return true;
+  }
+}
+
+// Helper function to save data with timestamp
+function saveFormDataWithTimestamp(data: FormData): void {
+  try {
+    localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(FORM_DATA_TIMESTAMP_KEY, Date.now().toString());
+  } catch (error) {
+    console.error("Error saving form data to localStorage:", error);
+  }
+}
+
 export function FormDataProvider({ children }: { children: ReactNode }) {
-  // Initialize state from localStorage if available
+  // Initialize state from localStorage if available and not expired
   const [formData, setFormData] = useState<FormData>(() => {
     try {
+      // Check if data is expired first
+      if (isFormDataExpired()) {
+        return initialFormData;
+      }
+
       const storedData = localStorage.getItem(FORM_DATA_STORAGE_KEY);
       if (storedData) {
         const parsedData = JSON.parse(storedData) as unknown;
 
         // Validate that the stored data has the correct structure
         if (isValidFormData(parsedData)) {
+          console.log("Loaded valid form data from localStorage");
           return { ...initialFormData, ...parsedData };
         } else {
           console.warn(
@@ -57,14 +101,30 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
     return initialFormData;
   });
 
-  // Save to localStorage whenever formData changes
+  // Save to localStorage whenever formData changes (with timestamp)
   useEffect(() => {
-    try {
-      localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(formData));
-    } catch (error) {
-      console.error("Error saving form data to localStorage:", error);
-    }
+    saveFormDataWithTimestamp(formData);
   }, [formData]);
+
+  // Check for expiration periodically (every 5 minutes)
+  useEffect(() => {
+    const checkExpiration = () => {
+      if (isFormDataExpired()) {
+        setFormData(initialFormData);
+      }
+    };
+
+    // Check immediately
+    checkExpiration();
+
+    // Set up periodic check (every 5 minutes)
+    const intervalId = setInterval(checkExpiration, 5 * 60 * 1000);
+
+    // Cleanup interval on unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   // General form data update
   const updateFormData = useCallback((data: Partial<FormData>) => {
@@ -151,6 +211,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
     // Also clear from localStorage
     try {
       localStorage.removeItem(FORM_DATA_STORAGE_KEY);
+      localStorage.removeItem(FORM_DATA_TIMESTAMP_KEY);
     } catch (error) {
       console.error("Error removing form data from localStorage:", error);
     }
@@ -160,8 +221,27 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
   const clearStoredFormData = useCallback(() => {
     try {
       localStorage.removeItem(FORM_DATA_STORAGE_KEY);
+      localStorage.removeItem(FORM_DATA_TIMESTAMP_KEY);
     } catch (error) {
       console.error("Error removing form data from localStorage:", error);
+    }
+  }, []);
+
+  // Get remaining time until expiration (in milliseconds)
+  const getRemainingTime = useCallback((): number => {
+    try {
+      const timestamp = localStorage.getItem(FORM_DATA_TIMESTAMP_KEY);
+      if (!timestamp) return 0;
+
+      const savedTime = parseInt(timestamp);
+      const currentTime = Date.now();
+      const remainingTime =
+        FORM_DATA_EXPIRATION_TIME - (currentTime - savedTime);
+
+      return Math.max(0, remainingTime);
+    } catch (error) {
+      console.error("Error getting remaining time:", error);
+      return 0;
     }
   }, []);
 
@@ -198,6 +278,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       updateSeventhFormGrade,
       resetFormData,
       clearStoredFormData,
+      getRemainingTime,
       isFormDataComplete,
     }),
     [
@@ -211,6 +292,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       updateSeventhFormGrade,
       resetFormData,
       clearStoredFormData,
+      getRemainingTime,
       isFormDataComplete,
     ],
   );

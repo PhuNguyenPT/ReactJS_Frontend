@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 import { signupUser } from "../services/user/authService";
 import axios, { AxiosError } from "axios";
@@ -9,6 +10,7 @@ import { plainToInstance } from "class-transformer";
 
 export function useSignupForm() {
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +56,18 @@ export function useSignupForm() {
       // Check if Register was successful
       if (authResponse.success && authResponse.accessToken) {
         register(authResponse);
-        window.location.replace("/");
+
+        // Check if there's a redirect path stored
+        const redirectPath = sessionStorage.getItem("redirectAfterAuth");
+        if (redirectPath) {
+          // Clear the stored redirect path
+          sessionStorage.removeItem("redirectAfterAuth");
+          // Navigate to the stored path
+          await navigate(redirectPath);
+        } else {
+          // Default redirect to home
+          window.location.replace("/");
+        }
       } else {
         setApiError(authResponse.message || "Register failed");
       }

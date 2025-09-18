@@ -79,6 +79,8 @@ export interface FormDataContextType {
     value: string,
   ) => void;
   resetFormData: () => void;
+  clearStoredFormData: () => void;
+  getRemainingTime: () => number; // Returns remaining time in milliseconds
   isFormDataComplete: () => boolean;
 }
 

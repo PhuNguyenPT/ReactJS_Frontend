@@ -49,6 +49,8 @@ export default function NinthFormPage() {
 
   const handleLogin = () => {
     setOpenPopup(false);
+    // Store the current path to redirect back after login
+    sessionStorage.setItem("redirectAfterAuth", "/ninthForm");
     // Redirect to login page
     void navigate("/login");
   };
