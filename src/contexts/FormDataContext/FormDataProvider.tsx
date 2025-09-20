@@ -12,6 +12,7 @@ import {
   type GradeKey,
   type GradeValues,
 } from "./FormDataContext";
+import { getVietnameseValue, getTranslationKey } from "../../type/enum/major";
 
 const FORM_DATA_STORAGE_KEY = "form_data";
 const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
@@ -20,17 +21,36 @@ const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
 // 2 hours = 2 * 60 * 60 * 1000
 const FORM_DATA_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
 
+// Helper function to convert translation keys to Vietnamese for storage
+function convertToVietnameseForStorage(formData: FormData): FormData {
+  return {
+    ...formData,
+    secondForm: formData.secondForm.map((major) =>
+      major ? getVietnameseValue(major) : null,
+    ),
+  };
+}
+
+// Helper function to convert Vietnamese values back to translation keys
+function convertFromVietnameseStorage(formData: FormData): FormData {
+  return {
+    ...formData,
+    secondForm: formData.secondForm.map((major) =>
+      major ? getTranslationKey(major) : null,
+    ),
+  };
+}
+
 // Helper function to validate stored form data
 function isValidFormData(data: unknown): data is FormData {
   if (typeof data !== "object" || data === null) return false;
 
   const formData = data as Record<string, unknown>;
 
-  // Check if it has the required top-level properties
   return (
-    (typeof formData.selectedProvince === "string" ||
-      formData.selectedProvince === null) &&
-    Array.isArray(formData.secondFormMajors) &&
+    (typeof formData.firstForm === "string" || formData.firstForm === null) &&
+    (typeof formData.uniType === "string" || formData.uniType === null) &&
+    Array.isArray(formData.secondForm) &&
     typeof formData.thirdForm === "object" &&
     typeof formData.fourthForm === "object" &&
     typeof formData.fifthForm === "object" &&
@@ -62,10 +82,11 @@ function isFormDataExpired(): boolean {
   }
 }
 
-// Helper function to save data with timestamp
+// Helper function to save data with timestamp (converts to Vietnamese first)
 function saveFormDataWithTimestamp(data: FormData): void {
   try {
-    localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(data));
+    const vietnameseData = convertToVietnameseForStorage(data);
+    localStorage.setItem(FORM_DATA_STORAGE_KEY, JSON.stringify(vietnameseData));
     localStorage.setItem(FORM_DATA_TIMESTAMP_KEY, Date.now().toString());
   } catch (error) {
     console.error("Error saving form data to localStorage:", error);
@@ -88,7 +109,9 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
         // Validate that the stored data has the correct structure
         if (isValidFormData(parsedData)) {
           console.log("Loaded valid form data from localStorage");
-          return { ...initialFormData, ...parsedData };
+          // Convert Vietnamese values back to translation keys for UI
+          const convertedData = convertFromVietnameseStorage(parsedData);
+          return { ...initialFormData, ...convertedData };
         } else {
           console.warn(
             "Stored form data has invalid structure, using initial data",
@@ -101,7 +124,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
     return initialFormData;
   });
 
-  // Save to localStorage whenever formData changes (with timestamp)
+  // Save to localStorage whenever formData changes (with timestamp and Vietnamese conversion)
   useEffect(() => {
     saveFormDataWithTimestamp(formData);
   }, [formData]);
@@ -246,12 +269,11 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const isFormDataComplete = useCallback(() => {
-    const { selectedProvince, secondFormMajors, thirdForm } = formData;
+    const { firstForm, secondForm, thirdForm } = formData;
 
     // Check if previous forms are complete
     const previousFormsComplete =
-      selectedProvince !== null &&
-      secondFormMajors.every((major) => major !== null);
+      firstForm !== null && secondForm.every((major) => major !== null);
 
     // Check if third form main subjects are complete
     const thirdFormMainComplete =
@@ -263,6 +285,11 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       thirdForm.chosenScores.every((score) => score.trim() !== "");
 
     return previousFormsComplete && thirdFormMainComplete;
+  }, [formData]);
+
+  // Function to get form data with Vietnamese values (for API calls)
+  const getFormDataForApi = useCallback(() => {
+    return convertToVietnameseForStorage(formData);
   }, [formData]);
 
   // Memoize context value to prevent unnecessary re-renders
@@ -280,6 +307,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       clearStoredFormData,
       getRemainingTime,
       isFormDataComplete,
+      getFormDataForApi, // New function for API calls
     }),
     [
       formData,
@@ -294,6 +322,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       clearStoredFormData,
       getRemainingTime,
       isFormDataComplete,
+      getFormDataForApi,
     ],
   );
 

@@ -18,7 +18,7 @@ export default function SecondFormPage() {
 
   const handleNext = () => {
     // check if at least one major is selected
-    const hasAtLeastOneMajor = formData.secondFormMajors.some(
+    const hasAtLeastOneMajor = formData.secondForm.some(
       (major) => major !== null && major.trim() !== "",
     );
 

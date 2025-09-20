@@ -69,16 +69,45 @@
   },
   "firstForm": {
     "title": "Về vị trí của trường",
-    "subTitle": "Bạn mong muốn được học ở đâu?",
+    "subTitle1": "Bạn mong muốn được học ở đâu?",
+    "subTitle2": "Bạn ưu tiên loại hình trường đại học nào?",
+    "selectUniType": "Loại hình trường đại học",
     "selectProvince": "Tỉnh/Thành phố",
     "enterDetails": "TIẾP THEO",
-    "errorWarning": "Vui lòng chọn Tỉnh/Thành phố"
+    "errorWarning1": "Vui lòng chọn Tỉnh/Thành phố",
+    "errorWarning2": "Vui lòng chọn Loại hình trường đại học"
   },
   "secondForm": {
     "title": "Về ngành học của bạn",
     "subTitle": "Ba nhóm ngành mà bạn thấy mình phù hợp",
     "major": "Ngành học",
     "errorWarning": "Vui lòng chọn ít nhất một ngành học"
+  },
+  "majors": {
+    "agriculture_forestry_fisheries": "Nông, lâm nghiệp và thủy sản",
+    "architecture_and_construction": "Kiến trúc và xây dựng",
+    "arts": "Nghệ thuật",
+    "business_and_management": "Kinh doanh và quản lý",
+    "computer_and_it": "Máy tính và công nghệ thông tin",
+    "education_and_teacher_training": "Khoa học giáo dục và đào tạo giáo viên",
+    "engineering": "Kỹ thuật",
+    "engineering_technology": "Công nghệ kỹ thuật",
+    "environment_and_protection": "Môi trường và bảo vệ môi trường",
+    "health": "Sức khỏe",
+    "humanities": "Nhân văn",
+    "journalism_and_information": "Báo chí và thông tin",
+    "law": "Pháp luật",
+    "life_sciences": "Khoa học sự sống",
+    "manufacturing_and_processing": "Sản xuất và chế biến",
+    "mathematics_and_statistics": "Toán và thống kê",
+    "natural_sciences": "Khoa học tự nhiên",
+    "other": "Khác",
+    "security_defense": "An ninh, Quốc phòng",
+    "social_and_behavioral_sciences": "Khoa học xã hội và hành vi",
+    "social_services": "Dịch vụ xã hội",
+    "tourism_hospitality_sports_personal": "Du lịch, khách sạn, thể thao và dịch vụ cá nhân",
+    "transport_services": "Dịch vụ vận tải",
+    "veterinary": "Thú y"
   },
   "thirdForm": {
     "title": "Về kết quả thi của bạn",

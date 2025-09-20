@@ -40,8 +40,9 @@ export interface GradeValues {
 export type GradeKey = "10" | "11" | "12";
 
 export interface FormData {
-  selectedProvince: string | null;
-  secondFormMajors: (string | null)[];
+  firstForm: string | null; // province
+  uniType: string | null; // university type field
+  secondForm: (string | null)[]; // translation keys (e.g., "majors.engineering")
   thirdForm: {
     mathScore: string;
     literatureScore: string;
@@ -56,7 +57,7 @@ export interface FormData {
     costRange: number[];
   };
   sixthForm: {
-    specialStudentCases: string[]; // Array of selected special student case values
+    specialStudentCases: string[];
   };
   seventhForm: {
     grades: Record<GradeKey, GradeValues>;
@@ -80,8 +81,9 @@ export interface FormDataContextType {
   ) => void;
   resetFormData: () => void;
   clearStoredFormData: () => void;
-  getRemainingTime: () => number; // Returns remaining time in milliseconds
+  getRemainingTime: () => number;
   isFormDataComplete: () => boolean;
+  getFormDataForApi: () => FormData; // New method to get data with Vietnamese values
 }
 
 export const FormDataContext = createContext<FormDataContextType | undefined>(
@@ -89,39 +91,25 @@ export const FormDataContext = createContext<FormDataContextType | undefined>(
 );
 
 export const initialFormData: FormData = {
-  selectedProvince: null,
-  secondFormMajors: [null, null, null],
+  firstForm: null,
+  uniType: null,
+  secondForm: [null, null, null],
   thirdForm: {
     mathScore: "",
     literatureScore: "",
     chosenSubjects: [null, null],
     chosenScores: ["", ""],
     optionalCategories: [
-      {
-        id: "category-1",
-        name: "ĐGNL",
-        scores: [],
-        isExpanded: false,
-      },
-      {
-        id: "category-2",
-        name: "V-SAT",
-        scores: [],
-        isExpanded: false,
-      },
-      {
-        id: "category-3",
-        name: "Năng khiếu",
-        scores: [],
-        isExpanded: false,
-      },
+      { id: "category-1", name: "ĐGNL", scores: [], isExpanded: false },
+      { id: "category-2", name: "V-SAT", scores: [], isExpanded: false },
+      { id: "category-3", name: "Năng khiếu", scores: [], isExpanded: false },
     ],
   },
   fourthForm: {
     categories: [
       {
         id: "category-1",
-        name: "", // Will be set by translation
+        name: "",
         entries: [],
         isExpanded: false,
         categoryType: "national_award",
@@ -130,7 +118,7 @@ export const initialFormData: FormData = {
       },
       {
         id: "category-2",
-        name: "", // Will be set by translation
+        name: "",
         entries: [],
         isExpanded: false,
         categoryType: "international_cert",
@@ -139,7 +127,7 @@ export const initialFormData: FormData = {
       },
       {
         id: "category-3",
-        name: "", // Will be set by translation
+        name: "",
         entries: [],
         isExpanded: false,
         categoryType: "language_cert",
@@ -148,12 +136,8 @@ export const initialFormData: FormData = {
       },
     ],
   },
-  fifthForm: {
-    costRange: [0, 500],
-  },
-  sixthForm: {
-    specialStudentCases: [],
-  },
+  fifthForm: { costRange: [0, 500] },
+  sixthForm: { specialStudentCases: [] },
   seventhForm: {
     grades: {
       "10": { conduct: "", academicPerformance: "" },

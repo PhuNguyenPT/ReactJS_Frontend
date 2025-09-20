@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ThirdFormMain from "./ThirdFormMain";
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
@@ -72,7 +72,6 @@ export default function ThirdFormPage() {
 
   const handleNext = () => {
     if (isFormValid()) {
-      console.log("Form data saved:", formData);
       void navigate("/fourthForm");
     } else {
       // Show errors when user tries to proceed with incomplete form
@@ -83,10 +82,6 @@ export default function ThirdFormPage() {
   const handlePrev = () => {
     void navigate("/secondForm");
   };
-
-  useEffect(() => {
-    console.log("Third form data updated:", formData.thirdForm);
-  }, [formData.thirdForm]);
 
   return (
     <>

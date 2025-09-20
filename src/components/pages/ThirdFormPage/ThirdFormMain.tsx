@@ -121,7 +121,7 @@ export default function ThirdFormMain({
       </Box>
       {hasError && mathScore === "" && (
         <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
-          {t("thirdForm.errorWarning", "Vui lòng nhập điểm")}
+          {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
 

@@ -12,7 +12,7 @@ export default function FirstFormPage() {
       <div className="form-container">
         <div className="form-content">
           <h1 className="form-title">1 → {t("firstForm.title")}</h1>
-          <p className="form-subtitle">{t("firstForm.subTitle")}</p>
+          <p className="form-subtitle">{t("firstForm.subTitle1")}</p>
           <FirstForm />
         </div>
       </div>
