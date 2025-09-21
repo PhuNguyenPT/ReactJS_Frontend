@@ -1,6 +1,20 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type AxiosError,
+} from "axios";
+import APIError from "./apiError";
 
-const BASE_URL = "http://localhost:3001/api";
+const BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:3001/api";
+
+// ✅ Preconfigured axios instance
+const apiClient: AxiosInstance = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -16,28 +30,51 @@ async function apiFetch<T = unknown, B = unknown>(
   endpoint: string,
   options: RequestOptions<B> = {},
 ): Promise<T> {
-  const { method = "GET", body, headers = {}, signal } = options;
+  const {
+    method = "GET",
+    body,
+    headers = {},
+    signal,
+    requiresAuth = false,
+  } = options;
 
   const config: AxiosRequestConfig = {
-    url: `${BASE_URL}${endpoint}`,
+    url: endpoint,
     method,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers: { ...headers },
     data: body,
     signal,
-    withCredentials: true,
   };
 
-  try {
-    const response: AxiosResponse<T> = await axios(config);
-    return response.data;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      throw error;
+  // 🔑 Inject auth token if required
+  if (requiresAuth) {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers ??= {};
+      (config.headers as Record<string, string>).Authorization =
+        `Bearer ${token}`;
     }
-    throw new Error(error instanceof Error ? error.message : "API call failed");
+  }
+
+  try {
+    const response: AxiosResponse<T> = await apiClient.request<T>(config);
+    return response.data;
+  } catch (err: unknown) {
+    // ✅ Narrow the error type safely
+    if (axios.isAxiosError(err)) {
+      const axiosError = err as AxiosError<{ message?: string }>;
+      throw new APIError(
+        axiosError.response?.status ?? 500,
+        axiosError.response?.data.message ?? axiosError.message,
+        axiosError.response?.data,
+      );
+    }
+
+    if (err instanceof Error) {
+      throw new APIError(500, err.message);
+    }
+
+    throw new APIError(500, "API call failed");
   }
 }
 
