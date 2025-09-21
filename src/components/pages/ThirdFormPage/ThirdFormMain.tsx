@@ -1,17 +1,12 @@
 import { Box, TextField, Autocomplete, FormHelperText } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import {
+  VietnameseSubject,
+  getSelectableSubjects,
+} from "../../../type/enum/subject"; // Adjust import path as needed
 
-const allSubjects = [
-  "Toán",
-  "Ngữ văn",
-  "Ngoại ngữ",
-  "Vật lý",
-  "Hóa học",
-  "Sinh học",
-  "Lịch sử",
-  "Địa lý",
-  "GDCD",
-];
+// Get selectable subjects (excluding mandatory TOAN and VAN)
+const selectableSubjects = getSelectableSubjects();
 
 interface ThirdFormMainProps {
   mathScore: string;
@@ -82,6 +77,16 @@ export default function ThirdFormMain({
     width: "130px",
   };
 
+  // Filter available subjects to exclude already selected ones
+  const getAvailableSubjects = (currentIndex: number): string[] => {
+    return selectableSubjects.filter((subject) => {
+      // Don't show subjects that are already selected in other dropdowns
+      return !chosenSubjects.some(
+        (selected, index) => index !== currentIndex && selected === subject,
+      );
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -93,9 +98,13 @@ export default function ThirdFormMain({
         maxWidth: "400px",
       }}
     >
-      {/* Math row */}
+      {/* Math row - Fixed as TOAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <TextField value="Toán" disabled sx={subjectFieldStyle} />
+        <TextField
+          value={VietnameseSubject.TOAN}
+          disabled
+          sx={subjectFieldStyle}
+        />
         <TextField
           placeholder={t("thirdForm.score")}
           slotProps={{
@@ -112,13 +121,17 @@ export default function ThirdFormMain({
       </Box>
       {hasError && mathScore === "" && (
         <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
-          {t("thirdForm.errorWarning", "Vui lòng nhập điểm")}
+          {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
 
-      {/* Literature row */}
+      {/* Literature row - Fixed as VAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <TextField value="Ngữ Văn" disabled sx={subjectFieldStyle} />
+        <TextField
+          value={VietnameseSubject.NGU_VAN}
+          disabled
+          sx={subjectFieldStyle}
+        />
         <TextField
           placeholder={t("thirdForm.score")}
           slotProps={{
@@ -139,14 +152,12 @@ export default function ThirdFormMain({
         </FormHelperText>
       )}
 
-      {/* Two chosen subjects */}
+      {/* Two choosable subjects */}
       {[0, 1].map((index) => (
         <Box key={index}>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
             <Autocomplete
-              options={allSubjects.filter(
-                (s) => s !== "Toán" && s !== "Ngữ văn",
-              )}
+              options={getAvailableSubjects(index)}
               value={chosenSubjects[index]}
               onChange={(_, newValue) => {
                 const updated = [...chosenSubjects];

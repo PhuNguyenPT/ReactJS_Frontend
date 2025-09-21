@@ -7,34 +7,75 @@ import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 export default function ThirdFormPage() {
   usePageTitle("Unizy | Third Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { formData, updateThirdForm } = useFormData();
 
-  // Lifted state from ThirdFormMain
-  const [mathScore, setMathScore] = useState("");
-  const [literatureScore, setLiteratureScore] = useState("");
-  const [chosenSubjects, setChosenSubjects] = useState<(string | null)[]>([
-    null,
-    null,
-  ]);
-  const [chosenScores, setChosenScores] = useState<string[]>(["", ""]);
-  const [hasError, setHasError] = useState(false);
+  // Add explicit error state
+  const [showErrors, setShowErrors] = useState(false);
 
-  const handleNext = () => {
-    const allFilled =
+  // Get current third form data from context
+  const {
+    mathScore,
+    literatureScore,
+    chosenSubjects,
+    chosenScores,
+    optionalCategories,
+  } = formData.thirdForm;
+
+  // Update functions that sync with context
+  const setMathScore = (value: string) => {
+    updateThirdForm({ mathScore: value });
+    // Clear errors when user starts typing
+    if (showErrors) setShowErrors(false);
+  };
+
+  const setLiteratureScore = (value: string) => {
+    updateThirdForm({ literatureScore: value });
+    if (showErrors) setShowErrors(false);
+  };
+
+  const setChosenSubjects = (value: (string | null)[]) => {
+    updateThirdForm({ chosenSubjects: value });
+    if (showErrors) setShowErrors(false);
+  };
+
+  const setChosenScores = (value: string[]) => {
+    updateThirdForm({ chosenScores: value });
+    if (showErrors) setShowErrors(false);
+  };
+
+  const setOptionalCategories = (value: typeof optionalCategories) => {
+    updateThirdForm({ optionalCategories: value });
+  };
+
+  // Check if all required fields are filled
+  const isFormValid = () => {
+    return (
       mathScore.trim() !== "" &&
       literatureScore.trim() !== "" &&
       chosenSubjects.every((s) => s && s.trim() !== "") &&
-      chosenScores.every((s) => s.trim() !== "");
+      chosenScores.every((s) => s.trim() !== "")
+    );
+  };
 
-    if (allFilled) {
-      setHasError(false);
+  // Pass showErrors directly as hasError
+  const hasError = showErrors;
+
+  const setHasError = (value: boolean) => {
+    setShowErrors(value);
+  };
+
+  const handleNext = () => {
+    if (isFormValid()) {
       void navigate("/fourthForm");
     } else {
-      setHasError(true);
+      // Show errors when user tries to proceed with incomplete form
+      setShowErrors(true);
     }
   };
 
@@ -50,7 +91,6 @@ export default function ThirdFormPage() {
           <h1 className="form-title">3 → {t("thirdForm.title")}</h1>
           <p className="form-subtitle">{t("thirdForm.subTitle")}</p>
 
-          {/* Pass state and setters as props */}
           <ThirdFormMain
             mathScore={mathScore}
             setMathScore={setMathScore}
@@ -64,7 +104,10 @@ export default function ThirdFormPage() {
             setHasError={setHasError}
           />
 
-          <ThirdFormOptional />
+          <ThirdFormOptional
+            categories={optionalCategories}
+            setCategories={setOptionalCategories}
+          />
         </div>
 
         <Box

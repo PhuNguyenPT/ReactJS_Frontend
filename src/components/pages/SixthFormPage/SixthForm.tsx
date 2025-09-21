@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -6,19 +5,46 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { SpecialStudentCase } from "../../../type/enum/special.student.case";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 const SixthForm = () => {
-  const { t } = useTranslation();
+  const { formData, updateSixthForm } = useFormData();
 
-  // State for checkboxes
-  const [checkedValues, setCheckedValues] = useState<string[]>([]);
+  // Get current checked values from context
+  const checkedValues = formData.sixthForm.specialStudentCases;
 
   const handleToggle = (value: string) => {
-    setCheckedValues((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
-    );
+    const newCheckedValues = checkedValues.includes(value)
+      ? checkedValues.filter((v) => v !== value)
+      : [...checkedValues, value];
+
+    updateSixthForm({ specialStudentCases: newCheckedValues });
   };
+
+  // Define the options using the SpecialStudentCase enum
+  const specialStudentOptions = [
+    {
+      key: "HEROES_AND_CONTRIBUTORS",
+      value: SpecialStudentCase.HEROES_AND_CONTRIBUTORS,
+      label: SpecialStudentCase.HEROES_AND_CONTRIBUTORS,
+    },
+    {
+      key: "TRANSFER_STUDENT",
+      value: SpecialStudentCase.TRANSFER_STUDENT,
+      label: SpecialStudentCase.TRANSFER_STUDENT,
+    },
+    {
+      key: "ETHNIC_MINORITY_STUDENT",
+      value: SpecialStudentCase.ETHNIC_MINORITY_STUDENT,
+      label: SpecialStudentCase.ETHNIC_MINORITY_STUDENT,
+    },
+    {
+      key: "VERY_FEW_ETHNIC_MINORITY",
+      value: SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY,
+      label: SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY,
+    },
+  ];
 
   return (
     <Box
@@ -38,19 +64,14 @@ const SixthForm = () => {
             gap: "6px",
           }}
         >
-          {[
-            { key: "hero", label: t("sixthForm.option1") },
-            { key: "specialSchool", label: t("sixthForm.option2") },
-            { key: "poorDistrict", label: t("sixthForm.option3") },
-            { key: "minority", label: t("sixthForm.option4") },
-          ].map((opt) => (
+          {specialStudentOptions.map((opt) => (
             <FormControlLabel
               key={opt.key}
               control={
                 <Checkbox
-                  checked={checkedValues.includes(opt.key)}
+                  checked={checkedValues.includes(opt.value)}
                   onChange={() => {
-                    handleToggle(opt.key);
+                    handleToggle(opt.value);
                   }}
                   sx={{
                     "& .MuiSvgIcon-root": {

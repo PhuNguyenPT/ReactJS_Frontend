@@ -6,274 +6,147 @@ import {
   IconButton,
   Autocomplete,
 } from "@mui/material";
-import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import React from "react";
-
-interface AwardCertificate {
-  id: string;
-  firstField: string;
-  secondField: string;
-}
-
-interface CategoryData {
-  id: string;
-  name: string;
-  entries: AwardCertificate[];
-  isExpanded: boolean;
-  firstFieldLabel: string;
-  secondFieldLabel: string;
-  categoryType: string; // Add this to identify category type
-}
+import { CCNNType, CCQTType } from "../../../type/enum/exam";
+import { NationalExcellentStudentExamSubject } from "../../../type/enum/national.excellent.exam";
+import { Rank } from "../../../type/enum/ranks";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 export default function FourthForm() {
   const { t } = useTranslation();
+  const { formData, updateFourthForm } = useFormData();
 
-  const categories = [
-    t("fourthForm.cat1"),
-    t("fourthForm.cat2"),
-    t("fourthForm.cat3"),
-  ];
+  const ccqtOptions = [...Object.values(CCQTType)];
+  const ccnnOptions = [...Object.values(CCNNType)];
+  const hsgOptions = Object.values(NationalExcellentStudentExamSubject);
+  const rankOptions = Object.values(Rank);
 
-  // Options for each category - use category types instead of translated names
+  // Options for each category
   const categoryOptions = {
     national_award: {
-      subjects: [
-        "Toán học",
-        "Ngữ văn",
-        "Tiếng Anh",
-        "Vật lý",
-        "Hóa học",
-        "Sinh học",
-        "Lịch sử",
-        "Địa lý",
-        "Giáo dục công dân",
-      ],
-      awards: [
-        "Giải Nhất",
-        "Giải Nhì",
-        "Giải Ba",
-        "Giải Khuyến khích",
-        "Giải Xuất sắc",
-      ],
+      subjects: hsgOptions,
+      awards: rankOptions,
     },
     international_cert: {
-      certificates: [
-        "IELTS",
-        "TOEFL",
-        "SAT",
-        "ACT",
-        "Cambridge English",
-        "DELF/DALF",
-        "JLPT",
-        "HSK",
-        "TOPIK",
-      ],
-      scores: [
-        "9.0",
-        "8.5",
-        "8.0",
-        "7.5",
-        "7.0",
-        "6.5",
-        "6.0",
-        "5.5",
-        "5.0", // IELTS
-        "120",
-        "110",
-        "100",
-        "90",
-        "80",
-        "70",
-        "60", // TOEFL
-        "1600",
-        "1500",
-        "1400",
-        "1300",
-        "1200",
-        "1100",
-        "1000", // SAT
-        "36",
-        "35",
-        "34",
-        "33",
-        "32",
-        "31",
-        "30",
-        "29",
-        "28", // ACT
-        "C2",
-        "C1",
-        "B2",
-        "B1",
-        "A2",
-        "A1", // Cambridge/CEFR
-        "N1",
-        "N2",
-        "N3",
-        "N4",
-        "N5", // JLPT
-        "Level 6",
-        "Level 5",
-        "Level 4",
-        "Level 3",
-        "Level 2",
-        "Level 1", // HSK/TOPIK
-      ],
+      certificates: ccqtOptions,
+      scores: rankOptions,
     },
     language_cert: {
-      subjects: [
-        "Tiếng Anh",
-        "Tiếng Nhật",
-        "Tiếng Hàn",
-        "Tiếng Trung",
-        "Tiếng Pháp",
-        "Tiếng Đức",
-        "Tiếng Tây Ban Nha",
-        "Tiếng Nga",
-      ],
-      awards: [
-        "A1",
-        "A2",
-        "B1",
-        "B2",
-        "C1",
-        "C2", // CEFR levels
-        "Beginner",
-        "Elementary",
-        "Intermediate",
-        "Upper-Intermediate",
-        "Advanced",
-        "Proficient",
-        "N1",
-        "N2",
-        "N3",
-        "N4",
-        "N5", // Japanese
-        "HSK 1",
-        "HSK 2",
-        "HSK 3",
-        "HSK 4",
-        "HSK 5",
-        "HSK 6", // Chinese
-      ],
+      certificates: ccnnOptions,
     },
   };
 
-  // Update labels when translation changes
   React.useEffect(() => {
-    const categories = [
+    const translatedCategories = [
       t("fourthForm.cat1"),
       t("fourthForm.cat2"),
       t("fourthForm.cat3"),
     ];
-    setCategoryData((prev) =>
-      prev.map((category, index) => ({
-        ...category,
-        name: categories[index],
-        firstFieldLabel:
+
+    const needsUpdate = formData.fourthForm.categories.some(
+      (category, index) => {
+        const expectedName = translatedCategories[index];
+        const expectedFirstLabel =
           index === 0
             ? t("fourthForm.firstField")
             : index === 1
               ? t("fourthForm.secondField")
-              : t("fourthForm.thirdField"),
-        secondFieldLabel:
-          index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
-      })),
-    );
-  }, [t]);
+              : t("fourthForm.thirdField");
+        const expectedSecondLabel =
+          index === 1 ? t("fourthForm.score") : t("fourthForm.award");
 
-  const [categoryData, setCategoryData] = useState<CategoryData[]>(
-    categories.map((cat, index) => ({
-      id: `category-${String(index + 1)}`,
-      name: cat,
-      entries: [],
-      isExpanded: false,
-      categoryType:
-        index === 0
-          ? "national_award"
-          : index === 1
-            ? "international_cert"
-            : "language_cert",
-      firstFieldLabel:
-        index === 0
-          ? t("fourthForm.firstField")
-          : index === 1
-            ? t("fourthForm.secondField")
-            : t("fourthForm.thirdField"),
-      secondFieldLabel:
-        index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
-    })),
-  );
+        return (
+          category.name !== expectedName ||
+          category.firstFieldLabel !== expectedFirstLabel ||
+          category.secondFieldLabel !== expectedSecondLabel
+        );
+      },
+    );
+
+    if (needsUpdate) {
+      const updatedCategories = formData.fourthForm.categories.map(
+        (category, index) => ({
+          ...category,
+          name: translatedCategories[index],
+          firstFieldLabel:
+            index === 0
+              ? t("fourthForm.firstField")
+              : index === 1
+                ? t("fourthForm.secondField")
+                : t("fourthForm.thirdField"),
+          secondFieldLabel:
+            index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
+        }),
+      );
+
+      updateFourthForm({ categories: updatedCategories });
+    }
+  }, [t, updateFourthForm, formData.fourthForm.categories]);
 
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
   const handleAddEntry = (categoryId: string) => {
-    setCategoryData((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              entries: [
-                ...category.entries,
-                { id: generateId(), firstField: "", secondField: "" },
-              ],
-              isExpanded: true,
-            }
-          : category,
-      ),
+    const updatedCategories = formData.fourthForm.categories.map((category) =>
+      category.id === categoryId
+        ? {
+            ...category,
+            entries: [
+              ...category.entries,
+              {
+                id: generateId(),
+                firstField: "",
+                firstFieldOther: "",
+                secondField: "",
+              },
+            ],
+            isExpanded: true,
+          }
+        : category,
     );
+
+    updateFourthForm({ categories: updatedCategories });
   };
 
   const handleRemoveEntry = (categoryId: string, entryId: string) => {
-    setCategoryData((prev) =>
-      prev.map((category) => {
-        if (category.id === categoryId) {
-          const newEntries = category.entries.filter(
-            (entry) => entry.id !== entryId,
-          );
-          return {
-            ...category,
-            entries: newEntries,
-            isExpanded: newEntries.length > 0,
-          };
-        }
-        return category;
-      }),
-    );
+    const updatedCategories = formData.fourthForm.categories.map((category) => {
+      if (category.id === categoryId) {
+        const newEntries = category.entries.filter(
+          (entry) => entry.id !== entryId,
+        );
+        return {
+          ...category,
+          entries: newEntries,
+          isExpanded: newEntries.length > 0,
+        };
+      }
+      return category;
+    });
+
+    updateFourthForm({ categories: updatedCategories });
   };
 
   const handleEntryChange = (
     categoryId: string,
     entryId: string,
-    field: "firstField" | "secondField",
+    field: "firstField" | "firstFieldOther" | "secondField",
     value: string,
   ) => {
-    setCategoryData((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? {
-              ...category,
-              entries: category.entries.map((entry) =>
-                entry.id === entryId ? { ...entry, [field]: value } : entry,
-              ),
-            }
-          : category,
-      ),
+    const updatedCategories = formData.fourthForm.categories.map((category) =>
+      category.id === categoryId
+        ? {
+            ...category,
+            entries: category.entries.map((entry) =>
+              entry.id === entryId ? { ...entry, [field]: value } : entry,
+            ),
+          }
+        : category,
     );
-  };
 
-  const toggleExpanded = (categoryId: string) => {
-    setCategoryData((prev) =>
-      prev.map((category) =>
-        category.id === categoryId
-          ? { ...category, isExpanded: !category.isExpanded }
-          : category,
-      ),
-    );
+    updateFourthForm({ categories: updatedCategories });
   };
 
   // Options helper
@@ -284,7 +157,7 @@ export default function FourthForm() {
       case "international_cert":
         return categoryOptions.international_cert.certificates;
       case "language_cert":
-        return categoryOptions.language_cert.subjects;
+        return categoryOptions.language_cert.certificates;
       default:
         return [];
     }
@@ -296,8 +169,6 @@ export default function FourthForm() {
         return categoryOptions.national_award.awards;
       case "international_cert":
         return categoryOptions.international_cert.scores;
-      case "language_cert":
-        return categoryOptions.language_cert.awards;
       default:
         return [];
     }
@@ -311,7 +182,7 @@ export default function FourthForm() {
         alignItems: "flex-start",
       }}
     >
-      {categoryData.map((category) => (
+      {formData.fourthForm.categories.map((category) => (
         <Box
           key={category.id}
           sx={{
@@ -329,130 +200,192 @@ export default function FourthForm() {
               mb: 1,
               color: "#A657AE",
               textAlign: "left",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              toggleExpanded(category.id);
             }}
           >
             {category.name}
           </Typography>
 
           {category.isExpanded &&
-            category.entries.map((entry) => (
-              <Box
-                key={entry.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  justifyContent: "flex-start",
-                  mb: 1,
-                }}
-              >
-                {/* First Field Autocomplete */}
-                <Autocomplete
-                  options={getFirstFieldOptions(category.categoryType)}
-                  value={entry.firstField || null}
-                  onChange={(_, newValue) => {
-                    handleEntryChange(
-                      category.id,
-                      entry.id,
-                      "firstField",
-                      newValue ?? "",
-                    );
-                  }}
-                  sx={{
-                    width: 240,
-                  }}
-                  filterSelectedOptions
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={category.firstFieldLabel}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "17px",
-                          height: "40px",
-                          "& fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#8B4A8F",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                        },
-                        "& input": {
-                          color: "#A657AE",
-                        },
-                      }}
-                    />
-                  )}
-                />
+            category.entries.map((entry) => {
+              const isOtherSelected =
+                entry.firstField === "Other" &&
+                (category.categoryType === "international_cert" ||
+                  category.categoryType === "language_cert");
 
-                {/* Second Field Autocomplete */}
-                <Autocomplete
-                  options={getSecondFieldOptions(category.categoryType)}
-                  value={entry.secondField || null}
-                  onChange={(_, newValue) => {
-                    handleEntryChange(
-                      category.id,
-                      entry.id,
-                      "secondField",
-                      newValue ?? "",
-                    );
-                  }}
+              return (
+                <Box
+                  key={entry.id}
                   sx={{
-                    width: 150,
-                  }}
-                  filterSelectedOptions
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={category.secondFieldLabel}
-                      sx={{
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "17px",
-                          height: "40px",
-                          "& fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#8B4A8F",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                        },
-                        "& input": {
-                          color: "#A657AE",
-                        },
-                      }}
-                    />
-                  )}
-                />
-
-                {/* Remove Button */}
-                <IconButton
-                  onClick={() => {
-                    handleRemoveEntry(category.id, entry.id);
-                  }}
-                  sx={{
-                    backgroundColor: "#f44336",
-                    color: "white",
-                    width: "35px",
-                    height: "35px",
-                    "&:hover": {
-                      backgroundColor: "#d32f2f",
-                    },
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    mb: 2,
+                    gap: 1,
                   }}
                 >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            ))}
+                  {/* Main row with dropdown, second field, and remove button */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    {/* First Field Autocomplete */}
+                    <Autocomplete
+                      options={getFirstFieldOptions(category.categoryType)}
+                      value={entry.firstField || null}
+                      onChange={(_, newValue) => {
+                        handleEntryChange(
+                          category.id,
+                          entry.id,
+                          "firstField",
+                          newValue ?? "",
+                        );
+                      }}
+                      sx={{ width: 200 }}
+                      filterSelectedOptions
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={category.firstFieldLabel}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "17px",
+                              height: "40px",
+                              "& fieldset": { borderColor: "#A657AE" },
+                              "&:hover fieldset": { borderColor: "#8B4A8F" },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#A657AE",
+                              },
+                            },
+                            "& input": { color: "#A657AE" },
+                          }}
+                        />
+                      )}
+                    />
+
+                    {/* Second Field */}
+                    {category.categoryType === "language_cert" ? (
+                      <TextField
+                        value={entry.secondField}
+                        onChange={(e) => {
+                          handleEntryChange(
+                            category.id,
+                            entry.id,
+                            "secondField",
+                            e.target.value,
+                          );
+                        }}
+                        placeholder={category.secondFieldLabel}
+                        sx={{
+                          width: 170,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "17px",
+                            height: "40px",
+                            "& fieldset": { borderColor: "#A657AE" },
+                            "&:hover fieldset": { borderColor: "#8B4A8F" },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#A657AE",
+                            },
+                          },
+                          "& input": { color: "#A657AE" },
+                        }}
+                      />
+                    ) : (
+                      <Autocomplete
+                        options={getSecondFieldOptions(category.categoryType)}
+                        value={entry.secondField || null}
+                        onChange={(_, newValue) => {
+                          handleEntryChange(
+                            category.id,
+                            entry.id,
+                            "secondField",
+                            newValue ?? "",
+                          );
+                        }}
+                        sx={{ width: 170 }}
+                        filterSelectedOptions
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={category.secondFieldLabel}
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: "17px",
+                                height: "40px",
+                                "& fieldset": { borderColor: "#A657AE" },
+                                "&:hover fieldset": { borderColor: "#8B4A8F" },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: "#A657AE",
+                                },
+                              },
+                              "& input": { color: "#A657AE" },
+                            }}
+                          />
+                        )}
+                      />
+                    )}
+
+                    {/* Remove Button */}
+                    <IconButton
+                      onClick={() => {
+                        handleRemoveEntry(category.id, entry.id);
+                      }}
+                      sx={{
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        width: "35px",
+                        height: "35px",
+                        "&:hover": {
+                          backgroundColor: "#d32f2f",
+                        },
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+
+                  {/* "Other" input field - appears below the main row */}
+                  {isOtherSelected && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        ml: 0,
+                      }}
+                    >
+                      <TextField
+                        value={entry.firstFieldOther ?? ""}
+                        onChange={(e) => {
+                          handleEntryChange(
+                            category.id,
+                            entry.id,
+                            "firstFieldOther",
+                            e.target.value,
+                          );
+                        }}
+                        placeholder={t("fourthForm.enterOther")}
+                        sx={{
+                          width: 200,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "17px",
+                            height: "40px",
+                            "& fieldset": { borderColor: "#A657AE" },
+                            "&:hover fieldset": { borderColor: "#8B4A8F" },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#A657AE",
+                            },
+                          },
+                          "& input": { color: "#A657AE" },
+                        }}
+                      />
+                    </Box>
+                  )}
+                </Box>
+              );
+            })}
 
           {/* Add Button */}
           <Button
@@ -467,9 +400,7 @@ export default function FourthForm() {
               borderRadius: "10px",
               textTransform: "none",
               alignSelf: "flex-start",
-              "&:hover": {
-                backgroundColor: "#7b1fa2",
-              },
+              "&:hover": { backgroundColor: "#7b1fa2" },
             }}
           >
             {t("buttons.add")}

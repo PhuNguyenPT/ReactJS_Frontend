@@ -13,7 +13,7 @@ const SecondForm = ({ hasError }: { hasError: boolean }) => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useFormData();
 
-  const selectedMajors = formData.secondFormMajors;
+  const selectedMajors = formData.secondForm;
   const allMajors = getAllMajorGroups();
 
   const getAvailableOptions = (currentIndex: number): string[] => {
@@ -27,47 +27,72 @@ const SecondForm = ({ hasError }: { hasError: boolean }) => {
   const handleMajorChange = (index: number, value: string | null) => {
     const updated = [...selectedMajors];
     updated[index] = value;
-    updateFormData({ secondFormMajors: updated });
+    updateFormData({ secondForm: updated });
+  };
+
+  // Convert translation keys to display options with translated labels
+  const getTranslatedOptions = (availableOptions: string[]) => {
+    return availableOptions.map((translationKey) => ({
+      key: translationKey,
+      label: t(translationKey),
+    }));
+  };
+
+  // Get the selected value as an option object
+  const getSelectedValue = (translationKey: string | null) => {
+    if (!translationKey) return null;
+    return {
+      key: translationKey,
+      label: t(translationKey),
+    };
   };
 
   return (
     <Box component="form" className="second-form" sx={{ position: "relative" }}>
-      {[0, 1, 2].map((index) => (
-        <FormControl
-          key={index}
-          fullWidth
-          error={hasError && index === 0 && !selectedMajors[0]}
-          sx={{ mb: 1, width: 450, marginRight: 50 }}
-        >
-          <Autocomplete
-            options={getAvailableOptions(index)}
-            value={selectedMajors[index]}
-            onChange={(_, newValue) => {
-              handleMajorChange(index, newValue);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder={`${t("secondForm.major")} ${String(index + 1)}`}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 999,
-                    "& fieldset": { borderColor: "#A657AE" },
-                    "&:hover fieldset": { borderColor: "#8B4A8F" },
-                    "&.Mui-focused fieldset": { borderColor: "#A657AE" },
-                  },
-                  "& input": { color: "#A657AE" },
-                }}
-              />
-            )}
-          />
-          <FormHelperText sx={{ minHeight: "1.5em" }}>
-            {hasError && index === 0 && !selectedMajors[0]
-              ? t("secondForm.errorWarning")
-              : " "}
-          </FormHelperText>
-        </FormControl>
-      ))}
+      {[0, 1, 2].map((index) => {
+        const availableOptions = getAvailableOptions(index);
+        const translatedOptions = getTranslatedOptions(availableOptions);
+        const selectedValue = getSelectedValue(selectedMajors[index]);
+
+        return (
+          <FormControl
+            key={index}
+            fullWidth
+            error={hasError && index === 0 && !selectedMajors[0]}
+            sx={{ mb: 1, width: 450, marginRight: 50 }}
+          >
+            <Autocomplete
+              options={translatedOptions}
+              value={selectedValue}
+              onChange={(_, newValue) => {
+                handleMajorChange(index, newValue?.key ?? null);
+              }}
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) => option.key === value.key}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder={`${t("secondForm.major")} ${String(index + 1)}`}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 999,
+                      "& fieldset": { borderColor: "#A657AE" },
+                      "&:hover fieldset": { borderColor: "#8B4A8F" },
+                      "&.Mui-focused fieldset": { borderColor: "#A657AE" },
+                    },
+                    "& input": { color: "#A657AE" },
+                  }}
+                />
+              )}
+            />
+            <FormHelperText sx={{ minHeight: "1.5em" }}>
+              {hasError && index === 0 && !selectedMajors[0]
+                ? t("secondForm.errorWarning")
+                : " "}
+            </FormHelperText>
+          </FormControl>
+        );
+      })}
     </Box>
   );
 };

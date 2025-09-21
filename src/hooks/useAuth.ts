@@ -1,4 +1,3 @@
-// src/hooks/useAuth.ts
 import { use } from "react";
 import { AuthContext } from "../contexts/auth/AuthContext"; // adjust path as needed
 import type { AuthContextType } from "../contexts/auth/AuthContext"; // if types are in the same file

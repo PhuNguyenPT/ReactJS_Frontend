@@ -6,14 +6,15 @@ import {
   IconButton,
   Autocomplete,
 } from "@mui/material";
-import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
+import { getOptionalCategorySubjects } from "../../../type/enum/combineUtil";
 
 interface OptionalScore {
   id: string;
   subject: string;
+  subjectOther?: string; // Add this field for "Other" input
   score: string;
 }
 
@@ -24,32 +25,16 @@ interface CategoryData {
   isExpanded: boolean;
 }
 
-const optionalCategories = ["ĐGNL", "V-SAT", "Năng khiếu"];
+interface ThirdFormOptionalProps {
+  categories: CategoryData[];
+  setCategories: (categories: CategoryData[]) => void;
+}
 
-// Sample subjects for each category
-const subjectOptions = {
-  ĐGNL: [
-    "Toán học",
-    "Ngữ văn",
-    "Tiếng Anh",
-    "Khoa học tự nhiên",
-    "Khoa học xã hội",
-  ],
-  "V-SAT": ["Toán", "Đọc hiểu", "Viết", "Khoa học", "Lịch sử"],
-  "Năng khiếu": ["Âm nhạc", "Mỹ thuật", "Thể thao", "Khiêu vũ", "Diễn xuất"],
-};
-
-export default function ThirdFormOptional() {
+export default function ThirdFormOptional({
+  categories,
+  setCategories,
+}: ThirdFormOptionalProps) {
   const { t } = useTranslation();
-
-  const [categories, setCategories] = useState<CategoryData[]>(
-    optionalCategories.map((cat, index) => ({
-      id: `category-${String(index + 1)}`,
-      name: cat,
-      scores: [],
-      isExpanded: false,
-    })),
-  );
 
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -61,7 +46,7 @@ export default function ThirdFormOptional() {
           ...category,
           scores: [
             ...category.scores,
-            { id: generateId(), subject: "", score: "" },
+            { id: generateId(), subject: "", subjectOther: "", score: "" },
           ],
           isExpanded: true,
         };
@@ -91,7 +76,7 @@ export default function ThirdFormOptional() {
   const handleScoreChange = (
     categoryId: string,
     scoreId: string,
-    field: "subject" | "score",
+    field: "subject" | "subjectOther" | "score",
     value: string,
   ) => {
     const updated = categories.map((category) => {
@@ -111,14 +96,22 @@ export default function ThirdFormOptional() {
     setCategories(updated);
   };
 
-  const toggleExpanded = (categoryId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        return { ...category, isExpanded: !category.isExpanded };
-      }
-      return category;
-    });
-    setCategories(updated);
+  // Get available subjects for a specific category and exclude already selected ones
+  const getAvailableSubjects = (
+    categoryName: string,
+    currentScoreId: string,
+  ): string[] => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    const allSubjects = getOptionalCategorySubjects(categoryName);
+
+    if (!category) return allSubjects;
+
+    // Filter out subjects that are already selected in this category
+    const selectedSubjects = category.scores
+      .filter((score) => score.id !== currentScoreId && score.subject)
+      .map((score) => score.subject);
+
+    return allSubjects.filter((subject) => !selectedSubjects.includes(subject));
   };
 
   return (
@@ -150,9 +143,6 @@ export default function ThirdFormOptional() {
               fontStyle: "italic",
               textAlign: "left",
             }}
-            onClick={() => {
-              toggleExpanded(category.id);
-            }}
           >
             {t("thirdForm.firstTypo")} {category.name}{" "}
             {t("thirdForm.secondTypo")}
@@ -160,117 +150,169 @@ export default function ThirdFormOptional() {
 
           {/* Score Inputs */}
           {category.isExpanded &&
-            category.scores.map((score) => (
-              <Box
-                key={score.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  justifyContent: "flex-start",
-                  mb: 1,
-                }}
-              >
-                {/* Subject Autocomplete */}
-                <Autocomplete
-                  options={
-                    subjectOptions[category.name as keyof typeof subjectOptions]
-                  }
-                  value={score.subject || null}
-                  onChange={(_, newValue) => {
-                    handleScoreChange(
-                      category.id,
-                      score.id,
-                      "subject",
-                      newValue ?? "",
-                    );
-                  }}
+            category.scores.map((score) => {
+              const isOtherSelected =
+                score.subject === "Other" && category.name === "ĐGNL";
+
+              return (
+                <Box
+                  key={score.id}
                   sx={{
-                    width: 200,
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    mb: 2,
+                    gap: 1,
                   }}
-                  filterSelectedOptions
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={t("thirdForm.chooseExam")}
+                >
+                  {/* Main row with dropdown, score field, and remove button */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    {/* Subject Autocomplete */}
+                    <Autocomplete
+                      options={getAvailableSubjects(category.name, score.id)}
+                      value={score.subject || null}
+                      onChange={(_, newValue) => {
+                        handleScoreChange(
+                          category.id,
+                          score.id,
+                          "subject",
+                          newValue ?? "",
+                        );
+                      }}
                       sx={{
+                        width: 200,
+                      }}
+                      filterSelectedOptions
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={t("thirdForm.chooseExam")}
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "17px",
+                              height: "40px",
+                              "& fieldset": {
+                                borderColor: "#A657AE",
+                              },
+                              "&:hover fieldset": {
+                                borderColor: "#8B4A8F",
+                              },
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#A657AE",
+                              },
+                            },
+                            "& input": {
+                              color: "#A657AE",
+                            },
+                          }}
+                        />
+                      )}
+                    />
+
+                    {/* Score Input */}
+                    <TextField
+                      value={score.score}
+                      onChange={(e) => {
+                        handleScoreChange(
+                          category.id,
+                          score.id,
+                          "score",
+                          e.target.value,
+                        );
+                      }}
+                      placeholder={t("thirdForm.score")}
+                      slotProps={{
+                        htmlInput: { min: 0, max: 10, step: 0.1 },
+                      }}
+                      sx={{
+                        width: "150px",
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "17px",
                           height: "40px",
-                          "& fieldset": {
-                            borderColor: "#A657AE",
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "#8B4A8F",
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "#A657AE",
-                          },
                         },
-                        "& input": {
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#8B4A8F",
+                        },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#A657AE",
+                        },
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#A657AE",
+                        },
+                        "& .MuiInputBase-input": {
+                          textAlign: "left",
                           color: "#A657AE",
                         },
                       }}
                     />
+
+                    {/* Remove Button */}
+                    <IconButton
+                      onClick={() => {
+                        handleRemoveScore(category.id, score.id);
+                      }}
+                      sx={{
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        width: "35px",
+                        height: "35px",
+                        "&:hover": {
+                          backgroundColor: "#d32f2f",
+                        },
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+
+                  {/* "Other" input field - appears below the main row for ĐGNL category */}
+                  {isOtherSelected && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        ml: 0,
+                      }}
+                    >
+                      <TextField
+                        value={score.subjectOther ?? ""}
+                        onChange={(e) => {
+                          handleScoreChange(
+                            category.id,
+                            score.id,
+                            "subjectOther",
+                            e.target.value,
+                          );
+                        }}
+                        placeholder={
+                          t("thirdForm.enterOther") || "Enter other exam type"
+                        }
+                        sx={{
+                          width: 200,
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "17px",
+                            height: "40px",
+                            "& fieldset": { borderColor: "#A657AE" },
+                            "&:hover fieldset": { borderColor: "#8B4A8F" },
+                            "&.Mui-focused fieldset": {
+                              borderColor: "#A657AE",
+                            },
+                          },
+                          "& input": { color: "#A657AE" },
+                        }}
+                      />
+                    </Box>
                   )}
-                />
-
-                {/* Score Input */}
-                <TextField
-                  value={score.score}
-                  onChange={(e) => {
-                    handleScoreChange(
-                      category.id,
-                      score.id,
-                      "score",
-                      e.target.value,
-                    );
-                  }}
-                  placeholder={t("thirdForm.score")}
-                  slotProps={{
-                    htmlInput: { min: 0, max: 10, step: 0.1 },
-                  }}
-                  sx={{
-                    width: "150px",
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "17px",
-                      height: "40px",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8B4A8F",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A657AE",
-                    },
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#A657AE",
-                    },
-                    "& .MuiInputBase-input": {
-                      textAlign: "left",
-                      color: "#A657AE",
-                    },
-                  }}
-                />
-
-                {/* Remove Button */}
-                <IconButton
-                  onClick={() => {
-                    handleRemoveScore(category.id, score.id);
-                  }}
-                  sx={{
-                    backgroundColor: "#f44336",
-                    color: "white",
-                    width: "35px",
-                    height: "35px",
-                    "&:hover": {
-                      backgroundColor: "#d32f2f",
-                    },
-                  }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            ))}
+                </Box>
+              );
+            })}
 
           {/* Add Button */}
           <Button

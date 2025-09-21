@@ -15,7 +15,8 @@
     "search": "Search",
     "loading": "Loading...",
     "error": "An error occurred",
-    "success": "Success!"
+    "success": "Success!",
+    "skip": "Skip"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -43,12 +44,15 @@
     "view": "View",
     "download": "Download",
     "start": "Start",
-    "stop": "Stop"
+    "stop": "Stop",
+    "next": "Next",
+    "back": "Back"
   },
   "contents": {
     "highlight": "GUIDING",
-    "tilte1": "YOU TO",
-    "tilte2": "YOUR DREAM UNIVERSITY"
+    "title1": "YOU TO",
+    "title2": "YOUR DREAM UNIVERSITY",
+    "start": "START"
   },
   "loginForm": {
     "tilte": "Welcome to Unizy",
@@ -64,9 +68,11 @@
     "viewHistory": "View History"
   },
   "firstForm": {
-    "title": "About university location",
-    "subTitle": "Where do you want to study?",
+    "title": "About university",
+    "subTitle1": "Where do you want to study?",
+    "subTitle2": "What type of university do you prefer?",
     "selectProvince": "Province/City",
+    "selectUniType": "University Type",
     "enterButton": "NEXT",
     "errorWarning": "Please select a province/city"
   },
@@ -76,6 +82,32 @@
     "major": "Major",
     "errorWarning": "Please select at least one major"
   },
+  "majors": {
+    "agriculture_forestry_fisheries": "Agriculture, Forestry and Fisheries",
+    "architecture_and_construction": "Architecture and Construction",
+    "arts": "Arts",
+    "business_and_management": "Business and Management",
+    "computer_and_it": "Computer and Information Technology",
+    "education_and_teacher_training": "Education and Teacher Training",
+    "engineering": "Engineering",
+    "engineering_technology": "Engineering Technology",
+    "environment_and_protection": "Environment and Environmental Protection",
+    "health": "Health",
+    "humanities": "Humanities",
+    "journalism_and_information": "Journalism and Information",
+    "law": "Law",
+    "life_sciences": "Life Sciences",
+    "manufacturing_and_processing": "Manufacturing and Processing",
+    "mathematics_and_statistics": "Mathematics and Statistics",
+    "natural_sciences": "Natural Sciences",
+    "other": "Other",
+    "security_defense": "Security and Defense",
+    "social_and_behavioral_sciences": "Social and Behavioral Sciences",
+    "social_services": "Social Services",
+    "tourism_hospitality_sports_personal": "Tourism, Hospitality, Sports and Personal Services",
+    "transport_services": "Transport Services",
+    "veterinary": "Veterinary"
+  },
   "thirdForm": {
     "title": "About your exam results",
     "subTitle": "Enter your National High School Exam scores",
@@ -84,7 +116,8 @@
     "score": "Score",
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
-    "secondTypo": "exam scores of yours. (if any)"
+    "secondTypo": "exam scores of yours. (if any)",
+    "enterOther": "Enter your other option"
   },
   "fourthForm": {
     "title": "About your achievements",
@@ -94,17 +127,13 @@
     "firstField": "Subject",
     "secondField": "Certificate Type",
     "thirdField": "Language",
+    "enterOther": "Enter your other option",
     "award": "Award",
     "score": "Score"
   },
   "fifthForm": {
     "title": "About your budget",
-    "subTitle1": "In a year, how much can your family spend",
-    "subTitle2": "on tuition fees?",
-    "highlight1": "minimum",
-    "highlight2": "maximum",
-    "placeholder": "In VND (e.g.: 10.000.000, 15.000.000,...)",
-    "errorWarning": "Please enter a valid amount"
+    "subTitle1": "In a year, how much can your family spend on tuition fees?"
   },
   "sixthForm": {
     "title": "Special Admission Categories",
@@ -113,5 +142,34 @@
     "option2": "Specialized school students",
     "option3": "Students from poor districts, extremely difficult areas",
     "option4": "Ethnic minorities with very few people (Mong, La Ha,...)"
+  },
+  "seventhForm": {
+    "title": "About your academic scores",
+    "subTitle10": "Please enter your practice results and academic scores in grade 10",
+    "subTitle11": "Please enter your practice results and academic scores in grade 11",
+    "subTitle12": "Please enter your practice results and academic scores in grade 12",
+    "practiceResults": "Practice results",
+    "academicScore": "Academic score",
+    "errorWarning1": "Please enter your academic scores",
+    "errorWarning2": "Please enter your practice results"
+  },
+  "eighthForm": {
+    "title": "Please upload your score board with full 6 semester (3 years in HighSchool) into these fields",
+    "helper1": "(You can click on ",
+    "helper2": " to input your score manually if you don’t have the score board or to check it again.)",
+    "grade": "Grade",
+    "semester1": "Semester 1",
+    "semester2": "Semester 2"
+  },
+  "ninthForm": {
+    "title": "CHECK AND SUPPLEMENT YOUR SCORE BOARD",
+    "grade": "Score board in Grade",
+    "semester1": "Semester 1",
+    "semester2": "Semester 2",
+    "score": "Score",
+    "chooseSubject": "Subject"
+  },
+  "popup": {
+    "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?"
   }
 }

@@ -5,52 +5,32 @@ import {
   Autocomplete,
   FormHelperText,
 } from "@mui/material";
-//import { useTranslation } from "react-i18next";
-
-interface GradeValues {
-  hanhKiem: string;
-  hocLuc: string;
-}
-
-interface GradeErrors {
-  hanhKiem: boolean;
-  hocLuc: boolean;
-}
-
-type GradeKey = "10" | "11" | "12";
+import { useTranslation } from "react-i18next";
+import { AcademicPerformance } from "../../../type/enum/academic.performance";
+import { Conduct } from "../../../type/enum/conduct";
+import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import type { GradeKey } from "../../../contexts/FormDataContext/FormDataContext";
 
 interface SeventhFormProps {
-  onChange: (grade: GradeKey, field: keyof GradeValues, value: string) => void;
-  errors: Record<GradeKey, GradeErrors>;
-  values: Record<GradeKey, GradeValues>;
   shouldValidate?: boolean;
 }
 
 export default function SeventhForm({
-  onChange,
-  errors,
-  values,
   shouldValidate = false,
 }: SeventhFormProps) {
-  //const { t } = useTranslation();
+  const { t } = useTranslation();
+  const { formData, updateSeventhFormGrade } = useFormData();
 
-  const hanhKiemOptions = ["Tốt", "Khá", "Trung bình", "Yếu"];
-  const hocLucOptions = ["Giỏi", "Khá", "Trung bình", "Yếu", "Kém"];
+  const conductOptions = Object.values(Conduct);
+  const academicPerformanceOptions = Object.values(AcademicPerformance);
 
   const grades = [
-    {
-      key: "10" as GradeKey,
-      label: "Vui lòng nhập hạnh kiểm và học lực năm lớp 10 của bạn",
-    },
-    {
-      key: "11" as GradeKey,
-      label: "Vui lòng nhập hạnh kiểm và học lực năm lớp 11 của bạn",
-    },
-    {
-      key: "12" as GradeKey,
-      label: "Vui lòng nhập hạnh kiểm và học lực năm lớp 12 của bạn",
-    },
+    { key: "10" as GradeKey, label: t("seventhForm.subTitle10") },
+    { key: "11" as GradeKey, label: t("seventhForm.subTitle11") },
+    { key: "12" as GradeKey, label: t("seventhForm.subTitle12") },
   ];
+
+  const { grades: values } = formData.seventhForm;
 
   return (
     <Box
@@ -62,127 +42,135 @@ export default function SeventhForm({
         width: "100%",
       }}
     >
-      {grades.map((grade) => (
-        <Box
-          key={grade.key}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: 1,
-            width: "100%",
-          }}
-        >
-          {/* Subtitle */}
-          <Typography
-            variant="body1"
-            sx={{ mb: 1, color: "#A657AE", textAlign: "left" }}
+      {grades.map((grade) => {
+        const conductEmpty = shouldValidate && values[grade.key].conduct === "";
+        const performanceEmpty =
+          shouldValidate && values[grade.key].academicPerformance === "";
+
+        return (
+          <Box
+            key={grade.key}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: 1,
+              width: "100%",
+            }}
           >
-            {grade.label}
-          </Typography>
+            {/* Subtitle */}
+            <Typography
+              variant="body1"
+              sx={{ mb: 1, color: "#A657AE", textAlign: "left" }}
+            >
+              {grade.label}
+            </Typography>
 
-          {/* Dropdowns */}
-          <Box sx={{ display: "flex", gap: 2 }}>
-            {/* Hạnh kiểm */}
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Autocomplete
-                options={hanhKiemOptions}
-                value={values[grade.key].hanhKiem || null}
-                onChange={(_, newValue) => {
-                  onChange(grade.key, "hanhKiem", newValue ?? "");
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Hạnh kiểm"
-                    error={errors[grade.key].hanhKiem && shouldValidate}
-                    sx={{
-                      width: 150,
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "17px",
-                        height: "40px",
-                        "& fieldset": {
-                          borderColor:
-                            errors[grade.key].hanhKiem && shouldValidate
+            {/* Dropdowns */}
+            <Box sx={{ display: "flex", gap: 3 }}>
+              {/* Conduct (Kết quả rèn luyện) */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Autocomplete
+                  options={conductOptions}
+                  value={values[grade.key].conduct || null}
+                  onChange={(_, newValue) => {
+                    updateSeventhFormGrade(
+                      grade.key,
+                      "conduct",
+                      newValue ?? "",
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t("seventhForm.practiceResults")}
+                      error={conductEmpty}
+                      sx={{
+                        width: 230,
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "17px",
+                          height: "40px",
+                          "& fieldset": {
+                            borderColor: conductEmpty ? "#d32f2f" : "#A657AE",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: conductEmpty ? "#d32f2f" : "#8B4A8F",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: conductEmpty ? "#d32f2f" : "#A657AE",
+                          },
+                        },
+                        "& input": { color: "#A657AE" },
+                      }}
+                    />
+                  )}
+                />
+                {conductEmpty && (
+                  <FormHelperText
+                    error
+                    sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
+                  >
+                    {t("seventhForm.errorWarning2")}
+                  </FormHelperText>
+                )}
+              </Box>
+
+              {/* Academic Performance (Học lực) */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Autocomplete
+                  options={academicPerformanceOptions}
+                  value={values[grade.key].academicPerformance || null}
+                  onChange={(_, newValue) => {
+                    updateSeventhFormGrade(
+                      grade.key,
+                      "academicPerformance",
+                      newValue ?? "",
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder={t("seventhForm.academicScore")}
+                      error={performanceEmpty}
+                      sx={{
+                        width: 240,
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "17px",
+                          height: "40px",
+                          "& fieldset": {
+                            borderColor: performanceEmpty
                               ? "#d32f2f"
                               : "#A657AE",
-                        },
-                        "&:hover fieldset": {
-                          borderColor:
-                            errors[grade.key].hanhKiem && shouldValidate
+                          },
+                          "&:hover fieldset": {
+                            borderColor: performanceEmpty
                               ? "#d32f2f"
                               : "#8B4A8F",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor:
-                            errors[grade.key].hanhKiem && shouldValidate
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: performanceEmpty
                               ? "#d32f2f"
                               : "#A657AE",
+                          },
                         },
-                      },
-                      "& input": { color: "#A657AE" },
-                    }}
-                  />
+                        "& input": { color: "#A657AE" },
+                      }}
+                    />
+                  )}
+                />
+                {performanceEmpty && (
+                  <FormHelperText
+                    error
+                    sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
+                  >
+                    {t("seventhForm.errorWarning1")}
+                  </FormHelperText>
                 )}
-              />
-              {errors[grade.key].hanhKiem && shouldValidate && (
-                <FormHelperText error sx={{ ml: 0 }}>
-                  Bạn phải chọn hạnh kiểm
-                </FormHelperText>
-              )}
-            </Box>
-
-            {/* Học lực */}
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Autocomplete
-                options={hocLucOptions}
-                value={values[grade.key].hocLuc || null}
-                onChange={(_, newValue) => {
-                  onChange(grade.key, "hocLuc", newValue ?? "");
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Học lực"
-                    error={errors[grade.key].hocLuc && shouldValidate}
-                    sx={{
-                      width: 150,
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "17px",
-                        height: "40px",
-                        "& fieldset": {
-                          borderColor:
-                            errors[grade.key].hocLuc && shouldValidate
-                              ? "#d32f2f"
-                              : "#A657AE",
-                        },
-                        "&:hover fieldset": {
-                          borderColor:
-                            errors[grade.key].hocLuc && shouldValidate
-                              ? "#d32f2f"
-                              : "#8B4A8F",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor:
-                            errors[grade.key].hocLuc && shouldValidate
-                              ? "#d32f2f"
-                              : "#A657AE",
-                        },
-                      },
-                      "& input": { color: "#A657AE" },
-                    }}
-                  />
-                )}
-              />
-              {errors[grade.key].hocLuc && shouldValidate && (
-                <FormHelperText error sx={{ ml: 0 }}>
-                  Bạn phải chọn học lực
-                </FormHelperText>
-              )}
+              </Box>
             </Box>
           </Box>
-        </Box>
-      ))}
+        );
+      })}
     </Box>
   );
 }
