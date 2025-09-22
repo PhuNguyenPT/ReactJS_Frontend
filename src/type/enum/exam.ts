@@ -3,7 +3,7 @@
  */
 export const CCNNType = {
   IELTS: "IELTS",
-  OTHER: "Other",
+  OTHER: "Khác",
   TOEFL_CBT: "TOEFL CBT",
   TOEFL_iBT: "TOEFL iBT",
   TOEFL_Paper: "TOEFL Paper",
@@ -16,14 +16,14 @@ export const CCQTType = {
   DoulingoEnglishTest: "DoulingoEnglishTest",
   IB: "IB",
   OSSD: "OSSD",
-  OTHER: "Other",
+  OTHER: "Khác",
   PTE_Academic: "PTE Academic",
   SAT: "SAT",
 } as const;
 
 export const DGNLType = {
   HSA: "HSA",
-  OTHER: "Other",
+  OTHER: "Khác",
   TSA: "TSA",
   VNUHCM: "VNUHCM",
 } as const;

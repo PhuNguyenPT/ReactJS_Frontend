@@ -13,6 +13,14 @@ import {
   type GradeValues,
 } from "./FormDataContext";
 import { getVietnameseValue, getTranslationKey } from "../../type/enum/major";
+import {
+  getUniTypeVietnameseValue,
+  getUniTypeTranslationKey,
+} from "../../type/enum/uni-type";
+import {
+  getNationalExamSubjectVietnameseValue,
+  getNationalExamSubjectTranslationKey,
+} from "../../type/enum/national-exam-subject";
 
 const FORM_DATA_STORAGE_KEY = "form_data";
 const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
@@ -25,9 +33,18 @@ const FORM_DATA_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
 function convertToVietnameseForStorage(formData: FormData): FormData {
   return {
     ...formData,
+    uniType: formData.uniType
+      ? getUniTypeVietnameseValue(formData.uniType)
+      : null,
     secondForm: formData.secondForm.map((major) =>
       major ? getVietnameseValue(major) : null,
     ),
+    thirdForm: {
+      ...formData.thirdForm,
+      chosenSubjects: formData.thirdForm.chosenSubjects.map((subject) =>
+        subject ? getNationalExamSubjectVietnameseValue(subject) : null,
+      ),
+    },
   };
 }
 
@@ -35,9 +52,18 @@ function convertToVietnameseForStorage(formData: FormData): FormData {
 function convertFromVietnameseStorage(formData: FormData): FormData {
   return {
     ...formData,
+    uniType: formData.uniType
+      ? getUniTypeTranslationKey(formData.uniType)
+      : null,
     secondForm: formData.secondForm.map((major) =>
       major ? getTranslationKey(major) : null,
     ),
+    thirdForm: {
+      ...formData.thirdForm,
+      chosenSubjects: formData.thirdForm.chosenSubjects.map((subject) =>
+        subject ? getNationalExamSubjectTranslationKey(subject) : null,
+      ),
+    },
   };
 }
 

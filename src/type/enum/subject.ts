@@ -4,6 +4,7 @@
  */
 export const VietnameseSubject = {
   BIEU_DIEN_NGHE_THUAT: "Biểu diễn nghệ thuật",
+  CONG_NGHE: "Công Nghệ",
   DIA_LY: "Địa Lý",
   DOC_HIEU: "Đọc hiểu",
   DOC_KE_DIEN_CAM: "Đọc kể diễn cảm",
@@ -36,6 +37,7 @@ export const VietnameseSubject = {
   TIENG_NHAT: "Tiếng Nhật",
   TIENG_PHAP: "Tiếng Pháp",
   TIENG_TRUNG: "Tiếng Trung",
+  TIN_HOC: "Tin Học",
   TOAN: "Toán",
   TRANG_TRI: "Trang trí",
   TU_DUY_GIAI_QUYET_NGU_VAN_DE: "Tư duy Khoa học Giải quyết vấn đề",
@@ -46,26 +48,3 @@ export const VietnameseSubject = {
   XAY_DUNG_KICH_BAN_SU_KIEN: "Xây dựng kịch bản sự kiện",
   XUONG_AM: "Xướng âm",
 } as const;
-
-export type VietnameseSubjectType =
-  (typeof VietnameseSubject)[keyof typeof VietnameseSubject];
-
-export const CORE_SUBJECTS = [
-  VietnameseSubject.TOAN,
-  VietnameseSubject.NGU_VAN,
-  VietnameseSubject.TIENG_ANH,
-  VietnameseSubject.VAT_LY,
-  VietnameseSubject.HOA_HOC,
-  VietnameseSubject.SINH_HOC,
-  VietnameseSubject.LICH_SU,
-  VietnameseSubject.DIA_LY,
-  VietnameseSubject.GDCD,
-] as const;
-
-export function getSelectableSubjects(): string[] {
-  return CORE_SUBJECTS.filter(
-    (subject) =>
-      subject !== VietnameseSubject.TOAN &&
-      subject !== VietnameseSubject.NGU_VAN,
-  );
-}

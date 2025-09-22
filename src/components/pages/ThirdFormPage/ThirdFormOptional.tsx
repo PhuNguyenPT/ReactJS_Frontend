@@ -152,7 +152,7 @@ export default function ThirdFormOptional({
           {category.isExpanded &&
             category.scores.map((score) => {
               const isOtherSelected =
-                score.subject === "Other" && category.name === "ĐGNL";
+                score.subject === "Khác" && category.name === "ĐGNL";
 
               return (
                 <Box

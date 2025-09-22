@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.provinces";
-import { UniType } from "../../../type/enum/uni-type";
+import { getAllUniTypes } from "../../../type/enum/uni-type";
 import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
 const FirstForm = () => {
@@ -18,7 +18,7 @@ const FirstForm = () => {
   const { t } = useTranslation();
   const { formData, updateFormData } = useFormData();
 
-  // Province state
+  // Province state (provinces might not need translation if they're proper names)
   const [selectedProvinces, setSelectedProvinces] = useState<string | null>(
     formData.firstForm ?? null,
   );
@@ -32,7 +32,24 @@ const FirstForm = () => {
 
   // Convert enums to array of values
   const provinces = useMemo(() => Object.values(VietnamSouthernProvinces), []);
-  const uniTypes = useMemo(() => Object.values(UniType), []);
+  const uniTypes = useMemo(() => getAllUniTypes(), []); // Now returns translation keys
+
+  // Convert translation keys to display options for university types
+  const getTranslatedUniTypeOptions = (availableOptions: string[]) => {
+    return availableOptions.map((translationKey) => ({
+      key: translationKey,
+      label: t(translationKey),
+    }));
+  };
+
+  // Get the selected university type value as an option object
+  const getSelectedUniTypeValue = (translationKey: string | null) => {
+    if (!translationKey) return null;
+    return {
+      key: translationKey,
+      label: t(translationKey),
+    };
+  };
 
   const handleNext = () => {
     let valid = true;
@@ -55,6 +72,9 @@ const FirstForm = () => {
       void navigate("/secondForm");
     }
   };
+
+  const translatedUniTypeOptions = getTranslatedUniTypeOptions(uniTypes);
+  const selectedUniTypeValue = getSelectedUniTypeValue(selectedUniType);
 
   return (
     <Box component="form" className="first-form">
@@ -107,13 +127,16 @@ const FirstForm = () => {
       {/* University type dropdown */}
       <FormControl fullWidth error={hasUniTypeError} sx={{ mt: 2 }}>
         <Autocomplete
-          options={uniTypes}
-          value={selectedUniType}
+          options={translatedUniTypeOptions}
+          value={selectedUniTypeValue}
           onChange={(_, newValue) => {
-            setSelectedUniType(newValue);
+            const translationKey = newValue?.key ?? null;
+            setSelectedUniType(translationKey);
             setHasUniTypeError(false);
-            updateFormData({ uniType: newValue });
+            updateFormData({ uniType: translationKey });
           }}
+          getOptionLabel={(option) => option.label}
+          isOptionEqualToValue={(option, value) => option.key === value.key}
           sx={{
             width: 450,
             marginRight: 63,

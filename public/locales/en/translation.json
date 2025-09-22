@@ -76,6 +76,10 @@
     "enterButton": "NEXT",
     "errorWarning": "Please select a province/city"
   },
+  "uniType": {
+    "private": "Private",
+    "public": "Public"
+  },
   "secondForm": {
     "title": "About your preferred majors",
     "subTitle": "Three majors that suit you best",
@@ -118,6 +122,24 @@
     "firstTypo": "Enter your ",
     "secondTypo": "exam scores of yours. (if any)",
     "enterOther": "Enter your other option"
+  },
+  "subjects": {
+    "math": "Mathematics",
+    "literature": "Literature",
+    "english": "English",
+    "german": "German",
+    "russian": "Russian",
+    "japanese": "Japanese",
+    "french": "French",
+    "chinese": "Chinese",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "biology": "Biology",
+    "history": "History",
+    "geography": "Geography",
+    "civic_education": "Civic Education & Economics",
+    "informatics": "Computer Science",
+    "technology": "Technology"
   },
   "fourthForm": {
     "title": "About your achievements",

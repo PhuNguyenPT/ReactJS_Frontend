@@ -77,6 +77,10 @@
     "errorWarning1": "Vui lòng chọn Tỉnh/Thành phố",
     "errorWarning2": "Vui lòng chọn Loại hình trường đại học"
   },
+  "uniType": {
+    "private": "Tư thục",
+    "public": "Công lập"
+  },
   "secondForm": {
     "title": "Về ngành học của bạn",
     "subTitle": "Ba nhóm ngành mà bạn thấy mình phù hợp",
@@ -119,6 +123,24 @@
     "firstTypo": "Nhập vào điểm thi",
     "secondTypo": "của bạn. (nếu có)",
     "enterOther": "Nhập lựa chọn khác của bạn"
+  },
+  "subjects": {
+    "math": "Toán",
+    "literature": "Ngữ Văn",
+    "english": "Tiếng Anh",
+    "german": "Tiếng Đức",
+    "russian": "Tiếng Nga",
+    "japanese": "Tiếng Nhật",
+    "french": "Tiếng Pháp",
+    "chinese": "Tiếng Trung",
+    "physics": "Vật Lý",
+    "chemistry": "Hóa Học",
+    "biology": "Sinh Học",
+    "history": "Lịch Sử",
+    "geography": "Địa Lý",
+    "civic_education": "Giáo dục Kinh tế và Pháp luật",
+    "informatics": "Tin Học",
+    "technology": "Công Nghệ"
   },
   "fourthForm": {
     "title": "Về thành tích của bạn",

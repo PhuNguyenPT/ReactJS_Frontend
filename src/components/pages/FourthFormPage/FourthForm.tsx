@@ -208,7 +208,7 @@ export default function FourthForm() {
           {category.isExpanded &&
             category.entries.map((entry) => {
               const isOtherSelected =
-                entry.firstField === "Other" &&
+                entry.firstField === "Khác" &&
                 (category.categoryType === "international_cert" ||
                   category.categoryType === "language_cert");
 
