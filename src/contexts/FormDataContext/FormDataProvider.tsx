@@ -21,6 +21,22 @@ import {
   getNationalExamSubjectVietnameseValue,
   getNationalExamSubjectTranslationKey,
 } from "../../type/enum/national-exam-subject";
+import {
+  getOptionalSubjectVietnameseValue,
+  getOptionalSubjectTranslationKey,
+} from "../../type/enum/combineUtil";
+import {
+  getExamTypeVietnameseValue,
+  getExamTypeTranslationKey,
+} from "../../type/enum/exam";
+import {
+  getNationalExcellentExamVietnameseValue,
+  getNationalExcellentExamTranslationKey,
+} from "../../type/enum/national-excellent-exam";
+import {
+  getRankVietnameseValue,
+  getRankTranslationKey,
+} from "../../type/enum/ranks";
 
 const FORM_DATA_STORAGE_KEY = "form_data";
 const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
@@ -28,6 +44,52 @@ const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
 // Set expiration time (in milliseconds)
 // 2 hours = 2 * 60 * 60 * 1000
 const FORM_DATA_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
+
+// Helper function to convert fourth form fields
+function convertFourthFormToVietnamese(fourthForm: FormData["fourthForm"]) {
+  return {
+    ...fourthForm,
+    categories: fourthForm.categories.map((category) => ({
+      ...category,
+      entries: category.entries.map((entry) => ({
+        ...entry,
+        firstField: entry.firstField
+          ? category.categoryType === "national_award"
+            ? getNationalExcellentExamVietnameseValue(entry.firstField)
+            : getExamTypeVietnameseValue(entry.firstField)
+          : entry.firstField,
+        secondField: entry.secondField
+          ? category.categoryType === "language_cert"
+            ? entry.secondField // Keep as is for language certs (free text)
+            : getRankVietnameseValue(entry.secondField) // Convert ranks for awards/scores
+          : entry.secondField,
+      })),
+    })),
+  };
+}
+
+// Helper function to convert fourth form fields from Vietnamese
+function convertFourthFormFromVietnamese(fourthForm: FormData["fourthForm"]) {
+  return {
+    ...fourthForm,
+    categories: fourthForm.categories.map((category) => ({
+      ...category,
+      entries: category.entries.map((entry) => ({
+        ...entry,
+        firstField: entry.firstField
+          ? category.categoryType === "national_award"
+            ? getNationalExcellentExamTranslationKey(entry.firstField)
+            : getExamTypeTranslationKey(entry.firstField)
+          : entry.firstField,
+        secondField: entry.secondField
+          ? category.categoryType === "language_cert"
+            ? entry.secondField // Keep as is for language certs (free text)
+            : getRankTranslationKey(entry.secondField) // Convert ranks from Vietnamese
+          : entry.secondField,
+      })),
+    })),
+  };
+}
 
 // Helper function to convert translation keys to Vietnamese for storage
 function convertToVietnameseForStorage(formData: FormData): FormData {
@@ -44,7 +106,19 @@ function convertToVietnameseForStorage(formData: FormData): FormData {
       chosenSubjects: formData.thirdForm.chosenSubjects.map((subject) =>
         subject ? getNationalExamSubjectVietnameseValue(subject) : null,
       ),
+      optionalCategories: formData.thirdForm.optionalCategories.map(
+        (category) => ({
+          ...category,
+          scores: category.scores.map((score) => ({
+            ...score,
+            subject: score.subject
+              ? getOptionalSubjectVietnameseValue(score.subject)
+              : score.subject,
+          })),
+        }),
+      ),
     },
+    fourthForm: convertFourthFormToVietnamese(formData.fourthForm),
   };
 }
 
@@ -63,7 +137,19 @@ function convertFromVietnameseStorage(formData: FormData): FormData {
       chosenSubjects: formData.thirdForm.chosenSubjects.map((subject) =>
         subject ? getNationalExamSubjectTranslationKey(subject) : null,
       ),
+      optionalCategories: formData.thirdForm.optionalCategories.map(
+        (category) => ({
+          ...category,
+          scores: category.scores.map((score) => ({
+            ...score,
+            subject: score.subject
+              ? getOptionalSubjectTranslationKey(score.subject)
+              : score.subject,
+          })),
+        }),
+      ),
     },
+    fourthForm: convertFourthFormFromVietnamese(formData.fourthForm),
   };
 }
 

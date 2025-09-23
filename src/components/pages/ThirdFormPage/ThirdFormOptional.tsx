@@ -9,12 +9,15 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
-import { getOptionalCategorySubjects } from "../../../type/enum/combineUtil";
+import {
+  getOptionalCategorySubjects,
+  getCategoryTranslationKey,
+} from "../../../type/enum/combineUtil";
 
 interface OptionalScore {
   id: string;
   subject: string;
-  subjectOther?: string; // Add this field for "Other" input
+  subjectOther?: string;
   score: string;
 }
 
@@ -96,6 +99,23 @@ export default function ThirdFormOptional({
     setCategories(updated);
   };
 
+  // Convert translation keys to display options for subjects
+  const getTranslatedSubjectOptions = (availableOptions: string[]) => {
+    return availableOptions.map((translationKey) => ({
+      key: translationKey,
+      label: t(translationKey),
+    }));
+  };
+
+  // Get the selected subject value as an option object
+  const getSelectedSubjectValue = (translationKey: string | null) => {
+    if (!translationKey) return null;
+    return {
+      key: translationKey,
+      label: t(translationKey),
+    };
+  };
+
   // Get available subjects for a specific category and exclude already selected ones
   const getAvailableSubjects = (
     categoryName: string,
@@ -112,6 +132,12 @@ export default function ThirdFormOptional({
       .map((score) => score.subject);
 
     return allSubjects.filter((subject) => !selectedSubjects.includes(subject));
+  };
+
+  // Get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    const translationKey = getCategoryTranslationKey(categoryName);
+    return t(translationKey);
   };
 
   return (
@@ -134,25 +160,36 @@ export default function ThirdFormOptional({
             alignItems: "flex-start",
           }}
         >
-          {/* Category Header */}
+          {/* Category Header - Now with translation support */}
           <Typography
             variant="body1"
             sx={{
               mb: 1,
               color: "#9c27b0",
-              fontStyle: "italic",
               textAlign: "left",
             }}
           >
-            {t("thirdForm.firstTypo")} {category.name}{" "}
+            {t("thirdForm.firstTypo")}{" "}
+            {getTranslatedCategoryName(category.name)}{" "}
             {t("thirdForm.secondTypo")}
           </Typography>
 
           {/* Score Inputs */}
           {category.isExpanded &&
             category.scores.map((score) => {
+              const availableSubjects = getAvailableSubjects(
+                category.name,
+                score.id,
+              );
+              const translatedSubjectOptions =
+                getTranslatedSubjectOptions(availableSubjects);
+              const selectedSubjectValue = getSelectedSubjectValue(
+                score.subject || null,
+              );
+
+              // Check if "Other" is selected (works for both translation key and Vietnamese value)
               const isOtherSelected =
-                score.subject === "Khác" && category.name === "ĐGNL";
+                score.subject === "examTypes.other" || score.subject === "Khác";
 
               return (
                 <Box
@@ -176,16 +213,21 @@ export default function ThirdFormOptional({
                   >
                     {/* Subject Autocomplete */}
                     <Autocomplete
-                      options={getAvailableSubjects(category.name, score.id)}
-                      value={score.subject || null}
+                      options={translatedSubjectOptions}
+                      value={selectedSubjectValue}
                       onChange={(_, newValue) => {
+                        const translationKey = newValue?.key ?? "";
                         handleScoreChange(
                           category.id,
                           score.id,
                           "subject",
-                          newValue ?? "",
+                          translationKey,
                         );
                       }}
+                      getOptionLabel={(option) => option.label}
+                      isOptionEqualToValue={(option, value) =>
+                        option.key === value.key
+                      }
                       sx={{
                         width: 200,
                       }}
@@ -272,7 +314,7 @@ export default function ThirdFormOptional({
                     </IconButton>
                   </Box>
 
-                  {/* "Other" input field - appears below the main row for ĐGNL category */}
+                  {/* "Other" input field - appears below the main row */}
                   {isOtherSelected && (
                     <Box
                       sx={{

@@ -1,40 +1,40 @@
 // Define types for better TypeScript support
 type NationalExamSubjectTranslationKey =
-  | "subjects.math"
-  | "subjects.literature"
-  | "subjects.english"
-  | "subjects.german"
-  | "subjects.russian"
-  | "subjects.japanese"
-  | "subjects.french"
-  | "subjects.chinese"
-  | "subjects.physics"
-  | "subjects.chemistry"
-  | "subjects.biology"
-  | "subjects.history"
-  | "subjects.geography"
-  | "subjects.civic_education"
-  | "subjects.informatics"
-  | "subjects.technology";
+  | "subjects.toan"
+  | "subjects.ngu_van"
+  | "subjects.tieng_anh"
+  | "subjects.tieng_duc"
+  | "subjects.tieng_nga"
+  | "subjects.tieng_nhat"
+  | "subjects.tieng_phap"
+  | "subjects.tieng_trung"
+  | "subjects.vat_ly"
+  | "subjects.hoa_hoc"
+  | "subjects.sinh_hoc"
+  | "subjects.lich_su"
+  | "subjects.dia_ly"
+  | "subjects.gdktpl"
+  | "subjects.tin_hoc"
+  | "subjects.cong_nghe";
 
 // NationalExamSubjects enum with translation keys
 export const NationalExamSubjects = {
-  TOAN: "subjects.math",
-  NGU_VAN: "subjects.literature",
-  TIENG_ANH: "subjects.english",
-  TIENG_DUC: "subjects.german",
-  TIENG_NGA: "subjects.russian",
-  TIENG_NHAT: "subjects.japanese",
-  TIENG_PHAP: "subjects.french",
-  TIENG_TRUNG: "subjects.chinese",
-  VAT_LY: "subjects.physics",
-  HOA_HOC: "subjects.chemistry",
-  SINH_HOC: "subjects.biology",
-  LICH_SU: "subjects.history",
-  DIA_LY: "subjects.geography",
-  GDKT_PL: "subjects.civic_education",
-  TIN_HOC: "subjects.informatics",
-  CONG_NGHE: "subjects.technology",
+  TOAN: "subjects.toan",
+  NGU_VAN: "subjects.ngu_van",
+  TIENG_ANH: "subjects.tieng_anh",
+  TIENG_DUC: "subjects.tieng_duc",
+  TIENG_NGA: "subjects.tieng_nga",
+  TIENG_NHAT: "subjects.tieng_nhat",
+  TIENG_PHAP: "subjects.tieng_phap",
+  TIENG_TRUNG: "subjects.tieng_trung",
+  VAT_LY: "subjects.vat_ly",
+  HOA_HOC: "subjects.hoa_hoc",
+  SINH_HOC: "subjects.sinh_hoc",
+  LICH_SU: "subjects.lich_su",
+  DIA_LY: "subjects.dia_ly",
+  GDKT_PL: "subjects.gdktpl",
+  TIN_HOC: "subjects.tin_hoc",
+  CONG_NGHE: "subjects.cong_nghe",
 } as const;
 
 // Mapping from translation keys to Vietnamese values (for API)
@@ -42,22 +42,22 @@ export const NationalExamSubjectsVietnamese: Record<
   NationalExamSubjectTranslationKey,
   string
 > = {
-  "subjects.math": "Toán",
-  "subjects.literature": "Ngữ Văn",
-  "subjects.english": "Tiếng Anh",
-  "subjects.german": "Tiếng Đức",
-  "subjects.russian": "Tiếng Nga",
-  "subjects.japanese": "Tiếng Nhật",
-  "subjects.french": "Tiếng Pháp",
-  "subjects.chinese": "Tiếng Trung",
-  "subjects.physics": "Vật Lý",
-  "subjects.chemistry": "Hóa Học",
-  "subjects.biology": "Sinh Học",
-  "subjects.history": "Lịch Sử",
-  "subjects.geography": "Địa Lý",
-  "subjects.civic_education": "Giáo dục Kinh tế và Pháp luật",
-  "subjects.informatics": "Tin Học",
-  "subjects.technology": "Công Nghệ",
+  "subjects.toan": "Toán",
+  "subjects.ngu_van": "Ngữ Văn",
+  "subjects.tieng_anh": "Tiếng Anh",
+  "subjects.tieng_duc": "Tiếng Đức",
+  "subjects.tieng_nga": "Tiếng Nga",
+  "subjects.tieng_nhat": "Tiếng Nhật",
+  "subjects.tieng_phap": "Tiếng Pháp",
+  "subjects.tieng_trung": "Tiếng Trung",
+  "subjects.vat_ly": "Vật Lý",
+  "subjects.hoa_hoc": "Hóa Học",
+  "subjects.sinh_hoc": "Sinh Học",
+  "subjects.lich_su": "Lịch Sử",
+  "subjects.dia_ly": "Địa Lý",
+  "subjects.gdktpl": "Giáo dục Kinh tế và Pháp luật",
+  "subjects.tin_hoc": "Tin Học",
+  "subjects.cong_nghe": "Công Nghệ",
 } as const;
 
 // Reverse mapping from Vietnamese values to translation keys

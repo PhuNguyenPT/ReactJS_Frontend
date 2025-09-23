@@ -11,7 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { CCNNType, CCQTType } from "../../../type/enum/exam";
-import { NationalExcellentStudentExamSubject } from "../../../type/enum/national.excellent.exam";
+import { NationalExcellentStudentExamSubject } from "../../../type/enum/national-excellent-exam";
 import { Rank } from "../../../type/enum/ranks";
 import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 
@@ -24,18 +24,35 @@ export default function FourthForm() {
   const hsgOptions = Object.values(NationalExcellentStudentExamSubject);
   const rankOptions = Object.values(Rank);
 
+  // Convert translation keys to display options
+  const getTranslatedOptions = (options: string[]) => {
+    return options.map((translationKey) => ({
+      key: translationKey,
+      label: t(translationKey),
+    }));
+  };
+
+  // Get selected value as option object
+  const getSelectedValue = (translationKey: string | null) => {
+    if (!translationKey) return null;
+    return {
+      key: translationKey,
+      label: t(translationKey),
+    };
+  };
+
   // Options for each category
   const categoryOptions = {
     national_award: {
-      subjects: hsgOptions,
-      awards: rankOptions,
+      subjects: getTranslatedOptions(hsgOptions),
+      awards: getTranslatedOptions(rankOptions),
     },
     international_cert: {
-      certificates: ccqtOptions,
-      scores: rankOptions,
+      certificates: getTranslatedOptions(ccqtOptions),
+      scores: getTranslatedOptions(rankOptions),
     },
     language_cert: {
-      certificates: ccnnOptions,
+      certificates: getTranslatedOptions(ccnnOptions),
     },
   };
 
@@ -149,7 +166,7 @@ export default function FourthForm() {
     updateFourthForm({ categories: updatedCategories });
   };
 
-  // Options helper
+  // Options helper - returns translated options
   const getFirstFieldOptions = (categoryType: string) => {
     switch (categoryType) {
       case "national_award":
@@ -207,10 +224,17 @@ export default function FourthForm() {
 
           {category.isExpanded &&
             category.entries.map((entry) => {
+              const selectedFirstFieldValue = getSelectedValue(
+                entry.firstField || null,
+              );
+              const selectedSecondFieldValue = getSelectedValue(
+                entry.secondField || null,
+              );
+
+              // Check if "Other" is selected (works for both translation key and Vietnamese value)
               const isOtherSelected =
-                entry.firstField === "Khác" &&
-                (category.categoryType === "international_cert" ||
-                  category.categoryType === "language_cert");
+                entry.firstField === "examTypes.other" ||
+                entry.firstField === "Khác";
 
               return (
                 <Box
@@ -235,15 +259,20 @@ export default function FourthForm() {
                     {/* First Field Autocomplete */}
                     <Autocomplete
                       options={getFirstFieldOptions(category.categoryType)}
-                      value={entry.firstField || null}
+                      value={selectedFirstFieldValue}
                       onChange={(_, newValue) => {
+                        const translationKey = newValue?.key ?? "";
                         handleEntryChange(
                           category.id,
                           entry.id,
                           "firstField",
-                          newValue ?? "",
+                          translationKey,
                         );
                       }}
+                      getOptionLabel={(option) => option.label}
+                      isOptionEqualToValue={(option, value) =>
+                        option.key === value.key
+                      }
                       sx={{ width: 200 }}
                       filterSelectedOptions
                       renderInput={(params) => (
@@ -296,15 +325,20 @@ export default function FourthForm() {
                     ) : (
                       <Autocomplete
                         options={getSecondFieldOptions(category.categoryType)}
-                        value={entry.secondField || null}
+                        value={selectedSecondFieldValue}
                         onChange={(_, newValue) => {
+                          const translationKey = newValue?.key ?? "";
                           handleEntryChange(
                             category.id,
                             entry.id,
                             "secondField",
-                            newValue ?? "",
+                            translationKey,
                           );
                         }}
+                        getOptionLabel={(option) => option.label}
+                        isOptionEqualToValue={(option, value) =>
+                          option.key === value.key
+                        }
                         sx={{ width: 170 }}
                         filterSelectedOptions
                         renderInput={(params) => (
