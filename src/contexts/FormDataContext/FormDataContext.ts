@@ -143,6 +143,6 @@ export const initialFormData: FormData = {
       "10": { conduct: "", academicPerformance: "" },
       "11": { conduct: "", academicPerformance: "" },
       "12": { conduct: "", academicPerformance: "" },
-    },
+    } as Record<GradeKey, GradeValues>,
   },
 };

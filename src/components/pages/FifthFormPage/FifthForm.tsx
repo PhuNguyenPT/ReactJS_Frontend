@@ -27,7 +27,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
   };
 
   const formatValue = (value: number) => {
-    return `${String(value)} triệu VND`;
+    return `${String(value)} ${t("fifthForm.millionVND")}`;
   };
 
   const { costRange } = formData.fifthForm;
@@ -52,7 +52,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
             onChange={handleSliderChange}
             valueLabelFormat={formatValue}
             min={0}
-            max={500}
+            max={900}
             sx={{
               color: "#A657AE",
               maxWidth: "450px",
@@ -100,7 +100,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
           {/* Centered result text */}
           <Box sx={{ mt: 2, textAlign: "center" }}>
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
-              {`${String(costRange[0])} - ${String(costRange[1])} triệu VND / năm`}
+              {`${String(costRange[0])} - ${String(costRange[1])} ${t("fifthForm.millionVND/year")}`}
             </Typography>
           </Box>
         </Box>

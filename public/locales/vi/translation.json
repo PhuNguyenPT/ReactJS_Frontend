@@ -211,15 +211,19 @@
   },
   "fifthForm": {
     "title": "Dự trù kinh phí",
-    "subTitle1": "Trong một năm, gia đình bạn có thể chi bao nhiêu cho học phí?"
+    "subTitle1": "Trong một năm, gia đình bạn có thể chi bao nhiêu cho học phí?",
+    "millionVND": "triệu VND",
+    "millionVND/year": "triệu VND / năm"
   },
   "sixthForm": {
     "title": "Một số diện tuyển sinh đặc biệt",
-    "subTitle": "Bạn có thuộc một trong các diện ưu tiên sau không?",
-    "option1": "Anh hùng Lao động, Anh hùng Lực lượng vũ trang Nhân dân, Chiến sĩ thi đua toàn quốc",
-    "option2": "Học sinh trường chuyên",
-    "option3": "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
-    "option4": "Dân tộc thiểu số rất ít người (Mông, La Ha,...)"
+    "subTitle": "Bạn có thuộc một trong các diện ưu tiên sau không?"
+  },
+  "specialCases": {
+    "ethnic_minority_student": "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
+    "heroes_and_contributors": "Anh hùng Lao động, Anh hùng Lực lượng vũ trang Nhân dân, Chiến sĩ thi đua toàn quốc",
+    "transfer_student": "Học sinh trường chuyên",
+    "very_few_ethnic_minority": "Dân tộc thiểu số rất ít người (Mông, La Ha,...)"
   },
   "seventhForm": {
     "title": "Về học lực của bạn",
@@ -230,6 +234,18 @@
     "academicScore": "Học lực",
     "errorWarning1": "Vui lòng nhập điểm số học lực của bạn",
     "errorWarning2": "Vui lòng nhập kết quả rèn luyện của bạn"
+  },
+  "conduct": {
+    "good": "Tốt",
+    "satisfactory": "Khá",
+    "passed": "Đạt",
+    "not_passed": "Chưa đạt"
+  },
+  "academicPerformance": {
+    "good": "Tốt",
+    "satisfactory": "Khá",
+    "passed": "Đạt",
+    "not_passed": "Chưa đạt"
   },
   "eighthForm": {
     "title": "Vui lòng đăng tải bảng điểm của bạn với đầy đủ 6 học kỳ (3 năm ở THPT) vào các ô bên dưới",

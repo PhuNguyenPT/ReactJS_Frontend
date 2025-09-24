@@ -210,15 +210,19 @@
   },
   "fifthForm": {
     "title": "About your budget",
-    "subTitle1": "In a year, how much can your family spend on tuition fees?"
+    "subTitle1": "In a year, how much can your family spend on tuition fees?",
+    "millionVND": "million VND",
+    "millionVND/year": "million VND / year"
   },
   "sixthForm": {
     "title": "Special Admission Categories",
-    "subTitle": "Do you belong to any of the following priority categories?",
-    "option1": "Labor Heroes, People's Armed Forces Heroes, National Emulation Soldiers",
-    "option2": "Specialized school students",
-    "option3": "Students from poor districts, extremely difficult areas",
-    "option4": "Ethnic minorities with very few people (Mong, La Ha,...)"
+    "subTitle": "Do you belong to any of the following priority categories?"
+  },
+  "specialCases": {
+    "ethnic_minority_student": "Students from poor districts and extremely difficult areas",
+    "heroes_and_contributors": "Labor Heroes, Armed Forces Heroes, National Outstanding Fighters",
+    "transfer_student": "Specialized school students",
+    "very_few_ethnic_minority": "Very few ethnic minorities (Hmong, La Ha, etc.)"
   },
   "seventhForm": {
     "title": "About your academic scores",
@@ -229,6 +233,18 @@
     "academicScore": "Academic score",
     "errorWarning1": "Please enter your academic scores",
     "errorWarning2": "Please enter your practice results"
+  },
+  "conduct": {
+    "good": "Good",
+    "satisfactory": "Satisfactory",
+    "passed": "Passed",
+    "not_passed": "Not Passed"
+  },
+  "academicPerformance": {
+    "good": "Good",
+    "satisfactory": "Satisfactory",
+    "passed": "Passed",
+    "not_passed": "Not Passed"
   },
   "eighthForm": {
     "title": "Please upload your score board with full 6 semester (3 years in HighSchool) into these fields",

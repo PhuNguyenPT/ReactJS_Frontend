@@ -6,7 +6,7 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { AcademicPerformance } from "../../../type/enum/academic.performance";
+import { AcademicPerformance } from "../../../type/enum/academic-performance";
 import { Conduct } from "../../../type/enum/conduct";
 import { useFormData } from "../../../contexts/FormDataContext/useFormData";
 import type { GradeKey } from "../../../contexts/FormDataContext/FormDataContext";
@@ -23,6 +23,28 @@ export default function SeventhForm({
 
   const conductOptions = Object.values(Conduct);
   const academicPerformanceOptions = Object.values(AcademicPerformance);
+
+  // Convert translation keys to display options
+  const getTranslatedOptions = (options: string[]) => {
+    return options.map((translationKey) => ({
+      key: translationKey,
+      label: t(translationKey),
+    }));
+  };
+
+  // Get selected value as option object
+  const getSelectedValue = (translationKey: string | null) => {
+    if (!translationKey) return null;
+    return {
+      key: translationKey,
+      label: t(translationKey),
+    };
+  };
+
+  const translatedConductOptions = getTranslatedOptions(conductOptions);
+  const translatedAcademicPerformanceOptions = getTranslatedOptions(
+    academicPerformanceOptions,
+  );
 
   const grades = [
     { key: "10" as GradeKey, label: t("seventhForm.subTitle10") },
@@ -46,6 +68,13 @@ export default function SeventhForm({
         const conductEmpty = shouldValidate && values[grade.key].conduct === "";
         const performanceEmpty =
           shouldValidate && values[grade.key].academicPerformance === "";
+
+        const selectedConductValue = getSelectedValue(
+          values[grade.key].conduct || null,
+        );
+        const selectedPerformanceValue = getSelectedValue(
+          values[grade.key].academicPerformance || null,
+        );
 
         return (
           <Box
@@ -71,15 +100,20 @@ export default function SeventhForm({
               {/* Conduct (Kết quả rèn luyện) */}
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Autocomplete
-                  options={conductOptions}
-                  value={values[grade.key].conduct || null}
+                  options={translatedConductOptions}
+                  value={selectedConductValue}
                   onChange={(_, newValue) => {
+                    const translationKey = newValue?.key ?? "";
                     updateSeventhFormGrade(
                       grade.key,
                       "conduct",
-                      newValue ?? "",
+                      translationKey,
                     );
                   }}
+                  getOptionLabel={(option) => option.label}
+                  isOptionEqualToValue={(option, value) =>
+                    option.key === value.key
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -118,15 +152,20 @@ export default function SeventhForm({
               {/* Academic Performance (Học lực) */}
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Autocomplete
-                  options={academicPerformanceOptions}
-                  value={values[grade.key].academicPerformance || null}
+                  options={translatedAcademicPerformanceOptions}
+                  value={selectedPerformanceValue}
                   onChange={(_, newValue) => {
+                    const translationKey = newValue?.key ?? "";
                     updateSeventhFormGrade(
                       grade.key,
                       "academicPerformance",
-                      newValue ?? "",
+                      translationKey,
                     );
                   }}
+                  getOptionLabel={(option) => option.label}
+                  isOptionEqualToValue={(option, value) =>
+                    option.key === value.key
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
