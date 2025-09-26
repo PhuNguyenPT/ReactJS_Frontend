@@ -73,7 +73,7 @@ export default function FourthForm() {
               ? t("fourthForm.secondField")
               : t("fourthForm.thirdField");
         const expectedSecondLabel =
-          index === 1 ? t("fourthForm.score") : t("fourthForm.award");
+          index === 2 ? t("fourthForm.score") : t("fourthForm.award");
 
         return (
           category.name !== expectedName ||
@@ -95,7 +95,7 @@ export default function FourthForm() {
                 ? t("fourthForm.secondField")
                 : t("fourthForm.thirdField"),
           secondFieldLabel:
-            index === 1 ? t("fourthForm.score") : t("fourthForm.award"),
+            index === 2 ? t("fourthForm.score") : t("fourthForm.award"),
         }),
       );
 

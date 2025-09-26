@@ -40,7 +40,7 @@ export default function EighthFormPage() {
 
         <EighthForm />
         <Typography
-          variant="body2"
+          variant="body1"
           sx={{ color: "white", textAlign: "left", paddingTop: "2rem" }}
         >
           {t("eighthForm.helper1")} <strong>{t("buttons.next")}</strong>{" "}

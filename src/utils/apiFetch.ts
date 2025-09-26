@@ -3,6 +3,7 @@ import axios, {
   type AxiosRequestConfig,
   type AxiosResponse,
   type AxiosError,
+  type InternalAxiosRequestConfig,
 } from "axios";
 import APIError from "./apiError";
 
@@ -13,8 +14,51 @@ const BASE_URL =
 const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+  },
+  timeout: 10000, // 10 second timeout
 });
+
+// Request interceptor for debugging
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    console.log("API Request:", {
+      url: config.url,
+      method: config.method,
+      data: config.data as unknown,
+      headers: config.headers,
+    });
+    return config;
+  },
+  (error: unknown) => {
+    console.error("Request Error:", error);
+    return Promise.reject(
+      error instanceof Error ? error : new Error(String(error)),
+    );
+  },
+);
+
+// Response interceptor for debugging
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => {
+    console.log("✅ API Response:", {
+      url: response.config.url,
+      status: response.status,
+      data: response.data as unknown,
+    });
+    return response;
+  },
+  (error: AxiosError) => {
+    console.error("Response Error:", {
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
+    return Promise.reject(error);
+  },
+);
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -38,35 +82,61 @@ async function apiFetch<T = unknown, B = unknown>(
     requiresAuth = false,
   } = options;
 
+  // Build config object
   const config: AxiosRequestConfig = {
-    url: endpoint,
     method,
     headers: { ...headers },
-    data: body,
     signal,
   };
 
-  // 🔑 Inject auth token if required
+  // Add body data if present
+  if (body !== undefined && body !== null && method !== "GET") {
+    config.data = body;
+  }
+
+  // Inject auth token if required
   if (requiresAuth) {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers ??= {};
-      (config.headers as Record<string, string>).Authorization =
-        `Bearer ${token}`;
+      config.headers = {
+        ...(config.headers
+          ? Object.fromEntries(Object.entries(config.headers))
+          : {}),
+        Authorization: `Bearer ${token}`,
+      };
+    } else {
+      console.warn("No access token found for authenticated request");
     }
   }
 
   try {
-    const response: AxiosResponse<T> = await apiClient.request<T>(config);
+    // Use the endpoint directly with the axios instance
+    const response: AxiosResponse<T> = await apiClient(endpoint, config);
     return response.data;
   } catch (err: unknown) {
-    // ✅ Narrow the error type safely
+    // Narrow the error type safely
     if (axios.isAxiosError(err)) {
-      const axiosError = err as AxiosError<{ message?: string }>;
+      const axiosError = err as AxiosError<{
+        message?: string;
+        error?: string;
+      }>;
+
+      // Check for network errors
+      if (!axiosError.response) {
+        console.error("Network error - server might be down or CORS issue");
+        throw new APIError(
+          0,
+          "Network error - please check if the server is running",
+          { originalError: axiosError.message },
+        );
+      }
+
       throw new APIError(
-        axiosError.response?.status ?? 500,
-        axiosError.response?.data.message ?? axiosError.message,
-        axiosError.response?.data,
+        axiosError.response.status,
+        axiosError.response.data.message ??
+          axiosError.response.data.error ??
+          axiosError.message,
+        axiosError.response.data,
       );
     }
 

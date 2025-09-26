@@ -18,7 +18,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     setRefreshToken(null);
     setUser(null);
-
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
   };
@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = login; // Same logic as login
 
-  const displayName = user?.name ?? user?.email;
+  const displayName = user?.name ?? user?.email ?? "Guest";
   const value = useMemo(
     () => ({
       user,
