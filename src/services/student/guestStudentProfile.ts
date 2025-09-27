@@ -3,7 +3,7 @@ import type { FormData } from "../../contexts/FormData/FormDataContext";
 import { transformFormDataToApiSchema } from "../../contexts/FormData/FormDataTransformer";
 
 export interface StudentResponse {
-  // adjust this according to the actual response from your backend
+  status: number;
   success: boolean;
   message?: string;
   data?: unknown;

@@ -74,9 +74,10 @@ function convertFourthFormToVietnamese(fourthForm: FormData["fourthForm"]) {
             : getExamTypeVietnameseValue(entry.firstField)
           : entry.firstField,
         secondField: entry.secondField
-          ? category.categoryType === "language_cert"
-            ? entry.secondField // Keep as is for language certs (free text)
-            : getRankVietnameseValue(entry.secondField) // Convert ranks for awards/scores
+          ? category.categoryType === "language_cert" ||
+            category.categoryType === "international_cert"
+            ? entry.secondField
+            : getRankVietnameseValue(entry.secondField)
           : entry.secondField,
       })),
     })),
@@ -97,9 +98,10 @@ function convertFourthFormFromVietnamese(fourthForm: FormData["fourthForm"]) {
             : getExamTypeTranslationKey(entry.firstField)
           : entry.firstField,
         secondField: entry.secondField
-          ? category.categoryType === "language_cert"
-            ? entry.secondField // Keep as is for language certs (free text)
-            : getRankTranslationKey(entry.secondField) // Convert ranks from Vietnamese
+          ? category.categoryType === "language_cert" ||
+            category.categoryType === "international_cert"
+            ? entry.secondField
+            : getRankTranslationKey(entry.secondField)
           : entry.secondField,
       })),
     })),

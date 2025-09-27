@@ -47,9 +47,13 @@ export function transformFormDataToApiSchema(formData: FormData) {
       })),
     ],
 
+    // Fixed: Only include if scores exist, match the example structure
     aptitudeTestScore: aptitudeCategory?.scores.length
       ? {
-          examType: { type: "DGNL", value: "VNUHCM" },
+          examType: {
+            type: "DGNL",
+            value: "VNUHCM", // This should be dynamic based on the actual exam type
+          },
           score: parseFloat(aptitudeCategory.scores[0].score) || 0,
         }
       : null,
@@ -66,28 +70,39 @@ export function transformFormDataToApiSchema(formData: FormData) {
         score: parseFloat(s.score) || 0,
       })) ?? [],
 
+    // Fixed: Awards structure to match the example
     awards: nationalAwards.map((a) => ({
-      category: a.firstFieldOther ?? a.firstField,
-      level: a.secondField,
-      name: a.firstField,
+      category: a.firstField, // The subject/field (e.g., "Tiếng Anh")
+      level: a.secondField, // The rank (e.g., "Hạng Nhất")
+      name: "Học sinh giỏi cấp Quốc Gia", // This should be based on the award type
     })),
 
+    // Fixed: Certifications structure
     certifications: [
       ...languageCerts.map((c) => ({
-        examType: { type: "CCNN", value: c.firstField },
-        level: c.secondField,
+        examType: {
+          type: "CCNN", // Language certification
+          value: c.firstField, // e.g., "IELTS"
+        },
+        level: c.secondField, // e.g., "6.5"
       })),
       ...internationalCerts.map((c) => ({
-        examType: { type: "CCQT", value: c.firstField },
-        level: c.secondField,
+        examType: {
+          type: "CCQT", // International certification
+          value: c.firstField, // e.g., "SAT"
+        },
+        level: c.secondField, // e.g., "1200"
       })),
     ],
 
+    // Budget values are already in VND after getFormDataForApi conversion
     minBudget: formData.fifthForm.costRange[0],
     maxBudget: formData.fifthForm.costRange[1],
 
+    // Special cases are already in Vietnamese after getFormDataForApi conversion
     specialStudentCases: formData.sixthForm.specialStudentCases,
 
+    // Conducts are already in Vietnamese after getFormDataForApi conversion
     conducts: Object.entries(formData.seventhForm.grades).map(
       ([grade, values]) => ({
         grade: parseInt(grade, 10),
@@ -95,6 +110,7 @@ export function transformFormDataToApiSchema(formData: FormData) {
       }),
     ),
 
+    // Academic performances are already in Vietnamese after getFormDataForApi conversion
     academicPerformances: Object.entries(formData.seventhForm.grades).map(
       ([grade, values]) => ({
         grade: parseInt(grade, 10),
@@ -103,8 +119,3 @@ export function transformFormDataToApiSchema(formData: FormData) {
     ),
   };
 }
-
-// Example usage for API calls:
-// const { getFormDataForApi } = useFormData();
-// const vietnameseFormData = getFormDataForApi();
-// const apiPayload = transformFormDataToApiSchema(vietnameseFormData);

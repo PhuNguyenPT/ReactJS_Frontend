@@ -43,7 +43,7 @@ apiClient.interceptors.request.use(
 // Response interceptor for debugging
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log("✅ API Response:", {
+    console.log("API Response:", {
       url: response.config.url,
       status: response.status,
       data: response.data as unknown,

@@ -49,7 +49,7 @@ export default function FourthForm() {
     },
     international_cert: {
       certificates: getTranslatedOptions(ccqtOptions),
-      scores: getTranslatedOptions(rankOptions),
+      // Removed scores since it will now use text input
     },
     language_cert: {
       certificates: getTranslatedOptions(ccnnOptions),
@@ -184,8 +184,6 @@ export default function FourthForm() {
     switch (categoryType) {
       case "national_award":
         return categoryOptions.national_award.awards;
-      case "international_cert":
-        return categoryOptions.international_cert.scores;
       default:
         return [];
     }
@@ -227,9 +225,11 @@ export default function FourthForm() {
               const selectedFirstFieldValue = getSelectedValue(
                 entry.firstField || null,
               );
-              const selectedSecondFieldValue = getSelectedValue(
-                entry.secondField || null,
-              );
+              // Only get translated value for national_award, not for score fields
+              const selectedSecondFieldValue =
+                category.categoryType === "national_award"
+                  ? getSelectedValue(entry.secondField || null)
+                  : null;
 
               // Check if "Other" is selected (works for both translation key and Vietnamese value)
               const isOtherSelected =
@@ -295,8 +295,9 @@ export default function FourthForm() {
                       )}
                     />
 
-                    {/* Second Field */}
-                    {category.categoryType === "language_cert" ? (
+                    {/* Second Field - Text input for language_cert and international_cert, Autocomplete for national_award */}
+                    {category.categoryType === "language_cert" ||
+                    category.categoryType === "international_cert" ? (
                       <TextField
                         value={entry.secondField}
                         onChange={(e) => {

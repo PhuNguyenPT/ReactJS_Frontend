@@ -25,7 +25,7 @@ export default function useLoginForm() {
     e.preventDefault();
     setApiError("");
 
-    // ✅ Use class-validator instead of manual checks
+    // Use class-validator instead of manual checks
     const dto = plainToInstance(LoginDto, { email, password });
     const validationErrors = await validateDTO(dto);
 
