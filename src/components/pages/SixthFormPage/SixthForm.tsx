@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { SpecialStudentCase } from "../../../type/enum/special-student-case";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 const SixthForm = () => {
   const { t } = useTranslation();

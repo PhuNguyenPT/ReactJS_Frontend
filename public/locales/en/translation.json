@@ -74,7 +74,8 @@
     "selectProvince": "Province/City",
     "selectUniType": "University Type",
     "enterButton": "NEXT",
-    "errorWarning": "Please select a province/city"
+    "errorWarning1": "Please select a province/city",
+    "errorWarning2": "Please select a university type"
   },
   "uniType": {
     "private": "Private",

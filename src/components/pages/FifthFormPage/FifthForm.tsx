@@ -1,7 +1,7 @@
 import { useImperativeHandle } from "react";
 import { Box, FormControl, Slider, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 export interface FifthFormRef {
   validate: () => boolean;

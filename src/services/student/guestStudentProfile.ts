@@ -1,6 +1,6 @@
 import apiFetch from "../../utils/apiFetch";
-import type { FormData } from "../../contexts/FormDataContext/FormDataContext";
-import { transformFormDataToApiSchema } from "../../contexts/FormDataContext/FormDataTransformer";
+import type { FormData } from "../../contexts/FormData/FormDataContext";
+import { transformFormDataToApiSchema } from "../../contexts/FormData/FormDataTransformer";
 
 export interface StudentResponse {
   // adjust this according to the actual response from your backend

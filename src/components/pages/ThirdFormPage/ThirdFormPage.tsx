@@ -7,7 +7,7 @@ import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 export default function ThirdFormPage() {
   usePageTitle("Unizy | Third Form");

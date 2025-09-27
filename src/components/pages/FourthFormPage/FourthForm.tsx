@@ -13,7 +13,7 @@ import React from "react";
 import { CCNNType, CCQTType } from "../../../type/enum/exam";
 import { NationalExcellentStudentExamSubject } from "../../../type/enum/national-excellent-exam";
 import { Rank } from "../../../type/enum/ranks";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 export default function FourthForm() {
   const { t } = useTranslation();

@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { getAllMajorGroups } from "../../../type/enum/major";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 const SecondForm = ({ hasError }: { hasError: boolean }) => {
   const { t } = useTranslation();

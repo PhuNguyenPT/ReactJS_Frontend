@@ -8,8 +8,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { AcademicPerformance } from "../../../type/enum/academic-performance";
 import { Conduct } from "../../../type/enum/conduct";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
-import type { GradeKey } from "../../../contexts/FormDataContext/FormDataContext";
+import { useFormData } from "../../../contexts/FormData/useFormData";
+import type { GradeKey } from "../../../contexts/FormData/FormDataContext";
 
 interface SeventhFormProps {
   shouldValidate?: boolean;

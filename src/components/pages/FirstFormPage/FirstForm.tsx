@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.provinces";
 import { getAllUniTypes } from "../../../type/enum/uni-type";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 const FirstForm = () => {
   const navigate = useNavigate();

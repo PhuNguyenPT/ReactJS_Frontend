@@ -7,8 +7,9 @@ import axios, {
 } from "axios";
 import APIError from "./apiError";
 
-const BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:3001/api";
+console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // ✅ Preconfigured axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -17,7 +18,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // 10 second timeout
+  timeout: 10000,
 });
 
 // Request interceptor for debugging

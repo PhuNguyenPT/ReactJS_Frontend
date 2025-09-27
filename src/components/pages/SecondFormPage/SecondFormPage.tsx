@@ -6,7 +6,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SecondForm from "./SecondForm";
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 export default function SecondFormPage() {
   usePageTitle("Unizy | Second Form");
