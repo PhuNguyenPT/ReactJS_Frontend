@@ -257,11 +257,18 @@ export function FileDataProvider({ children }: { children: ReactNode }) {
     const formData = new FormData();
     const allFiles = getAllEighthFormFiles();
 
-    allFiles.forEach(({ grade, semester, file }) => {
-      // Create a descriptive field name for the API
-      const fieldName = `grade_${grade}_semester_${(semester + 1).toString()}`;
-      formData.append(fieldName, file);
+    // Add each file
+    allFiles.forEach(({ file }) => {
+      formData.append("files", file);
     });
+
+    // Build metadata array (must be same order/length as files)
+    const metadata = allFiles.map(() => ({
+      fileType: "transcript",
+    }));
+
+    // Append metadata JSON string
+    formData.append("filesMetadata", JSON.stringify(metadata));
 
     return formData;
   }, [getAllEighthFormFiles]);

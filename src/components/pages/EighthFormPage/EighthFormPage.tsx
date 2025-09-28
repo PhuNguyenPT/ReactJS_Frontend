@@ -1,4 +1,3 @@
-import { useState } from "react";
 import usePageTitle from "../../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import {
@@ -7,61 +6,23 @@ import {
   Button,
   CircularProgress,
   Alert,
+  LinearProgress,
 } from "@mui/material";
 import EighthForm from "./EighthForm";
 import { useTranslation } from "react-i18next";
-import { useFormData } from "../../../contexts/FormData/useFormData";
-import { submitGuestStudent } from "../../../services/student/guestStudentProfile";
+import { useStudentProfile } from "../../../hooks/useStudentProfile";
 
 export default function EighthFormPage() {
   usePageTitle("Unizy | Eighth Form");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Get form data from context
-  const { getFormDataForApi, clearStoredFormData } = useFormData();
-
-  // State for API call handling
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Use the custom hook for profile submission
+  const { isSubmitting, error, handleSubmit, clearError, uploadProgress } =
+    useStudentProfile();
 
   const handleNext = async () => {
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
-      // Get the form data already converted to Vietnamese values
-      const formData = getFormDataForApi();
-
-      // Submit to API
-      const response = await submitGuestStudent(formData);
-
-      if (response.success) {
-        // Clear the stored form data after successful submission
-        clearStoredFormData();
-
-        // Navigate to the next page (you might want to pass the response data)
-        void navigate("/ninthForm", {
-          state: {
-            submissionSuccess: true,
-            responseData: response.data,
-          },
-        });
-      } else {
-        // Handle API error response
-        setError(response.message ?? "Submission failed. Please try again.");
-      }
-    } catch (err) {
-      // Handle network or other errors
-      console.error("Error submitting form:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unexpected error occurred. Please try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    await handleSubmit();
   };
 
   const handlePrev = () => {
@@ -91,13 +52,44 @@ export default function EighthFormPage() {
 
         <EighthForm />
 
+        {/* Upload Progress */}
+        {isSubmitting && uploadProgress > 0 && (
+          <Box sx={{ width: "100%", maxWidth: "600px", mt: 2 }}>
+            <LinearProgress
+              variant="determinate"
+              value={uploadProgress}
+              sx={{
+                height: 8,
+                borderRadius: 5,
+                backgroundColor: "rgba(255, 255, 255, 0.3)",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: "#A657AE",
+                },
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                color: "white",
+                mt: 1,
+                display: "block",
+                textAlign: "center",
+              }}
+            >
+              {uploadProgress < 50
+                ? "Creating profile..."
+                : uploadProgress < 100
+                  ? "Uploading files..."
+                  : "Complete!"}
+            </Typography>
+          </Box>
+        )}
+
         {/* Error Alert */}
         {error && (
           <Alert
             severity="error"
-            onClose={() => {
-              setError(null);
-            }}
+            onClose={clearError}
             sx={{
               mt: 2,
               maxWidth: "600px",
@@ -145,9 +137,7 @@ export default function EighthFormPage() {
 
         <Button
           variant="contained"
-          onClick={() => {
-            void handleNext();
-          }}
+          onClick={() => void handleNext()}
           disabled={isSubmitting}
           sx={{
             position: "fixed",
