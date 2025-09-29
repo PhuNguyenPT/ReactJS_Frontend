@@ -11,13 +11,11 @@ console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// ✅ Preconfigured axios instance
+// ✅ Preconfigured axios instance - REMOVED default Content-Type
 const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // DON'T set Content-Type here - let axios set it based on the data
   timeout: 10000,
 });
 
@@ -93,18 +91,28 @@ async function apiFetch<T = unknown, B = unknown>(
   // Add body data if present
   if (body !== undefined && body !== null && method !== "GET") {
     config.data = body;
+
+    // IMPORTANT: Set Content-Type based on body type
+    // If body is FormData, don't set Content-Type (let browser set it with boundary)
+    // Otherwise, set it to application/json
+    if (!(body instanceof FormData)) {
+      // Safely set Content-Type for non-FormData requests
+      config.headers ??= {};
+      config.headers["Content-Type"] = "application/json";
+    }
+    // For FormData, explicitly delete Content-Type if it was set
+    else if (config.headers && "Content-Type" in config.headers) {
+      delete config.headers["Content-Type"];
+    }
   }
 
   // Inject auth token if required
   if (requiresAuth) {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers = {
-        ...(config.headers
-          ? Object.fromEntries(Object.entries(config.headers))
-          : {}),
-        Authorization: `Bearer ${token}`,
-      };
+      // Safely set Authorization header
+      config.headers ??= {};
+      config.headers.Authorization = `Bearer ${token}`;
     } else {
       console.warn("No access token found for authenticated request");
     }

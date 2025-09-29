@@ -3,10 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useFormData } from "../contexts/FormData/useFormData";
 import { useFileData } from "../contexts/FileData/useFileData";
 import { submitStudentProfile, isUserAuthenticated } from "./useCreateProfile";
-import { uploadStudentFiles } from "../services/fileUpload/fileUploadService";
+import {
+  uploadStudentFilesAuto,
+  isUploadSuccessful,
+  getUploadStatusMessage,
+} from "./useFileUpload";
 import {
   hasUserId,
   type NinthFormNavigationState,
+  type FileUploadResponse,
 } from "../type/interface/profileTypes";
 
 interface UseStudentProfileReturn {
@@ -30,6 +35,53 @@ export function useStudentProfile(): UseStudentProfileReturn {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  /**
+   * Handle file uploads for the student profile
+   */
+  const handleFileUploads = async (
+    studentId: string,
+    isAuthenticated: boolean,
+  ): Promise<FileUploadResponse | null> => {
+    const files = getAllEighthFormFiles();
+
+    if (files.length === 0) {
+      console.log("No files to upload");
+      return null;
+    }
+
+    console.log(
+      `Uploading ${String(files.length)} files for ${
+        isAuthenticated ? "authenticated" : "guest"
+      } student ${studentId}`,
+    );
+
+    try {
+      // Prepare and upload files
+      const filePayloads = files.map(({ grade, semester, file }) => ({
+        grade,
+        semester: semester + 1, // Convert 0-indexed to 1-indexed
+        file,
+      }));
+
+      const response = await uploadStudentFilesAuto(studentId, filePayloads);
+
+      // Log the status
+      const statusMessage = getUploadStatusMessage(response, isAuthenticated);
+      if (isUploadSuccessful(response)) {
+        console.log(statusMessage);
+      } else {
+        console.warn(statusMessage);
+      }
+
+      return response;
+    } catch (uploadError) {
+      console.error("File upload error:", uploadError);
+      // Don't fail the entire process if file upload fails
+      // Files are supplementary to the main profile
+      return null;
+    }
+  };
 
   /**
    * Handle form submission
@@ -66,48 +118,17 @@ export function useStudentProfile(): UseStudentProfileReturn {
           throw new Error("No student ID received from server");
         }
 
-        // Step 2: Upload files if authenticated and files exist
-        const files = getAllEighthFormFiles();
-        let fileUploadResponse = null;
-
-        if (isAuthenticated && files.length > 0) {
-          console.log(
-            `Uploading ${files.length.toString()} files for student ${studentId}`,
-          );
-          setUploadProgress(75);
-
-          try {
-            // Prepare files for upload
-            const filePayloads = files.map(({ grade, semester, file }) => ({
-              grade,
-              semester: semester + 1, // Convert 0-indexed to 1-indexed
-              file,
-            }));
-
-            // Upload files
-            fileUploadResponse = await uploadStudentFiles(
-              studentId,
-              filePayloads,
-            );
-
-            if (!fileUploadResponse.success) {
-              console.warn("File upload failed:", fileUploadResponse.message);
-              // Don't throw error - files are optional
-              // But log the warning for debugging
-            } else {
-              console.log("Files uploaded successfully");
-            }
-          } catch (uploadError) {
-            console.error("File upload error:", uploadError);
-            // Don't fail the entire process if file upload fails
-            // Files are supplementary to the main profile
-          }
-        }
+        // Step 2: Upload files if files exist
+        setUploadProgress(75);
+        const fileUploadResponse = await handleFileUploads(
+          studentId,
+          isAuthenticated,
+        );
 
         setUploadProgress(100);
 
-        // Clear files from context after successful submission
-        if (fileUploadResponse?.success) {
+        // Clear files from context after successful upload
+        if (isUploadSuccessful(fileUploadResponse)) {
           clearEighthFormFiles();
         }
 
@@ -116,8 +137,8 @@ export function useStudentProfile(): UseStudentProfileReturn {
           submissionSuccess: true,
           responseData: response.data ?? response,
           wasAuthenticated: isAuthenticated,
-          filesUploaded: fileUploadResponse?.success ?? false,
-          uploadedFilesCount: files.length,
+          filesUploaded: isUploadSuccessful(fileUploadResponse),
+          uploadedFilesCount: getAllEighthFormFiles().length,
         };
 
         void navigate("/ninthForm", { state: navigationState });

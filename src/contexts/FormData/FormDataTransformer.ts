@@ -1,5 +1,26 @@
 import type { FormData } from "./FormDataContext";
 
+/**
+ * Helper function to check if a value is empty (null, undefined, empty string, or whitespace)
+ */
+function isEmpty(value: unknown): boolean {
+  return (
+    value === null ||
+    value === undefined ||
+    (typeof value === "string" && value.trim() === "")
+  );
+}
+
+/**
+ * Helper function to filter out empty values from arrays
+ */
+function filterNonEmpty<T>(arr: (T | null | undefined)[]): T[] {
+  return arr.filter((item) => !isEmpty(item)) as T[];
+}
+
+/**
+ * Transform form data to API schema, excluding all empty/null/undefined values
+ */
 export function transformFormDataToApiSchema(formData: FormData) {
   // Extract optional categories
   const aptitudeCategory = formData.thirdForm.optionalCategories.find(
@@ -28,94 +49,176 @@ export function transformFormDataToApiSchema(formData: FormData) {
       (c) => c.categoryType === "language_cert",
     )?.entries ?? [];
 
-  return {
-    province: formData.firstForm ?? "",
-    uniType: formData.uniType ?? "",
+  // Build the base payload with only non-empty values
+  const payload: Record<string, unknown> = {};
 
-    // formData.secondForm now contains Vietnamese values when coming from getFormDataForApi()
-    majors: formData.secondForm.filter(Boolean) as string[],
+  // Add province if not empty
+  if (!isEmpty(formData.firstForm)) {
+    payload.province = formData.firstForm;
+  }
 
-    nationalExams: [
-      { name: "Toán", score: parseFloat(formData.thirdForm.mathScore) || 0 },
-      {
-        name: "Ngữ Văn",
-        score: parseFloat(formData.thirdForm.literatureScore) || 0,
-      },
-      ...formData.thirdForm.chosenSubjects.map((subject, i) => ({
-        name: subject ?? "",
-        score: parseFloat(formData.thirdForm.chosenScores[i] || "0") || 0,
-      })),
-    ],
+  // Add uniType if not empty
+  if (!isEmpty(formData.uniType)) {
+    payload.uniType = formData.uniType;
+  }
 
-    // Fixed: Only include if scores exist, match the example structure
-    aptitudeTestScore: aptitudeCategory?.scores.length
-      ? {
-          examType: {
-            type: "DGNL",
-            value: "VNUHCM", // This should be dynamic based on the actual exam type
-          },
-          score: parseFloat(aptitudeCategory.scores[0].score) || 0,
-        }
-      : null,
+  // Add majors (filter out null/empty values)
+  const majors = filterNonEmpty(formData.secondForm);
+  if (majors.length > 0) {
+    payload.majors = majors;
+  }
 
-    vsatScores:
-      vsatCategory?.scores.map((s) => ({
-        name: s.subject,
-        score: parseFloat(s.score) || 0,
-      })) ?? [],
+  // Build national exams array (only include if scores are provided)
+  const nationalExams = [];
 
-    talentScores:
-      talentCategory?.scores.map((s) => ({
-        name: s.subject,
-        score: parseFloat(s.score) || 0,
-      })) ?? [],
+  if (!isEmpty(formData.thirdForm.mathScore)) {
+    const mathScore = parseFloat(formData.thirdForm.mathScore);
+    if (!isNaN(mathScore)) {
+      nationalExams.push({ name: "Toán", score: mathScore });
+    }
+  }
 
-    // Fixed: Awards structure to match the example
-    awards: nationalAwards.map((a) => ({
-      category: a.firstField, // The subject/field (e.g., "Tiếng Anh")
-      level: a.secondField, // The rank (e.g., "Hạng Nhất")
-      name: "Học sinh giỏi cấp Quốc Gia", // This should be based on the award type
-    })),
+  if (!isEmpty(formData.thirdForm.literatureScore)) {
+    const litScore = parseFloat(formData.thirdForm.literatureScore);
+    if (!isNaN(litScore)) {
+      nationalExams.push({ name: "Ngữ Văn", score: litScore });
+    }
+  }
 
-    // Fixed: Certifications structure
-    certifications: [
-      ...languageCerts.map((c) => ({
+  // Add chosen subjects with scores
+  formData.thirdForm.chosenSubjects.forEach((subject, i) => {
+    const score = formData.thirdForm.chosenScores[i];
+    if (!isEmpty(subject) && !isEmpty(score)) {
+      const parsedScore = parseFloat(score);
+      if (!isNaN(parsedScore)) {
+        nationalExams.push({ name: subject, score: parsedScore });
+      }
+    }
+  });
+
+  if (nationalExams.length > 0) {
+    payload.nationalExams = nationalExams;
+  }
+
+  // Add aptitude test score if available
+  if (
+    aptitudeCategory?.scores.length &&
+    !isEmpty(aptitudeCategory.scores[0].score)
+  ) {
+    const score = parseFloat(aptitudeCategory.scores[0].score);
+    if (!isNaN(score)) {
+      payload.aptitudeTestScore = {
         examType: {
-          type: "CCNN", // Language certification
-          value: c.firstField, // e.g., "IELTS"
+          type: "DGNL",
+          value: "VNUHCM",
         },
-        level: c.secondField, // e.g., "6.5"
-      })),
-      ...internationalCerts.map((c) => ({
+        score,
+      };
+    }
+  }
+
+  // Add VSAT scores if available
+  const vsatScores = vsatCategory?.scores
+    .filter((s) => !isEmpty(s.subject) && !isEmpty(s.score))
+    .map((s) => ({
+      name: s.subject,
+      score: parseFloat(s.score) || 0,
+    }))
+    .filter((s) => !isNaN(s.score));
+
+  if (vsatScores && vsatScores.length > 0) {
+    payload.vsatScores = vsatScores;
+  }
+
+  // Add talent scores if available
+  const talentScores = talentCategory?.scores
+    .filter((s) => !isEmpty(s.subject) && !isEmpty(s.score))
+    .map((s) => ({
+      name: s.subject,
+      score: parseFloat(s.score) || 0,
+    }))
+    .filter((s) => !isNaN(s.score));
+
+  if (talentScores && talentScores.length > 0) {
+    payload.talentScores = talentScores;
+  }
+
+  // Add awards if available
+  const awards = nationalAwards
+    .filter((a) => !isEmpty(a.firstField) && !isEmpty(a.secondField))
+    .map((a) => ({
+      category: a.firstField,
+      level: a.secondField,
+      name: "Học sinh giỏi cấp Quốc Gia",
+    }));
+
+  if (awards.length > 0) {
+    payload.awards = awards;
+  }
+
+  // Add certifications if available
+  const certifications = [
+    ...languageCerts
+      .filter((c) => !isEmpty(c.firstField) && !isEmpty(c.secondField))
+      .map((c) => ({
         examType: {
-          type: "CCQT", // International certification
-          value: c.firstField, // e.g., "SAT"
+          type: "CCNN",
+          value: c.firstField,
         },
-        level: c.secondField, // e.g., "1200"
+        level: c.secondField,
       })),
-    ],
+    ...internationalCerts
+      .filter((c) => !isEmpty(c.firstField) && !isEmpty(c.secondField))
+      .map((c) => ({
+        examType: {
+          type: "CCQT",
+          value: c.firstField,
+        },
+        level: c.secondField,
+      })),
+  ];
 
-    // Budget values are already in VND after getFormDataForApi conversion
-    minBudget: formData.fifthForm.costRange[0],
-    maxBudget: formData.fifthForm.costRange[1],
+  if (certifications.length > 0) {
+    payload.certifications = certifications;
+  }
 
-    // Special cases are already in Vietnamese after getFormDataForApi conversion
-    specialStudentCases: formData.sixthForm.specialStudentCases,
+  // Add budget only if values are meaningful (not default 0, 900000000)
+  const minBudget = formData.fifthForm.costRange[0];
+  const maxBudget = formData.fifthForm.costRange[1];
 
-    // Conducts are already in Vietnamese after getFormDataForApi conversion
-    conducts: Object.entries(formData.seventhForm.grades).map(
-      ([grade, values]) => ({
-        grade: parseInt(grade, 10),
-        conduct: values.conduct,
-      }),
-    ),
+  if (minBudget > 0 || maxBudget < 900000000) {
+    payload.minBudget = minBudget;
+    payload.maxBudget = maxBudget;
+  }
 
-    // Academic performances are already in Vietnamese after getFormDataForApi conversion
-    academicPerformances: Object.entries(formData.seventhForm.grades).map(
-      ([grade, values]) => ({
-        grade: parseInt(grade, 10),
-        academicPerformance: values.academicPerformance,
-      }),
-    ),
-  };
+  // Add special student cases if available
+  if (formData.sixthForm.specialStudentCases.length > 0) {
+    payload.specialStudentCases = formData.sixthForm.specialStudentCases;
+  }
+
+  // Add conducts if any grade has a conduct value
+  const conducts = Object.entries(formData.seventhForm.grades)
+    .filter(([, values]) => !isEmpty(values.conduct))
+    .map(([grade, values]) => ({
+      grade: parseInt(grade, 10),
+      conduct: values.conduct,
+    }));
+
+  if (conducts.length > 0) {
+    payload.conducts = conducts;
+  }
+
+  // Add academic performances if any grade has a performance value
+  const academicPerformances = Object.entries(formData.seventhForm.grades)
+    .filter(([, values]) => !isEmpty(values.academicPerformance))
+    .map(([grade, values]) => ({
+      grade: parseInt(grade, 10),
+      academicPerformance: values.academicPerformance,
+    }));
+
+  if (academicPerformances.length > 0) {
+    payload.academicPerformances = academicPerformances;
+  }
+
+  return payload;
 }
