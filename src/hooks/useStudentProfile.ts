@@ -8,6 +8,7 @@ import {
   isUploadSuccessful,
   getUploadStatusMessage,
 } from "./useFileUpload";
+import { useOcrHandler } from "./useOcrHandler";
 import {
   hasUserId,
   type NinthFormNavigationState,
@@ -30,6 +31,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
   const navigate = useNavigate();
   const { getFormDataForApi } = useFormData();
   const { getAllEighthFormFiles, clearEighthFormFiles } = useFileData();
+  const { processOcr, isOcrSuccessful } = useOcrHandler();
 
   // State for API call handling
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,7 +104,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
         `Submitting as ${isAuthenticated ? "authenticated" : "guest"} user`,
       );
 
-      // Step 1: Submit student profile
+      // Step 1: Submit student profile (25% progress)
       setUploadProgress(25);
       const response = await submitStudentProfile(formData);
 
@@ -118,19 +120,25 @@ export function useStudentProfile(): UseStudentProfileReturn {
           throw new Error("No student ID received from server");
         }
 
-        // Step 2: Upload files if files exist
-        setUploadProgress(75);
+        // Step 2: Upload files if files exist (50% -> 65% progress)
         const fileUploadResponse = await handleFileUploads(
           studentId,
           isAuthenticated,
         );
+        setUploadProgress(65);
 
-        setUploadProgress(100);
+        // Step 3: Trigger OCR processing if files were uploaded successfully (65% -> 85% progress)
+        const ocrResponse = isUploadSuccessful(fileUploadResponse)
+          ? await processOcr(studentId, isAuthenticated)
+          : null;
+        setUploadProgress(85);
 
         // Clear files from context after successful upload
         if (isUploadSuccessful(fileUploadResponse)) {
           clearEighthFormFiles();
         }
+
+        setUploadProgress(100);
 
         // Navigate to the next page with submission data
         const navigationState: NinthFormNavigationState = {
@@ -139,6 +147,8 @@ export function useStudentProfile(): UseStudentProfileReturn {
           wasAuthenticated: isAuthenticated,
           filesUploaded: isUploadSuccessful(fileUploadResponse),
           uploadedFilesCount: getAllEighthFormFiles().length,
+          ocrProcessed: isOcrSuccessful(ocrResponse),
+          ocrResults: ocrResponse?.data,
         };
 
         void navigate("/ninthForm", { state: navigationState });

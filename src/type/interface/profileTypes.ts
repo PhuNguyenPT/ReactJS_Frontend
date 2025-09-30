@@ -30,6 +30,21 @@ export interface FileUploadResponse {
   };
 }
 
+// OCR score item structure
+export interface OcrScoreItem {
+  name: string;
+  score: number;
+}
+
+// OCR result item structure (matches your API response)
+export interface OcrResultItem {
+  createdAt: string;
+  fileId: string;
+  id: string;
+  processedBy: string;
+  scores: OcrScoreItem[] | null;
+}
+
 // Helper type guard to check if response has userId/id
 export function hasUserId(response: StudentResponse): string | null {
   // Check for id/userId in different possible locations
@@ -52,8 +67,11 @@ export function hasUserId(response: StudentResponse): string | null {
 // Type for the navigation state
 export interface NinthFormNavigationState {
   submissionSuccess: boolean;
-  responseData: StudentResponse["data"] | StudentResponse;
+  responseData: unknown;
   wasAuthenticated: boolean;
-  filesUploaded?: boolean;
-  uploadedFilesCount?: number;
+  filesUploaded: boolean;
+  uploadedFilesCount: number;
+  // OCR-related properties
+  ocrProcessed?: boolean;
+  ocrResults?: OcrResultItem[]; // Direct array of OCR results
 }
