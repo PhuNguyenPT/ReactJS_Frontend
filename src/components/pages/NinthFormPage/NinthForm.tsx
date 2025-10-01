@@ -297,7 +297,6 @@ export default function NinthForm() {
               slotProps={{
                 htmlInput: {
                   pattern: "[0-9]+(\\.[0-9]+)?",
-                  title: "Nhập điểm số (ví dụ: 8.5)",
                 },
               }}
             />
@@ -368,7 +367,6 @@ export default function NinthForm() {
               slotProps={{
                 htmlInput: {
                   pattern: "[0-9]+(\\.[0-9]+)?",
-                  title: "Nhập điểm số (ví dụ: 8.5)",
                 },
               }}
             />

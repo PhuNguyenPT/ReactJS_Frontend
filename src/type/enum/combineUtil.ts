@@ -1,4 +1,4 @@
-import { VietnameseSubject } from "./subject";
+import { VSATSubjects } from "./vsat-subjects";
 import { getTalentExamSubjects } from "./talent-exam";
 import { DGNLType } from "./exam";
 import {
@@ -34,7 +34,7 @@ export function getOptionalCategorySubjects(category: string): string[] {
 
     case "categories.vsat":
     case "V-SAT": // Support both translation key and Vietnamese value
-      return Object.values(VietnameseSubject);
+      return Object.values(VSATSubjects);
 
     case "categories.talent":
     case "Năng khiếu": // Support both translation key and Vietnamese value
@@ -110,7 +110,7 @@ export const getAllExamTypes = () => {
  * Get all Vietnamese subjects
  */
 export const getAllVietnameseSubjects = () => {
-  return Object.values(VietnameseSubject);
+  return Object.values(VSATSubjects);
 };
 
 /**

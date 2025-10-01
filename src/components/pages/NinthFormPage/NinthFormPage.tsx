@@ -14,7 +14,7 @@ import {
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import useAuth from "../../../hooks/useAuth"; // Import your existing useAuth hook
+import useAuth from "../../../hooks/useAuth";
 
 export default function NinthFormPage() {
   usePageTitle("Unizy | Ninth Form");
@@ -26,17 +26,42 @@ export default function NinthFormPage() {
 
   // Local state for popup
   const [openPopup, setOpenPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleNext = () => {
     // Show loading indicator while checking authentication
-    if (isLoading) {
+    if (isLoading || isSubmitting) {
       return;
     }
 
     if (isAuthenticated) {
-      // User is authenticated, proceed to next form
+      // User is authenticated, process and save results
       console.log("User is authenticated:", user?.name ?? user?.email);
-      void navigate("/tenthForm");
+
+      setIsSubmitting(true);
+
+      // Use void to explicitly ignore the promise
+      void (async () => {
+        try {
+          // Simulate API call
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Navigate to final result page with prediction data
+          void navigate("/finalResult", {
+            state: {
+              userId: user?.id,
+              userName: user?.name,
+              savedToAccount: true,
+            },
+          });
+        } catch (error) {
+          console.error("Error processing form:", error);
+          // Handle error - maybe show an error dialog
+          alert("Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại!");
+        } finally {
+          setIsSubmitting(false);
+        }
+      })();
     } else {
       // User is not authenticated, show popup
       setOpenPopup(true);
@@ -55,13 +80,31 @@ export default function NinthFormPage() {
     void navigate("/login");
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     setOpenPopup(false);
-    // Skip authentication and proceed to next form
-    console.log(
-      "User skipped authentication, proceeding without saving results",
-    );
-    void navigate("/tenthForm");
+    setIsSubmitting(true);
+
+    try {
+      // Skip authentication and proceed without saving
+      console.log(
+        "User skipped authentication, proceeding without saving results",
+      );
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Navigate to final result page without saving
+      void navigate("/finalResult", {
+        state: {
+          savedToAccount: false,
+          isGuest: true,
+        },
+      });
+    } catch (error) {
+      console.error("Error processing form:", error);
+      alert("Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại!");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClosePopup = () => {
@@ -111,6 +154,7 @@ export default function NinthFormPage() {
         <Button
           variant="contained"
           onClick={handlePrev}
+          disabled={isSubmitting}
           sx={{
             position: "fixed",
             bottom: 30,
@@ -123,6 +167,10 @@ export default function NinthFormPage() {
             zIndex: 1000,
             "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
+            "&:disabled": {
+              backgroundColor: "#cccccc",
+              color: "#666666",
+            },
           }}
         >
           {t("buttons.back", "BACK")}
@@ -132,7 +180,7 @@ export default function NinthFormPage() {
         <Button
           variant="contained"
           onClick={handleNext}
-          disabled={isLoading}
+          disabled={isLoading || isSubmitting}
           sx={{
             position: "fixed",
             bottom: 30,
@@ -151,7 +199,7 @@ export default function NinthFormPage() {
             },
           }}
         >
-          {isLoading ? (
+          {isLoading || isSubmitting ? (
             <CircularProgress size={24} sx={{ color: "white" }} />
           ) : (
             t("common.submit", "SUBMIT")
@@ -185,7 +233,10 @@ export default function NinthFormPage() {
               mb: 3,
             }}
           >
-            {t("popup.saveResultMessage")}
+            {t(
+              "popup.saveResultMessage",
+              "Bạn có muốn đăng nhập để lưu kết quả không?",
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions
@@ -198,19 +249,24 @@ export default function NinthFormPage() {
           <Button
             variant="contained"
             onClick={handleLogin}
+            disabled={isSubmitting}
             sx={{
               backgroundColor: "#A657AE",
               color: "white",
               px: 4,
               borderRadius: "12px",
               "&:hover": { backgroundColor: "#8B4A8F" },
+              "&:disabled": {
+                backgroundColor: "#cccccc",
+              },
             }}
           >
-            {t("common.login")}
+            {t("common.login", "Đăng nhập")}
           </Button>
           <Button
             variant="outlined"
-            onClick={handleSkip}
+            onClick={() => void handleSkip()}
+            disabled={isSubmitting}
             sx={{
               borderColor: "#A657AE",
               color: "#A657AE",
@@ -220,9 +276,17 @@ export default function NinthFormPage() {
                 backgroundColor: "#f5f5f5",
                 borderColor: "#A657AE",
               },
+              "&:disabled": {
+                borderColor: "#cccccc",
+                color: "#cccccc",
+              },
             }}
           >
-            {t("common.skip")}
+            {isSubmitting ? (
+              <CircularProgress size={20} sx={{ color: "#A657AE" }} />
+            ) : (
+              t("common.skip", "Bỏ qua")
+            )}
           </Button>
         </DialogActions>
       </Dialog>

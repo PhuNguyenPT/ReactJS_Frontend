@@ -45,6 +45,9 @@ const EighthFormPage = lazy(
 const NinthFormPage = lazy(
   () => import("./components/pages/NinthFormPage/NinthFormPage"),
 );
+const FinalResultPage = lazy(
+  () => import("./components/pages/FinalResultPage/FinalResultPage"),
+);
 
 const rootElement = document.getElementById("root");
 
@@ -70,6 +73,7 @@ if (rootElement) {
                     <Route path="seventhForm" element={<SeventhFormPage />} />
                     <Route path="eighthForm" element={<EighthFormPage />} />
                     <Route path="ninthForm" element={<NinthFormPage />} />
+                    <Route path="finalResult" element={<FinalResultPage />} />
                   </Route>
                 </Routes>
               </BrowserRouter>
