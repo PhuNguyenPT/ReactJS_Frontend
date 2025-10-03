@@ -6,9 +6,10 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  Box,
 } from "@mui/material";
 import LanguageIcon from "@mui/icons-material/Language";
-import { useTranslation } from "../../../hooks/useTranslation"; // adjust import path as needed
+import { useTranslation } from "../../../hooks/locales/useTranslation";
 
 // Language options
 const languages = [
@@ -22,7 +23,7 @@ const languages = [
     name: "Tiếng Việt",
     flag: "🇻🇳",
   },
-];
+] as const;
 
 const LanguageSwitcher: React.FC = () => {
   const { currentLanguage, changeLanguage } = useTranslation();
@@ -37,10 +38,18 @@ const LanguageSwitcher: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleLanguageChange = (languageCode: string) => {
-    void changeLanguage(languageCode);
-    handleClose();
+  const handleLanguageChange = async (languageCode: string) => {
+    try {
+      await changeLanguage(languageCode);
+      handleClose();
+    } catch (error) {
+      console.error("Failed to change language:", error);
+      handleClose();
+    }
   };
+
+  // Get current language details for display
+  const currentLang = languages.find((lang) => lang.code === currentLanguage);
 
   return (
     <>
@@ -48,13 +57,27 @@ const LanguageSwitcher: React.FC = () => {
         <IconButton
           onClick={handleClick}
           size="small"
-          sx={{ ml: 2 }}
+          sx={{
+            ml: 2,
+            "&:focus": {
+              outline: "none",
+            },
+            "&:focus-visible": {
+              outline: "none",
+            },
+          }}
           aria-controls={open ? "language-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
           color="inherit"
+          disableRipple
         >
-          <LanguageIcon />
+          {/* Show current flag instead of generic icon */}
+          {currentLang ? (
+            <Box sx={{ fontSize: "1.25rem" }}>{currentLang.flag}</Box>
+          ) : (
+            <LanguageIcon />
+          )}
         </IconButton>
       </Tooltip>
       <Menu
@@ -63,27 +86,73 @@ const LanguageSwitcher: React.FC = () => {
         open={open}
         onClose={handleClose}
         slotProps={{
-          list: {
-            "aria-labelledby": "language-button",
+          paper: {
+            elevation: 2,
+            sx: {
+              minWidth: 180,
+              mt: 1,
+            },
           },
         }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        {languages.map((language) => (
-          <MenuItem
-            key={language.code}
-            onClick={() => {
-              handleLanguageChange(language.code);
-            }}
-            selected={language.code === currentLanguage}
-          >
-            <ListItemIcon>
-              <span className="language-flag">{language.flag}</span>
-            </ListItemIcon>
-            <ListItemText primary={language.name} />
-          </MenuItem>
-        ))}
+        {languages.map((language) => {
+          const isSelected = language.code === currentLanguage;
+
+          return (
+            <MenuItem
+              key={language.code}
+              onClick={() => {
+                void handleLanguageChange(language.code);
+              }}
+              selected={isSelected}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                py: 1.2,
+                "&.Mui-selected": {
+                  backgroundColor: "action.selected",
+                  "&:hover": {
+                    backgroundColor: "action.hover",
+                  },
+                },
+                "&:hover .MuiListItemText-primary": {
+                  fontWeight: 600,
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  marginRight: 1.5, //
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    fontSize: "1.25rem",
+                    lineHeight: 1,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {language.flag}
+                </Box>
+              </ListItemIcon>
+              <ListItemText
+                primary={language.name}
+                slotProps={{
+                  primary: {
+                    variant: "body1",
+                    fontWeight: isSelected ? 600 : 400,
+                    sx: { lineHeight: 1 }, // ✅ text aligns with flag better
+                  },
+                }}
+              />
+            </MenuItem>
+          );
+        })}
       </Menu>
     </>
   );
