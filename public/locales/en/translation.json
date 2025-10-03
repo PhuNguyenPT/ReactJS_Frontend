@@ -105,7 +105,6 @@
     "manufacturing_and_processing": "Manufacturing and Processing",
     "mathematics_and_statistics": "Mathematics and Statistics",
     "natural_sciences": "Natural Sciences",
-    "other": "Other",
     "security_defense": "Security and Defense",
     "social_and_behavioral_sciences": "Social and Behavioral Sciences",
     "social_services": "Social Services",
@@ -121,8 +120,7 @@
     "score": "Score",
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
-    "secondTypo": "exam scores of yours. (if any)",
-    "enterOther": "Enter your other option"
+    "secondTypo": "exam scores of yours. (if any)"
   },
   "subjects": {
     "bieu_dien_nghe_thuat": "Performing Arts",
@@ -171,7 +169,6 @@
   },
   "examTypes": {
     "ielts": "IELTS",
-    "other": "Other",
     "toefl_cbt": "TOEFL CBT",
     "toefl_ibt": "TOEFL iBT",
     "toefl_paper": "TOEFL Paper",
@@ -200,7 +197,6 @@
     "firstField": "Subject",
     "secondField": "Certificate Type",
     "thirdField": "Language",
-    "enterOther": "Enter your other option",
     "award": "Award",
     "score": "Score"
   },

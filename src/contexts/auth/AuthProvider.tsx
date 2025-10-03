@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AuthContext, type AuthResponse, type User } from "./AuthContext";
 import axios from "axios";
 import { isTokenExpired } from "../../utils/tokenUtils";
-import { useTokenRefresh } from "../../hooks/useTokenRefresh";
+import { useTokenRefresh } from "../../hooks/auth/useTokenRefresh";
 
 interface AuthProviderProps {
   children: ReactNode;

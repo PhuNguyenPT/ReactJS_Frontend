@@ -2,7 +2,7 @@ import { Toolbar } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import LanguageSwitcher from "../Language Switch/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
-import useAuth from "../../../hooks/useAuth";
+import useAuth from "../../../hooks/auth/useAuth";
 import AccountMenu from "./AccountMenu";
 
 function Header() {

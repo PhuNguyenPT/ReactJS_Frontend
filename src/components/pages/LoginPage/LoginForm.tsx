@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import PasswordField from "../../common/PasswordField";
-import useLoginForm from "../../../hooks/useLoginForm";
+import useLoginForm from "../../../hooks/auth/useLoginForm";
 import { useTranslation } from "react-i18next";
 
 export default function LoginForm() {

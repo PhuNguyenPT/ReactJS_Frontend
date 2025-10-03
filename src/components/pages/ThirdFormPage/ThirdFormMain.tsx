@@ -35,6 +35,28 @@ export default function ThirdFormMain({
   // Get selectable subjects (excluding mandatory TOAN and VAN)
   const selectableSubjects = getSelectableSubjects();
 
+  // Validate and sanitize score input
+  const handleScoreChange = (value: string): string => {
+    // Allow empty string
+    if (value === "") return "";
+
+    // Allow only numbers and one decimal point
+    const regex = /^\d*\.?\d*$/;
+    if (!regex.test(value)) return value.slice(0, -1);
+
+    // Convert to number and validate range
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return value;
+
+    // If greater than 10, return "10"
+    if (numValue > 10) return "10";
+
+    // If less than 0, return "0"
+    if (numValue < 0) return "0";
+
+    return value;
+  };
+
   const pillStyle = {
     borderRadius: "17px",
     height: "40px",
@@ -75,6 +97,17 @@ export default function ThirdFormMain({
   const scoreFieldStyle = {
     ...pillStyle,
     width: "130px",
+    "& input[type=number]": {
+      MozAppearance: "textfield",
+    },
+    "& input[type=number]::-webkit-outer-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
+    "& input[type=number]::-webkit-inner-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
   };
 
   // Convert translation keys to display options for subjects
@@ -118,18 +151,20 @@ export default function ThirdFormMain({
       {/* Math row - Fixed as TOAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={t(NationalExamSubjects.TOAN)} // Translate the subject name
+          value={t(NationalExamSubjects.TOAN)}
           disabled
           sx={subjectFieldStyle}
         />
         <TextField
           placeholder={t("thirdForm.score")}
+          type="number"
           slotProps={{
             htmlInput: { min: 0, max: 10, step: 0.1 },
           }}
           value={mathScore}
           onChange={(e) => {
-            setMathScore(e.target.value);
+            const validatedValue = handleScoreChange(e.target.value);
+            setMathScore(validatedValue);
             setHasError(false);
           }}
           error={hasError && mathScore === ""}
@@ -145,18 +180,20 @@ export default function ThirdFormMain({
       {/* Literature row - Fixed as NGU_VAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={t(NationalExamSubjects.NGU_VAN)} // Translate the subject name
+          value={t(NationalExamSubjects.NGU_VAN)}
           disabled
           sx={subjectFieldStyle}
         />
         <TextField
           placeholder={t("thirdForm.score")}
+          type="number"
           slotProps={{
             htmlInput: { min: 0, max: 10, step: 0.1 },
           }}
           value={literatureScore}
           onChange={(e) => {
-            setLiteratureScore(e.target.value);
+            const validatedValue = handleScoreChange(e.target.value);
+            setLiteratureScore(validatedValue);
             setHasError(false);
           }}
           error={hasError && literatureScore === ""}
@@ -237,13 +274,15 @@ export default function ThirdFormMain({
               />
               <TextField
                 placeholder={t("thirdForm.score")}
+                type="number"
                 slotProps={{
                   htmlInput: { min: 0, max: 10, step: 0.1 },
                 }}
                 value={chosenScores[index]}
                 onChange={(e) => {
+                  const validatedValue = handleScoreChange(e.target.value);
                   const updated = [...chosenScores];
-                  updated[index] = e.target.value;
+                  updated[index] = validatedValue;
                   setChosenScores(updated);
                   setHasError(false);
                 }}

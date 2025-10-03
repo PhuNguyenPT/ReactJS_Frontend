@@ -1,4 +1,4 @@
-import { logoutUser } from "../services/user/authService";
+import { logoutUser } from "../../services/user/authService";
 import useAuth from "./useAuth";
 
 export default function useLogout() {

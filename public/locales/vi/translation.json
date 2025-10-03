@@ -105,7 +105,6 @@
     "manufacturing_and_processing": "Sản xuất và chế biến",
     "mathematics_and_statistics": "Toán và thống kê",
     "natural_sciences": "Khoa học tự nhiên",
-    "other": "Khác",
     "security_defense": "An ninh, Quốc phòng",
     "social_and_behavioral_sciences": "Khoa học xã hội và hành vi",
     "social_services": "Dịch vụ xã hội",
@@ -121,8 +120,7 @@
     "score": "Điểm",
     "chooseExam": "Chọn kỳ thi",
     "firstTypo": "Nhập vào điểm thi",
-    "secondTypo": "của bạn. (nếu có)",
-    "enterOther": "Nhập lựa chọn khác của bạn"
+    "secondTypo": "của bạn. (nếu có)"
   },
   "subjects": {
     "bieu_dien_nghe_thuat": "Biểu diễn nghệ thuật",
@@ -171,7 +169,6 @@
   },
   "examTypes": {
     "ielts": "IELTS",
-    "other": "Khác",
     "toefl_cbt": "TOEFL CBT",
     "toefl_ibt": "TOEFL iBT",
     "toefl_paper": "TOEFL Paper",
@@ -188,9 +185,9 @@
     "vnuhcm": "VNUHCM"
   },
   "categories": {
-    "dgnl": "Đánh Giá Năng Lực",
-    "vsat": "V-SAT",
-    "talent": "Năng khiếu"
+    "dgnl": " Đánh Giá Năng Lực",
+    "vsat": " V-SAT",
+    "talent": " Năng khiếu"
   },
   "fourthForm": {
     "title": "Về thành tích của bạn",
@@ -200,7 +197,6 @@
     "firstField": "Môn thi",
     "secondField": "Loại chứng chỉ",
     "thirdField": "Ngoại ngữ",
-    "enterOther": "Nhập lựa chọn khác của bạn",
     "award": "Giải thưởng",
     "score": "Điểm"
   },

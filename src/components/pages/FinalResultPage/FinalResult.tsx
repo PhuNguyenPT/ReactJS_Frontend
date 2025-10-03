@@ -132,77 +132,60 @@ export default function FinalResult() {
     [],
   );
 
-  const getMatchColor = (matchScore: number) => {
-    if (matchScore >= 90) return "#4CAF50";
-    if (matchScore >= 80) return "#8BC34A";
-    if (matchScore >= 70) return "#FFC107";
-    return "#FF9800";
-  };
-
   return (
     <Box
       className="final-result"
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 3,
+        width: "100%",
+        maxWidth: "1100px",
+        margin: "0 auto",
         px: 2,
         py: 3,
       }}
     >
-      {/* Search Bar Container */}
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: "1100px",
-          margin: "0 auto",
-        }}
-      >
+      {/* Search Bar */}
+      <Box sx={{ mb: 4 }}>
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Tìm kiếm..."
+          placeholder="Tìm kiếm trường đại học hoặc ngành học..."
           value={searchQuery}
           onChange={handleSearchChange}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon sx={{ color: "#A657AE", fontSize: "1.8rem" }} />
+                </InputAdornment>
+              ),
+            },
+          }}
           sx={{
             backgroundColor: "white",
             borderRadius: "30px",
             "& .MuiOutlinedInput-root": {
               borderRadius: "30px",
-              paddingRight: "14px",
               "& fieldset": {
-                borderColor: "transparent",
+                borderColor: "rgba(166, 87, 174, 0.3)",
               },
               "&:hover fieldset": {
-                borderColor: "transparent",
+                borderColor: "#A657AE",
               },
               "&.Mui-focused fieldset": {
-                borderColor: "transparent",
+                borderColor: "#A657AE",
+                borderWidth: "2px",
               },
             },
             "& input": {
               padding: "16px 20px",
-              fontSize: "1.1rem",
+              fontSize: "1rem",
             },
-          }}
-          slotProps={{
-            htmlInput: (
-              <InputAdornment position="end">
-                <SearchIcon sx={{ color: "#A657AE", fontSize: "2rem" }} />
-              </InputAdornment>
-            ),
           }}
         />
       </Box>
 
-      {/* University Results Container */}
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: "1100px",
-          margin: "0 auto",
-        }}
-      >
+      {/* University Results */}
+      <Box>
         {filteredUniversities.length === 0 ? (
           <Box
             sx={{
@@ -260,17 +243,6 @@ export default function FinalResult() {
                     {university.name} ({university.shortName})
                   </Typography>
                 </Box>
-                <Chip
-                  label={`${String(university.matchScore)}% phù hợp`}
-                  sx={{
-                    backgroundColor: getMatchColor(university.matchScore),
-                    color: "white",
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    height: "32px",
-                    mr: 2,
-                  }}
-                />
               </AccordionSummary>
 
               <AccordionDetails sx={{ px: 4, py: 3 }}>

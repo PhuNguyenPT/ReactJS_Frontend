@@ -14,7 +14,7 @@ import {
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import useAuth from "../../../hooks/useAuth";
+import useAuth from "../../../hooks/auth/useAuth";
 
 export default function NinthFormPage() {
   usePageTitle("Unizy | Ninth Form");

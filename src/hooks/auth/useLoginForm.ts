@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
-import { loginUser } from "../services/user/authService";
+import { loginUser } from "../../services/user/authService";
 import axios, { AxiosError } from "axios";
-import type { ErrorDetails } from "../type/interface/error.details";
-import { LoginDto } from "../dto/loginDto";
-import { validateDTO } from "../utils/validation";
+import type { ErrorDetails } from "../../type/interface/error.details";
+import { LoginDto } from "../../dto/loginDto";
+import { validateDTO } from "../../utils/validation";
 import { plainToInstance } from "class-transformer";
 
 export default function useLoginForm() {

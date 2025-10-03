@@ -42,6 +42,28 @@ export default function ThirdFormOptional({
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
+  // Validate and sanitize score input
+  const handleScoreValidation = (value: string): string => {
+    // Allow empty string
+    if (value === "") return "";
+
+    // Allow only numbers and one decimal point
+    const regex = /^\d*\.?\d*$/;
+    if (!regex.test(value)) return value.slice(0, -1);
+
+    // Convert to number and validate range
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return value;
+
+    // If greater than 10, return "10"
+    if (numValue > 10) return "10";
+
+    // If less than 0, return "0"
+    if (numValue < 0) return "0";
+
+    return value;
+  };
+
   const handleAddScore = (categoryId: string) => {
     const updated = categories.map((category) => {
       if (category.id === categoryId) {
@@ -187,10 +209,6 @@ export default function ThirdFormOptional({
                 score.subject || null,
               );
 
-              // Check if "Other" is selected (works for both translation key and Vietnamese value)
-              const isOtherSelected =
-                score.subject === "examTypes.other" || score.subject === "Khác";
-
               return (
                 <Box
                   key={score.id}
@@ -258,15 +276,19 @@ export default function ThirdFormOptional({
                       )}
                     />
 
-                    {/* Score Input */}
+                    {/* Score Input with validation */}
                     <TextField
+                      type="number"
                       value={score.score}
                       onChange={(e) => {
+                        const validatedValue = handleScoreValidation(
+                          e.target.value,
+                        );
                         handleScoreChange(
                           category.id,
                           score.id,
                           "score",
-                          e.target.value,
+                          validatedValue,
                         );
                       }}
                       placeholder={t("thirdForm.score")}
@@ -292,6 +314,17 @@ export default function ThirdFormOptional({
                           textAlign: "left",
                           color: "#A657AE",
                         },
+                        "& input[type=number]": {
+                          MozAppearance: "textfield",
+                        },
+                        "& input[type=number]::-webkit-outer-spin-button": {
+                          WebkitAppearance: "none",
+                          margin: 0,
+                        },
+                        "& input[type=number]::-webkit-inner-spin-button": {
+                          WebkitAppearance: "none",
+                          margin: 0,
+                        },
                       }}
                     />
 
@@ -313,45 +346,6 @@ export default function ThirdFormOptional({
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </Box>
-
-                  {/* "Other" input field - appears below the main row */}
-                  {isOtherSelected && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                        ml: 0,
-                      }}
-                    >
-                      <TextField
-                        value={score.subjectOther ?? ""}
-                        onChange={(e) => {
-                          handleScoreChange(
-                            category.id,
-                            score.id,
-                            "subjectOther",
-                            e.target.value,
-                          );
-                        }}
-                        placeholder={
-                          t("thirdForm.enterOther") || "Enter other exam type"
-                        }
-                        sx={{
-                          width: 200,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "17px",
-                            height: "40px",
-                            "& fieldset": { borderColor: "#A657AE" },
-                            "&:hover fieldset": { borderColor: "#8B4A8F" },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "#A657AE",
-                            },
-                          },
-                          "& input": { color: "#A657AE" },
-                        }}
-                      />
-                    </Box>
-                  )}
                 </Box>
               );
             })}

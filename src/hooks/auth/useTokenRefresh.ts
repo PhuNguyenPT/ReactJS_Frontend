@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { decodeJWT } from "../utils/decodeJWT";
-import { refreshAccessToken } from "../services/user/authService";
-import type { AuthResponse } from "../contexts/auth/AuthContext";
+import { decodeJWT } from "../../utils/decodeJWT";
+import { refreshAccessToken } from "../../services/user/authService";
+import type { AuthResponse } from "../../contexts/auth/AuthContext";
 
 interface TokenRefreshOptions {
   accessToken: string | null;

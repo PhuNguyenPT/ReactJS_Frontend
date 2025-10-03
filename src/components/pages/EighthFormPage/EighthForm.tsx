@@ -69,15 +69,6 @@ export default function EighthForm() {
     return file.type.startsWith("image/");
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    const formattedSize = Math.round((bytes / Math.pow(k, i)) * 100) / 100;
-    return `${formattedSize.toString()} ${sizes[i]}`;
-  };
-
   return (
     <Box
       className="eighth-form"
@@ -383,15 +374,6 @@ export default function EighthForm() {
                               }}
                             >
                               {currentFile.name}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "#cececeff",
-                                fontSize: "0.65rem",
-                              }}
-                            >
-                              {formatFileSize(currentFile.size)}
                             </Typography>
                           </Box>
                         )}

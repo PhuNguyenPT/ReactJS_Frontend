@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
-import { signupUser } from "../services/user/authService";
+import { signupUser } from "../../services/user/authService";
 import axios, { AxiosError } from "axios";
-import type { ErrorDetails } from "../type/interface/error.details";
-import { SignupDto } from "../dto/signUpDto";
-import { validateDTO } from "../utils/validation";
+import type { ErrorDetails } from "../../type/interface/error.details";
+import { SignupDto } from "../../dto/signUpDto";
+import { validateDTO } from "../../utils/validation";
 import { plainToInstance } from "class-transformer";
 
 export function useSignupForm() {

@@ -230,12 +230,6 @@ export default function FourthForm() {
                 category.categoryType === "national_award"
                   ? getSelectedValue(entry.secondField || null)
                   : null;
-
-              // Check if "Other" is selected (works for both translation key and Vietnamese value)
-              const isOtherSelected =
-                entry.firstField === "examTypes.other" ||
-                entry.firstField === "Khác";
-
               return (
                 <Box
                   key={entry.id}
@@ -381,43 +375,6 @@ export default function FourthForm() {
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </Box>
-
-                  {/* "Other" input field - appears below the main row */}
-                  {isOtherSelected && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                        ml: 0,
-                      }}
-                    >
-                      <TextField
-                        value={entry.firstFieldOther ?? ""}
-                        onChange={(e) => {
-                          handleEntryChange(
-                            category.id,
-                            entry.id,
-                            "firstFieldOther",
-                            e.target.value,
-                          );
-                        }}
-                        placeholder={t("fourthForm.enterOther")}
-                        sx={{
-                          width: 200,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "17px",
-                            height: "40px",
-                            "& fieldset": { borderColor: "#A657AE" },
-                            "&:hover fieldset": { borderColor: "#8B4A8F" },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "#A657AE",
-                            },
-                          },
-                          "& input": { color: "#A657AE" },
-                        }}
-                      />
-                    </Box>
-                  )}
                 </Box>
               );
             })}
