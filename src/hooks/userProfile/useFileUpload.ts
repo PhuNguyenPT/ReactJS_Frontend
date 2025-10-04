@@ -1,9 +1,9 @@
 import {
   uploadStudentFiles,
   uploadGuestStudentFiles,
-} from "../services/fileUpload/fileUploadService";
-import { isUserAuthenticated } from "../utils/profileAuthUtils";
-import type { FileUploadResponse } from "../type/interface/profileTypes";
+} from "../../services/fileUpload/fileUploadService";
+import { isUserAuthenticated } from "../../utils/profileAuthUtils";
+import type { FileUploadResponse } from "../../type/interface/profileTypes";
 
 export interface FileUploadPayload {
   grade: string;
@@ -66,5 +66,5 @@ export function getUploadStatusMessage(
 }
 
 // Re-export for convenience
-export { isUserAuthenticated } from "../utils/profileAuthUtils";
-export type { FileUploadResponse } from "../type/interface/profileTypes";
+export { isUserAuthenticated } from "../../utils/profileAuthUtils";
+export type { FileUploadResponse } from "../../type/interface/profileTypes";

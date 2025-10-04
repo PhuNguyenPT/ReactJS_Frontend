@@ -1,4 +1,4 @@
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { useTranslation } from "react-i18next";
 import FourthForm from "./FourthForm";
 import { Box, IconButton } from "@mui/material";

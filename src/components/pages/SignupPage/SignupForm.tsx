@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useSignupForm } from "../../../hooks/auth/useSignupForm";
-import PasswordField from "../../common/PasswordField";
+import PasswordField from "../../common/PasswordField/PasswordField";
 
 export default function SignupForm() {
   const {

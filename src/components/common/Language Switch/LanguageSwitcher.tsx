@@ -94,7 +94,8 @@ const LanguageSwitcher: React.FC = () => {
             },
           },
         }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
         {languages.map((language) => {
           const isSelected = language.code === currentLanguage;
@@ -124,7 +125,8 @@ const LanguageSwitcher: React.FC = () => {
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  marginRight: 1.5, //
+                  marginRight: 1.5,
+                  marginBottom: "3px",
                   display: "flex",
                   alignItems: "center",
                 }}
@@ -146,7 +148,11 @@ const LanguageSwitcher: React.FC = () => {
                   primary: {
                     variant: "body1",
                     fontWeight: isSelected ? 600 : 400,
-                    sx: { lineHeight: 1 }, // ✅ text aligns with flag better
+                    sx: {
+                      lineHeight: 1,
+                      display: "flex",
+                      alignItems: "center",
+                    },
                   },
                 }}
               />

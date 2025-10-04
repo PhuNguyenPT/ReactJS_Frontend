@@ -1,4 +1,4 @@
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import EighthForm from "./EighthForm";
 import { useTranslation } from "react-i18next";
-import { useStudentProfile } from "../../../hooks/useStudentProfile";
+import { useStudentProfile } from "../../../hooks/userProfile/useStudentProfile";
 
 export default function EighthFormPage() {
   usePageTitle("Unizy | Eighth Form");

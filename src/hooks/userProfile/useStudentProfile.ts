@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFormData } from "../contexts/FormData/useFormData";
-import { useFileData } from "../contexts/FileData/useFileData";
+import { useFormData } from "../../contexts/FormData/useFormData";
+import { useFileData } from "../../contexts/FileData/useFileData";
 import { submitStudentProfile, isUserAuthenticated } from "./useCreateProfile";
 import {
   uploadStudentFilesAuto,
@@ -13,7 +13,7 @@ import {
   hasUserId,
   type NinthFormNavigationState,
   type FileUploadResponse,
-} from "../type/interface/profileTypes";
+} from "../../type/interface/profileTypes";
 
 interface UseStudentProfileReturn {
   isSubmitting: boolean;

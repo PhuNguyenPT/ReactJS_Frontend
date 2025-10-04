@@ -3,7 +3,7 @@ import {
   isOcrSuccessful,
   getOcrStatusMessage,
   type OcrResponse,
-} from "../services/fileUpload/ocrAnalyseService";
+} from "../../services/fileUpload/ocrAnalyseService";
 
 /**
  * Utility function to wait for a specified time

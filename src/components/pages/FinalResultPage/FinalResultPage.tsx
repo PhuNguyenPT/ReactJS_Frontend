@@ -1,4 +1,4 @@
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { Box, Button, Typography } from "@mui/material";
 import FinalResult from "./FinalResult";
 import { useTranslation } from "react-i18next";

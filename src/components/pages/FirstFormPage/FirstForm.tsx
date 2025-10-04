@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import {
   Box,
   FormControl,
@@ -7,74 +6,22 @@ import {
   TextField,
   Autocomplete,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.provinces";
-import { getAllUniTypes } from "../../../type/enum/uni-type";
-import { useFormData } from "../../../contexts/FormData/useFormData";
+import { useFirstForm } from "../../../hooks/formPages/useFirstForm";
 
 const FirstForm = () => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { formData, updateFormData } = useFormData();
-
-  // Province state (provinces might not need translation if they're proper names)
-  const [selectedProvinces, setSelectedProvinces] = useState<string | null>(
-    formData.firstForm ?? null,
-  );
-  const [hasProvinceError, setHasProvinceError] = useState(false);
-
-  // University type state
-  const [selectedUniType, setSelectedUniType] = useState<string | null>(
-    formData.uniType ?? null,
-  );
-  const [hasUniTypeError, setHasUniTypeError] = useState(false);
-
-  // Convert enums to array of values
-  const provinces = useMemo(() => Object.values(VietnamSouthernProvinces), []);
-  const uniTypes = useMemo(() => getAllUniTypes(), []); // Now returns translation keys
-
-  // Convert translation keys to display options for university types
-  const getTranslatedUniTypeOptions = (availableOptions: string[]) => {
-    return availableOptions.map((translationKey) => ({
-      key: translationKey,
-      label: t(translationKey),
-    }));
-  };
-
-  // Get the selected university type value as an option object
-  const getSelectedUniTypeValue = (translationKey: string | null) => {
-    if (!translationKey) return null;
-    return {
-      key: translationKey,
-      label: t(translationKey),
-    };
-  };
-
-  const handleNext = () => {
-    let valid = true;
-
-    if (!selectedProvinces) {
-      setHasProvinceError(true);
-      valid = false;
-    }
-    if (!selectedUniType) {
-      setHasUniTypeError(true);
-      valid = false;
-    }
-
-    if (valid) {
-      // Save both fields into context before navigating
-      updateFormData({
-        firstForm: selectedProvinces,
-        uniType: selectedUniType,
-      });
-      void navigate("/secondForm");
-    }
-  };
-
-  const translatedUniTypeOptions = getTranslatedUniTypeOptions(uniTypes);
-  const selectedUniTypeValue = getSelectedUniTypeValue(selectedUniType);
+  const {
+    selectedProvinces,
+    //selectedUniType,
+    hasProvinceError,
+    hasUniTypeError,
+    provinces,
+    translatedUniTypeOptions,
+    selectedUniTypeValue,
+    handleProvinceChange,
+    handleUniTypeChange,
+    handleNext,
+    t,
+  } = useFirstForm();
 
   return (
     <Box component="form" className="first-form">
@@ -84,9 +31,7 @@ const FirstForm = () => {
           options={provinces}
           value={selectedProvinces}
           onChange={(_, newValue) => {
-            setSelectedProvinces(newValue);
-            setHasProvinceError(false);
-            updateFormData({ firstForm: newValue });
+            handleProvinceChange(newValue);
           }}
           sx={{
             width: 450,
@@ -130,10 +75,7 @@ const FirstForm = () => {
           options={translatedUniTypeOptions}
           value={selectedUniTypeValue}
           onChange={(_, newValue) => {
-            const translationKey = newValue?.key ?? null;
-            setSelectedUniType(translationKey);
-            setHasUniTypeError(false);
-            updateFormData({ uniType: translationKey });
+            handleUniTypeChange(newValue);
           }}
           getOptionLabel={(option) => option.label}
           isOptionEqualToValue={(option, value) => option.key === value.key}

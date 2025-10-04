@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import PasswordField from "../../common/PasswordField";
+import PasswordField from "../../common/PasswordField/PasswordField";
 import useLoginForm from "../../../hooks/auth/useLoginForm";
 import { useTranslation } from "react-i18next";
 
