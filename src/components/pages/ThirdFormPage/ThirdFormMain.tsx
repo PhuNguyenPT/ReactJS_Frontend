@@ -1,9 +1,5 @@
 import { Box, TextField, Autocomplete, FormHelperText } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import {
-  NationalExamSubjects,
-  getSelectableSubjects,
-} from "../../../type/enum/national-exam-subject";
+import { useThirdMainForm } from "../../../hooks/formPages/useThirdMainForm";
 
 interface ThirdFormMainProps {
   mathScore: string;
@@ -18,44 +14,21 @@ interface ThirdFormMainProps {
   setHasError: (value: boolean) => void;
 }
 
-export default function ThirdFormMain({
-  mathScore,
-  setMathScore,
-  literatureScore,
-  setLiteratureScore,
-  chosenSubjects,
-  setChosenSubjects,
-  chosenScores,
-  setChosenScores,
-  hasError,
-  setHasError,
-}: ThirdFormMainProps) {
-  const { t } = useTranslation();
-
-  // Get selectable subjects (excluding mandatory TOAN and VAN)
-  const selectableSubjects = getSelectableSubjects();
-
-  // Validate and sanitize score input
-  const handleScoreChange = (value: string): string => {
-    // Allow empty string
-    if (value === "") return "";
-
-    // Allow only numbers and one decimal point
-    const regex = /^\d*\.?\d*$/;
-    if (!regex.test(value)) return value.slice(0, -1);
-
-    // Convert to number and validate range
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return value;
-
-    // If greater than 10, return "10"
-    if (numValue > 10) return "10";
-
-    // If less than 0, return "0"
-    if (numValue < 0) return "0";
-
-    return value;
-  };
+export default function ThirdFormMain(props: ThirdFormMainProps) {
+  const {
+    mathScore,
+    literatureScore,
+    chosenScores,
+    handleMathScoreChange,
+    handleLiteratureScoreChange,
+    handleChosenSubjectChange,
+    handleChosenScoreChange,
+    getOptionalSubjectData,
+    shouldShowMathError,
+    shouldShowLiteratureError,
+    mandatorySubjects,
+    t,
+  } = useThirdMainForm(props);
 
   const pillStyle = {
     borderRadius: "17px",
@@ -110,33 +83,6 @@ export default function ThirdFormMain({
     },
   };
 
-  // Convert translation keys to display options for subjects
-  const getTranslatedSubjectOptions = (availableOptions: string[]) => {
-    return availableOptions.map((translationKey) => ({
-      key: translationKey,
-      label: t(translationKey),
-    }));
-  };
-
-  // Get the selected subject value as an option object
-  const getSelectedSubjectValue = (translationKey: string | null) => {
-    if (!translationKey) return null;
-    return {
-      key: translationKey,
-      label: t(translationKey),
-    };
-  };
-
-  // Filter available subjects to exclude already selected ones
-  const getAvailableSubjects = (currentIndex: number): string[] => {
-    return selectableSubjects.filter((subject) => {
-      // Don't show subjects that are already selected in other dropdowns
-      return !chosenSubjects.some(
-        (selected, index) => index !== currentIndex && selected === subject,
-      );
-    });
-  };
-
   return (
     <Box
       sx={{
@@ -151,7 +97,7 @@ export default function ThirdFormMain({
       {/* Math row - Fixed as TOAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={t(NationalExamSubjects.TOAN)}
+          value={mandatorySubjects.math}
           disabled
           sx={subjectFieldStyle}
         />
@@ -163,15 +109,13 @@ export default function ThirdFormMain({
           }}
           value={mathScore}
           onChange={(e) => {
-            const validatedValue = handleScoreChange(e.target.value);
-            setMathScore(validatedValue);
-            setHasError(false);
+            handleMathScoreChange(e.target.value);
           }}
-          error={hasError && mathScore === ""}
+          error={shouldShowMathError()}
           sx={scoreFieldStyle}
         />
       </Box>
-      {hasError && mathScore === "" && (
+      {shouldShowMathError() && (
         <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
           {t("thirdForm.errorWarning")}
         </FormHelperText>
@@ -180,7 +124,7 @@ export default function ThirdFormMain({
       {/* Literature row - Fixed as NGU_VAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={t(NationalExamSubjects.NGU_VAN)}
+          value={mandatorySubjects.literature}
           disabled
           sx={subjectFieldStyle}
         />
@@ -192,15 +136,13 @@ export default function ThirdFormMain({
           }}
           value={literatureScore}
           onChange={(e) => {
-            const validatedValue = handleScoreChange(e.target.value);
-            setLiteratureScore(validatedValue);
-            setHasError(false);
+            handleLiteratureScoreChange(e.target.value);
           }}
-          error={hasError && literatureScore === ""}
+          error={shouldShowLiteratureError()}
           sx={scoreFieldStyle}
         />
       </Box>
-      {hasError && literatureScore === "" && (
+      {shouldShowLiteratureError() && (
         <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
           {t("thirdForm.errorWarning")}
         </FormHelperText>
@@ -208,12 +150,13 @@ export default function ThirdFormMain({
 
       {/* Two choosable subjects */}
       {[0, 1].map((index) => {
-        const availableSubjects = getAvailableSubjects(index);
-        const translatedSubjectOptions =
-          getTranslatedSubjectOptions(availableSubjects);
-        const selectedSubjectValue = getSelectedSubjectValue(
-          chosenSubjects[index],
-        );
+        const {
+          translatedSubjectOptions,
+          selectedSubjectValue,
+          showSubjectError,
+          showScoreError,
+          showRowError,
+        } = getOptionalSubjectData(index);
 
         return (
           <Box key={index}>
@@ -222,11 +165,7 @@ export default function ThirdFormMain({
                 options={translatedSubjectOptions}
                 value={selectedSubjectValue}
                 onChange={(_, newValue) => {
-                  const translationKey = newValue?.key ?? null;
-                  const updated = [...chosenSubjects];
-                  updated[index] = translationKey;
-                  setChosenSubjects(updated);
-                  setHasError(false);
+                  handleChosenSubjectChange(index, newValue?.key ?? null);
                 }}
                 getOptionLabel={(option) => option.label}
                 isOptionEqualToValue={(option, value) =>
@@ -237,7 +176,7 @@ export default function ThirdFormMain({
                   <TextField
                     {...params}
                     placeholder={`${t("thirdForm.optionalSubject")} ${String(index + 1)}`}
-                    error={hasError && !chosenSubjects[index]}
+                    error={showSubjectError}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         height: "40px",
@@ -245,23 +184,14 @@ export default function ThirdFormMain({
                         borderRadius: "17px",
                         fontSize: "0.9rem",
                         "& fieldset": {
-                          borderColor:
-                            hasError && !chosenSubjects[index]
-                              ? "#d32f2f"
-                              : "#A657AE",
+                          borderColor: showSubjectError ? "#d32f2f" : "#A657AE",
                           borderRadius: "17px",
                         },
                         "&:hover fieldset": {
-                          borderColor:
-                            hasError && !chosenSubjects[index]
-                              ? "#d32f2f"
-                              : "#8B4A8F",
+                          borderColor: showSubjectError ? "#d32f2f" : "#8B4A8F",
                         },
                         "&.Mui-focused fieldset": {
-                          borderColor:
-                            hasError && !chosenSubjects[index]
-                              ? "#d32f2f"
-                              : "#A657AE",
+                          borderColor: showSubjectError ? "#d32f2f" : "#A657AE",
                         },
                       },
                       "& input": {
@@ -280,22 +210,17 @@ export default function ThirdFormMain({
                 }}
                 value={chosenScores[index]}
                 onChange={(e) => {
-                  const validatedValue = handleScoreChange(e.target.value);
-                  const updated = [...chosenScores];
-                  updated[index] = validatedValue;
-                  setChosenScores(updated);
-                  setHasError(false);
+                  handleChosenScoreChange(index, e.target.value);
                 }}
-                error={hasError && chosenScores[index] === ""}
+                error={showScoreError}
                 sx={scoreFieldStyle}
               />
             </Box>
-            {hasError &&
-              (!chosenSubjects[index] || chosenScores[index] === "") && (
-                <FormHelperText error sx={{ ml: 1 }}>
-                  {t("thirdForm.errorWarning")}
-                </FormHelperText>
-              )}
+            {showRowError && (
+              <FormHelperText error sx={{ ml: 1 }}>
+                {t("thirdForm.errorWarning")}
+              </FormHelperText>
+            )}
           </Box>
         );
       })}

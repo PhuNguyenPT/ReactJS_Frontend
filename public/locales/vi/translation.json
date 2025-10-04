@@ -120,7 +120,8 @@
     "score": "Điểm",
     "chooseExam": "Chọn kỳ thi",
     "firstTypo": "Nhập vào điểm thi",
-    "secondTypo": "của bạn. (nếu có)"
+    "secondTypo": "của bạn. (nếu có)",
+    "vsatMinimumError": "V-SAT phải có ít nhất 3 môn học."
   },
   "subjects": {
     "bieu_dien_nghe_thuat": "Biểu diễn nghệ thuật",

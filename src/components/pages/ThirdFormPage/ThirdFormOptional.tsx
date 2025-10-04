@@ -5,14 +5,11 @@ import {
   Button,
   IconButton,
   Autocomplete,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { useTranslation } from "react-i18next";
-import {
-  getOptionalCategorySubjects,
-  getCategoryTranslationKey,
-} from "../../../type/enum/combineUtil";
+import { useThirdOptionalForm } from "../../../hooks/formPages/useThirdOptionalForm";
 
 interface OptionalScore {
   id: string;
@@ -31,136 +28,23 @@ interface CategoryData {
 interface ThirdFormOptionalProps {
   categories: CategoryData[];
   setCategories: (categories: CategoryData[]) => void;
+  showErrors?: boolean;
 }
 
-export default function ThirdFormOptional({
-  categories,
-  setCategories,
-}: ThirdFormOptionalProps) {
-  const { t } = useTranslation();
-
-  const generateId = () =>
-    `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
-
-  // Validate and sanitize score input
-  const handleScoreValidation = (value: string): string => {
-    // Allow empty string
-    if (value === "") return "";
-
-    // Allow only numbers and one decimal point
-    const regex = /^\d*\.?\d*$/;
-    if (!regex.test(value)) return value.slice(0, -1);
-
-    // Convert to number and validate range
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return value;
-
-    // If greater than 10, return "10"
-    if (numValue > 10) return "10";
-
-    // If less than 0, return "0"
-    if (numValue < 0) return "0";
-
-    return value;
-  };
-
-  const handleAddScore = (categoryId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          scores: [
-            ...category.scores,
-            { id: generateId(), subject: "", subjectOther: "", score: "" },
-          ],
-          isExpanded: true,
-        };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
-  const handleRemoveScore = (categoryId: string, scoreId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        const newScores = category.scores.filter(
-          (score) => score.id !== scoreId,
-        );
-        return {
-          ...category,
-          scores: newScores,
-          isExpanded: newScores.length > 0,
-        };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
-  const handleScoreChange = (
-    categoryId: string,
-    scoreId: string,
-    field: "subject" | "subjectOther" | "score",
-    value: string,
-  ) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          scores: category.scores.map((score) => {
-            if (score.id === scoreId) {
-              return { ...score, [field]: value };
-            }
-            return score;
-          }),
-        };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
-  // Convert translation keys to display options for subjects
-  const getTranslatedSubjectOptions = (availableOptions: string[]) => {
-    return availableOptions.map((translationKey) => ({
-      key: translationKey,
-      label: t(translationKey),
-    }));
-  };
-
-  // Get the selected subject value as an option object
-  const getSelectedSubjectValue = (translationKey: string | null) => {
-    if (!translationKey) return null;
-    return {
-      key: translationKey,
-      label: t(translationKey),
-    };
-  };
-
-  // Get available subjects for a specific category and exclude already selected ones
-  const getAvailableSubjects = (
-    categoryName: string,
-    currentScoreId: string,
-  ): string[] => {
-    const category = categories.find((cat) => cat.name === categoryName);
-    const allSubjects = getOptionalCategorySubjects(categoryName);
-
-    if (!category) return allSubjects;
-
-    // Filter out subjects that are already selected in this category
-    const selectedSubjects = category.scores
-      .filter((score) => score.id !== currentScoreId && score.subject)
-      .map((score) => score.subject);
-
-    return allSubjects.filter((subject) => !selectedSubjects.includes(subject));
-  };
-
-  // Get translated category name
-  const getTranslatedCategoryName = (categoryName: string): string => {
-    const translationKey = getCategoryTranslationKey(categoryName);
-    return t(translationKey);
-  };
+export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
+  const { showErrors = false } = props;
+  const {
+    categories,
+    handleAddScore,
+    handleRemoveScore,
+    handleSubjectChange,
+    handleScoreValueChange,
+    getTranslatedCategoryName,
+    getScoreRowData,
+    getCategoryErrors,
+    getScoreRowErrors,
+    t,
+  } = useThirdOptionalForm(props);
 
   return (
     <Box
@@ -182,7 +66,7 @@ export default function ThirdFormOptional({
             alignItems: "flex-start",
           }}
         >
-          {/* Category Header - Now with translation support */}
+          {/* Category Header */}
           <Typography
             variant="body1"
             sx={{
@@ -196,18 +80,25 @@ export default function ThirdFormOptional({
             {t("thirdForm.secondTypo")}
           </Typography>
 
+          {/* Category-level error messages - only show when showErrors is true */}
+          {showErrors &&
+            getCategoryErrors(category).map((error) => (
+              <Alert
+                key={`${category.id}-${error}`}
+                severity="error"
+                sx={{ mb: 2, width: "100%" }}
+              >
+                {error}
+              </Alert>
+            ))}
+
           {/* Score Inputs */}
           {category.isExpanded &&
             category.scores.map((score) => {
-              const availableSubjects = getAvailableSubjects(
-                category.name,
-                score.id,
-              );
-              const translatedSubjectOptions =
-                getTranslatedSubjectOptions(availableSubjects);
-              const selectedSubjectValue = getSelectedSubjectValue(
-                score.subject || null,
-              );
+              const { translatedSubjectOptions, selectedSubjectValue } =
+                getScoreRowData(category.name, score);
+              const scoreRowErrors = getScoreRowErrors(category.name, score);
+              const hasError = showErrors && scoreRowErrors.length > 0;
 
               return (
                 <Box
@@ -235,10 +126,9 @@ export default function ThirdFormOptional({
                       value={selectedSubjectValue}
                       onChange={(_, newValue) => {
                         const translationKey = newValue?.key ?? "";
-                        handleScoreChange(
+                        handleSubjectChange(
                           category.id,
                           score.id,
-                          "subject",
                           translationKey,
                         );
                       }}
@@ -281,17 +171,14 @@ export default function ThirdFormOptional({
                       type="number"
                       value={score.score}
                       onChange={(e) => {
-                        const validatedValue = handleScoreValidation(
-                          e.target.value,
-                        );
-                        handleScoreChange(
+                        handleScoreValueChange(
                           category.id,
                           score.id,
-                          "score",
-                          validatedValue,
+                          e.target.value,
                         );
                       }}
                       placeholder={t("thirdForm.score")}
+                      error={hasError}
                       slotProps={{
                         htmlInput: { min: 0, max: 10, step: 0.1 },
                       }}
@@ -302,13 +189,13 @@ export default function ThirdFormOptional({
                           height: "40px",
                         },
                         "&:hover .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#8B4A8F",
+                          borderColor: hasError ? "#d32f2f" : "#8B4A8F",
                         },
                         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#A657AE",
+                          borderColor: hasError ? "#d32f2f" : "#A657AE",
                         },
                         "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#A657AE",
+                          borderColor: hasError ? "#d32f2f" : "#A657AE",
                         },
                         "& .MuiInputBase-input": {
                           textAlign: "left",
@@ -346,6 +233,18 @@ export default function ThirdFormOptional({
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   </Box>
+
+                  {/* Row-level error messages - only show when showErrors is true */}
+                  {showErrors &&
+                    scoreRowErrors.map((error) => (
+                      <Typography
+                        key={`${score.id}-${error}`}
+                        variant="caption"
+                        sx={{ color: "#d32f2f", ml: 1, textAlign: "left" }}
+                      >
+                        {error}
+                      </Typography>
+                    ))}
                 </Box>
               );
             })}

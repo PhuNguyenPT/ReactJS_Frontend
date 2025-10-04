@@ -120,7 +120,8 @@
     "score": "Score",
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
-    "secondTypo": "exam scores of yours. (if any)"
+    "secondTypo": "exam scores of yours. (if any)",
+    "vsatMinimumError": "V-Sat must contains at least 3 subjects."
   },
   "subjects": {
     "bieu_dien_nghe_thuat": "Performing Arts",

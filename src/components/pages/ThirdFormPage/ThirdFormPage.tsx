@@ -8,6 +8,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import { useFormData } from "../../../contexts/FormData/useFormData";
+import { useThirdOptionalForm } from "../../../hooks/formPages/useThirdOptionalForm";
 
 export default function ThirdFormPage() {
   usePageTitle("Unizy | Third Form");
@@ -26,6 +27,14 @@ export default function ThirdFormPage() {
     chosenScores,
     optionalCategories,
   } = formData.thirdForm;
+
+  // Get validation function from optional form hook
+  const { validateForm } = useThirdOptionalForm({
+    categories: optionalCategories,
+    setCategories: (value) => {
+      updateThirdForm({ optionalCategories: value });
+    },
+  });
 
   // Update functions that sync with context
   const setMathScore = (value: string) => {
@@ -51,10 +60,12 @@ export default function ThirdFormPage() {
 
   const setOptionalCategories = (value: typeof optionalCategories) => {
     updateThirdForm({ optionalCategories: value });
+    // Clear errors when user updates optional categories
+    if (showErrors) setShowErrors(false);
   };
 
   // Check if all required fields are filled
-  const isFormValid = () => {
+  const isMainFormValid = () => {
     return (
       mathScore.trim() !== "" &&
       literatureScore.trim() !== "" &&
@@ -71,7 +82,12 @@ export default function ThirdFormPage() {
   };
 
   const handleNext = () => {
-    if (isFormValid()) {
+    const mainFormValid = isMainFormValid();
+    const optionalFormValidation = validateForm();
+    const optionalFormValid = optionalFormValidation.isValid;
+
+    // Check both main form and optional form
+    if (mainFormValid && optionalFormValid) {
       void navigate("/fourthForm");
     } else {
       // Show errors when user tries to proceed with incomplete form
@@ -107,6 +123,7 @@ export default function ThirdFormPage() {
           <ThirdFormOptional
             categories={optionalCategories}
             setCategories={setOptionalCategories}
+            showErrors={showErrors}
           />
         </div>
 
