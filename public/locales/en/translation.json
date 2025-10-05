@@ -199,7 +199,9 @@
     "secondField": "Certificate Type",
     "thirdField": "Language",
     "award": "Award",
-    "score": "Score"
+    "score": "Score",
+    "scoreRequiredError": "Please enter your scores",
+    "awardRequiredError": "Please enter your awards"
   },
   "ranks": {
     "first": "First Place",

@@ -318,7 +318,7 @@ html,
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  color: #a657ae;
+  color: #9c27b0;
   background: #fff;
   padding: 30px;
   border-radius: 30px;
@@ -333,7 +333,7 @@ html,
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  color: #a657ae;
+  color: #9c27b0;
   background: #fff;
   padding: 30px;
   border-radius: 30px;
@@ -369,8 +369,7 @@ html,
 }
 
 .form-subtitle {
-  font-size: 1.2rem;
-  font-style: italic;
+  font-size: 1rem;
   text-align: left;
 }
 

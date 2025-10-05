@@ -128,7 +128,7 @@
     "cong_nghe": "Công nghệ",
     "dia_ly": "Địa lý",
     "doc_hieu": "Đọc hiểu",
-    "doc_ke_dien_cam": "Đọc và biểu cảm cảm xúc",
+    "doc_ke_dien_cam": "Đọc kể diễn cảm",
     "gdktpl": "Giáo dục kinh tế và pháp luật",
     "hat": "Hát",
     "hat_bieu_dien_nhac_cu": "Hát hoặc Biểu diễn nhạc cụ",
@@ -199,7 +199,9 @@
     "secondField": "Loại chứng chỉ",
     "thirdField": "Ngoại ngữ",
     "award": "Giải thưởng",
-    "score": "Điểm"
+    "score": "Điểm",
+    "scoreRequiredError": "Vui lòng nhập điểm của bạn",
+    "awardRequiredError": "Vui lòng nhập giải thưởng của bạn"
   },
   "ranks": {
     "first": "Hạng Nhất",

@@ -101,16 +101,6 @@ export const useThirdOptionalForm = ({
     const regex = /^\d*\.?\d*$/;
     if (!regex.test(value)) return value.slice(0, -1);
 
-    // Convert to number and validate range
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return value;
-
-    // If greater than 10, return "10"
-    if (numValue > 10) return "10";
-
-    // If less than 0, return "0"
-    if (numValue < 0) return "0";
-
     return value;
   };
 

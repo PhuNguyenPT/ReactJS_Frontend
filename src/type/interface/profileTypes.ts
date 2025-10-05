@@ -2,16 +2,15 @@
 export interface StudentResponse {
   success?: boolean;
   message?: string;
-  id?: string; // Add id at root level
+  id?: string;
   userId?: string;
-  majors?: string[]; // Add majors array
+  majors?: string[];
   data?: {
-    id?: string; // Also check in data object
+    id?: string;
     userId?: string;
     email?: string;
     name?: string;
     majors?: string[];
-    // Add other fields as needed based on your API response
     [key: string]: unknown;
   };
 }

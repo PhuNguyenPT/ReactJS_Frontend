@@ -1,5 +1,5 @@
 import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -10,24 +10,157 @@ import {
   DialogContentText,
   Paper,
   CircularProgress,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../../../hooks/auth/useAuth";
+import { getAdmissionForStudent } from "../../../services/studentAdmission/studentAdmissionService";
+import type {
+  StudentResponse,
+  NinthFormNavigationState,
+} from "../../../type/interface/profileTypes";
 
 export default function NinthFormPage() {
   usePageTitle("Unizy | Ninth Form");
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
   // Use your existing auth hook
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Local state for popup
+  // Local state for popup and loading
   const [openPopup, setOpenPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
+  // Get student ID from navigation state or sessionStorage
+  useEffect(() => {
+    // First, try to get from navigation state
+    const navigationState = location.state as
+      | NinthFormNavigationState
+      | undefined;
+
+    // Check if navigationState has the studentId from previous page
+    const navStudentId =
+      navigationState?.responseData &&
+      typeof navigationState.responseData === "object" &&
+      "id" in navigationState.responseData
+        ? (navigationState.responseData as { id?: string }).id
+        : null;
+
+    if (navStudentId) {
+      console.log(
+        "[NinthFormPage] Found student ID from navigation:",
+        navStudentId,
+      );
+      setStudentId(navStudentId);
+      sessionStorage.setItem("studentId", navStudentId);
+      return;
+    }
+
+    // Fallback: check sessionStorage
+    const storedStudentId = sessionStorage.getItem("studentId");
+    if (storedStudentId) {
+      console.log(
+        "[NinthFormPage] Found student ID from sessionStorage:",
+        storedStudentId,
+      );
+      setStudentId(storedStudentId);
+      return;
+    }
+
+    // Last resort: check user object
+    if (user && typeof user === "object" && "id" in user) {
+      const userId = (user as StudentResponse).id;
+      if (userId) {
+        console.log("[NinthFormPage] Found student ID from user:", userId);
+        setStudentId(userId);
+        sessionStorage.setItem("studentId", userId);
+        return;
+      }
+    }
+
+    console.warn("[NinthFormPage] No student ID found");
+  }, [location.state, user]);
+
+  /**
+   * Unified submission handler that works for both authenticated and guest users
+   * @param isGuest - Whether to treat this as a guest submission
+   */
+  const handleSubmit = async (isGuest = false) => {
+    if (!studentId) {
+      setErrorMessage(
+        t(
+          "errors.studentIdNotFound",
+          "Student ID not found. Please complete previous steps.",
+        ),
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      const userType = isGuest ? "guest" : "authenticated";
+      console.log(
+        `[NinthFormPage] Submitting for ${userType} user:`,
+        studentId,
+      );
+
+      // Use the smart helper that automatically picks the right endpoint
+      const admissionData = await getAdmissionForStudent(
+        studentId,
+        isAuthenticated && !isGuest,
+      );
+
+      console.log("[NinthFormPage] Admission data received:", admissionData);
+
+      // Extract user info safely (only for authenticated users)
+      const userData =
+        user && typeof user === "object" && "data" in user
+          ? (user as StudentResponse).data
+          : null;
+
+      const userId =
+        !isGuest && user && typeof user === "object" && "id" in user
+          ? (user as StudentResponse).id
+          : undefined;
+
+      const userName = !isGuest ? userData?.name : undefined;
+
+      // Navigate to final result page with admission data
+      void navigate("/finalResult", {
+        state: {
+          userId,
+          userName,
+          studentId,
+          savedToAccount: isAuthenticated && !isGuest,
+          isGuest,
+          admissionData: admissionData.data,
+        },
+      });
+    } catch (error) {
+      console.error("[NinthFormPage] Error submitting form:", error);
+      setErrorMessage(
+        t(
+          "errors.submissionFailed",
+          "Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại!",
+        ),
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  /**
+   * Handle Next/Submit button click
+   */
   const handleNext = () => {
     // Show loading indicator while checking authentication
     if (isLoading || isSubmitting) {
@@ -35,33 +168,8 @@ export default function NinthFormPage() {
     }
 
     if (isAuthenticated) {
-      // User is authenticated, process and save results
-      console.log("User is authenticated:", user?.name ?? user?.email);
-
-      setIsSubmitting(true);
-
-      // Use void to explicitly ignore the promise
-      void (async () => {
-        try {
-          // Simulate API call
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          // Navigate to final result page with prediction data
-          void navigate("/finalResult", {
-            state: {
-              userId: user?.id,
-              userName: user?.name,
-              savedToAccount: true,
-            },
-          });
-        } catch (error) {
-          console.error("Error processing form:", error);
-          // Handle error - maybe show an error dialog
-          alert("Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại!");
-        } finally {
-          setIsSubmitting(false);
-        }
-      })();
+      // User is authenticated, submit with authentication
+      void handleSubmit(false);
     } else {
       // User is not authenticated, show popup
       setOpenPopup(true);
@@ -80,42 +188,36 @@ export default function NinthFormPage() {
     void navigate("/login");
   };
 
-  const handleSkip = async () => {
+  /**
+   * Handle skip button - proceed as guest
+   */
+  const handleSkip = () => {
     setOpenPopup(false);
-    setIsSubmitting(true);
-
-    try {
-      // Skip authentication and proceed without saving
-      console.log(
-        "User skipped authentication, proceeding without saving results",
-      );
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Navigate to final result page without saving
-      void navigate("/finalResult", {
-        state: {
-          savedToAccount: false,
-          isGuest: true,
-        },
-      });
-    } catch (error) {
-      console.error("Error processing form:", error);
-      alert("Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại!");
-    } finally {
-      setIsSubmitting(false);
-    }
+    void handleSubmit(true); // Submit as guest
   };
 
   const handleClosePopup = () => {
     setOpenPopup(false);
   };
 
+  const handleCloseError = () => {
+    setErrorMessage(null);
+  };
+
   // Optional: Show user info in console for debugging
+  const userData =
+    user && typeof user === "object" && "data" in user
+      ? (user as StudentResponse).data
+      : null;
+
+  const userDisplayName = userData?.name ?? "Unknown";
+  const userDisplayEmail = userData?.email ?? "Unknown";
+
   console.log("Auth Status:", {
     isAuthenticated,
     isLoading,
-    user: user ? `${user.name} (${user.email})` : null,
+    user: user ? `${userDisplayName} (${userDisplayEmail})` : null,
+    studentId: studentId ?? "Not found",
   });
 
   return (
@@ -148,6 +250,7 @@ export default function NinthFormPage() {
         >
           {t("ninthForm.title")}
         </Typography>
+
         <NinthForm />
 
         {/* Back button */}
@@ -180,7 +283,7 @@ export default function NinthFormPage() {
         <Button
           variant="contained"
           onClick={handleNext}
-          disabled={isLoading || isSubmitting}
+          disabled={isLoading || isSubmitting || !studentId}
           sx={{
             position: "fixed",
             bottom: 30,
@@ -265,7 +368,7 @@ export default function NinthFormPage() {
           </Button>
           <Button
             variant="outlined"
-            onClick={() => void handleSkip()}
+            onClick={handleSkip}
             disabled={isSubmitting}
             sx={{
               borderColor: "#A657AE",
@@ -290,6 +393,22 @@ export default function NinthFormPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Error Snackbar */}
+      <Snackbar
+        open={!!errorMessage}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
