@@ -43,7 +43,7 @@ export function useOcrHandler() {
   const processOcr = async (
     isAuthenticated: boolean,
     studentId?: string,
-    initialWaitTime = 10000,
+    initialWaitTime = 7000,
     maxRetries = 3,
     retryDelay = 2000,
   ): Promise<OcrResponse | null> => {
@@ -57,7 +57,7 @@ export function useOcrHandler() {
 
       // Wait for the initial fixed time (10s by default) to allow OCR processing to complete
       console.log(
-        `[OCR Handler] ⏳ Waiting ${String(initialWaitTime / 1000)} seconds for OCR processing to complete...`,
+        `[OCR Handler]Waiting ${String(initialWaitTime / 1000)} seconds for OCR processing to complete...`,
       );
       await wait(initialWaitTime);
       console.log(

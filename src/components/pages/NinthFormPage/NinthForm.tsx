@@ -27,20 +27,20 @@ export default function NinthForm() {
 
   // Fixed subjects - memoized to prevent recreation on every render
   const fixedSubjects = useMemo(
-    () => ["Toán", "Ngữ Văn", "Tiếng Anh", "Lịch sử"],
+    () => ["Toán", "Ngữ Văn", "Tiếng Anh", "Lịch Sử"],
     [],
   );
 
   // Subjects available for dropdown - memoized to prevent recreation on every render
   const optionalSubjects = useMemo(
     () => [
-      "Địa lý",
-      "Giáo dục công dân",
-      "Vật lý",
-      "Hóa học",
-      "Sinh học",
-      "Công nghệ",
-      "Tin học",
+      "Địa Lý",
+      "Giáo Dục Công Dân",
+      "Vật Lý",
+      "Hóa Học",
+      "Sinh Học",
+      "Công Nghệ",
+      "Tin Học",
       "GDKTPL",
     ],
     [],

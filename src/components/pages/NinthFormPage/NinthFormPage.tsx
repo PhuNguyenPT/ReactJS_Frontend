@@ -15,9 +15,9 @@ import {
 } from "@mui/material";
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useAuth from "../../../hooks/auth/useAuth";
-import { getAdmissionForStudent } from "../../../services/studentAdmission/studentAdmissionService";
+import { useAdmissionHandler } from "../../../hooks/studentAdmission/useAdmissionHandler";
 import type { StudentResponse } from "../../../type/interface/profileTypes";
 import type { NinthFormNavigationState } from "../../../type/interface/navigationTypes";
 
@@ -30,11 +30,17 @@ export default function NinthFormPage() {
   // Use your existing auth hook
   const { isAuthenticated, isLoading, user } = useAuth();
 
+  // Use the admission handler hook
+  const { processAdmission } = useAdmissionHandler();
+
   // Local state for popup and loading
   const [openPopup, setOpenPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
+
+  // Use ref to track if we've already logged auth status
+  const hasLoggedAuthStatus = useRef(false);
 
   // Get student ID from navigation state or sessionStorage
   useEffect(() => {
@@ -86,6 +92,30 @@ export default function NinthFormPage() {
     console.warn("[NinthFormPage] No student ID found");
   }, [location.state, user]);
 
+  // Log auth status only once when component mounts or when auth state actually changes
+  useEffect(() => {
+    if (!hasLoggedAuthStatus.current || isLoading) {
+      const userData =
+        user && typeof user === "object" && "data" in user
+          ? (user as StudentResponse).data
+          : null;
+
+      const userDisplayName = userData?.name ?? "Unknown";
+      const userDisplayEmail = userData?.email ?? "Unknown";
+
+      console.log("Auth Status:", {
+        isAuthenticated,
+        isLoading,
+        user: user ? `${userDisplayName} (${userDisplayEmail})` : null,
+        studentId: studentId ?? "Not found",
+      });
+
+      if (!isLoading) {
+        hasLoggedAuthStatus.current = true;
+      }
+    }
+  }, [isAuthenticated, isLoading, user, studentId]);
+
   /**
    * Unified submission handler that works for both authenticated and guest users
    * @param isGuest - Whether to treat this as a guest submission
@@ -111,10 +141,13 @@ export default function NinthFormPage() {
         studentId,
       );
 
-      // Use the smart helper that automatically picks the right endpoint
-      const admissionData = await getAdmissionForStudent(
+      // Use the hook with proper wait time and retries
+      const admissionData = await processAdmission(
         studentId,
         isAuthenticated && !isGuest,
+        15000, // 15 second initial wait
+        3, // 3 retries
+        2000, // 2 second delay between retries
       );
 
       console.log("[NinthFormPage] Admission data received:", admissionData);
@@ -126,8 +159,8 @@ export default function NinthFormPage() {
           : null;
 
       const userId =
-        !isGuest && user && typeof user === "object" && "id" in user
-          ? (user as StudentResponse).id
+        !isGuest && user && typeof user === "object" && "userId" in user
+          ? (user as StudentResponse).userId // Use userId for the authenticated user's ID
           : undefined;
 
       const userName = !isGuest ? userData?.name : undefined;
@@ -135,12 +168,12 @@ export default function NinthFormPage() {
       // Navigate to final result page with admission data
       void navigate("/finalResult", {
         state: {
-          userId,
+          userId, // This is the authenticated user's ID
           userName,
-          studentId,
+          studentId, // This is the student profile ID
           savedToAccount: isAuthenticated && !isGuest,
           isGuest,
-          admissionData: admissionData.data,
+          admissionData: admissionData?.data,
         },
       });
     } catch (error) {
@@ -201,22 +234,6 @@ export default function NinthFormPage() {
   const handleCloseError = () => {
     setErrorMessage(null);
   };
-
-  // Optional: Show user info in console for debugging
-  const userData =
-    user && typeof user === "object" && "data" in user
-      ? (user as StudentResponse).data
-      : null;
-
-  const userDisplayName = userData?.name ?? "Unknown";
-  const userDisplayEmail = userData?.email ?? "Unknown";
-
-  console.log("Auth Status:", {
-    isAuthenticated,
-    isLoading,
-    user: user ? `${userDisplayName} (${userDisplayEmail})` : null,
-    studentId: studentId ?? "Not found",
-  });
 
   return (
     <>
