@@ -16,11 +16,9 @@ import {
 import { useState, useMemo, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
+import { useLocation } from "react-router-dom"; // Add this import
 import useAuth from "../../../hooks/auth/useAuth";
-import {
-  getAdmissionForStudent,
-  getStudentIdOrThrow,
-} from "../../../services/studentAdmission/studentAdmissionService";
+import { getAdmissionForStudent } from "../../../services/studentAdmission/studentAdmissionService";
 import { transformAdmissionData } from "../../../utils/transformAdmissionData";
 import type {
   AdmissionProgram,
@@ -47,8 +45,17 @@ function extractPrograms(data: unknown): AdmissionProgram[] {
   return [];
 }
 
+// Define the navigation state interface
+interface FinalResultState {
+  studentId?: string;
+  admissionData?: unknown;
+  isGuest?: boolean;
+  savedToAccount?: boolean;
+}
+
 export default function FinalResult() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +69,41 @@ export default function FinalResult() {
         setLoading(true);
         setError(null);
 
-        const studentId = getStudentIdOrThrow(user);
+        // Get data from navigation state
+        const state = location.state as FinalResultState | null;
+
+        // First, try to use admissionData from navigation state if available
+        if (state?.admissionData) {
+          console.log(
+            "[FinalResult] Using admission data from navigation state",
+          );
+          const programs = extractPrograms(state.admissionData);
+
+          if (programs.length === 0) {
+            throw new Error("Không tìm thấy dữ liệu tuyển sinh");
+          }
+
+          const transformedData = transformAdmissionData(programs);
+          setUniversities(transformedData);
+          setLoading(false);
+          return;
+        }
+
+        // If no data in navigation state, fetch it
+        console.log("[FinalResult] No data in navigation state, fetching...");
+
+        // Get studentId from navigation state or sessionStorage
+        const studentId =
+          state?.studentId ?? sessionStorage.getItem("studentId");
+
+        if (!studentId) {
+          throw new Error(
+            "Student ID not found. Please complete previous steps.",
+          );
+        }
+
+        console.log("[FinalResult] Fetching admission data for:", studentId);
+
         const response = await getAdmissionForStudent(
           studentId,
           isAuthenticated,
@@ -83,7 +124,7 @@ export default function FinalResult() {
           );
         }
       } catch (err) {
-        console.error("Error fetching admission data:", err);
+        console.error("[FinalResult] Error fetching admission data:", err);
         setError(
           err instanceof Error
             ? err.message
@@ -95,7 +136,7 @@ export default function FinalResult() {
     };
 
     void fetchAdmissionData();
-  }, [user, isAuthenticated]);
+  }, [location.state, isAuthenticated]);
 
   // Filter universities based on search query
   const filteredUniversities = useMemo(() => {

@@ -27,17 +27,7 @@ function extractStudentId(user: unknown): string | null {
     }
   }
 
-  // Check localStorage first (preferred storage)
-  const localStorageId = localStorage.getItem("studentId");
-  if (localStorageId) {
-    console.log(
-      "[AdmissionService] Found student ID in localStorage:",
-      localStorageId,
-    );
-    return localStorageId;
-  }
-
-  // Fallback: check sessionStorage
+  // Check sessionStorage first (matches what NinthFormPage uses)
   const sessionStorageId = sessionStorage.getItem("studentId");
   if (sessionStorageId) {
     console.log(
@@ -45,6 +35,16 @@ function extractStudentId(user: unknown): string | null {
       sessionStorageId,
     );
     return sessionStorageId;
+  }
+
+  // Fallback: check localStorage
+  const localStorageId = localStorage.getItem("studentId");
+  if (localStorageId) {
+    console.log(
+      "[AdmissionService] Found student ID in localStorage:",
+      localStorageId,
+    );
+    return localStorageId;
   }
 
   console.warn("[AdmissionService] No student ID found");

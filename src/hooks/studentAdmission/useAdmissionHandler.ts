@@ -85,9 +85,9 @@ export function useAdmissionHandler() {
   const processAdmission = async (
     studentId: string,
     isAuthenticated: boolean,
-    initialWaitTime = 10000,
-    maxRetries = 3,
-    retryDelay = 2000,
+    initialWaitTime = 20000,
+    maxRetries = 5,
+    retryDelay = 5000,
   ): Promise<AdmissionResponse | null> => {
     try {
       console.log(
