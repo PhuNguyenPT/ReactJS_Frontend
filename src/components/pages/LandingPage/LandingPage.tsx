@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { useTranslation } from "react-i18next";
 
 export default function LandingPage() {

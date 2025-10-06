@@ -5,44 +5,46 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import { SpecialStudentCase } from "../../../type/enum/special.student.case";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useTranslation } from "react-i18next";
+import { SpecialStudentCase } from "../../../type/enum/special-student-case";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 const SixthForm = () => {
+  const { t } = useTranslation();
   const { formData, updateSixthForm } = useFormData();
 
-  // Get current checked values from context
+  // Get current checked values from context (these are translation keys)
   const checkedValues = formData.sixthForm.specialStudentCases;
 
-  const handleToggle = (value: string) => {
-    const newCheckedValues = checkedValues.includes(value)
-      ? checkedValues.filter((v) => v !== value)
-      : [...checkedValues, value];
+  const handleToggle = (translationKey: string) => {
+    const newCheckedValues = checkedValues.includes(translationKey)
+      ? checkedValues.filter((v) => v !== translationKey)
+      : [...checkedValues, translationKey];
 
     updateSixthForm({ specialStudentCases: newCheckedValues });
   };
 
-  // Define the options using the SpecialStudentCase enum
+  // Define the options using the SpecialStudentCase enum with translation keys
   const specialStudentOptions = [
     {
       key: "HEROES_AND_CONTRIBUTORS",
       value: SpecialStudentCase.HEROES_AND_CONTRIBUTORS,
-      label: SpecialStudentCase.HEROES_AND_CONTRIBUTORS,
+      label: t(SpecialStudentCase.HEROES_AND_CONTRIBUTORS),
     },
     {
       key: "TRANSFER_STUDENT",
       value: SpecialStudentCase.TRANSFER_STUDENT,
-      label: SpecialStudentCase.TRANSFER_STUDENT,
+      label: t(SpecialStudentCase.TRANSFER_STUDENT),
     },
     {
       key: "ETHNIC_MINORITY_STUDENT",
       value: SpecialStudentCase.ETHNIC_MINORITY_STUDENT,
-      label: SpecialStudentCase.ETHNIC_MINORITY_STUDENT,
+      label: t(SpecialStudentCase.ETHNIC_MINORITY_STUDENT),
     },
     {
       key: "VERY_FEW_ETHNIC_MINORITY",
       value: SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY,
-      label: SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY,
+      label: t(SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY),
     },
   ];
 

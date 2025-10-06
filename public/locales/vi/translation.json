@@ -77,6 +77,10 @@
     "errorWarning1": "Vui lòng chọn Tỉnh/Thành phố",
     "errorWarning2": "Vui lòng chọn Loại hình trường đại học"
   },
+  "uniType": {
+    "private": "Tư thục",
+    "public": "Công lập"
+  },
   "secondForm": {
     "title": "Về ngành học của bạn",
     "subTitle": "Ba nhóm ngành mà bạn thấy mình phù hợp",
@@ -101,7 +105,6 @@
     "manufacturing_and_processing": "Sản xuất và chế biến",
     "mathematics_and_statistics": "Toán và thống kê",
     "natural_sciences": "Khoa học tự nhiên",
-    "other": "Khác",
     "security_defense": "An ninh, Quốc phòng",
     "social_and_behavioral_sciences": "Khoa học xã hội và hành vi",
     "social_services": "Dịch vụ xã hội",
@@ -118,7 +121,74 @@
     "chooseExam": "Chọn kỳ thi",
     "firstTypo": "Nhập vào điểm thi",
     "secondTypo": "của bạn. (nếu có)",
-    "enterOther": "Nhập lựa chọn khác của bạn"
+    "vsatMinimumError": "V-SAT phải có ít nhất 3 môn học."
+  },
+  "subjects": {
+    "bieu_dien_nghe_thuat": "Biểu diễn nghệ thuật",
+    "cong_nghe": "Công nghệ",
+    "dia_ly": "Địa lý",
+    "doc_hieu": "Đọc hiểu",
+    "doc_ke_dien_cam": "Đọc kể diễn cảm",
+    "gdktpl": "Giáo dục kinh tế và pháp luật",
+    "hat": "Hát",
+    "hat_bieu_dien_nhac_cu": "Hát hoặc Biểu diễn nhạc cụ",
+    "hat_mua": "Hát - Múa",
+    "hinh_hoa": "Vẽ",
+    "hoa_hoc": "Hóa học",
+    "ky_xuong_am": "Ký xướng âm",
+    "lich_su": "Lịch sử",
+    "nang_khieu": "Năng khiếu",
+    "nang_khieu_1": "Năng khiếu 1",
+    "nang_khieu_2": "Năng khiếu 2",
+    "nang_khieu_am_nhac_1": "Năng khiếu Âm nhạc 1",
+    "nang_khieu_am_nhac_2": "Năng khiếu Âm nhạc 2",
+    "nang_khieu_bao_chi": "Năng khiếu Báo chí",
+    "nang_khieu_mam_non_1": "Năng khiếu Mầm non 1 (kể chuyện, đọc, biểu cảm)",
+    "nang_khieu_mam_non_2": "Năng khiếu Mầm non 2 (Hát)",
+    "nang_khieu_skda_1": "Năng khiếu SKĐA 1",
+    "nang_khieu_skda_2": "Năng khiếu SKĐA 2",
+    "nang_khieu_tdtt": "Năng khiếu Thể dục thể thao",
+    "nang_khieu_ve": "Năng khiếu Vẽ",
+    "ngu_van": "Ngữ Văn",
+    "sinh_hoc": "Sinh học",
+    "tieng_anh": "Tiếng Anh",
+    "tieng_duc": "Tiếng Đức",
+    "tieng_nga": "Tiếng Nga",
+    "tieng_nhat": "Tiếng Nhật",
+    "tieng_phap": "Tiếng Pháp",
+    "tieng_trung": "Tiếng Trung",
+    "tin_hoc": "Tin học",
+    "toan": "Toán",
+    "trang_tri": "Trang trí",
+    "tu_duy_giai_quyet_ngu_van_de": "Scientific Thinking & Problem Solving",
+    "vat_ly": "Vật lý",
+    "ve_hinh_hoa_my_thuat": "Vẽ mỹ thuật",
+    "ve_my_thuat": "Vẽ nghệ thuật",
+    "ve_trang_tri_mau": "Vẽ trang trí màu",
+    "xay_dung_kich_ban_su_kien": "Xây dựng kịch bản sự kiện",
+    "xuong_am": "Xướng âm"
+  },
+  "examTypes": {
+    "ielts": "IELTS",
+    "toefl_cbt": "TOEFL CBT",
+    "toefl_ibt": "TOEFL iBT",
+    "toefl_paper": "TOEFL Paper",
+    "toeic": "TOEIC",
+    "act": "ACT",
+    "a_level": "A-Level",
+    "duolingo_english_test": "Duolingo English Test",
+    "ib": "IB",
+    "ossd": "OSSD",
+    "pte_academic": "PTE Academic",
+    "sat": "SAT",
+    "hsa": "HSA",
+    "tsa": "TSA",
+    "vnuhcm": "VNUHCM"
+  },
+  "categories": {
+    "dgnl": " Đánh Giá Năng Lực",
+    "vsat": " V-SAT",
+    "talent": " Năng khiếu"
   },
   "fourthForm": {
     "title": "Về thành tích của bạn",
@@ -128,21 +198,31 @@
     "firstField": "Môn thi",
     "secondField": "Loại chứng chỉ",
     "thirdField": "Ngoại ngữ",
-    "enterOther": "Nhập lựa chọn khác của bạn",
     "award": "Giải thưởng",
-    "score": "Điểm"
+    "score": "Điểm",
+    "scoreRequiredError": "Vui lòng nhập điểm của bạn",
+    "awardRequiredError": "Vui lòng nhập giải thưởng của bạn"
+  },
+  "ranks": {
+    "first": "Hạng Nhất",
+    "second": "Hạng Nhì",
+    "third": "Hạng Ba"
   },
   "fifthForm": {
     "title": "Dự trù kinh phí",
-    "subTitle1": "Trong một năm, gia đình bạn có thể chi bao nhiêu cho học phí?"
+    "subTitle1": "Trong một năm, gia đình bạn có thể chi bao nhiêu cho học phí?",
+    "millionVND": "triệu VND",
+    "millionVND/year": "triệu VND / năm"
   },
   "sixthForm": {
     "title": "Một số diện tuyển sinh đặc biệt",
-    "subTitle": "Bạn có thuộc một trong các diện ưu tiên sau không?",
-    "option1": "Anh hùng Lao động, Anh hùng Lực lượng vũ trang Nhân dân, Chiến sĩ thi đua toàn quốc",
-    "option2": "Học sinh trường chuyên",
-    "option3": "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
-    "option4": "Dân tộc thiểu số rất ít người (Mông, La Ha,...)"
+    "subTitle": "Bạn có thuộc một trong các diện ưu tiên sau không?"
+  },
+  "specialCases": {
+    "ethnic_minority_student": "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
+    "heroes_and_contributors": "Anh hùng Lao động, Anh hùng Lực lượng vũ trang Nhân dân, Chiến sĩ thi đua toàn quốc",
+    "transfer_student": "Học sinh trường chuyên",
+    "very_few_ethnic_minority": "Dân tộc thiểu số rất ít người (Mông, La Ha,...)"
   },
   "seventhForm": {
     "title": "Về học lực của bạn",
@@ -153,6 +233,18 @@
     "academicScore": "Học lực",
     "errorWarning1": "Vui lòng nhập điểm số học lực của bạn",
     "errorWarning2": "Vui lòng nhập kết quả rèn luyện của bạn"
+  },
+  "conduct": {
+    "good": "Tốt",
+    "satisfactory": "Khá",
+    "passed": "Đạt",
+    "not_passed": "Chưa đạt"
+  },
+  "academicPerformance": {
+    "good": "Tốt",
+    "satisfactory": "Khá",
+    "passed": "Đạt",
+    "not_passed": "Chưa đạt"
   },
   "eighthForm": {
     "title": "Vui lòng đăng tải bảng điểm của bạn với đầy đủ 6 học kỳ (3 năm ở THPT) vào các ô bên dưới",

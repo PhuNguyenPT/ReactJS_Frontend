@@ -13,7 +13,6 @@ export interface CategoryData {
   isExpanded: boolean;
 }
 
-// Fourth form specific interfaces
 export interface AwardCertificate {
   id: string;
   firstField: string;
@@ -28,10 +27,9 @@ export interface FourthFormCategoryData {
   isExpanded: boolean;
   firstFieldLabel: string;
   secondFieldLabel: string;
-  categoryType: string; // category identifier
+  categoryType: string;
 }
 
-// Seventh form specific interfaces
 export interface GradeValues {
   conduct: string;
   academicPerformance: string;
@@ -40,9 +38,9 @@ export interface GradeValues {
 export type GradeKey = "10" | "11" | "12";
 
 export interface FormData {
-  firstForm: string | null; // province
-  uniType: string | null; // university type field
-  secondForm: (string | null)[]; // translation keys (e.g., "majors.engineering")
+  firstForm: string | null;
+  uniType: string | null;
+  secondForm: (string | null)[];
   thirdForm: {
     mathScore: string;
     literatureScore: string;
@@ -83,7 +81,7 @@ export interface FormDataContextType {
   clearStoredFormData: () => void;
   getRemainingTime: () => number;
   isFormDataComplete: () => boolean;
-  getFormDataForApi: () => FormData; // New method to get data with Vietnamese values
+  getFormDataForApi: () => FormData;
 }
 
 export const FormDataContext = createContext<FormDataContextType | undefined>(
@@ -136,13 +134,13 @@ export const initialFormData: FormData = {
       },
     ],
   },
-  fifthForm: { costRange: [0, 500] },
+  fifthForm: { costRange: [0, 900] },
   sixthForm: { specialStudentCases: [] },
   seventhForm: {
     grades: {
       "10": { conduct: "", academicPerformance: "" },
       "11": { conduct: "", academicPerformance: "" },
       "12": { conduct: "", academicPerformance: "" },
-    },
+    } as Record<GradeKey, GradeValues>,
   },
 };

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
-import useLogout from "../../../hooks/useLogout";
+import useLogout from "../../../hooks/auth/useLogout";
 
 interface AccountMenuProps {
   displayName?: string;

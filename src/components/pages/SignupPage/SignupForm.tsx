@@ -7,8 +7,8 @@ import {
   Alert,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useSignupForm } from "../../../hooks/useSignupForm";
-import PasswordField from "../../common/PasswordField";
+import { useSignupForm } from "../../../hooks/auth/useSignupForm";
+import PasswordField from "../../common/PasswordField/PasswordField";
 
 export default function SignupForm() {
   const {

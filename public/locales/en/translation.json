@@ -74,7 +74,12 @@
     "selectProvince": "Province/City",
     "selectUniType": "University Type",
     "enterButton": "NEXT",
-    "errorWarning": "Please select a province/city"
+    "errorWarning1": "Please select a province/city",
+    "errorWarning2": "Please select a university type"
+  },
+  "uniType": {
+    "private": "Private",
+    "public": "Public"
   },
   "secondForm": {
     "title": "About your preferred majors",
@@ -100,7 +105,6 @@
     "manufacturing_and_processing": "Manufacturing and Processing",
     "mathematics_and_statistics": "Mathematics and Statistics",
     "natural_sciences": "Natural Sciences",
-    "other": "Other",
     "security_defense": "Security and Defense",
     "social_and_behavioral_sciences": "Social and Behavioral Sciences",
     "social_services": "Social Services",
@@ -117,7 +121,74 @@
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
     "secondTypo": "exam scores of yours. (if any)",
-    "enterOther": "Enter your other option"
+    "vsatMinimumError": "V-Sat must contains at least 3 subjects."
+  },
+  "subjects": {
+    "bieu_dien_nghe_thuat": "Performing Arts",
+    "cong_nghe": "Technology",
+    "dia_ly": "Geography",
+    "doc_hieu": "Reading Comprehension",
+    "doc_ke_dien_cam": "Reading and Emotional Expression",
+    "gdktpl": "Civic Economics and Law",
+    "hat": "Singing",
+    "hat_bieu_dien_nhac_cu": "Singing or Musical Performance",
+    "hat_mua": "Singing - Dancing",
+    "hinh_hoa": "Drawing",
+    "hoa_hoc": "Chemistry",
+    "ky_xuong_am": "Vocal Notation",
+    "lich_su": "History",
+    "nang_khieu": "Talent",
+    "nang_khieu_1": "Talent 1",
+    "nang_khieu_2": "Talent 2",
+    "nang_khieu_am_nhac_1": "Music Talent 1",
+    "nang_khieu_am_nhac_2": "Music Talent 2",
+    "nang_khieu_bao_chi": "Journalism Talent",
+    "nang_khieu_mam_non_1": "Early Childhood 1 (storytelling, reading, expression)",
+    "nang_khieu_mam_non_2": "Early Childhood 2 (Singing)",
+    "nang_khieu_skda_1": "SKĐA Talent 1",
+    "nang_khieu_skda_2": "SKĐA Talent 2",
+    "nang_khieu_tdtt": "Physical Education Talent",
+    "nang_khieu_ve": "Drawing Talent",
+    "ngu_van": "Literature",
+    "sinh_hoc": "Biology",
+    "tieng_anh": "English",
+    "tieng_duc": "German",
+    "tieng_nga": "Russian",
+    "tieng_nhat": "Japanese",
+    "tieng_phap": "French",
+    "tieng_trung": "Chinese",
+    "tin_hoc": "Computer Science",
+    "toan": "Mathematics",
+    "trang_tri": "Decoration",
+    "tu_duy_giai_quyet_ngu_van_de": "Scientific Thinking & Problem Solving",
+    "vat_ly": "Physics",
+    "ve_hinh_hoa_my_thuat": "Fine Arts Drawing",
+    "ve_my_thuat": "Art Drawing",
+    "ve_trang_tri_mau": "Colorful Decorative Drawing",
+    "xay_dung_kich_ban_su_kien": "Event Script Development",
+    "xuong_am": "Vocal Performance"
+  },
+  "examTypes": {
+    "ielts": "IELTS",
+    "toefl_cbt": "TOEFL CBT",
+    "toefl_ibt": "TOEFL iBT",
+    "toefl_paper": "TOEFL Paper",
+    "toeic": "TOEIC",
+    "act": "ACT",
+    "a_level": "A-Level",
+    "duolingo_english_test": "Duolingo English Test",
+    "ib": "IB",
+    "ossd": "OSSD",
+    "pte_academic": "PTE Academic",
+    "sat": "SAT",
+    "hsa": "HSA",
+    "tsa": "TSA",
+    "vnuhcm": "VNUHCM"
+  },
+  "categories": {
+    "dgnl": "Aptitude Assessment",
+    "vsat": "V-SAT",
+    "talent": "Talent"
   },
   "fourthForm": {
     "title": "About your achievements",
@@ -127,21 +198,31 @@
     "firstField": "Subject",
     "secondField": "Certificate Type",
     "thirdField": "Language",
-    "enterOther": "Enter your other option",
     "award": "Award",
-    "score": "Score"
+    "score": "Score",
+    "scoreRequiredError": "Please enter your scores",
+    "awardRequiredError": "Please enter your awards"
+  },
+  "ranks": {
+    "first": "First Place",
+    "second": "Second Place",
+    "third": "Third Place"
   },
   "fifthForm": {
     "title": "About your budget",
-    "subTitle1": "In a year, how much can your family spend on tuition fees?"
+    "subTitle1": "In a year, how much can your family spend on tuition fees?",
+    "millionVND": "million VND",
+    "millionVND/year": "million VND / year"
   },
   "sixthForm": {
     "title": "Special Admission Categories",
-    "subTitle": "Do you belong to any of the following priority categories?",
-    "option1": "Labor Heroes, People's Armed Forces Heroes, National Emulation Soldiers",
-    "option2": "Specialized school students",
-    "option3": "Students from poor districts, extremely difficult areas",
-    "option4": "Ethnic minorities with very few people (Mong, La Ha,...)"
+    "subTitle": "Do you belong to any of the following priority categories?"
+  },
+  "specialCases": {
+    "ethnic_minority_student": "Students from poor districts and extremely difficult areas",
+    "heroes_and_contributors": "Labor Heroes, Armed Forces Heroes, National Outstanding Fighters",
+    "transfer_student": "Specialized school students",
+    "very_few_ethnic_minority": "Very few ethnic minorities (Hmong, La Ha, etc.)"
   },
   "seventhForm": {
     "title": "About your academic scores",
@@ -152,6 +233,18 @@
     "academicScore": "Academic score",
     "errorWarning1": "Please enter your academic scores",
     "errorWarning2": "Please enter your practice results"
+  },
+  "conduct": {
+    "good": "Good",
+    "satisfactory": "Satisfactory",
+    "passed": "Passed",
+    "not_passed": "Not Passed"
+  },
+  "academicPerformance": {
+    "good": "Good",
+    "satisfactory": "Satisfactory",
+    "passed": "Passed",
+    "not_passed": "Not Passed"
   },
   "eighthForm": {
     "title": "Please upload your score board with full 6 semester (3 years in HighSchool) into these fields",

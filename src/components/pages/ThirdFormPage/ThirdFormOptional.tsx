@@ -5,16 +5,16 @@ import {
   Button,
   IconButton,
   Autocomplete,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { useTranslation } from "react-i18next";
-import { getOptionalCategorySubjects } from "../../../type/enum/combineUtil";
+import { useThirdOptionalForm } from "../../../hooks/formPages/useThirdOptionalForm";
 
 interface OptionalScore {
   id: string;
   subject: string;
-  subjectOther?: string; // Add this field for "Other" input
+  subjectOther?: string;
   score: string;
 }
 
@@ -28,91 +28,23 @@ interface CategoryData {
 interface ThirdFormOptionalProps {
   categories: CategoryData[];
   setCategories: (categories: CategoryData[]) => void;
+  showErrors?: boolean;
 }
 
-export default function ThirdFormOptional({
-  categories,
-  setCategories,
-}: ThirdFormOptionalProps) {
-  const { t } = useTranslation();
-
-  const generateId = () =>
-    `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
-
-  const handleAddScore = (categoryId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          scores: [
-            ...category.scores,
-            { id: generateId(), subject: "", subjectOther: "", score: "" },
-          ],
-          isExpanded: true,
-        };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
-  const handleRemoveScore = (categoryId: string, scoreId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        const newScores = category.scores.filter(
-          (score) => score.id !== scoreId,
-        );
-        return {
-          ...category,
-          scores: newScores,
-          isExpanded: newScores.length > 0,
-        };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
-  const handleScoreChange = (
-    categoryId: string,
-    scoreId: string,
-    field: "subject" | "subjectOther" | "score",
-    value: string,
-  ) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          scores: category.scores.map((score) => {
-            if (score.id === scoreId) {
-              return { ...score, [field]: value };
-            }
-            return score;
-          }),
-        };
-      }
-      return category;
-    });
-    setCategories(updated);
-  };
-
-  // Get available subjects for a specific category and exclude already selected ones
-  const getAvailableSubjects = (
-    categoryName: string,
-    currentScoreId: string,
-  ): string[] => {
-    const category = categories.find((cat) => cat.name === categoryName);
-    const allSubjects = getOptionalCategorySubjects(categoryName);
-
-    if (!category) return allSubjects;
-
-    // Filter out subjects that are already selected in this category
-    const selectedSubjects = category.scores
-      .filter((score) => score.id !== currentScoreId && score.subject)
-      .map((score) => score.subject);
-
-    return allSubjects.filter((subject) => !selectedSubjects.includes(subject));
-  };
+export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
+  const { showErrors = false } = props;
+  const {
+    categories,
+    handleAddScore,
+    handleRemoveScore,
+    handleSubjectChange,
+    handleScoreValueChange,
+    getTranslatedCategoryName,
+    getScoreRowData,
+    getCategoryErrors,
+    getScoreRowErrors,
+    t,
+  } = useThirdOptionalForm(props);
 
   return (
     <Box
@@ -140,19 +72,33 @@ export default function ThirdFormOptional({
             sx={{
               mb: 1,
               color: "#9c27b0",
-              fontStyle: "italic",
               textAlign: "left",
             }}
           >
-            {t("thirdForm.firstTypo")} {category.name}{" "}
+            {t("thirdForm.firstTypo")}{" "}
+            {getTranslatedCategoryName(category.name)}{" "}
             {t("thirdForm.secondTypo")}
           </Typography>
+
+          {/* Category-level error messages - only show when showErrors is true */}
+          {showErrors &&
+            getCategoryErrors(category).map((error) => (
+              <Alert
+                key={`${category.id}-${error}`}
+                severity="error"
+                sx={{ mb: 2, width: "100%" }}
+              >
+                {error}
+              </Alert>
+            ))}
 
           {/* Score Inputs */}
           {category.isExpanded &&
             category.scores.map((score) => {
-              const isOtherSelected =
-                score.subject === "Other" && category.name === "ĐGNL";
+              const { translatedSubjectOptions, selectedSubjectValue } =
+                getScoreRowData(category.name, score);
+              const scoreRowErrors = getScoreRowErrors(category.name, score);
+              const hasError = showErrors && scoreRowErrors.length > 0;
 
               return (
                 <Box
@@ -176,16 +122,20 @@ export default function ThirdFormOptional({
                   >
                     {/* Subject Autocomplete */}
                     <Autocomplete
-                      options={getAvailableSubjects(category.name, score.id)}
-                      value={score.subject || null}
+                      options={translatedSubjectOptions}
+                      value={selectedSubjectValue}
                       onChange={(_, newValue) => {
-                        handleScoreChange(
+                        const translationKey = newValue?.key ?? "";
+                        handleSubjectChange(
                           category.id,
                           score.id,
-                          "subject",
-                          newValue ?? "",
+                          translationKey,
                         );
                       }}
+                      getOptionLabel={(option) => option.label}
+                      isOptionEqualToValue={(option, value) =>
+                        option.key === value.key
+                      }
                       sx={{
                         width: 200,
                       }}
@@ -216,18 +166,19 @@ export default function ThirdFormOptional({
                       )}
                     />
 
-                    {/* Score Input */}
+                    {/* Score Input with validation */}
                     <TextField
+                      type="number"
                       value={score.score}
                       onChange={(e) => {
-                        handleScoreChange(
+                        handleScoreValueChange(
                           category.id,
                           score.id,
-                          "score",
                           e.target.value,
                         );
                       }}
                       placeholder={t("thirdForm.score")}
+                      error={hasError}
                       slotProps={{
                         htmlInput: { min: 0, max: 10, step: 0.1 },
                       }}
@@ -238,17 +189,28 @@ export default function ThirdFormOptional({
                           height: "40px",
                         },
                         "&:hover .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#8B4A8F",
+                          borderColor: hasError ? "#d32f2f" : "#8B4A8F",
                         },
                         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#A657AE",
+                          borderColor: hasError ? "#d32f2f" : "#A657AE",
                         },
                         "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#A657AE",
+                          borderColor: hasError ? "#d32f2f" : "#A657AE",
                         },
                         "& .MuiInputBase-input": {
                           textAlign: "left",
                           color: "#A657AE",
+                        },
+                        "& input[type=number]": {
+                          MozAppearance: "textfield",
+                        },
+                        "& input[type=number]::-webkit-outer-spin-button": {
+                          WebkitAppearance: "none",
+                          margin: 0,
+                        },
+                        "& input[type=number]::-webkit-inner-spin-button": {
+                          WebkitAppearance: "none",
+                          margin: 0,
                         },
                       }}
                     />
@@ -272,44 +234,17 @@ export default function ThirdFormOptional({
                     </IconButton>
                   </Box>
 
-                  {/* "Other" input field - appears below the main row for ĐGNL category */}
-                  {isOtherSelected && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-start",
-                        ml: 0,
-                      }}
-                    >
-                      <TextField
-                        value={score.subjectOther ?? ""}
-                        onChange={(e) => {
-                          handleScoreChange(
-                            category.id,
-                            score.id,
-                            "subjectOther",
-                            e.target.value,
-                          );
-                        }}
-                        placeholder={
-                          t("thirdForm.enterOther") || "Enter other exam type"
-                        }
-                        sx={{
-                          width: 200,
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: "17px",
-                            height: "40px",
-                            "& fieldset": { borderColor: "#A657AE" },
-                            "&:hover fieldset": { borderColor: "#8B4A8F" },
-                            "&.Mui-focused fieldset": {
-                              borderColor: "#A657AE",
-                            },
-                          },
-                          "& input": { color: "#A657AE" },
-                        }}
-                      />
-                    </Box>
-                  )}
+                  {/* Row-level error messages - only show when showErrors is true */}
+                  {showErrors &&
+                    scoreRowErrors.map((error) => (
+                      <Typography
+                        key={`${score.id}-${error}`}
+                        variant="caption"
+                        sx={{ color: "#d32f2f", ml: 1, textAlign: "left" }}
+                      >
+                        {error}
+                      </Typography>
+                    ))}
                 </Box>
               );
             })}

@@ -13,6 +13,42 @@ import {
   type GradeValues,
 } from "./FormDataContext";
 import { getVietnameseValue, getTranslationKey } from "../../type/enum/major";
+import {
+  getUniTypeVietnameseValue,
+  getUniTypeTranslationKey,
+} from "../../type/enum/uni-type";
+import {
+  getNationalExamSubjectVietnameseValue,
+  getNationalExamSubjectTranslationKey,
+} from "../../type/enum/national-exam-subject";
+import {
+  getOptionalSubjectVietnameseValue,
+  getOptionalSubjectTranslationKey,
+} from "../../type/enum/combineUtil";
+import {
+  getExamTypeVietnameseValue,
+  getExamTypeTranslationKey,
+} from "../../type/enum/exam";
+import {
+  getNationalExcellentExamVietnameseValue,
+  getNationalExcellentExamTranslationKey,
+} from "../../type/enum/national-excellent-exam";
+import {
+  getRankVietnameseValue,
+  getRankTranslationKey,
+} from "../../type/enum/ranks";
+import {
+  getSpecialStudentCaseVietnameseValue,
+  getSpecialStudentCaseTranslationKey,
+} from "../../type/enum/special-student-case";
+import {
+  getConductVietnameseValue,
+  getConductTranslationKey,
+} from "../../type/enum/conduct";
+import {
+  getAcademicPerformanceVietnameseValue,
+  getAcademicPerformanceTranslationKey,
+} from "../../type/enum/academic-performance";
 
 const FORM_DATA_STORAGE_KEY = "form_data";
 const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
@@ -21,13 +57,144 @@ const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
 // 2 hours = 2 * 60 * 60 * 1000
 const FORM_DATA_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
 
+// Conversion constant for VND (million to actual value)
+const MILLION_TO_VND = 1000000;
+
+// Helper function to convert fourth form fields
+function convertFourthFormToVietnamese(fourthForm: FormData["fourthForm"]) {
+  return {
+    ...fourthForm,
+    categories: fourthForm.categories.map((category) => ({
+      ...category,
+      entries: category.entries.map((entry) => ({
+        ...entry,
+        firstField: entry.firstField
+          ? category.categoryType === "national_award"
+            ? getNationalExcellentExamVietnameseValue(entry.firstField)
+            : getExamTypeVietnameseValue(entry.firstField)
+          : entry.firstField,
+        secondField: entry.secondField
+          ? category.categoryType === "language_cert" ||
+            category.categoryType === "international_cert"
+            ? entry.secondField
+            : getRankVietnameseValue(entry.secondField)
+          : entry.secondField,
+      })),
+    })),
+  };
+}
+
+// Helper function to convert fourth form fields from Vietnamese
+function convertFourthFormFromVietnamese(fourthForm: FormData["fourthForm"]) {
+  return {
+    ...fourthForm,
+    categories: fourthForm.categories.map((category) => ({
+      ...category,
+      entries: category.entries.map((entry) => ({
+        ...entry,
+        firstField: entry.firstField
+          ? category.categoryType === "national_award"
+            ? getNationalExcellentExamTranslationKey(entry.firstField)
+            : getExamTypeTranslationKey(entry.firstField)
+          : entry.firstField,
+        secondField: entry.secondField
+          ? category.categoryType === "language_cert" ||
+            category.categoryType === "international_cert"
+            ? entry.secondField
+            : getRankTranslationKey(entry.secondField)
+          : entry.secondField,
+      })),
+    })),
+  };
+}
+
 // Helper function to convert translation keys to Vietnamese for storage
 function convertToVietnameseForStorage(formData: FormData): FormData {
   return {
     ...formData,
+    uniType: formData.uniType
+      ? getUniTypeVietnameseValue(formData.uniType)
+      : null,
     secondForm: formData.secondForm.map((major) =>
       major ? getVietnameseValue(major) : null,
     ),
+    thirdForm: {
+      ...formData.thirdForm,
+      chosenSubjects: formData.thirdForm.chosenSubjects.map((subject) =>
+        subject ? getNationalExamSubjectVietnameseValue(subject) : null,
+      ),
+      optionalCategories: formData.thirdForm.optionalCategories.map(
+        (category) => ({
+          ...category,
+          scores: category.scores.map((score) => ({
+            ...score,
+            subject: score.subject
+              ? getOptionalSubjectVietnameseValue(score.subject)
+              : score.subject,
+          })),
+        }),
+      ),
+    },
+    fourthForm: convertFourthFormToVietnamese(formData.fourthForm),
+    // Convert fifthForm costRange from millions to actual VND values
+    fifthForm: {
+      ...formData.fifthForm,
+      costRange: formData.fifthForm.costRange.map(
+        (value) => value * MILLION_TO_VND,
+      ),
+    },
+    // Convert sixthForm special student cases to Vietnamese
+    sixthForm: {
+      ...formData.sixthForm,
+      specialStudentCases: formData.sixthForm.specialStudentCases.map(
+        (caseKey) => getSpecialStudentCaseVietnameseValue(caseKey),
+      ),
+    },
+    // Convert seventhForm grades to Vietnamese
+    seventhForm: {
+      ...formData.seventhForm,
+      grades: {
+        "10": {
+          conduct: formData.seventhForm.grades["10"].conduct
+            ? getConductVietnameseValue(
+                formData.seventhForm.grades["10"].conduct,
+              )
+            : formData.seventhForm.grades["10"].conduct,
+          academicPerformance: formData.seventhForm.grades["10"]
+            .academicPerformance
+            ? getAcademicPerformanceVietnameseValue(
+                formData.seventhForm.grades["10"].academicPerformance,
+              )
+            : formData.seventhForm.grades["10"].academicPerformance,
+        },
+        "11": {
+          conduct: formData.seventhForm.grades["11"].conduct
+            ? getConductVietnameseValue(
+                formData.seventhForm.grades["11"].conduct,
+              )
+            : formData.seventhForm.grades["11"].conduct,
+          academicPerformance: formData.seventhForm.grades["11"]
+            .academicPerformance
+            ? getAcademicPerformanceVietnameseValue(
+                formData.seventhForm.grades["11"].academicPerformance,
+              )
+            : formData.seventhForm.grades["11"].academicPerformance,
+        },
+        "12": {
+          conduct: formData.seventhForm.grades["12"].conduct
+            ? getConductVietnameseValue(
+                formData.seventhForm.grades["12"].conduct,
+              )
+            : formData.seventhForm.grades["12"].conduct,
+          academicPerformance: formData.seventhForm.grades["12"]
+            .academicPerformance
+            ? getAcademicPerformanceVietnameseValue(
+                formData.seventhForm.grades["12"].academicPerformance,
+              )
+            : formData.seventhForm.grades["12"].academicPerformance,
+        },
+      },
+    },
   };
 }
 
@@ -35,9 +202,90 @@ function convertToVietnameseForStorage(formData: FormData): FormData {
 function convertFromVietnameseStorage(formData: FormData): FormData {
   return {
     ...formData,
+    uniType: formData.uniType
+      ? getUniTypeTranslationKey(formData.uniType)
+      : null,
     secondForm: formData.secondForm.map((major) =>
       major ? getTranslationKey(major) : null,
     ),
+    thirdForm: {
+      ...formData.thirdForm,
+      chosenSubjects: formData.thirdForm.chosenSubjects.map((subject) =>
+        subject ? getNationalExamSubjectTranslationKey(subject) : null,
+      ),
+      optionalCategories: formData.thirdForm.optionalCategories.map(
+        (category) => ({
+          ...category,
+          scores: category.scores.map((score) => ({
+            ...score,
+            subject: score.subject
+              ? getOptionalSubjectTranslationKey(score.subject)
+              : score.subject,
+          })),
+        }),
+      ),
+    },
+    fourthForm: convertFourthFormFromVietnamese(formData.fourthForm),
+    // Convert fifthForm costRange from actual VND values back to millions
+    fifthForm: {
+      ...formData.fifthForm,
+      costRange: formData.fifthForm.costRange.map((value) =>
+        Math.round(value / MILLION_TO_VND),
+      ),
+    },
+    // Convert sixthForm special student cases back to translation keys
+    sixthForm: {
+      ...formData.sixthForm,
+      specialStudentCases: formData.sixthForm.specialStudentCases.map(
+        (vietnameseValue) =>
+          getSpecialStudentCaseTranslationKey(vietnameseValue),
+      ),
+    },
+    // Convert seventhForm grades back to translation keys
+    seventhForm: {
+      ...formData.seventhForm,
+      grades: {
+        "10": {
+          conduct: formData.seventhForm.grades["10"].conduct
+            ? getConductTranslationKey(
+                formData.seventhForm.grades["10"].conduct,
+              )
+            : formData.seventhForm.grades["10"].conduct,
+          academicPerformance: formData.seventhForm.grades["10"]
+            .academicPerformance
+            ? getAcademicPerformanceTranslationKey(
+                formData.seventhForm.grades["10"].academicPerformance,
+              )
+            : formData.seventhForm.grades["10"].academicPerformance,
+        },
+        "11": {
+          conduct: formData.seventhForm.grades["11"].conduct
+            ? getConductTranslationKey(
+                formData.seventhForm.grades["11"].conduct,
+              )
+            : formData.seventhForm.grades["11"].conduct,
+          academicPerformance: formData.seventhForm.grades["11"]
+            .academicPerformance
+            ? getAcademicPerformanceTranslationKey(
+                formData.seventhForm.grades["11"].academicPerformance,
+              )
+            : formData.seventhForm.grades["11"].academicPerformance,
+        },
+        "12": {
+          conduct: formData.seventhForm.grades["12"].conduct
+            ? getConductTranslationKey(
+                formData.seventhForm.grades["12"].conduct,
+              )
+            : formData.seventhForm.grades["12"].conduct,
+          academicPerformance: formData.seventhForm.grades["12"]
+            .academicPerformance
+            ? getAcademicPerformanceTranslationKey(
+                formData.seventhForm.grades["12"].academicPerformance,
+              )
+            : formData.seventhForm.grades["12"].academicPerformance,
+        },
+      },
+    },
   };
 }
 

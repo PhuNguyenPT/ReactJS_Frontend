@@ -1,4 +1,4 @@
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import LoginForm from "./LoginForm";
 import { useTranslation } from "react-i18next";
 

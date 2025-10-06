@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AuthContext, type AuthResponse, type User } from "./AuthContext";
 import axios from "axios";
 import { isTokenExpired } from "../../utils/tokenUtils";
-import { useTokenRefresh } from "../../hooks/useTokenRefresh";
+import { useTokenRefresh } from "../../hooks/auth/useTokenRefresh";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -18,7 +18,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     setRefreshToken(null);
     setUser(null);
-
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
   };
@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = login; // Same logic as login
 
-  const displayName = user?.name ?? user?.email;
+  const displayName = user?.name ?? user?.email ?? "Guest";
   const value = useMemo(
     () => ({
       user,

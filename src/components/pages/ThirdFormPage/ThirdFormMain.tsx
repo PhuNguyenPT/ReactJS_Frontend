@@ -1,12 +1,5 @@
 import { Box, TextField, Autocomplete, FormHelperText } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import {
-  VietnameseSubject,
-  getSelectableSubjects,
-} from "../../../type/enum/subject"; // Adjust import path as needed
-
-// Get selectable subjects (excluding mandatory TOAN and VAN)
-const selectableSubjects = getSelectableSubjects();
+import { useThirdMainForm } from "../../../hooks/formPages/useThirdMainForm";
 
 interface ThirdFormMainProps {
   mathScore: string;
@@ -21,19 +14,21 @@ interface ThirdFormMainProps {
   setHasError: (value: boolean) => void;
 }
 
-export default function ThirdFormMain({
-  mathScore,
-  setMathScore,
-  literatureScore,
-  setLiteratureScore,
-  chosenSubjects,
-  setChosenSubjects,
-  chosenScores,
-  setChosenScores,
-  hasError,
-  setHasError,
-}: ThirdFormMainProps) {
-  const { t } = useTranslation();
+export default function ThirdFormMain(props: ThirdFormMainProps) {
+  const {
+    mathScore,
+    literatureScore,
+    chosenScores,
+    handleMathScoreChange,
+    handleLiteratureScoreChange,
+    handleChosenSubjectChange,
+    handleChosenScoreChange,
+    getOptionalSubjectData,
+    shouldShowMathError,
+    shouldShowLiteratureError,
+    mandatorySubjects,
+    t,
+  } = useThirdMainForm(props);
 
   const pillStyle = {
     borderRadius: "17px",
@@ -75,16 +70,17 @@ export default function ThirdFormMain({
   const scoreFieldStyle = {
     ...pillStyle,
     width: "130px",
-  };
-
-  // Filter available subjects to exclude already selected ones
-  const getAvailableSubjects = (currentIndex: number): string[] => {
-    return selectableSubjects.filter((subject) => {
-      // Don't show subjects that are already selected in other dropdowns
-      return !chosenSubjects.some(
-        (selected, index) => index !== currentIndex && selected === subject,
-      );
-    });
+    "& input[type=number]": {
+      MozAppearance: "textfield",
+    },
+    "& input[type=number]::-webkit-outer-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
+    "& input[type=number]::-webkit-inner-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
   };
 
   return (
@@ -101,134 +97,133 @@ export default function ThirdFormMain({
       {/* Math row - Fixed as TOAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={VietnameseSubject.TOAN}
+          value={mandatorySubjects.math}
           disabled
           sx={subjectFieldStyle}
         />
         <TextField
           placeholder={t("thirdForm.score")}
+          type="number"
           slotProps={{
             htmlInput: { min: 0, max: 10, step: 0.1 },
           }}
           value={mathScore}
           onChange={(e) => {
-            setMathScore(e.target.value);
-            setHasError(false);
+            handleMathScoreChange(e.target.value);
           }}
-          error={hasError && mathScore === ""}
+          error={shouldShowMathError()}
           sx={scoreFieldStyle}
         />
       </Box>
-      {hasError && mathScore === "" && (
+      {shouldShowMathError() && (
         <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
           {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
 
-      {/* Literature row - Fixed as VAN */}
+      {/* Literature row - Fixed as NGU_VAN */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
-          value={VietnameseSubject.NGU_VAN}
+          value={mandatorySubjects.literature}
           disabled
           sx={subjectFieldStyle}
         />
         <TextField
           placeholder={t("thirdForm.score")}
+          type="number"
           slotProps={{
             htmlInput: { min: 0, max: 10, step: 0.1 },
           }}
           value={literatureScore}
           onChange={(e) => {
-            setLiteratureScore(e.target.value);
-            setHasError(false);
+            handleLiteratureScoreChange(e.target.value);
           }}
-          error={hasError && literatureScore === ""}
+          error={shouldShowLiteratureError()}
           sx={scoreFieldStyle}
         />
       </Box>
-      {hasError && literatureScore === "" && (
+      {shouldShowLiteratureError() && (
         <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
           {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
 
       {/* Two choosable subjects */}
-      {[0, 1].map((index) => (
-        <Box key={index}>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <Autocomplete
-              options={getAvailableSubjects(index)}
-              value={chosenSubjects[index]}
-              onChange={(_, newValue) => {
-                const updated = [...chosenSubjects];
-                updated[index] = newValue;
-                setChosenSubjects(updated);
-                setHasError(false);
-              }}
-              sx={subjectFieldStyle}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder={`${t("thirdForm.optionalSubject")} ${String(index + 1)}`}
-                  error={hasError && !chosenSubjects[index]}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      height: "40px",
-                      width: "190px",
-                      borderRadius: "17px",
-                      fontSize: "0.9rem",
-                      "& fieldset": {
-                        borderColor:
-                          hasError && !chosenSubjects[index]
-                            ? "#d32f2f"
-                            : "#A657AE",
+      {[0, 1].map((index) => {
+        const {
+          translatedSubjectOptions,
+          selectedSubjectValue,
+          showSubjectError,
+          showScoreError,
+          showRowError,
+        } = getOptionalSubjectData(index);
+
+        return (
+          <Box key={index}>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <Autocomplete
+                options={translatedSubjectOptions}
+                value={selectedSubjectValue}
+                onChange={(_, newValue) => {
+                  handleChosenSubjectChange(index, newValue?.key ?? null);
+                }}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) =>
+                  option.key === value.key
+                }
+                sx={subjectFieldStyle}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={`${t("thirdForm.optionalSubject")} ${String(index + 1)}`}
+                    error={showSubjectError}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        height: "40px",
+                        width: "190px",
                         borderRadius: "17px",
+                        fontSize: "0.9rem",
+                        "& fieldset": {
+                          borderColor: showSubjectError ? "#d32f2f" : "#A657AE",
+                          borderRadius: "17px",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: showSubjectError ? "#d32f2f" : "#8B4A8F",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: showSubjectError ? "#d32f2f" : "#A657AE",
+                        },
                       },
-                      "&:hover fieldset": {
-                        borderColor:
-                          hasError && !chosenSubjects[index]
-                            ? "#d32f2f"
-                            : "#8B4A8F",
+                      "& input": {
+                        padding: "10px 16px",
+                        color: "#A657AE",
                       },
-                      "&.Mui-focused fieldset": {
-                        borderColor:
-                          hasError && !chosenSubjects[index]
-                            ? "#d32f2f"
-                            : "#A657AE",
-                      },
-                    },
-                    "& input": {
-                      padding: "10px 16px",
-                      color: "#A657AE",
-                    },
-                  }}
-                />
-              )}
-            />
-            <TextField
-              placeholder={t("thirdForm.score")}
-              slotProps={{
-                htmlInput: { min: 0, max: 10, step: 0.1 },
-              }}
-              value={chosenScores[index]}
-              onChange={(e) => {
-                const updated = [...chosenScores];
-                updated[index] = e.target.value;
-                setChosenScores(updated);
-                setHasError(false);
-              }}
-              error={hasError && chosenScores[index] === ""}
-              sx={scoreFieldStyle}
-            />
-          </Box>
-          {hasError &&
-            (!chosenSubjects[index] || chosenScores[index] === "") && (
+                    }}
+                  />
+                )}
+              />
+              <TextField
+                placeholder={t("thirdForm.score")}
+                type="number"
+                slotProps={{
+                  htmlInput: { min: 0, max: 10, step: 0.1 },
+                }}
+                value={chosenScores[index]}
+                onChange={(e) => {
+                  handleChosenScoreChange(index, e.target.value);
+                }}
+                error={showScoreError}
+                sx={scoreFieldStyle}
+              />
+            </Box>
+            {showRowError && (
               <FormHelperText error sx={{ ml: 1 }}>
                 {t("thirdForm.errorWarning")}
               </FormHelperText>
             )}
-        </Box>
-      ))}
+          </Box>
+        );
+      })}
     </Box>
   );
 }

@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import {
   Box,
   FormControl,
@@ -7,54 +6,22 @@ import {
   TextField,
   Autocomplete,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { VietnamSouthernProvinces } from "../../../type/enum/vietnamese.provinces";
-import { UniType } from "../../../type/enum/uni-type";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFirstForm } from "../../../hooks/formPages/useFirstForm";
 
 const FirstForm = () => {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { formData, updateFormData } = useFormData();
-
-  // Province state
-  const [selectedProvinces, setSelectedProvinces] = useState<string | null>(
-    formData.firstForm ?? null,
-  );
-  const [hasProvinceError, setHasProvinceError] = useState(false);
-
-  // University type state
-  const [selectedUniType, setSelectedUniType] = useState<string | null>(
-    formData.uniType ?? null,
-  );
-  const [hasUniTypeError, setHasUniTypeError] = useState(false);
-
-  // Convert enums to array of values
-  const provinces = useMemo(() => Object.values(VietnamSouthernProvinces), []);
-  const uniTypes = useMemo(() => Object.values(UniType), []);
-
-  const handleNext = () => {
-    let valid = true;
-
-    if (!selectedProvinces) {
-      setHasProvinceError(true);
-      valid = false;
-    }
-    if (!selectedUniType) {
-      setHasUniTypeError(true);
-      valid = false;
-    }
-
-    if (valid) {
-      // Save both fields into context before navigating
-      updateFormData({
-        firstForm: selectedProvinces,
-        uniType: selectedUniType,
-      });
-      void navigate("/secondForm");
-    }
-  };
+  const {
+    selectedProvinces,
+    //selectedUniType,
+    hasProvinceError,
+    hasUniTypeError,
+    provinces,
+    translatedUniTypeOptions,
+    selectedUniTypeValue,
+    handleProvinceChange,
+    handleUniTypeChange,
+    handleNext,
+    t,
+  } = useFirstForm();
 
   return (
     <Box component="form" className="first-form">
@@ -64,9 +31,7 @@ const FirstForm = () => {
           options={provinces}
           value={selectedProvinces}
           onChange={(_, newValue) => {
-            setSelectedProvinces(newValue);
-            setHasProvinceError(false);
-            updateFormData({ firstForm: newValue });
+            handleProvinceChange(newValue);
           }}
           sx={{
             width: 450,
@@ -107,13 +72,13 @@ const FirstForm = () => {
       {/* University type dropdown */}
       <FormControl fullWidth error={hasUniTypeError} sx={{ mt: 2 }}>
         <Autocomplete
-          options={uniTypes}
-          value={selectedUniType}
+          options={translatedUniTypeOptions}
+          value={selectedUniTypeValue}
           onChange={(_, newValue) => {
-            setSelectedUniType(newValue);
-            setHasUniTypeError(false);
-            updateFormData({ uniType: newValue });
+            handleUniTypeChange(newValue);
           }}
+          getOptionLabel={(option) => option.label}
+          isOptionEqualToValue={(option, value) => option.key === value.key}
           sx={{
             width: 450,
             marginRight: 63,

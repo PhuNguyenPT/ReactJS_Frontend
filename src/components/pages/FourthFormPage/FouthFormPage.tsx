@@ -1,18 +1,32 @@
-import usePageTitle from "../../../hooks/usePageTitle";
+import { useState } from "react";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { useTranslation } from "react-i18next";
 import FourthForm from "./FourthForm";
 import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import { useFourthForm } from "../../../hooks/formPages/useFourthForm";
 
 export default function FourthFormPage() {
   usePageTitle("Unizy | Fourth Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [showErrors, setShowErrors] = useState(false);
+
+  // Get validation function from fourth form hook
+  const { validateForm } = useFourthForm();
 
   const handleNext = () => {
-    void navigate("/fifthForm");
+    const validation = validateForm();
+
+    if (validation.isValid) {
+      void navigate("/fifthForm");
+      setShowErrors(false); // Reset errors on successful navigation
+    } else {
+      // Show errors when user tries to proceed with incomplete form
+      setShowErrors(true);
+    }
   };
 
   const handlePrev = () => {
@@ -25,7 +39,7 @@ export default function FourthFormPage() {
       <div className="form-container">
         <div className="form-2-content">
           <h1 className="form-title">4 → {t("fourthForm.title")}</h1>
-          <FourthForm />
+          <FourthForm showErrors={showErrors} />
         </div>
 
         <Box

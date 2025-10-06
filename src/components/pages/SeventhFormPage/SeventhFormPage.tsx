@@ -1,4 +1,4 @@
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { useTranslation } from "react-i18next";
 import SeventhForm from "./SeventhForm";
 import { Box, IconButton } from "@mui/material";
@@ -6,7 +6,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useFormData } from "../../../contexts/FormDataContext/useFormData";
+import { useFormData } from "../../../contexts/FormData/useFormData";
 
 export default function SeventhFormPage() {
   usePageTitle("Unizy | Seventh Form");

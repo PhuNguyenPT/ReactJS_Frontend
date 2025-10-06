@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { decodeJWT } from "../utils/decodeJWT";
-import { refreshAccessToken } from "../services/user/authService"; // adjust path
-import type { AuthResponse } from "../contexts/auth/AuthContext";
+import { decodeJWT } from "../../utils/decodeJWT";
+import { refreshAccessToken } from "../../services/user/authService";
+import type { AuthResponse } from "../../contexts/auth/AuthContext";
 
 interface TokenRefreshOptions {
   accessToken: string | null;
@@ -48,7 +48,8 @@ export function useTokenRefresh({
       if (accessTimeout > 0) {
         accessTimeoutId.current = window.setTimeout(async () => {
           try {
-            const newTokens = await refreshAccessToken(refreshToken);
+            // Don't pass any arguments - refreshAccessToken gets the token from localStorage
+            const newTokens = await refreshAccessToken();
             onTokenUpdate(newTokens);
           } catch (err) {
             console.error("Failed to refresh access token:", err);
@@ -59,7 +60,8 @@ export function useTokenRefresh({
         // If already expired or near expiry → refresh immediately
         void (async () => {
           try {
-            const newTokens = await refreshAccessToken(refreshToken);
+            // Don't pass any arguments here either
+            const newTokens = await refreshAccessToken();
             onTokenUpdate(newTokens);
           } catch (err) {
             console.error("Failed to refresh access token immediately:", err);
@@ -71,7 +73,8 @@ export function useTokenRefresh({
       if (refreshTimeout > 0) {
         refreshTimeoutId.current = window.setTimeout(async () => {
           try {
-            const newTokens = await refreshAccessToken(refreshToken);
+            // Don't pass any arguments here either
+            const newTokens = await refreshAccessToken();
             onTokenUpdate(newTokens);
           } catch (err) {
             console.error("Failed to refresh refresh token:", err);

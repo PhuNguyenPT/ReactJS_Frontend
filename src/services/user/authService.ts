@@ -28,38 +28,154 @@ interface LogoutResponse {
   message: string;
 }
 
-/* Authenticates user with email and password*/
+interface LogoutPayload {
+  refreshToken: string;
+}
+
+interface RefreshTokenPayload {
+  refreshToken: string;
+}
+
+/**
+ * Authenticates user with email and password
+ * Stores tokens in localStorage on success
+ */
 export async function loginUser(payload: AuthPayload): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>("/auth/login", {
-    method: "POST",
-    body: payload,
-    requiresAuth: false,
-  });
+  try {
+    const response = await apiFetch<AuthResponse, AuthPayload>("/auth/login", {
+      method: "POST",
+      body: payload,
+      requiresAuth: false,
+    });
+
+    // Store tokens on successful login
+    if (response.accessToken) {
+      localStorage.setItem("accessToken", response.accessToken);
+      if (response.refreshToken) {
+        localStorage.setItem("refreshToken", response.refreshToken);
+      }
+      console.log("✅ Login successful, tokens stored");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
+  }
 }
 
-/* Registers a new user account*/
+/**
+ * Registers a new user account
+ * Stores tokens in localStorage on success
+ */
 export async function signupUser(payload: AuthPayload): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>("/auth/register", {
-    method: "POST",
-    body: payload,
-    requiresAuth: false,
-  });
+  try {
+    const response = await apiFetch<AuthResponse, AuthPayload>(
+      "/auth/register",
+      {
+        method: "POST",
+        body: payload,
+        requiresAuth: false,
+      },
+    );
+
+    // Store tokens on successful signup
+    if (response.accessToken) {
+      localStorage.setItem("accessToken", response.accessToken);
+      if (response.refreshToken) {
+        localStorage.setItem("refreshToken", response.refreshToken);
+      }
+      console.log("✅ Signup successful, tokens stored");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Signup failed:", error);
+    throw error;
+  }
 }
 
-/* Logs out the current user and invalidates tokens*/
+/**
+ * Logs out the current user and invalidates tokens
+ * Requires both access token (in header) and refresh token (in body)
+ */
 export async function logoutUser(): Promise<LogoutResponse> {
-  return apiFetch<LogoutResponse>("/auth/logout", {
-    method: "POST",
-    requiresAuth: true,
-  });
+  try {
+    // Get the refresh token from localStorage
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+      throw new Error("No refresh token found");
+    }
+
+    const payload: LogoutPayload = {
+      refreshToken: refreshToken,
+    };
+
+    const response = await apiFetch<LogoutResponse, LogoutPayload>(
+      "/auth/logout",
+      {
+        method: "POST",
+        body: payload,
+        requiresAuth: true, // This will add the access token to headers
+      },
+    );
+
+    // Clear tokens from localStorage on successful logout
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    console.log("✅ Logout successful, tokens cleared");
+
+    return response;
+  } catch (error) {
+    console.error("Logout failed:", error);
+    // Clear tokens even if logout fails
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    throw error;
+  }
 }
 
-export async function refreshAccessToken(
-  refreshToken: string,
-): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>("/auth/refresh", {
-    method: "POST",
-    body: { refreshToken },
-    requiresAuth: false,
-  });
+/**
+ * Refreshes the access token using the refresh token
+ * Updates tokens in localStorage on success
+ */
+export async function refreshAccessToken(): Promise<AuthResponse> {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+      throw new Error("No refresh token found");
+    }
+
+    const payload: RefreshTokenPayload = {
+      refreshToken: refreshToken,
+    };
+
+    const response = await apiFetch<AuthResponse, RefreshTokenPayload>(
+      "/auth/refresh",
+      {
+        method: "POST",
+        body: payload,
+        requiresAuth: false,
+      },
+    );
+
+    // Update tokens on successful refresh
+    if (response.accessToken) {
+      localStorage.setItem("accessToken", response.accessToken);
+      if (response.refreshToken) {
+        localStorage.setItem("refreshToken", response.refreshToken);
+      }
+      console.log("✅ Token refresh successful");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Token refresh failed:", error);
+    // Clear tokens if refresh fails
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    throw error;
+  }
 }

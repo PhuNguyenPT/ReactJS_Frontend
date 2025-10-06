@@ -1,5 +1,5 @@
 import SignupForm from "./SignupForm";
-import usePageTitle from "../../../hooks/usePageTitle";
+import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 
 export default function Signup() {
   usePageTitle("Unizy | Sign Up");

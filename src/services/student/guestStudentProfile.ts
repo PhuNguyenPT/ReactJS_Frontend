@@ -1,14 +1,11 @@
 import apiFetch from "../../utils/apiFetch";
-import type { FormData } from "../../contexts/FormDataContext/FormDataContext";
-import { transformFormDataToApiSchema } from "../../contexts/FormDataContext/FormDataTransformer";
+import type { FormData } from "../../contexts/FormData/FormDataContext";
+import { transformFormDataToApiSchema } from "../../contexts/FormData/FormDataTransformer";
+import type { StudentResponse } from "../../type/interface/profileTypes";
 
-export interface StudentResponse {
-  // adjust this according to the actual response from your backend
-  success: boolean;
-  message?: string;
-  data?: unknown;
-}
-
+/**
+ * Submit student profile for guest users (no authentication required)
+ */
 export async function submitGuestStudent(
   formData: FormData,
 ): Promise<StudentResponse> {
