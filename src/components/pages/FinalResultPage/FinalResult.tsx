@@ -8,129 +8,170 @@ import {
   InputAdornment,
   Chip,
   Divider,
+  CircularProgress,
+  Alert,
+  Pagination,
+  Stack,
 } from "@mui/material";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
-//import { useTranslation } from "react-i18next";
+import useAuth from "../../../hooks/auth/useAuth";
+import {
+  getAdmissionForStudent,
+  getStudentIdOrThrow,
+} from "../../../services/studentAdmission/studentAdmissionService";
+import { transformAdmissionData } from "../../../utils/transformAdmissionData";
+import type {
+  AdmissionProgram,
+  University,
+} from "../../../type/interface/admissionTypes";
 
-interface Course {
-  name: string;
-  code: string;
-  score: number;
+const ITEMS_PER_PAGE = 5;
+
+// Helper function to extract programs from API response
+function extractPrograms(data: unknown): AdmissionProgram[] {
+  if (Array.isArray(data)) {
+    return data as AdmissionProgram[];
+  }
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "content" in data &&
+    Array.isArray((data as { content: unknown }).content)
+  ) {
+    return (data as { content: AdmissionProgram[] }).content;
+  }
+
+  return [];
 }
-
-interface University {
-  id: string;
-  name: string;
-  shortName: string;
-  logo?: string;
-  courses: Course[];
-  applicationMethod: string[];
-  tuitionFee: string;
-  location: string;
-  matchScore: number;
-}
-
-// Mock data - replace with actual data from your API/backend
-const mockUniversities: University[] = [
-  {
-    id: "1",
-    name: "Đại học Kinh tế TP.HCM",
-    shortName: "UEH",
-    matchScore: 95,
-    location: "TP. Hồ Chí Minh",
-    courses: [
-      { name: "Kinh doanh Quốc tế", code: "IB", score: 24.5 },
-      { name: "Quản trị Kinh doanh", code: "BA", score: 23.8 },
-      { name: "Kế toán", code: "AC", score: 24.0 },
-    ],
-    applicationMethod: ["Xét điểm thi THPT", "Xét học bạ", "Xét điểm SAT/ACT"],
-    tuitionFee: "15.000.000 - 20.000.000 VNĐ/năm",
-  },
-  {
-    id: "2",
-    name: "Đại học Bách Khoa TP.HCM",
-    shortName: "HCMUT",
-    matchScore: 92,
-    location: "TP. Hồ Chí Minh",
-    courses: [
-      { name: "Công nghệ Thông tin", code: "IT", score: 25.0 },
-      { name: "Kỹ thuật Máy tính", code: "CE", score: 24.5 },
-      { name: "Khoa học Máy tính", code: "CS", score: 25.5 },
-    ],
-    applicationMethod: ["Xét điểm thi THPT", "Xét học bạ THPT", "Kỳ thi riêng"],
-    tuitionFee: "12.000.000 - 18.000.000 VNĐ/năm",
-  },
-  {
-    id: "3",
-    name: "Đại học Tôn Đức Thắng",
-    shortName: "TDTU",
-    matchScore: 88,
-    location: "TP. Hồ Chí Minh",
-    courses: [
-      { name: "Công nghệ Phần mềm", code: "SE", score: 22.5 },
-      { name: "Hệ thống Thông tin", code: "IS", score: 22.0 },
-      { name: "An toàn Thông tin", code: "InfoSec", score: 23.0 },
-    ],
-    applicationMethod: ["Xét điểm thi THPT", "Xét học bạ", "Xét kết hợp"],
-    tuitionFee: "10.000.000 - 15.000.000 VNĐ/năm",
-  },
-  {
-    id: "4",
-    name: "Đại học Nông Lâm TP.HCM",
-    shortName: "NLU",
-    matchScore: 85,
-    location: "TP. Hồ Chí Minh",
-    courses: [
-      { name: "Công nghệ Sinh học", code: "BT", score: 21.5 },
-      { name: "Môi trường", code: "ENV", score: 20.8 },
-      { name: "Nông học", code: "AG", score: 21.0 },
-    ],
-    applicationMethod: ["Xét điểm thi THPT", "Xét học bạ"],
-    tuitionFee: "8.000.000 - 12.000.000 VNĐ/năm",
-  },
-  {
-    id: "5",
-    name: "Đại học Công Nghệ Thông Tin",
-    shortName: "UIT",
-    matchScore: 90,
-    location: "TP. Hồ Chí Minh",
-    courses: [
-      { name: "Khoa học Dữ liệu", code: "DS", score: 24.8 },
-      { name: "Trí tuệ Nhân tạo", code: "AI", score: 25.2 },
-      { name: "An ninh Mạng", code: "NS", score: 24.0 },
-    ],
-    applicationMethod: ["Xét điểm thi THPT", "Xét học bạ", "Olympic Tin học"],
-    tuitionFee: "11.000.000 - 16.000.000 VNĐ/năm",
-  },
-];
 
 export default function FinalResult() {
-  //const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [universities, setUniversities] = useState<University[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Fetch admission data on mount
+  useEffect(() => {
+    const fetchAdmissionData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const studentId = getStudentIdOrThrow(user);
+        const response = await getAdmissionForStudent(
+          studentId,
+          isAuthenticated,
+        );
+
+        if (response.success && response.data) {
+          const programs = extractPrograms(response.data);
+
+          if (programs.length === 0) {
+            throw new Error("Không tìm thấy dữ liệu tuyển sinh");
+          }
+
+          const transformedData = transformAdmissionData(programs);
+          setUniversities(transformedData);
+        } else {
+          throw new Error(
+            response.message ?? "Không thể tải dữ liệu tuyển sinh",
+          );
+        }
+      } catch (err) {
+        console.error("Error fetching admission data:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Không thể tải dữ liệu tuyển sinh. Vui lòng thử lại.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchAdmissionData();
+  }, [user, isAuthenticated]);
 
   // Filter universities based on search query
   const filteredUniversities = useMemo(() => {
     if (!searchQuery.trim()) {
-      return mockUniversities;
+      return universities;
     }
 
     const query = searchQuery.toLowerCase();
-    return mockUniversities.filter(
+    return universities.filter(
       (uni) =>
         uni.name.toLowerCase().includes(query) ||
         uni.shortName.toLowerCase().includes(query) ||
+        uni.location.toLowerCase().includes(query) ||
         uni.courses.some((course) => course.name.toLowerCase().includes(query)),
     );
-  }, [searchQuery]);
+  }, [searchQuery, universities]);
+
+  // Paginate filtered results
+  const paginatedUniversities = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredUniversities.slice(startIndex, endIndex);
+  }, [filteredUniversities, currentPage]);
+
+  const totalPages = Math.ceil(filteredUniversities.length / ITEMS_PER_PAGE);
 
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
+      setCurrentPage(1);
     },
     [],
   );
+
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    page: number,
+  ) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "400px",
+          gap: 2,
+        }}
+      >
+        <CircularProgress sx={{ color: "#A657AE" }} size={60} />
+        <Typography sx={{ color: "white", fontSize: "1.1rem" }}>
+          Đang tải kết quả tuyển sinh...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <Box sx={{ maxWidth: "800px", margin: "0 auto", px: 2 }}>
+        <Alert severity="error" sx={{ borderRadius: "12px" }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Đã xảy ra lỗi
+          </Typography>
+          <Typography>{error}</Typography>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -184,6 +225,21 @@ export default function FinalResult() {
         />
       </Box>
 
+      {/* Results count */}
+      {universities.length > 0 && (
+        <Typography
+          sx={{
+            color: "white",
+            fontSize: "1rem",
+            mb: 2,
+            textAlign: "center",
+          }}
+        >
+          Tìm thấy <strong>{filteredUniversities.length}</strong> trường đại học
+          phù hợp
+        </Typography>
+      )}
+
       {/* University Results */}
       <Box>
         {filteredUniversities.length === 0 ? (
@@ -196,176 +252,276 @@ export default function FinalResult() {
             }}
           >
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
-              Không tìm thấy trường đại học phù hợp với từ khóa "{searchQuery}"
+              {searchQuery
+                ? `Không tìm thấy trường đại học phù hợp với từ khóa "${searchQuery}"`
+                : "Không có dữ liệu tuyển sinh"}
             </Typography>
           </Box>
         ) : (
-          filteredUniversities.map((university) => (
-            <Accordion
-              key={university.id}
-              sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.95)",
-                borderRadius: "12px !important",
-                mb: 3,
-                "&:before": { display: "none" },
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ color: "#A657AE" }} />}
+          <>
+            {paginatedUniversities.map((university) => (
+              <Accordion
+                key={university.id}
                 sx={{
-                  backgroundColor: "rgba(166, 87, 174, 0.1)",
-                  borderRadius: "12px",
-                  minHeight: "70px",
-                  "& .MuiAccordionSummary-content": {
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    my: 1.5,
-                  },
+                  backgroundColor: "rgba(255, 255, 255, 0.95)",
+                  borderRadius: "12px !important",
+                  mb: 3,
+                  "&:before": { display: "none" },
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                 }}
               >
-                <Box
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon sx={{ color: "#A657AE" }} />}
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    flex: 1,
+                    backgroundColor: "rgba(166, 87, 174, 0.1)",
+                    borderRadius: "12px",
+                    minHeight: "70px",
+                    "& .MuiAccordionSummary-content": {
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      my: 1.5,
+                    },
                   }}
                 >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: "#A657AE",
-                      fontWeight: 600,
-                      fontSize: "1.2rem",
-                    }}
-                  >
-                    {university.name} ({university.shortName})
-                  </Typography>
-                </Box>
-              </AccordionSummary>
-
-              <AccordionDetails sx={{ px: 4, py: 3 }}>
-                {/* Courses Section */}
-                <Box sx={{ mb: 3 }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      color: "#A657AE",
-                      fontWeight: 600,
-                      mb: 2,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Các ngành học phù hợp:
-                  </Typography>
                   <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0.5,
+                      flex: 1,
+                    }}
                   >
-                    {university.courses.map((course) => (
-                      <Box
-                        key={`${university.id}-${course.code}`}
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          backgroundColor: "rgba(166, 87, 174, 0.05)",
-                          padding: "12px 20px",
-                          borderRadius: "8px",
-                          border: "1px solid rgba(166, 87, 174, 0.2)",
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            sx={{
-                              color: "#333",
-                              fontWeight: 500,
-                              fontSize: "1rem",
-                            }}
-                          >
-                            {course.name}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              color: "#666",
-                              fontSize: "0.85rem",
-                              mt: 0.5,
-                            }}
-                          >
-                            Mã ngành: {course.code}
-                          </Typography>
-                        </Box>
-                        <Chip
-                          label={`Điểm: ${String(course.score)}`}
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: "#A657AE",
+                        fontWeight: 600,
+                        fontSize: "1.2rem",
+                      }}
+                    >
+                      {university.name} ({university.shortName})
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: "#666",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      {university.location} • {university.uniType}
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+
+                <AccordionDetails sx={{ px: 4, py: 3 }}>
+                  {/* Courses Section */}
+                  <Box sx={{ mb: 3 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        color: "#A657AE",
+                        fontWeight: 600,
+                        mb: 2,
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      Các ngành học ({university.courses.length} ngành):
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      {university.courses.map((course) => (
+                        <Box
+                          key={`${university.id}-${course.code}`}
                           sx={{
-                            backgroundColor: "#A657AE",
-                            color: "white",
-                            fontWeight: 600,
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            backgroundColor: "rgba(166, 87, 174, 0.05)",
+                            padding: "12px 20px",
+                            borderRadius: "8px",
+                            border: "1px solid rgba(166, 87, 174, 0.2)",
+                            flexWrap: "wrap",
+                            gap: 2,
+                          }}
+                        >
+                          <Box sx={{ flex: 1, minWidth: "200px" }}>
+                            <Typography
+                              sx={{
+                                color: "#333",
+                                fontWeight: 500,
+                                fontSize: "1rem",
+                                textAlign: "left",
+                              }}
+                            >
+                              {course.name}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                color: "#666",
+                                fontSize: "0.85rem",
+                                mt: 0.5,
+                                textAlign: "left",
+                              }}
+                            >
+                              Mã ngành: {course.code}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                color: "#666",
+                                fontSize: "0.85rem",
+                                mt: 0.5,
+                                textAlign: "left",
+                              }}
+                            >
+                              Tổ hợp: {course.subjectCombination}
+                            </Typography>
+                          </Box>
+                          <Chip
+                            label={course.tuitionFee}
+                            sx={{
+                              backgroundColor: "#A657AE",
+                              color: "white",
+                              fontWeight: 600,
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+
+                  <Divider sx={{ my: 3 }} />
+
+                  {/* Application Method */}
+                  <Box sx={{ mb: 3 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        color: "#A657AE",
+                        fontWeight: 600,
+                        mb: 2,
+                        fontSize: "1.1rem",
+                        textAlign: "center",
+                      }}
+                    >
+                      Phương thức xét tuyển:
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 1,
+                        justifyContent: "center",
+                      }}
+                    >
+                      {university.applicationMethods.map((method) => (
+                        <Chip
+                          key={`${university.id}-${method}`}
+                          label={method}
+                          sx={{
+                            backgroundColor: "rgba(166, 87, 174, 0.15)",
+                            color: "#A657AE",
+                            fontWeight: 500,
+                            fontSize: "0.9rem",
                           }}
                         />
-                      </Box>
-                    ))}
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
 
-                <Divider sx={{ my: 3 }} />
+                  <Divider sx={{ my: 3 }} />
 
-                {/* Application Method */}
-                <Box sx={{ mb: 3 }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      color: "#A657AE",
-                      fontWeight: 600,
-                      mb: 2,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Phương thức xét tuyển:
-                  </Typography>
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                    {university.applicationMethod.map((method) => (
-                      <Chip
-                        key={`${university.id}-${method}`}
-                        label={method}
-                        sx={{
-                          backgroundColor: "rgba(166, 87, 174, 0.15)",
-                          color: "#A657AE",
-                          fontWeight: 500,
-                          fontSize: "0.9rem",
-                        }}
-                      />
-                    ))}
+                  {/* Tuition Fee Range */}
+                  <Box sx={{ mb: 3 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        color: "#A657AE",
+                        fontWeight: 600,
+                        mb: 1,
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      Học phí:
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: "#333",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      {university.tuitionFeeRange}
+                    </Typography>
                   </Box>
-                </Box>
 
-                <Divider sx={{ my: 3 }} />
+                  <Divider sx={{ my: 3 }} />
 
-                {/* Tuition Fee */}
-                <Box>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      color: "#A657AE",
-                      fontWeight: 600,
-                      mb: 1,
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    Học phí:
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "#333",
+                  {/* Website Link */}
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        color: "#A657AE",
+                        fontWeight: 600,
+                        mb: 1,
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      Website:
+                    </Typography>
+                    <Typography
+                      component="a"
+                      href={university.webLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        color: "#A657AE",
+                        fontSize: "1rem",
+                        textDecoration: "none",
+                        "&:hover": {
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      {university.webLink}
+                    </Typography>
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Stack spacing={2} alignItems="center" sx={{ mt: 4, mb: 2 }}>
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                  size="large"
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      color: "white",
                       fontSize: "1rem",
-                    }}
-                  >
-                    {university.tuitionFee}
-                  </Typography>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-          ))
+                      fontWeight: 500,
+                      "&.Mui-selected": {
+                        backgroundColor: "#A657AE",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#8e4a96",
+                        },
+                      },
+                      "&:hover": {
+                        backgroundColor: "rgba(166, 87, 174, 0.2)",
+                      },
+                    },
+                  }}
+                />
+                <Typography sx={{ color: "white", fontSize: "0.9rem" }}>
+                  Trang {currentPage} / {totalPages}
+                </Typography>
+              </Stack>
+            )}
+          </>
         )}
       </Box>
     </Box>

@@ -18,10 +18,8 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import useAuth from "../../../hooks/auth/useAuth";
 import { getAdmissionForStudent } from "../../../services/studentAdmission/studentAdmissionService";
-import type {
-  StudentResponse,
-  NinthFormNavigationState,
-} from "../../../type/interface/profileTypes";
+import type { StudentResponse } from "../../../type/interface/profileTypes";
+import type { NinthFormNavigationState } from "../../../type/interface/navigationTypes";
 
 export default function NinthFormPage() {
   usePageTitle("Unizy | Ninth Form");
@@ -268,6 +266,7 @@ export default function NinthFormPage() {
             px: 5,
             fontSize: "1.5rem",
             zIndex: 1000,
+            height: "56px",
             "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
             "&:disabled": {
@@ -294,6 +293,8 @@ export default function NinthFormPage() {
             px: 5,
             fontSize: "1.5rem",
             zIndex: 1000,
+            height: "56px",
+            minWidth: "140px",
             "&:hover": { backgroundColor: "#8B4A8F" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
             "&:disabled": {
@@ -303,7 +304,7 @@ export default function NinthFormPage() {
           }}
         >
           {isLoading || isSubmitting ? (
-            <CircularProgress size={24} sx={{ color: "white" }} />
+            <CircularProgress size={28} sx={{ color: "white" }} />
           ) : (
             t("common.submit", "SUBMIT")
           )}
@@ -357,6 +358,7 @@ export default function NinthFormPage() {
               backgroundColor: "#A657AE",
               color: "white",
               px: 4,
+              height: "42px",
               borderRadius: "12px",
               "&:hover": { backgroundColor: "#8B4A8F" },
               "&:disabled": {
@@ -374,6 +376,8 @@ export default function NinthFormPage() {
               borderColor: "#A657AE",
               color: "#A657AE",
               px: 4,
+              height: "42px",
+              minWidth: "100px",
               borderRadius: "12px",
               "&:hover": {
                 backgroundColor: "#f5f5f5",
@@ -386,7 +390,7 @@ export default function NinthFormPage() {
             }}
           >
             {isSubmitting ? (
-              <CircularProgress size={20} sx={{ color: "#A657AE" }} />
+              <CircularProgress size={24} sx={{ color: "#A657AE" }} />
             ) : (
               t("common.skip", "Bỏ qua")
             )}

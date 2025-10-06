@@ -1,6 +1,5 @@
 import apiFetch from "../../utils/apiFetch";
-
-import type { OcrResultItem } from "../../type/interface/profileTypes";
+import type { OcrResultItem } from "../../type/interface/ocrTypes";
 
 export interface OcrResponse {
   success: boolean;
@@ -9,20 +8,38 @@ export interface OcrResponse {
 }
 
 /**
+ * Get student ID from localStorage
+ * @throws Error if studentId is not found
+ */
+function getStudentIdFromStorage(): string {
+  const studentId = localStorage.getItem("studentId");
+  if (!studentId) {
+    throw new Error(
+      "Student ID not found in localStorage. Please complete profile creation first.",
+    );
+  }
+  return studentId;
+}
+
+/**
  * Trigger OCR processing for a student (authenticated users)
- * @param studentId - The student ID
+ * @param studentId - Optional student ID (defaults to localStorage value)
  * @returns Promise with OCR response
  */
 export async function triggerStudentOcr(
-  studentId: string,
+  studentId?: string,
 ): Promise<OcrResponse> {
+  const targetStudentId = studentId ?? getStudentIdFromStorage();
+
   try {
-    console.log(`[OCR] Calling authenticated endpoint: /ocr/${studentId}`);
+    console.log(
+      `[OCR] Calling authenticated endpoint: /ocr/${targetStudentId}`,
+    );
 
     const response = await apiFetch<
       OcrResultItem[] | { data: OcrResultItem[] },
       null
-    >(`/ocr/${studentId}`, {
+    >(`/ocr/${targetStudentId}`, {
       method: "GET",
       requiresAuth: true,
     });
@@ -70,19 +87,21 @@ export async function triggerStudentOcr(
 
 /**
  * Trigger OCR processing for a guest student (no authentication required)
- * @param studentId - The student ID
+ * @param studentId - Optional student ID (defaults to localStorage value)
  * @returns Promise with OCR response
  */
 export async function triggerGuestStudentOcr(
-  studentId: string,
+  studentId?: string,
 ): Promise<OcrResponse> {
+  const targetStudentId = studentId ?? getStudentIdFromStorage();
+
   try {
-    console.log(`[OCR] Calling guest endpoint: /ocr/guest/${studentId}`);
+    console.log(`[OCR] Calling guest endpoint: /ocr/guest/${targetStudentId}`);
 
     const response = await apiFetch<
       OcrResultItem[] | { data: OcrResultItem[] },
       null
-    >(`/ocr/guest/${studentId}`, {
+    >(`/ocr/guest/${targetStudentId}`, {
       method: "GET",
       requiresAuth: false,
     });
@@ -130,22 +149,24 @@ export async function triggerGuestStudentOcr(
 
 /**
  * Smart OCR function that chooses the right endpoint based on authentication
- * @param studentId - The student ID
  * @param isAuthenticated - Whether the user is authenticated
+ * @param studentId - Optional student ID (defaults to localStorage value)
  * @returns Promise with OCR response
  */
 export async function triggerOcrForStudent(
-  studentId: string,
   isAuthenticated: boolean,
+  studentId?: string,
 ): Promise<OcrResponse> {
+  const targetStudentId = studentId ?? getStudentIdFromStorage();
+
   console.log(
-    `[OCR] Triggering OCR for ${isAuthenticated ? "authenticated" : "guest"} student ${studentId}`,
+    `[OCR] Triggering OCR for ${isAuthenticated ? "authenticated" : "guest"} student ${targetStudentId}`,
   );
 
   if (isAuthenticated) {
-    return triggerStudentOcr(studentId);
+    return triggerStudentOcr(targetStudentId);
   } else {
-    return triggerGuestStudentOcr(studentId);
+    return triggerGuestStudentOcr(targetStudentId);
   }
 }
 

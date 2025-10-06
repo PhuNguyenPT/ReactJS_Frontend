@@ -7,13 +7,11 @@ import {
   uploadStudentFilesAuto,
   isUploadSuccessful,
   getUploadStatusMessage,
+  type FileUploadResponse,
 } from "./useFileUpload";
 import { useOcrHandler } from "./useOcrHandler";
-import {
-  hasUserId,
-  type NinthFormNavigationState,
-  type FileUploadResponse,
-} from "../../type/interface/profileTypes";
+import { type NinthFormNavigationState } from "../../type/interface/navigationTypes";
+import { hasUserId } from "../../type/interface/profileTypes";
 
 interface UseStudentProfileReturn {
   isSubmitting: boolean;
@@ -40,9 +38,9 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
   /**
    * Handle file uploads for the student profile
+   * Now uses automatic studentId from localStorage
    */
   const handleFileUploads = async (
-    studentId: string,
     isAuthenticated: boolean,
   ): Promise<FileUploadResponse | null> => {
     const files = getAllEighthFormFiles();
@@ -55,18 +53,18 @@ export function useStudentProfile(): UseStudentProfileReturn {
     console.log(
       `Uploading ${String(files.length)} files for ${
         isAuthenticated ? "authenticated" : "guest"
-      } student ${studentId}`,
+      } student (using localStorage studentId)`,
     );
 
     try {
-      // Prepare and upload files
+      // Prepare and upload files (studentId automatically retrieved from localStorage)
       const filePayloads = files.map(({ grade, semester, file }) => ({
         grade,
         semester: semester + 1, // Convert 0-indexed to 1-indexed
         file,
       }));
 
-      const response = await uploadStudentFilesAuto(studentId, filePayloads);
+      const response = await uploadStudentFilesAuto(filePayloads);
 
       // Log the status
       const statusMessage = getUploadStatusMessage(response, isAuthenticated);
@@ -120,16 +118,19 @@ export function useStudentProfile(): UseStudentProfileReturn {
           throw new Error("No student ID received from server");
         }
 
+        // Store studentId in localStorage for future API calls
+        localStorage.setItem("studentId", studentId);
+        console.log("[Profile] Stored studentId in localStorage:", studentId);
+
         // Step 2: Upload files if files exist (50% -> 65% progress)
-        const fileUploadResponse = await handleFileUploads(
-          studentId,
-          isAuthenticated,
-        );
+        // Now automatically uses studentId from localStorage
+        const fileUploadResponse = await handleFileUploads(isAuthenticated);
         setUploadProgress(65);
 
         // Step 3: Trigger OCR processing if files were uploaded successfully (65% -> 85% progress)
+        // Now automatically uses studentId from localStorage
         const ocrResponse = isUploadSuccessful(fileUploadResponse)
-          ? await processOcr(studentId, isAuthenticated)
+          ? await processOcr(isAuthenticated)
           : null;
         setUploadProgress(85);
 

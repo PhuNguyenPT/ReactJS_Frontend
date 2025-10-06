@@ -3,7 +3,21 @@ import {
   uploadGuestStudentFiles,
 } from "../../services/fileUpload/fileUploadService";
 import { isUserAuthenticated } from "../../utils/profileAuthUtils";
-import type { FileUploadResponse } from "../../type/interface/profileTypes";
+import type { FileUploadResponse } from "../../type/interface/fileUploadTypes";
+
+/**
+ * Get student ID from localStorage
+ * @throws Error if studentId is not found
+ */
+function getStudentIdFromStorage(): string {
+  const studentId = localStorage.getItem("studentId");
+  if (!studentId) {
+    throw new Error(
+      "Student ID not found in localStorage. Please complete profile creation first.",
+    );
+  }
+  return studentId;
+}
 
 export interface FileUploadPayload {
   grade: string;
@@ -14,11 +28,17 @@ export interface FileUploadPayload {
 /**
  * Main function that automatically uploads files to the correct endpoint
  * based on user authentication status
+ * @param files - Array of files with metadata
+ * @param studentId - Optional student ID (defaults to localStorage value)
  */
 export async function uploadStudentFilesAuto(
-  studentId: string,
   files: FileUploadPayload[],
+  studentId?: string,
 ): Promise<FileUploadResponse> {
+  const targetStudentId = studentId ?? getStudentIdFromStorage();
+
+  console.log("[Upload Helper] Using student ID:", targetStudentId);
+
   // Prepare files with metadata
   const filePayloads = files.map(({ grade, semester, file }) => ({
     grade,
@@ -29,9 +49,11 @@ export async function uploadStudentFilesAuto(
 
   // Choose endpoint based on authentication
   if (isUserAuthenticated()) {
-    return uploadStudentFiles(studentId, filePayloads);
+    console.log("[Upload Helper] Using authenticated endpoint");
+    return uploadStudentFiles(filePayloads, targetStudentId);
   } else {
-    return uploadGuestStudentFiles(studentId, filePayloads);
+    console.log("[Upload Helper] Using guest endpoint");
+    return uploadGuestStudentFiles(filePayloads, targetStudentId);
   }
 }
 
@@ -67,4 +89,4 @@ export function getUploadStatusMessage(
 
 // Re-export for convenience
 export { isUserAuthenticated } from "../../utils/profileAuthUtils";
-export type { FileUploadResponse } from "../../type/interface/profileTypes";
+export type { FileUploadResponse } from "../../type/interface/fileUploadTypes";

@@ -12,10 +12,8 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
-import type {
-  NinthFormNavigationState,
-  OcrResultItem,
-} from "../../../type/interface/profileTypes";
+import type { NinthFormNavigationState } from "../../../type/interface/navigationTypes";
+import type { OcrResultItem } from "../../../type/interface/ocrTypes";
 
 type SubjectScores = Record<string, string>;
 type GradeScores = Record<string, SubjectScores>;
@@ -43,7 +41,7 @@ export default function NinthForm() {
       "Sinh học",
       "Công nghệ",
       "Tin học",
-      "Giáo dục thể chất",
+      "GDKTPL",
     ],
     [],
   );
@@ -147,17 +145,22 @@ export default function NinthForm() {
             const scoreValue = scoreItem.score.toString();
 
             // Check if it's a fixed subject
-            if (fixedSubjects.includes(subjectName)) {
+            const isFixedSubject = fixedSubjects.includes(subjectName);
+            const isOptionalSubject = optionalSubjects.includes(subjectName);
+
+            if (isFixedSubject) {
+              // Add to fixed subjects scores
               newScores[gradeKey][subjectName] = scoreValue;
-            } else if (optionalSubjects.includes(subjectName)) {
+            } else if (isOptionalSubject) {
               // Add to optional subjects
               newScores[gradeKey][subjectName] = scoreValue;
               optionalSubjectsForGrade.push(subjectName);
             } else {
-              // Subject not in our list - add to optional anyway
+              // Subject not in either list - show warning
               console.warn(
-                `[NinthForm] Unknown subject from OCR: ${subjectName}`,
+                `[NinthForm] Unknown subject from OCR: ${subjectName} (not found in fixed or optional subjects)`,
               );
+              // Still add it to optional subjects so data isn't lost
               newScores[gradeKey][subjectName] = scoreValue;
               optionalSubjectsForGrade.push(subjectName);
             }

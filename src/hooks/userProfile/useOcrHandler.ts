@@ -6,6 +6,20 @@ import {
 } from "../../services/fileUpload/ocrAnalyseService";
 
 /**
+ * Get student ID from localStorage
+ * @throws Error if studentId is not found
+ */
+function getStudentIdFromStorage(): string {
+  const studentId = localStorage.getItem("studentId");
+  if (!studentId) {
+    throw new Error(
+      "Student ID not found in localStorage. Please complete profile creation first.",
+    );
+  }
+  return studentId;
+}
+
+/**
  * Utility function to wait for a specified time
  * @param ms - Milliseconds to wait
  */
@@ -19,26 +33,29 @@ const wait = (ms: number): Promise<void> =>
 export function useOcrHandler() {
   /**
    * Handle OCR processing for uploaded files with retry logic
-   * @param studentId - The student ID
    * @param isAuthenticated - Whether the user is authenticated
-   * @param initialWaitTime - Fixed wait time before first attempt (default: 30000ms = 30s)
+   * @param studentId - Optional student ID (defaults to localStorage value)
+   * @param initialWaitTime - Fixed wait time before first attempt (default: 10000ms = 10s)
    * @param maxRetries - Maximum number of retry attempts (default: 3)
    * @param retryDelay - Delay between retries in milliseconds (default: 2000ms)
    * @returns Promise with OCR response or null if error occurs
    */
   const processOcr = async (
-    studentId: string,
     isAuthenticated: boolean,
-    initialWaitTime = 6000,
+    studentId?: string,
+    initialWaitTime = 10000,
     maxRetries = 3,
     retryDelay = 2000,
   ): Promise<OcrResponse | null> => {
+    const targetStudentId = studentId ?? getStudentIdFromStorage();
+
     try {
       console.log(
         "[OCR Handler] Initiating OCR processing for uploaded files...",
       );
+      console.log("[OCR Handler] Using student ID:", targetStudentId);
 
-      // Wait for the initial fixed time (30s by default) to allow OCR processing to complete
+      // Wait for the initial fixed time (10s by default) to allow OCR processing to complete
       console.log(
         `[OCR Handler] ⏳ Waiting ${String(initialWaitTime / 1000)} seconds for OCR processing to complete...`,
       );
@@ -55,7 +72,10 @@ export function useOcrHandler() {
           `[OCR Handler] Attempt ${String(attempt)}/${String(maxRetries)}`,
         );
 
-        const response = await triggerOcrForStudent(studentId, isAuthenticated);
+        const response = await triggerOcrForStudent(
+          isAuthenticated,
+          targetStudentId,
+        );
         lastResponse = response;
 
         // Check if we got successful results
@@ -105,30 +125,30 @@ export function useOcrHandler() {
 
   /**
    * Process OCR without retries and with custom wait time
-   * @param studentId - The student ID
    * @param isAuthenticated - Whether the user is authenticated
+   * @param studentId - Optional student ID (defaults to localStorage value)
    * @param waitTime - Time to wait before checking (default: 30000ms = 30s)
    * @returns Promise with OCR response or null if error occurs
    */
   const processOcrWithWait = async (
-    studentId: string,
     isAuthenticated: boolean,
+    studentId?: string,
     waitTime = 30000,
   ): Promise<OcrResponse | null> => {
-    return processOcr(studentId, isAuthenticated, waitTime, 1, 0);
+    return processOcr(isAuthenticated, studentId, waitTime, 1, 0);
   };
 
   /**
    * Process OCR without any wait time (immediate single call)
-   * @param studentId - The student ID
    * @param isAuthenticated - Whether the user is authenticated
+   * @param studentId - Optional student ID (defaults to localStorage value)
    * @returns Promise with OCR response or null if error occurs
    */
   const processOcrImmediate = async (
-    studentId: string,
     isAuthenticated: boolean,
+    studentId?: string,
   ): Promise<OcrResponse | null> => {
-    return processOcr(studentId, isAuthenticated, 0, 1, 0);
+    return processOcr(isAuthenticated, studentId, 0, 1, 0);
   };
 
   return {

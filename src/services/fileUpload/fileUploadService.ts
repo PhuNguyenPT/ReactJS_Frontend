@@ -1,5 +1,5 @@
 import apiFetch from "../../utils/apiFetch";
-import type { FileUploadResponse } from "../../type/interface/profileTypes";
+import type { FileUploadResponse } from "../../type/interface/fileUploadTypes";
 
 export type AllowedFileType =
   | "certificate"
@@ -18,15 +18,31 @@ export interface FileUploadPayload {
 }
 
 /**
+ * Get student ID from localStorage
+ * @throws Error if studentId is not found
+ */
+function getStudentIdFromStorage(): string {
+  const studentId = localStorage.getItem("studentId");
+  if (!studentId) {
+    throw new Error(
+      "Student ID not found in localStorage. Please complete profile creation first.",
+    );
+  }
+  return studentId;
+}
+
+/**
  * Upload multiple files for a student (authenticated users)
- * @param studentId - The student ID from the profile creation response
  * @param files - Array of files with metadata
+ * @param studentId - Optional student ID (defaults to localStorage value)
  * @returns Promise with upload response
  */
 export async function uploadStudentFiles(
-  studentId: string,
   files: FileUploadPayload[],
+  studentId?: string,
 ): Promise<FileUploadResponse> {
+  const targetStudentId = studentId ?? getStudentIdFromStorage();
+
   const formData = new FormData();
 
   // Append files
@@ -39,7 +55,6 @@ export async function uploadStudentFiles(
     fileType: fileType ?? "transcript", // default to transcript
     fileName: file.name,
     description: `Grade ${grade} Semester ${semester.toString()}`,
-    // FIX: Convert tags array to a comma-separated string
     tags: `grade-${grade},semester-${semester.toString()}`,
   }));
 
@@ -48,11 +63,12 @@ export async function uploadStudentFiles(
 
   // Log the metadata for debugging
   console.log("Files metadata being sent (authenticated):", filesMetadata);
+  console.log("Using student ID:", targetStudentId);
 
   // Call API with authentication
   try {
     const response = await apiFetch<FileUploadResponse, FormData>(
-      `/files/upload/multiple/${studentId}`,
+      `/files/upload/multiple/${targetStudentId}`,
       {
         method: "POST",
         body: formData,
@@ -75,14 +91,16 @@ export async function uploadStudentFiles(
 
 /**
  * Upload multiple files for a guest student (no authentication required)
- * @param studentId - The student ID from the profile creation response
  * @param files - Array of files with metadata
+ * @param studentId - Optional student ID (defaults to localStorage value)
  * @returns Promise with upload response
  */
 export async function uploadGuestStudentFiles(
-  studentId: string,
   files: FileUploadPayload[],
+  studentId?: string,
 ): Promise<FileUploadResponse> {
+  const targetStudentId = studentId ?? getStudentIdFromStorage();
+
   const formData = new FormData();
 
   // Append files
@@ -103,11 +121,12 @@ export async function uploadGuestStudentFiles(
 
   // Log the metadata for debugging
   console.log("Files metadata being sent (guest):", filesMetadata);
+  console.log("Using student ID:", targetStudentId);
 
   // Call API without authentication
   try {
     const response = await apiFetch<FileUploadResponse, FormData>(
-      `/files/upload/multiple/guest/${studentId}`,
+      `/files/upload/multiple/guest/${targetStudentId}`,
       {
         method: "POST",
         body: formData,
@@ -130,20 +149,20 @@ export async function uploadGuestStudentFiles(
 
 /**
  * Smart upload function that chooses the right endpoint based on authentication
- * @param studentId - The student ID from the profile creation response
  * @param files - Array of files with metadata
  * @param isAuthenticated - Whether the user is authenticated
+ * @param studentId - Optional student ID (defaults to localStorage value)
  * @returns Promise with upload response
  */
 export async function uploadFilesForStudent(
-  studentId: string,
   files: FileUploadPayload[],
   isAuthenticated: boolean,
+  studentId?: string,
 ): Promise<FileUploadResponse> {
   if (isAuthenticated) {
-    return uploadStudentFiles(studentId, files);
+    return uploadStudentFiles(files, studentId);
   } else {
-    return uploadGuestStudentFiles(studentId, files);
+    return uploadGuestStudentFiles(files, studentId);
   }
 }
 

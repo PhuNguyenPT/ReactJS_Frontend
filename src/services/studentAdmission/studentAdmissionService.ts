@@ -1,19 +1,16 @@
 import apiFetch from "../../utils/apiFetch";
 import type { StudentResponse } from "../../type/interface/profileTypes";
 import { hasUserId } from "../../type/interface/profileTypes";
+import type {
+  AdmissionApiResponse,
+  AdmissionProgram,
+} from "../../type/interface/admissionTypes";
 
 // Response types for admission API
 export interface AdmissionResponse {
   success: boolean;
   message?: string;
-  data?: {
-    studentId?: string;
-    predictions?: unknown;
-    majorRecommendations?: unknown;
-    admissionChances?: unknown;
-    // Add other fields based on your API response
-    [key: string]: unknown;
-  };
+  data?: AdmissionApiResponse | AdmissionProgram[];
 }
 
 /**
@@ -30,14 +27,24 @@ function extractStudentId(user: unknown): string | null {
     }
   }
 
+  // Check localStorage first (preferred storage)
+  const localStorageId = localStorage.getItem("studentId");
+  if (localStorageId) {
+    console.log(
+      "[AdmissionService] Found student ID in localStorage:",
+      localStorageId,
+    );
+    return localStorageId;
+  }
+
   // Fallback: check sessionStorage
-  const storedStudentId = sessionStorage.getItem("studentId");
-  if (storedStudentId) {
+  const sessionStorageId = sessionStorage.getItem("studentId");
+  if (sessionStorageId) {
     console.log(
       "[AdmissionService] Found student ID in sessionStorage:",
-      storedStudentId,
+      sessionStorageId,
     );
-    return storedStudentId;
+    return sessionStorageId;
   }
 
   console.warn("[AdmissionService] No student ID found");
@@ -55,25 +62,32 @@ export async function getGuestAdmission(
   try {
     console.log("[AdmissionService] Fetching guest admission for:", studentId);
 
-    const response = await apiFetch<AdmissionResponse>(
+    const response = await apiFetch<AdmissionApiResponse>(
       `/admission/guest/${studentId}`,
       {
         method: "GET",
-        requiresAuth: false, // No auth required for guest
+        requiresAuth: false,
       },
     );
 
     console.log("[AdmissionService] Guest admission response:", response);
 
-    // Ensure we return a consistent structure
     return {
       success: true,
-      message: response.message ?? "Admission data retrieved successfully",
-      data: response.data,
+      message: "Admission data retrieved successfully",
+      data: response,
     };
   } catch (error) {
     console.error("[AdmissionService] Error fetching guest admission:", error);
-    throw error;
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch admission data",
+      data: undefined,
+    };
   }
 }
 
@@ -91,11 +105,11 @@ export async function getAuthenticatedAdmission(
       studentId,
     );
 
-    const response = await apiFetch<AdmissionResponse>(
+    const response = await apiFetch<AdmissionApiResponse>(
       `/admission/${studentId}`,
       {
         method: "GET",
-        requiresAuth: true, // This will add Bearer token from localStorage
+        requiresAuth: true,
       },
     );
 
@@ -104,18 +118,25 @@ export async function getAuthenticatedAdmission(
       response,
     );
 
-    // Ensure we return a consistent structure
     return {
       success: true,
-      message: response.message ?? "Admission data retrieved successfully",
-      data: response.data,
+      message: "Admission data retrieved successfully",
+      data: response,
     };
   } catch (error) {
     console.error(
       "[AdmissionService] Error fetching authenticated admission:",
       error,
     );
-    throw error;
+
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch admission data",
+      data: undefined,
+    };
   }
 }
 

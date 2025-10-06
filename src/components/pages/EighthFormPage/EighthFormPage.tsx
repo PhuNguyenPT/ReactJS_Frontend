@@ -6,7 +6,6 @@ import {
   Button,
   CircularProgress,
   Alert,
-  LinearProgress,
 } from "@mui/material";
 import EighthForm from "./EighthForm";
 import { useTranslation } from "react-i18next";
@@ -18,8 +17,7 @@ export default function EighthFormPage() {
   const { t } = useTranslation();
 
   // Use the custom hook for profile submission
-  const { isSubmitting, error, handleSubmit, clearError, uploadProgress } =
-    useStudentProfile();
+  const { isSubmitting, error, handleSubmit, clearError } = useStudentProfile();
 
   const handleNext = async () => {
     await handleSubmit();
@@ -51,39 +49,6 @@ export default function EighthFormPage() {
         </Typography>
 
         <EighthForm />
-
-        {/* Upload Progress */}
-        {isSubmitting && uploadProgress > 0 && (
-          <Box sx={{ width: "100%", maxWidth: "600px", mt: 2 }}>
-            <LinearProgress
-              variant="determinate"
-              value={uploadProgress}
-              sx={{
-                height: 8,
-                borderRadius: 5,
-                backgroundColor: "rgba(255, 255, 255, 0.3)",
-                "& .MuiLinearProgress-bar": {
-                  backgroundColor: "#A657AE",
-                },
-              }}
-            />
-            <Typography
-              variant="caption"
-              sx={{
-                color: "white",
-                mt: 1,
-                display: "block",
-                textAlign: "center",
-              }}
-            >
-              {uploadProgress < 50
-                ? "Creating profile..."
-                : uploadProgress < 100
-                  ? "Uploading files..."
-                  : "Complete!"}
-            </Typography>
-          </Box>
-        )}
 
         {/* Error Alert */}
         {error && (
@@ -150,6 +115,7 @@ export default function EighthFormPage() {
             fontSize: "1.5rem",
             zIndex: 1000,
             minWidth: "120px",
+            height: "56px",
             "&:hover": {
               backgroundColor: "#8B4A8F",
             },
@@ -161,7 +127,7 @@ export default function EighthFormPage() {
           }}
         >
           {isSubmitting ? (
-            <CircularProgress size={24} sx={{ color: "white" }} />
+            <CircularProgress size={28} sx={{ color: "white" }} />
           ) : (
             t("buttons.next")
           )}
