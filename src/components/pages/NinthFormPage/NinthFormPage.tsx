@@ -4,11 +4,6 @@ import {
   Box,
   Typography,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Paper,
   CircularProgress,
   Alert,
   Snackbar,
@@ -33,8 +28,7 @@ export default function NinthFormPage() {
   // Use the admission handler hook
   const { processAdmission } = useAdmissionHandler();
 
-  // Local state for popup and loading
-  const [openPopup, setOpenPopup] = useState(false);
+  // Local state for loading and errors
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
@@ -117,10 +111,9 @@ export default function NinthFormPage() {
   }, [isAuthenticated, isLoading, user, studentId]);
 
   /**
-   * Unified submission handler that works for both authenticated and guest users
-   * @param isGuest - Whether to treat this as a guest submission
+   * Handle form submission
    */
-  const handleSubmit = async (isGuest = false) => {
+  const handleSubmit = async () => {
     if (!studentId) {
       setErrorMessage(
         t(
@@ -135,16 +128,12 @@ export default function NinthFormPage() {
     setErrorMessage(null);
 
     try {
-      const userType = isGuest ? "guest" : "authenticated";
-      console.log(
-        `[NinthFormPage] Submitting for ${userType} user:`,
-        studentId,
-      );
+      console.log("[NinthFormPage] Submitting for user:", studentId);
 
       // Use the hook with proper wait time and retries
       const admissionData = await processAdmission(
         studentId,
-        isAuthenticated && !isGuest,
+        isAuthenticated,
         15000, // 15 second initial wait
         3, // 3 retries
         2000, // 2 second delay between retries
@@ -159,20 +148,20 @@ export default function NinthFormPage() {
           : null;
 
       const userId =
-        !isGuest && user && typeof user === "object" && "userId" in user
-          ? (user as StudentResponse).userId // Use userId for the authenticated user's ID
+        isAuthenticated && user && typeof user === "object" && "userId" in user
+          ? (user as StudentResponse).userId
           : undefined;
 
-      const userName = !isGuest ? userData?.name : undefined;
+      const userName = isAuthenticated ? userData?.name : undefined;
 
       // Navigate to final result page with admission data
       void navigate("/finalResult", {
         state: {
-          userId, // This is the authenticated user's ID
+          userId,
           userName,
-          studentId, // This is the student profile ID
-          savedToAccount: isAuthenticated && !isGuest,
-          isGuest,
+          studentId,
+          savedToAccount: isAuthenticated,
+          isGuest: !isAuthenticated,
           admissionData: admissionData?.data,
         },
       });
@@ -189,46 +178,15 @@ export default function NinthFormPage() {
     }
   };
 
-  /**
-   * Handle Next/Submit button click
-   */
   const handleNext = () => {
-    // Show loading indicator while checking authentication
     if (isLoading || isSubmitting) {
       return;
     }
-
-    if (isAuthenticated) {
-      // User is authenticated, submit with authentication
-      void handleSubmit(false);
-    } else {
-      // User is not authenticated, show popup
-      setOpenPopup(true);
-    }
+    void handleSubmit();
   };
 
   const handlePrev = () => {
     void navigate("/eighthForm");
-  };
-
-  const handleLogin = () => {
-    setOpenPopup(false);
-    // Store the current path to redirect back after login
-    sessionStorage.setItem("redirectAfterAuth", "/ninthForm");
-    // Redirect to login page
-    void navigate("/login");
-  };
-
-  /**
-   * Handle skip button - proceed as guest
-   */
-  const handleSkip = () => {
-    setOpenPopup(false);
-    void handleSubmit(true); // Submit as guest
-  };
-
-  const handleClosePopup = () => {
-    setOpenPopup(false);
   };
 
   const handleCloseError = () => {
@@ -327,93 +285,6 @@ export default function NinthFormPage() {
           )}
         </Button>
       </Box>
-
-      {/* Authentication Popup Dialog */}
-      <Dialog
-        open={openPopup}
-        onClose={handleClosePopup}
-        PaperComponent={Paper}
-        slotProps={{
-          paper: {
-            sx: {
-              backgroundColor: "white",
-              borderRadius: "16px",
-              padding: "1.5rem",
-              textAlign: "center",
-              maxWidth: "400px",
-            },
-          },
-        }}
-      >
-        <DialogContent>
-          <DialogContentText
-            sx={{
-              fontSize: "1.1rem",
-              fontWeight: 500,
-              color: "#A657AE",
-              mb: 3,
-            }}
-          >
-            {t(
-              "popup.saveResultMessage",
-              "Bạn có muốn đăng nhập để lưu kết quả không?",
-            )}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: "center",
-            gap: 2,
-            pb: 1,
-          }}
-        >
-          <Button
-            variant="contained"
-            onClick={handleLogin}
-            disabled={isSubmitting}
-            sx={{
-              backgroundColor: "#A657AE",
-              color: "white",
-              px: 4,
-              height: "42px",
-              borderRadius: "12px",
-              "&:hover": { backgroundColor: "#8B4A8F" },
-              "&:disabled": {
-                backgroundColor: "#cccccc",
-              },
-            }}
-          >
-            {t("common.login", "Đăng nhập")}
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleSkip}
-            disabled={isSubmitting}
-            sx={{
-              borderColor: "#A657AE",
-              color: "#A657AE",
-              px: 4,
-              height: "42px",
-              minWidth: "100px",
-              borderRadius: "12px",
-              "&:hover": {
-                backgroundColor: "#f5f5f5",
-                borderColor: "#A657AE",
-              },
-              "&:disabled": {
-                borderColor: "#cccccc",
-                color: "#cccccc",
-              },
-            }}
-          >
-            {isSubmitting ? (
-              <CircularProgress size={24} sx={{ color: "#A657AE" }} />
-            ) : (
-              t("common.skip", "Bỏ qua")
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Error Snackbar */}
       <Snackbar

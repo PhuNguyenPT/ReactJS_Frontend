@@ -110,7 +110,8 @@
     "social_services": "Social Services",
     "tourism_hospitality_sports_personal": "Tourism, Hospitality, Sports and Personal Services",
     "transport_services": "Transport Services",
-    "veterinary": "Veterinary"
+    "veterinary": "Veterinary",
+    "other": "Other"
   },
   "thirdForm": {
     "title": "About your exam results",

@@ -6,25 +6,67 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Paper,
 } from "@mui/material";
 import EighthForm from "./EighthForm";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import { useStudentProfile } from "../../../hooks/userProfile/useStudentProfile";
+import useAuth from "../../../hooks/auth/useAuth";
 
 export default function EighthFormPage() {
   usePageTitle("Unizy | Eighth Form");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // Auth hook
+  const { isAuthenticated, isLoading } = useAuth();
+
   // Use the custom hook for profile submission
   const { isSubmitting, error, handleSubmit, clearError } = useStudentProfile();
 
+  // State for authentication popup
+  const [openPopup, setOpenPopup] = useState(false);
+
   const handleNext = async () => {
-    await handleSubmit();
+    // Check authentication status
+    if (isLoading || isSubmitting) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      // User is authenticated, proceed with submission
+      await handleSubmit();
+    } else {
+      // User is not authenticated, show popup
+      setOpenPopup(true);
+    }
   };
 
   const handlePrev = () => {
     void navigate("/seventhForm");
+  };
+
+  const handleLogin = () => {
+    setOpenPopup(false);
+    // Store the current path to redirect back after login
+    sessionStorage.setItem("redirectAfterAuth", "/eighthForm");
+    // Redirect to login page
+    void navigate("/login");
+  };
+
+  const handleSkip = async () => {
+    setOpenPopup(false);
+    // Proceed as guest
+    await handleSubmit();
+  };
+
+  const handleClosePopup = () => {
+    setOpenPopup(false);
   };
 
   return (
@@ -103,7 +145,7 @@ export default function EighthFormPage() {
         <Button
           variant="contained"
           onClick={() => void handleNext()}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
           sx={{
             position: "fixed",
             bottom: 30,
@@ -126,13 +168,100 @@ export default function EighthFormPage() {
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
           }}
         >
-          {isSubmitting ? (
+          {isSubmitting || isLoading ? (
             <CircularProgress size={28} sx={{ color: "white" }} />
           ) : (
             t("buttons.next")
           )}
         </Button>
       </Box>
+
+      {/* Authentication Popup Dialog */}
+      <Dialog
+        open={openPopup}
+        onClose={handleClosePopup}
+        PaperComponent={Paper}
+        slotProps={{
+          paper: {
+            sx: {
+              backgroundColor: "white",
+              borderRadius: "16px",
+              padding: "1.5rem",
+              textAlign: "center",
+              maxWidth: "400px",
+            },
+          },
+        }}
+      >
+        <DialogContent>
+          <DialogContentText
+            sx={{
+              fontSize: "1.1rem",
+              fontWeight: 500,
+              color: "#A657AE",
+              mb: 3,
+            }}
+          >
+            {t(
+              "popup.saveResultMessage",
+              "Bạn có muốn đăng nhập để lưu kết quả không?",
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: "center",
+            gap: 2,
+            pb: 1,
+          }}
+        >
+          <Button
+            variant="contained"
+            onClick={handleLogin}
+            disabled={isSubmitting}
+            sx={{
+              backgroundColor: "#A657AE",
+              color: "white",
+              px: 4,
+              height: "42px",
+              borderRadius: "12px",
+              "&:hover": { backgroundColor: "#8B4A8F" },
+              "&:disabled": {
+                backgroundColor: "#cccccc",
+              },
+            }}
+          >
+            {t("common.login", "Đăng nhập")}
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => void handleSkip()}
+            disabled={isSubmitting}
+            sx={{
+              borderColor: "#A657AE",
+              color: "#A657AE",
+              px: 4,
+              height: "42px",
+              minWidth: "100px",
+              borderRadius: "12px",
+              "&:hover": {
+                backgroundColor: "#f5f5f5",
+                borderColor: "#A657AE",
+              },
+              "&:disabled": {
+                borderColor: "#cccccc",
+                color: "#cccccc",
+              },
+            }}
+          >
+            {isSubmitting ? (
+              <CircularProgress size={24} sx={{ color: "#A657AE" }} />
+            ) : (
+              t("common.skip", "Bỏ qua")
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
