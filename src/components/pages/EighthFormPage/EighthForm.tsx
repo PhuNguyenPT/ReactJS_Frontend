@@ -74,7 +74,7 @@ export default function EighthForm() {
       className="eighth-form"
       sx={{ display: "flex", flexDirection: "column", gap: 5 }}
     >
-      <Box sx={{ display: "flex", gap: 20 }}>
+      <Box sx={{ display: "flex", gap: 20, marginRight: "30px" }}>
         {grades.map((grade) => (
           <Box key={grade} className="grade-section">
             {/* Grade Title */}

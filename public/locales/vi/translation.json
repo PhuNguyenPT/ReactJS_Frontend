@@ -110,7 +110,8 @@
     "social_services": "Dịch vụ xã hội",
     "tourism_hospitality_sports_personal": "Du lịch, khách sạn, thể thao và dịch vụ cá nhân",
     "transport_services": "Dịch vụ vận tải",
-    "veterinary": "Thú y"
+    "veterinary": "Thú y",
+    "other": "Khác"
   },
   "thirdForm": {
     "title": "Về kết quả thi của bạn",
