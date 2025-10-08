@@ -39,6 +39,7 @@ export default function LoginForm() {
       </label>
       <TextField
         placeholder={t("loginForm.enterEmail")}
+        autoComplete="email"
         fullWidth
         required
         variant="outlined"

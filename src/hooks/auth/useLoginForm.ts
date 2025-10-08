@@ -7,6 +7,7 @@ import type { ErrorDetails } from "../../type/interface/error.details";
 import { LoginDto } from "../../dto/loginDto";
 import { validateDTO } from "../../utils/validation";
 import { plainToInstance } from "class-transformer";
+import APIError from "../../utils/apiError"; // ✅ Import APIError
 
 export default function useLoginForm() {
   const { login } = useAuth();
@@ -42,15 +43,11 @@ export default function useLoginForm() {
       if (authResponse.success && authResponse.accessToken) {
         login(authResponse);
 
-        // Check if there's a redirect path stored
         const redirectPath = sessionStorage.getItem("redirectAfterAuth");
         if (redirectPath) {
-          // Clear the stored redirect path
           sessionStorage.removeItem("redirectAfterAuth");
-          // Navigate to the stored path
           await navigate(redirectPath);
         } else {
-          // Default redirect to home
           window.location.replace("/");
         }
       } else {
@@ -59,20 +56,49 @@ export default function useLoginForm() {
     } catch (error: unknown) {
       let message = "An unexpected error occurred. Please try again.";
 
-      if (axios.isAxiosError(error)) {
-        const apiError = error as AxiosError<ErrorDetails>;
-        if (apiError.response?.data.validationErrors) {
-          const validationErrors = apiError.response.data.validationErrors;
+      // ✅ Handle APIError (thrown by apiFetch)
+      if (error instanceof APIError) {
+        const errorData = error.data as ErrorDetails;
+
+        // Check if there are validation errors in the data
+        if (errorData.validationErrors) {
+          const validationErrors = errorData.validationErrors;
+
+          // Extract all validation error messages
           const fieldErrors = Object.values(validationErrors)
-            .map((errorMsg) => String(errorMsg))
-            .join(", ");
-          message = fieldErrors;
-        } else if (apiError.response?.data.message) {
-          message = apiError.response.data.message;
-        } else if (apiError.message) {
-          message = apiError.message;
+            .filter((errorMsg) => typeof errorMsg === "string")
+            .join(". ");
+
+          // Use field errors if they exist
+          message = fieldErrors || errorData.message || error.message;
+        } else if (errorData.message) {
+          message = errorData.message;
+        } else {
+          message = error.message;
         }
-      } else if (error instanceof Error) {
+      }
+      // ✅ Fallback: Handle raw Axios errors (if apiFetch is bypassed)
+      else if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorDetails>;
+
+        if (axiosError.response?.data.validationErrors) {
+          const validationErrors = axiosError.response.data.validationErrors;
+          const fieldErrors = Object.values(validationErrors)
+            .filter((errorMsg) => typeof errorMsg === "string")
+            .join(". ");
+
+          message =
+            fieldErrors ||
+            axiosError.response.data.message ||
+            axiosError.message;
+        } else if (axiosError.response?.data.message) {
+          message = axiosError.response.data.message;
+        } else if (axiosError.message) {
+          message = axiosError.message;
+        }
+      }
+      // ✅ Handle generic errors
+      else if (error instanceof Error) {
         message = error.message;
       }
 

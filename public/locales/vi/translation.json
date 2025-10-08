@@ -171,6 +171,7 @@
   },
   "examTypes": {
     "ielts": "IELTS",
+    "jlpt": "JLPT",
     "toefl_cbt": "TOEFL CBT",
     "toefl_ibt": "TOEFL iBT",
     "toefl_paper": "TOEFL Paper",

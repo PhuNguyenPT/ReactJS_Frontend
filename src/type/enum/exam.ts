@@ -1,6 +1,7 @@
 // Translation keys for exam types
 export type ExamTypeTranslationKey =
   | "examTypes.ielts"
+  | "examTypes.jlpt"
   | "examTypes.toefl_cbt"
   | "examTypes.toefl_ibt"
   | "examTypes.toefl_paper"
@@ -19,6 +20,7 @@ export type ExamTypeTranslationKey =
 // CCNN (Language Certification) exam types
 export const CCNNType = {
   IELTS: "examTypes.ielts",
+  JLPT: "examTypes.jlpt",
   TOEFL_CBT: "examTypes.toefl_cbt",
   TOEFL_iBT: "examTypes.toefl_ibt",
   TOEFL_Paper: "examTypes.toefl_paper",
@@ -46,16 +48,17 @@ export const DGNLType = {
 // Vietnamese mappings for exam types
 export const ExamTypeValues: Record<ExamTypeTranslationKey, string> = {
   "examTypes.ielts": "IELTS",
+  "examTypes.jlpt": "JLPT",
   "examTypes.toefl_cbt": "TOEFL CBT",
   "examTypes.toefl_ibt": "TOEFL iBT",
   "examTypes.toefl_paper": "TOEFL Paper",
   "examTypes.toeic": "TOEIC",
   "examTypes.act": "ACT",
-  "examTypes.a_level": "A-Level",
+  "examTypes.a_level": "Alevel",
   "examTypes.duolingo_english_test": "DoulingoEnglishTest",
   "examTypes.ib": "IB",
   "examTypes.ossd": "OSSD",
-  "examTypes.pte_academic": "PTE Academic",
+  "examTypes.pte_academic": "PTEAcademic",
   "examTypes.sat": "SAT",
   "examTypes.hsa": "HSA",
   "examTypes.tsa": "TSA",

@@ -6,6 +6,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import APIError from "./apiError";
+import type { ErrorDetails } from "../type/interface/error.details";
 
 console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
 
@@ -15,7 +16,6 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
-  // DON'T set Content-Type here - let axios set it based on the data
   timeout: 10000,
 });
 
@@ -93,15 +93,10 @@ async function apiFetch<T = unknown, B = unknown>(
     config.data = body;
 
     // IMPORTANT: Set Content-Type based on body type
-    // If body is FormData, don't set Content-Type (let browser set it with boundary)
-    // Otherwise, set it to application/json
     if (!(body instanceof FormData)) {
-      // Safely set Content-Type for non-FormData requests
       config.headers ??= {};
       config.headers["Content-Type"] = "application/json";
-    }
-    // For FormData, explicitly delete Content-Type if it was set
-    else if (config.headers && "Content-Type" in config.headers) {
+    } else if (config.headers && "Content-Type" in config.headers) {
       delete config.headers["Content-Type"];
     }
   }
@@ -110,7 +105,6 @@ async function apiFetch<T = unknown, B = unknown>(
   if (requiresAuth) {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      // Safely set Authorization header
       config.headers ??= {};
       config.headers.Authorization = `Bearer ${token}`;
     } else {
@@ -119,16 +113,11 @@ async function apiFetch<T = unknown, B = unknown>(
   }
 
   try {
-    // Use the endpoint directly with the axios instance
     const response: AxiosResponse<T> = await apiClient(endpoint, config);
     return response.data;
   } catch (err: unknown) {
-    // Narrow the error type safely
     if (axios.isAxiosError(err)) {
-      const axiosError = err as AxiosError<{
-        message?: string;
-        error?: string;
-      }>;
+      const axiosError = err as AxiosError<ErrorDetails>;
 
       // Check for network errors
       if (!axiosError.response) {
@@ -140,11 +129,10 @@ async function apiFetch<T = unknown, B = unknown>(
         );
       }
 
+      // ✅ Remove the ?? operator since message is required in ErrorDetails
       throw new APIError(
         axiosError.response.status,
-        axiosError.response.data.message ??
-          axiosError.response.data.error ??
-          axiosError.message,
+        axiosError.response.data.message,
         axiosError.response.data,
       );
     }
