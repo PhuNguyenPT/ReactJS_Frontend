@@ -92,7 +92,7 @@ export default function EighthFormPage() {
 
         <EighthForm />
 
-        {/* Error Alert */}
+        {/* Error Alert - Enhanced to handle multi-line errors */}
         {error && (
           <Alert
             severity="error"
@@ -101,9 +101,33 @@ export default function EighthFormPage() {
               mt: 2,
               maxWidth: "600px",
               width: "100%",
+              "& .MuiAlert-message": {
+                width: "100%",
+                whiteSpace: "pre-line", // Preserve line breaks
+              },
             }}
           >
-            {error}
+            <Box
+              component="div"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              {/* Split by newline and render each error on separate line */}
+              {error.split("\n").map((errorLine) => (
+                <Typography
+                  key={errorLine}
+                  variant="body2"
+                  sx={{
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {errorLine}
+                </Typography>
+              ))}
+            </Box>
           </Alert>
         )}
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
 import { useFormData } from "../../contexts/FormData/useFormData";
 import { useFileData } from "../../contexts/FileData/useFileData";
 import { submitStudentProfile, isUserAuthenticated } from "./useCreateProfile";
@@ -12,6 +13,8 @@ import {
 import { useOcrHandler } from "./useOcrHandler";
 import { type NinthFormNavigationState } from "../../type/interface/navigationTypes";
 import { hasUserId } from "../../type/interface/profileTypes";
+import type { ErrorDetails } from "../../type/interface/error.details";
+import APIError from "../../utils/apiError"; //
 
 interface UseStudentProfileReturn {
   isSubmitting: boolean;
@@ -157,14 +160,67 @@ export function useStudentProfile(): UseStudentProfileReturn {
         // Handle API error response
         setError(response.message ?? "Submission failed. Please try again.");
       }
-    } catch (err) {
-      // Handle network or other errors
+    } catch (err: unknown) {
+      // Handle network or other errors with proper error extraction
       console.error("Error submitting form:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An unexpected error occurred. Please try again.",
-      );
+
+      let message = "An unexpected error occurred. Please try again.";
+
+      // ✅ Handle APIError first (thrown by apiFetch)
+      if (err instanceof APIError) {
+        const errorData = err.data as ErrorDetails;
+
+        // Check if there are validation errors in the data
+        if (errorData.validationErrors) {
+          const validationErrors = errorData.validationErrors;
+
+          // Extract all validation error messages with field names
+          const fieldErrors = Object.entries(validationErrors)
+            .map(([field, errorMsg]) => {
+              // Format field name to be more readable
+              const formattedField = field
+                .replace(/\./g, " → ") // Replace dots with arrows
+                .replace(/(\d+)/g, "[$1]"); // Wrap numbers in brackets
+              return `${formattedField}: ${String(errorMsg)}`;
+            })
+            .join("\n");
+
+          message = fieldErrors || errorData.message || err.message;
+        } else if (errorData.message) {
+          message = errorData.message;
+        } else {
+          message = err.message;
+        }
+      }
+      // ✅ Fallback: Handle raw Axios errors (if apiFetch is bypassed)
+      else if (axios.isAxiosError(err)) {
+        const apiError = err as AxiosError<ErrorDetails>;
+
+        if (apiError.response?.data.validationErrors) {
+          const validationErrors = apiError.response.data.validationErrors;
+
+          // Extract all validation error messages with field names
+          const fieldErrors = Object.entries(validationErrors)
+            .map(([field, errorMsg]) => {
+              const formattedField = field
+                .replace(/\./g, " → ")
+                .replace(/(\d+)/g, "[$1]");
+              return `${formattedField}: ${String(errorMsg)}`;
+            })
+            .join("\n");
+
+          message =
+            fieldErrors || apiError.response.data.message || apiError.message;
+        } else if (apiError.response?.data.message) {
+          message = apiError.response.data.message;
+        } else if (apiError.message) {
+          message = apiError.message;
+        }
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+
+      setError(message);
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
