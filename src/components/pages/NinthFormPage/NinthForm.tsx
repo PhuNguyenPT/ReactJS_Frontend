@@ -14,6 +14,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
 import type { NinthFormNavigationState } from "../../../type/interface/navigationTypes";
 import type { OcrResultItem } from "../../../type/interface/ocrTypes";
+import {
+  NationalExamSubjects,
+  getNationalExamSubjectTranslationKey,
+  isValidSubjectKey,
+  type NationalExamSubjectTranslationKey,
+} from "../../../type/enum/national-exam-subject";
+import { useNinthForm } from "../../../contexts/ScoreBoardData/useScoreBoardContext";
 
 type SubjectScores = Record<string, string>;
 type GradeScores = Record<string, SubjectScores>;
@@ -25,24 +32,50 @@ export default function NinthForm() {
     | NinthFormNavigationState
     | undefined;
 
-  // Fixed subjects - memoized to prevent recreation on every render
+  const [showAlert, setShowAlert] = useState(false);
+
+  // Use the context hook
+  const {
+    scores,
+    selectedSubjects,
+    hasOcrData,
+    updateScore,
+    updateSelectedSubject,
+    removeSubjectScore,
+    loadOcrData,
+  } = useNinthForm();
+
+  // Show alert when OCR data is loaded
+  useEffect(() => {
+    if (hasOcrData) {
+      setShowAlert(true);
+    }
+  }, [hasOcrData]);
+
+  // Fixed subjects using translation keys (enum values)
   const fixedSubjects = useMemo(
-    () => ["Toán", "Ngữ Văn", "Tiếng Anh", "Lịch Sử"],
+    () =>
+      [
+        NationalExamSubjects.TOAN,
+        NationalExamSubjects.NGU_VAN,
+        NationalExamSubjects.TIENG_ANH,
+        NationalExamSubjects.LICH_SU,
+      ] as NationalExamSubjectTranslationKey[],
     [],
   );
 
-  // Subjects available for dropdown - memoized to prevent recreation on every render
+  // Optional subjects using translation keys (enum values)
   const optionalSubjects = useMemo(
-    () => [
-      "Địa Lý",
-      "Giáo Dục Công Dân",
-      "Vật Lý",
-      "Hóa Học",
-      "Sinh Học",
-      "Công Nghệ",
-      "Tin Học",
-      "GDKTPL",
-    ],
+    () =>
+      [
+        NationalExamSubjects.DIA_LY,
+        NationalExamSubjects.GDKT_PL,
+        NationalExamSubjects.VAT_LY,
+        NationalExamSubjects.HOA_HOC,
+        NationalExamSubjects.SINH_HOC,
+        NationalExamSubjects.CONG_NGHE,
+        NationalExamSubjects.TIN_HOC,
+      ] as NationalExamSubjectTranslationKey[],
     [],
   );
 
@@ -53,35 +86,10 @@ export default function NinthForm() {
     [t],
   );
 
-  const [scores, setScores] = useState<GradeScores>({
-    "10-1": {},
-    "10-2": {},
-    "11-1": {},
-    "11-2": {},
-    "12-1": {},
-    "12-2": {},
-  });
-
-  const [selectedSubjects, setSelectedSubjects] = useState<
-    Record<string, (string | null)[]>
-  >({
-    "10-1": [null, null, null, null],
-    "10-2": [null, null, null, null],
-    "11-1": [null, null, null, null],
-    "11-2": [null, null, null, null],
-    "12-1": [null, null, null, null],
-    "12-2": [null, null, null, null],
-  });
-
-  const [hasOcrData, setHasOcrData] = useState(false);
-  const [ocrLoadMessage, setOcrLoadMessage] = useState<string | null>(null);
-
   /**
-   * Load OCR data into the form
-   * Maps OCR results to grade-semester format
-   * Using useCallback to memoize the function and avoid recreation on every render
+   * Process OCR data and load into context
    */
-  const loadOcrData = useCallback(
+  const processOcrData = useCallback(
     (ocrResults: OcrResultItem[]) => {
       try {
         // Filter out results without scores
@@ -90,7 +98,7 @@ export default function NinthForm() {
         );
 
         if (validResults.length === 0) {
-          setOcrLoadMessage("No OCR data available to load");
+          console.log("[NinthForm] No valid OCR data to load");
           return;
         }
 
@@ -141,28 +149,65 @@ export default function NinthForm() {
           const optionalSubjectsForGrade: (string | null)[] = [];
 
           result.scores.forEach((scoreItem) => {
-            const subjectName = scoreItem.name;
+            const subjectNameVietnamese = scoreItem.name;
             const scoreValue = scoreItem.score.toString();
 
-            // Check if it's a fixed subject
-            const isFixedSubject = fixedSubjects.includes(subjectName);
-            const isOptionalSubject = optionalSubjects.includes(subjectName);
+            // Convert Vietnamese name to translation key
+            const subjectTranslationKey = getNationalExamSubjectTranslationKey(
+              subjectNameVietnamese,
+            );
 
-            if (isFixedSubject) {
-              // Add to fixed subjects scores
-              newScores[gradeKey][subjectName] = scoreValue;
-            } else if (isOptionalSubject) {
-              // Add to optional subjects
-              newScores[gradeKey][subjectName] = scoreValue;
-              optionalSubjectsForGrade.push(subjectName);
-            } else {
-              // Subject not in either list - show warning
-              console.warn(
-                `[NinthForm] Unknown subject from OCR: ${subjectName} (not found in fixed or optional subjects)`,
+            console.log(
+              `[NinthForm] ${gradeKey} - Processing: "${subjectNameVietnamese}" -> "${subjectTranslationKey}" = ${scoreValue}`,
+            );
+
+            // ✅ FIX: Check if it's a valid subject key first
+            if (isValidSubjectKey(subjectTranslationKey)) {
+              const isFixedSubject = fixedSubjects.includes(
+                subjectTranslationKey,
               );
-              // Still add it to optional subjects so data isn't lost
-              newScores[gradeKey][subjectName] = scoreValue;
-              optionalSubjectsForGrade.push(subjectName);
+              const isOptionalSubject = optionalSubjects.includes(
+                subjectTranslationKey,
+              );
+
+              if (isFixedSubject) {
+                // Store using translation key
+                newScores[gradeKey][subjectTranslationKey] = scoreValue;
+                console.log(
+                  `[NinthForm] ✓ Fixed subject stored: ${subjectTranslationKey} = ${scoreValue}`,
+                );
+              } else if (isOptionalSubject) {
+                // Store using translation key
+                newScores[gradeKey][subjectTranslationKey] = scoreValue;
+                optionalSubjectsForGrade.push(subjectTranslationKey);
+                console.log(
+                  `[NinthForm] ✓ Optional subject stored: ${subjectTranslationKey} = ${scoreValue}`,
+                );
+              } else {
+                // Valid key but not in our lists (shouldn't happen)
+                console.warn(
+                  `[NinthForm] ⚠️ Valid subject key but not in lists: ${subjectTranslationKey}`,
+                );
+                newScores[gradeKey][subjectTranslationKey] = scoreValue;
+                optionalSubjectsForGrade.push(subjectTranslationKey);
+              }
+            } else {
+              // Not a recognized subject
+              console.warn(
+                `[NinthForm] ⚠️ Unknown subject from OCR: "${subjectNameVietnamese}" (key: "${subjectTranslationKey}")`,
+              );
+              console.warn(
+                `[NinthForm] Available fixed subjects:`,
+                fixedSubjects,
+              );
+              console.warn(
+                `[NinthForm] Available optional subjects:`,
+                optionalSubjects,
+              );
+
+              // Fallback: store with the returned key (might be Vietnamese name)
+              newScores[gradeKey][subjectTranslationKey] = scoreValue;
+              optionalSubjectsForGrade.push(subjectTranslationKey);
             }
           });
 
@@ -172,93 +217,93 @@ export default function NinthForm() {
           }
 
           newSelectedSubjects[gradeKey] = optionalSubjectsForGrade;
+
+          console.log(
+            `[NinthForm] ${gradeKey} - Scores stored:`,
+            newScores[gradeKey],
+          );
+          console.log(
+            `[NinthForm] ${gradeKey} - Optional subjects:`,
+            optionalSubjectsForGrade,
+          );
         });
 
-        setScores(newScores);
-        setSelectedSubjects(newSelectedSubjects);
-        setHasOcrData(true);
-        setOcrLoadMessage(
-          `Successfully loaded scores from ${String(validResults.length)} transcript${
-            validResults.length > 1 ? "s" : ""
-          }. Please review and edit if needed.`,
+        // Load into context
+        loadOcrData(newScores, newSelectedSubjects);
+        setShowAlert(true);
+        console.log("[NinthForm] ✅ OCR data loaded successfully");
+        console.log("[NinthForm] Final scores:", newScores);
+        console.log(
+          "[NinthForm] Final selected subjects:",
+          newSelectedSubjects,
         );
-
-        console.log("[NinthForm] OCR data loaded successfully");
       } catch (error) {
-        console.error("[NinthForm] Error loading OCR data:", error);
-        setOcrLoadMessage(
-          "Error loading OCR data. Please enter scores manually.",
-        );
+        console.error("[NinthForm] ❌ Error loading OCR data:", error);
       }
     },
-    [fixedSubjects, optionalSubjects],
+    [fixedSubjects, optionalSubjects, loadOcrData],
   );
 
-  // Load OCR data on component mount
+  // Load OCR data on component mount if available
   useEffect(() => {
-    if (navigationState?.ocrProcessed && navigationState.ocrResults) {
-      console.log("[NinthForm] Loading OCR data...");
-      loadOcrData(navigationState.ocrResults);
+    if (
+      navigationState?.ocrProcessed &&
+      navigationState.ocrResults &&
+      !hasOcrData
+    ) {
+      console.log("[NinthForm] Processing OCR data from navigation state...");
+      processOcrData(navigationState.ocrResults);
     }
-  }, [navigationState?.ocrProcessed, navigationState?.ocrResults, loadOcrData]);
+  }, [
+    navigationState?.ocrProcessed,
+    navigationState?.ocrResults,
+    hasOcrData,
+    processOcrData,
+  ]);
 
   const handleScoreChange = useCallback(
     (gradeKey: string, subject: string, value: string) => {
-      setScores((prev) => ({
-        ...prev,
-        [gradeKey]: {
-          ...prev[gradeKey],
-          [subject]: value,
-        },
-      }));
+      updateScore(gradeKey, subject, value);
     },
-    [],
+    [updateScore],
   );
 
   const handleSubjectSelect = useCallback(
     (gradeKey: string, index: number, newSubject: string | null) => {
-      setSelectedSubjects((prev) => {
-        const updated = [...prev[gradeKey]];
-        const oldSubject = updated[index];
+      const oldSubject = selectedSubjects[gradeKey][index];
 
-        // If changing subject, remove old subject's score
-        if (oldSubject && oldSubject !== newSubject) {
-          setScores((prevScores) => {
-            // Use object destructuring to omit the old subject instead of delete
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { [oldSubject]: _, ...restScores } = prevScores[gradeKey];
-            return {
-              ...prevScores,
-              [gradeKey]: restScores,
-            };
-          });
-        }
+      // If changing subject, remove old subject's score
+      if (oldSubject && oldSubject !== newSubject) {
+        removeSubjectScore(gradeKey, oldSubject);
+      }
 
-        updated[index] = newSubject;
-        return { ...prev, [gradeKey]: updated };
-      });
+      updateSelectedSubject(gradeKey, index, newSubject);
     },
-    [],
+    [selectedSubjects, removeSubjectScore, updateSelectedSubject],
   );
+
+  const handleCloseAlert = useCallback(() => {
+    setShowAlert(false);
+  }, []);
 
   const renderSubjectInputs = useCallback(
     (gradeKey: string) => (
       <>
         {/* Fixed subjects */}
-        {fixedSubjects.map((subject) => (
+        {fixedSubjects.map((subjectKey) => (
           <Box
-            key={subject}
+            key={subjectKey}
             sx={{ display: "flex", alignItems: "center", gap: 5, mb: 1 }}
           >
             {/* Subject pill (same look as Autocomplete) */}
             <TextField
-              value={subject}
+              value={t(subjectKey)}
               disabled
               sx={{
-                width: 180,
+                width: 250,
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "17px",
-                  height: "40px",
+                  height: "45px",
                   backgroundColor: "white",
                   "& fieldset": { borderColor: "#A657AE" },
                   "&.Mui-disabled fieldset": { borderColor: "#A657AE" },
@@ -278,17 +323,17 @@ export default function NinthForm() {
               variant="outlined"
               size="small"
               placeholder={t("ninthForm.score")}
-              value={scores[gradeKey][subject] || ""}
+              value={scores[gradeKey][subjectKey] || ""}
               onChange={(e) => {
-                handleScoreChange(gradeKey, subject, e.target.value);
+                handleScoreChange(gradeKey, subjectKey, e.target.value);
               }}
               sx={{
-                minWidth: "120px",
+                minWidth: "250px",
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "17px",
-                  height: "40px",
+                  height: "45px",
                   backgroundColor:
-                    hasOcrData && scores[gradeKey][subject]
+                    hasOcrData && scores[gradeKey][subjectKey]
                       ? "rgba(166, 87, 174, 0.05)"
                       : "white",
                   "& fieldset": { borderColor: "#A657AE" },
@@ -307,28 +352,29 @@ export default function NinthForm() {
         ))}
 
         {/* Optional subjects with Autocomplete */}
-        {selectedSubjects[gradeKey].map((subject, idx) => (
+        {selectedSubjects[gradeKey].map((subjectKey, idx) => (
           <Box
             key={`dropdown-${String(idx)}`}
             sx={{ display: "flex", alignItems: "center", gap: 5, mb: 1 }}
           >
             <Autocomplete
               options={optionalSubjects}
-              value={subject}
+              value={subjectKey}
               onChange={(_, newValue) => {
                 handleSubjectSelect(gradeKey, idx, newValue);
               }}
+              getOptionLabel={(option) => t(option)}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   placeholder={t("ninthForm.chooseSubject")}
                   sx={{
-                    width: 180,
+                    width: 250,
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "17px",
-                      height: "40px",
+                      height: "45px",
                       backgroundColor:
-                        hasOcrData && subject
+                        hasOcrData && subjectKey
                           ? "rgba(166, 87, 174, 0.05)"
                           : "white",
                       "& fieldset": { borderColor: "#A657AE" },
@@ -345,20 +391,20 @@ export default function NinthForm() {
               variant="outlined"
               size="small"
               placeholder={t("ninthForm.score")}
-              value={subject ? scores[gradeKey][subject] || "" : ""}
+              value={subjectKey ? scores[gradeKey][subjectKey] || "" : ""}
               onChange={(e) => {
-                if (subject) {
-                  handleScoreChange(gradeKey, subject, e.target.value);
+                if (subjectKey) {
+                  handleScoreChange(gradeKey, subjectKey, e.target.value);
                 }
               }}
-              disabled={!subject}
+              disabled={!subjectKey}
               sx={{
-                minWidth: "120px",
+                minWidth: "250px",
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "17px",
-                  height: "40px",
+                  height: "45px",
                   backgroundColor:
-                    hasOcrData && subject && scores[gradeKey][subject]
+                    hasOcrData && subjectKey && scores[gradeKey][subjectKey]
                       ? "rgba(166, 87, 174, 0.05)"
                       : "white",
                   "& fieldset": { borderColor: "#A657AE" },
@@ -389,10 +435,6 @@ export default function NinthForm() {
     ],
   );
 
-  const handleCloseAlert = useCallback(() => {
-    setOcrLoadMessage(null);
-  }, []);
-
   return (
     <Box
       className="ninth-form"
@@ -400,20 +442,16 @@ export default function NinthForm() {
         display: "flex",
         flexDirection: "column",
         gap: 3,
-        maxWidth: "800px",
+        maxWidth: "1200px",
         margin: "0 auto",
         px: 2,
         py: 3,
       }}
     >
       {/* OCR Load Status Message */}
-      {ocrLoadMessage && (
-        <Alert
-          severity={hasOcrData ? "success" : "info"}
-          onClose={handleCloseAlert}
-          sx={{ mb: 2 }}
-        >
-          {ocrLoadMessage}
+      {hasOcrData && showAlert && (
+        <Alert severity="success" onClose={handleCloseAlert} sx={{ mb: 2 }}>
+          {t("ninthForm.ocrDataLoaded")}
         </Alert>
       )}
 

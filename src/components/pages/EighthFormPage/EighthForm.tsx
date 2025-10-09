@@ -164,7 +164,7 @@ export default function EighthForm() {
                         >
                           {/* Clear button - shows when there's a file */}
                           {currentFile && (
-                            <Tooltip title="Clear file">
+                            <Tooltip title={t("eighthForm.clearFile")}>
                               <IconButton
                                 onClick={(e) => {
                                   handleClearFile(grade, semesterIndex, e);
@@ -250,7 +250,7 @@ export default function EighthForm() {
                                       fontWeight: 500,
                                     }}
                                   >
-                                    Click to replace
+                                    {t("eighthForm.replace")}
                                   </Typography>
                                 </Box>
                               </>
@@ -312,7 +312,7 @@ export default function EighthForm() {
                                       fontWeight: 500,
                                     }}
                                   >
-                                    Click to replace
+                                    {t("eighthForm.replace")}
                                   </Typography>
                                 </Box>
                               </>
@@ -334,7 +334,7 @@ export default function EighthForm() {
                                 variant="caption"
                                 sx={{ color: "#666", textAlign: "center" }}
                               >
-                                Click to upload
+                                {t("eighthForm.upload")}
                               </Typography>
                               <Typography
                                 variant="caption"
@@ -345,7 +345,7 @@ export default function EighthForm() {
                                   mt: 0.5,
                                 }}
                               >
-                                Images or Documents
+                                {t("eighthForm.imageDocument")}
                               </Typography>
                             </Box>
                           )}
