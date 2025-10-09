@@ -130,7 +130,7 @@
     "dia_ly": "Địa lý",
     "doc_hieu": "Đọc hiểu",
     "doc_ke_dien_cam": "Đọc kể diễn cảm",
-    "gdktpl": "Giáo dục kinh tế và pháp luật",
+    "gdktpl": "GDKTPL",
     "hat": "Hát",
     "hat_bieu_dien_nhac_cu": "Hát hoặc Biểu diễn nhạc cụ",
     "hat_mua": "Hát - Múa",
@@ -254,7 +254,11 @@
     "helper2": " để nhập điểm của bạn một cách thủ công nếu bạn không có bảng điểm hoặc để kiểm tra lại.)",
     "grade": "Lớp",
     "semester1": "Học kỳ 1",
-    "semester2": "Học kỳ 2"
+    "semester2": "Học kỳ 2",
+    "replace": "Click vào đây để thay thế",
+    "upload": "Click vào đây để tải lên",
+    "imageDocument": "Hình ảnh hoặc Tài liệu",
+    "clearFile": "Xóa tệp"
   },
   "ninthForm": {
     "title": "KIỂM TRA VÀ BỔ SUNG BẢNG ĐIỂM",
@@ -262,9 +266,33 @@
     "semester1": "Học kỳ 1",
     "semester2": "Học kỳ 2",
     "score": "Điểm",
-    "chooseSubject": "Môn học"
+    "chooseSubject": "Môn học",
+    "ocrDataLoaded": "Dữ liệu OCR đã được tải thành công",
+    "ocrDataLoadError": "Lỗi khi tải dữ liệu OCR"
   },
   "popup": {
     "saveResultMessage": "Bạn có muốn lưu kết quả bằng cách đăng nhập để xem lại lần sau không?"
+  },
+  "finalResult": {
+    "title": "DANH SÁCH CÁC TRƯỜNG VÀ NGÀNH HỌC PHÙ HỢP VỚI HỒ SƠ CỦA BẠN",
+    "loading": "Đang tải kết quả tuyển sinh...",
+    "errorOccurred": "Đã xảy ra lỗi",
+    "searchPlaceholder": "Tìm kiếm trường đại học hoặc ngành học...",
+    "foundResults": "Tìm thấy <strong>{{count}}</strong> trường đại học phù hợp",
+    "noResultsForKeyword": "Không tìm thấy trường đại học phù hợp với từ khóa \"{{keyword}}\"",
+    "noAdmissionData": "Không có dữ liệu tuyển sinh",
+    "coursesCount": "Các ngành học ({{count}} ngành):",
+    "courseCode": "Mã ngành",
+    "subjectCombination": "Tổ hợp",
+    "applicationMethod": "Phương thức xét tuyển:",
+    "tuitionFee": "Học phí:",
+    "website": "Website:",
+    "pageInfo": "Trang {{current}} / {{total}}",
+    "errors": {
+      "noDataFound": "Không tìm thấy dữ liệu tuyển sinh",
+      "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
+      "cannotLoadData": "Không thể tải dữ liệu tuyển sinh",
+      "cannotLoadDataRetry": "Không thể tải dữ liệu tuyển sinh. Vui lòng thử lại."
+    }
   }
 }

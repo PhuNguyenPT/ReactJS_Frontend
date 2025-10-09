@@ -37,6 +37,9 @@ export const NationalExamSubjects = {
   CONG_NGHE: "subjects.cong_nghe",
 } as const;
 
+// Export the type
+export type { NationalExamSubjectTranslationKey };
+
 // Mapping from translation keys to Vietnamese values (for API)
 export const NationalExamSubjectsVietnamese: Record<
   NationalExamSubjectTranslationKey,
@@ -55,7 +58,7 @@ export const NationalExamSubjectsVietnamese: Record<
   "subjects.sinh_hoc": "Sinh Học",
   "subjects.lich_su": "Lịch Sử",
   "subjects.dia_ly": "Địa Lý",
-  "subjects.gdktpl": "Giáo dục Kinh tế và Pháp luật",
+  "subjects.gdktpl": "GDKTPL",
   "subjects.tin_hoc": "Tin Học",
   "subjects.cong_nghe": "Công Nghệ",
 } as const;
@@ -72,25 +75,27 @@ export const VietnameseToNationalExamSubjects: Record<
 ) as Record<string, NationalExamSubjectTranslationKey>;
 
 // Type guard to check if a string is a valid subject translation key
-function isNationalExamSubjectTranslationKey(
+export function isNationalExamSubjectTranslationKey(
   key: string,
 ): key is NationalExamSubjectTranslationKey {
   return key in NationalExamSubjectsVietnamese;
 }
 
 // Helper functions
-export const getAllNationalExamSubjects = () => {
-  return Object.values(NationalExamSubjects);
-};
+export const getAllNationalExamSubjects =
+  (): NationalExamSubjectTranslationKey[] => {
+    return Object.values(NationalExamSubjects);
+  };
 
-export const getSelectableSubjects = () => {
-  // Return all subjects except Math and Literature (which are mandatory)
-  return Object.values(NationalExamSubjects).filter(
-    (subject) =>
-      subject !== NationalExamSubjects.TOAN &&
-      subject !== NationalExamSubjects.NGU_VAN,
-  );
-};
+export const getSelectableSubjects =
+  (): NationalExamSubjectTranslationKey[] => {
+    // Return all subjects except Math and Literature (which are mandatory)
+    return Object.values(NationalExamSubjects).filter(
+      (subject) =>
+        subject !== NationalExamSubjects.TOAN &&
+        subject !== NationalExamSubjects.NGU_VAN,
+    );
+  };
 
 export const getNationalExamSubjectVietnameseValue = (
   translationKey: string,
@@ -101,11 +106,16 @@ export const getNationalExamSubjectVietnameseValue = (
   return translationKey;
 };
 
+// ✅ FIX: Just return string and let the caller use type guard
 export const getNationalExamSubjectTranslationKey = (
   vietnameseValue: string,
 ): string => {
   if (vietnameseValue in VietnameseToNationalExamSubjects) {
     return VietnameseToNationalExamSubjects[vietnameseValue];
   }
+  // Return the original value if not found (fallback)
   return vietnameseValue;
 };
+
+// ✅ Helper to check if a translation key is valid (same as the type guard above)
+export const isValidSubjectKey = isNationalExamSubjectTranslationKey;

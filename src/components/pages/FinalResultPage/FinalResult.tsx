@@ -16,7 +16,8 @@ import {
 import { useState, useMemo, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
-import { useLocation } from "react-router-dom"; // Add this import
+import { useLocation } from "react-router-dom";
+import { useTranslation, Trans } from "react-i18next";
 import useAuth from "../../../hooks/auth/useAuth";
 import { getAdmissionForStudent } from "../../../services/studentAdmission/studentAdmissionService";
 import { transformAdmissionData } from "../../../utils/transformAdmissionData";
@@ -54,6 +55,7 @@ interface FinalResultState {
 }
 
 export default function FinalResult() {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,7 +82,7 @@ export default function FinalResult() {
           const programs = extractPrograms(state.admissionData);
 
           if (programs.length === 0) {
-            throw new Error("Không tìm thấy dữ liệu tuyển sinh");
+            throw new Error(t("finalResult.errors.noDataFound"));
           }
 
           const transformedData = transformAdmissionData(programs);
@@ -97,9 +99,7 @@ export default function FinalResult() {
           state?.studentId ?? sessionStorage.getItem("studentId");
 
         if (!studentId) {
-          throw new Error(
-            "Student ID not found. Please complete previous steps.",
-          );
+          throw new Error(t("finalResult.errors.studentIdNotFound"));
         }
 
         console.log("[FinalResult] Fetching admission data for:", studentId);
@@ -113,14 +113,14 @@ export default function FinalResult() {
           const programs = extractPrograms(response.data);
 
           if (programs.length === 0) {
-            throw new Error("Không tìm thấy dữ liệu tuyển sinh");
+            throw new Error(t("finalResult.errors.noDataFound"));
           }
 
           const transformedData = transformAdmissionData(programs);
           setUniversities(transformedData);
         } else {
           throw new Error(
-            response.message ?? "Không thể tải dữ liệu tuyển sinh",
+            response.message ?? t("finalResult.errors.cannotLoadData"),
           );
         }
       } catch (err) {
@@ -128,7 +128,7 @@ export default function FinalResult() {
         setError(
           err instanceof Error
             ? err.message
-            : "Không thể tải dữ liệu tuyển sinh. Vui lòng thử lại.",
+            : t("finalResult.errors.cannotLoadDataRetry"),
         );
       } finally {
         setLoading(false);
@@ -136,7 +136,7 @@ export default function FinalResult() {
     };
 
     void fetchAdmissionData();
-  }, [location.state, isAuthenticated]);
+  }, [location.state, isAuthenticated, t]);
 
   // Filter universities based on search query
   const filteredUniversities = useMemo(() => {
@@ -194,7 +194,7 @@ export default function FinalResult() {
       >
         <CircularProgress sx={{ color: "#A657AE" }} size={60} />
         <Typography sx={{ color: "white", fontSize: "1.1rem" }}>
-          Đang tải kết quả tuyển sinh...
+          {t("finalResult.loading")}
         </Typography>
       </Box>
     );
@@ -206,7 +206,7 @@ export default function FinalResult() {
       <Box sx={{ maxWidth: "800px", margin: "0 auto", px: 2 }}>
         <Alert severity="error" sx={{ borderRadius: "12px" }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
-            Đã xảy ra lỗi
+            {t("finalResult.errorOccurred")}
           </Typography>
           <Typography>{error}</Typography>
         </Alert>
@@ -230,7 +230,7 @@ export default function FinalResult() {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Tìm kiếm trường đại học hoặc ngành học..."
+          placeholder={t("finalResult.searchPlaceholder")}
           value={searchQuery}
           onChange={handleSearchChange}
           slotProps={{
@@ -276,8 +276,11 @@ export default function FinalResult() {
             textAlign: "center",
           }}
         >
-          Tìm thấy <strong>{filteredUniversities.length}</strong> trường đại học
-          phù hợp
+          <Trans
+            i18nKey="finalResult.foundResults"
+            values={{ count: filteredUniversities.length }}
+            components={{ strong: <strong /> }}
+          />
         </Typography>
       )}
 
@@ -294,8 +297,8 @@ export default function FinalResult() {
           >
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
               {searchQuery
-                ? `Không tìm thấy trường đại học phù hợp với từ khóa "${searchQuery}"`
-                : "Không có dữ liệu tuyển sinh"}
+                ? t("finalResult.noResultsForKeyword", { keyword: searchQuery })
+                : t("finalResult.noAdmissionData")}
             </Typography>
           </Box>
         ) : (
@@ -365,7 +368,9 @@ export default function FinalResult() {
                         fontSize: "1.1rem",
                       }}
                     >
-                      Các ngành học ({university.courses.length} ngành):
+                      {t("finalResult.coursesCount", {
+                        count: university.courses.length,
+                      })}
                     </Typography>
                     <Box
                       sx={{ display: "flex", flexDirection: "column", gap: 2 }}
@@ -404,7 +409,7 @@ export default function FinalResult() {
                                 textAlign: "left",
                               }}
                             >
-                              Mã ngành: {course.code}
+                              {t("finalResult.courseCode")}: {course.code}
                             </Typography>
                             <Typography
                               sx={{
@@ -414,7 +419,8 @@ export default function FinalResult() {
                                 textAlign: "left",
                               }}
                             >
-                              Tổ hợp: {course.subjectCombination}
+                              {t("finalResult.subjectCombination")}:{" "}
+                              {course.subjectCombination}
                             </Typography>
                           </Box>
                           <Chip
@@ -444,7 +450,7 @@ export default function FinalResult() {
                         textAlign: "center",
                       }}
                     >
-                      Phương thức xét tuyển:
+                      {t("finalResult.applicationMethod")}
                     </Typography>
                     <Box
                       sx={{
@@ -482,7 +488,7 @@ export default function FinalResult() {
                         fontSize: "1.1rem",
                       }}
                     >
-                      Học phí:
+                      {t("finalResult.tuitionFee")}
                     </Typography>
                     <Typography
                       sx={{
@@ -507,7 +513,7 @@ export default function FinalResult() {
                         fontSize: "1.1rem",
                       }}
                     >
-                      Website:
+                      {t("finalResult.website")}
                     </Typography>
                     <Typography
                       component="a"
@@ -558,7 +564,10 @@ export default function FinalResult() {
                   }}
                 />
                 <Typography sx={{ color: "white", fontSize: "0.9rem" }}>
-                  Trang {currentPage} / {totalPages}
+                  {t("finalResult.pageInfo", {
+                    current: currentPage,
+                    total: totalPages,
+                  })}
                 </Typography>
               </Stack>
             )}

@@ -130,7 +130,7 @@
     "dia_ly": "Geography",
     "doc_hieu": "Reading Comprehension",
     "doc_ke_dien_cam": "Reading and Emotional Expression",
-    "gdktpl": "Civic Economics and Law",
+    "gdktpl": "GDKTPL",
     "hat": "Singing",
     "hat_bieu_dien_nhac_cu": "Singing or Musical Performance",
     "hat_mua": "Singing - Dancing",
@@ -254,7 +254,11 @@
     "helper2": " to input your score manually if you don’t have the score board or to check it again.)",
     "grade": "Grade",
     "semester1": "Semester 1",
-    "semester2": "Semester 2"
+    "semester2": "Semester 2",
+    "replace": "Click to replace",
+    "upload": "Click to upload",
+    "imageDocument": "Images or Documents",
+    "clearFile": "Clear file"
   },
   "ninthForm": {
     "title": "CHECK AND SUPPLEMENT YOUR SCORE BOARD",
@@ -262,9 +266,33 @@
     "semester1": "Semester 1",
     "semester2": "Semester 2",
     "score": "Score",
-    "chooseSubject": "Subject"
+    "chooseSubject": "Subject",
+    "ocrDataLoaded": "OCR data loaded successfully",
+    "ocrDataLoadError": "Error loading OCR data"
   },
   "popup": {
     "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?"
+  },
+  "finalResult": {
+    "title": "LIST OF UNIVERSITIES AND PROGRAMS SUITABLE FOR YOUR PROFILE",
+    "loading": "Loading admission results...",
+    "errorOccurred": "An error occurred",
+    "searchPlaceholder": "Search for universities or programs...",
+    "foundResults": "Found <strong>{{count}}</strong> matching universities",
+    "noResultsForKeyword": "No universities found matching keyword \"{{keyword}}\"",
+    "noAdmissionData": "No admission data available",
+    "coursesCount": "Programs ({{count}} programs):",
+    "courseCode": "Program code",
+    "subjectCombination": "Subject combination",
+    "applicationMethod": "Application method:",
+    "tuitionFee": "Tuition fee:",
+    "website": "Website:",
+    "pageInfo": "Page {{current}} / {{total}}",
+    "errors": {
+      "noDataFound": "No admission data found",
+      "studentIdNotFound": "Student ID not found. Please complete previous steps.",
+      "cannotLoadData": "Cannot load admission data",
+      "cannotLoadDataRetry": "Cannot load admission data. Please try again."
+    }
   }
 }

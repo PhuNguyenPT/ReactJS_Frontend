@@ -42,10 +42,7 @@ export default function FinalResultPage() {
             px: 2,
           }}
         >
-          {t(
-            "finalResult.title",
-            "DANH SÁCH CÁC TRƯỜNG VÀ NGÀNH HỌC PHÙ HỢP VỚI HỒ SƠ CỦA BẠN",
-          )}
+          {t("finalResult.title")}
         </Typography>
 
         {/* Result Component */}

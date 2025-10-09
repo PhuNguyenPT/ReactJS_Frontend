@@ -15,6 +15,7 @@ import { FormDataProvider } from "./contexts/FormData/FormDataProvider";
 import App from "./App";
 import LandingPage from "./components/pages/LandingPage/LandingPage";
 import { FileDataProvider } from "./contexts/FileData/FileDataProvider";
+import { NinthFormProvider } from "./contexts/ScoreBoardData/scoreBoardContext";
 
 const Signup = lazy(() => import("./components/pages/SignupPage/SignupPage"));
 const Login = lazy(() => import("./components/pages/LoginPage/LoginPage"));
@@ -57,27 +58,29 @@ if (rootElement) {
       <AuthProvider>
         <FormDataProvider>
           <FileDataProvider>
-            <Suspense fallback={<LoadingComponent />}>
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<App />}>
-                    <Route index element={<LandingPage />} />
-                    <Route path="signup" element={<Signup />} />
-                    <Route path="login" element={<Login />} />
-                    <Route path="firstForm" element={<FirstFormPage />} />
-                    <Route path="secondForm" element={<SecondFormPage />} />
-                    <Route path="thirdForm" element={<ThirdFormPage />} />
-                    <Route path="fourthForm" element={<FourthFormPage />} />
-                    <Route path="fifthForm" element={<FifthFormPage />} />
-                    <Route path="sixthForm" element={<SixthFormPage />} />
-                    <Route path="seventhForm" element={<SeventhFormPage />} />
-                    <Route path="eighthForm" element={<EighthFormPage />} />
-                    <Route path="ninthForm" element={<NinthFormPage />} />
-                    <Route path="finalResult" element={<FinalResultPage />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </Suspense>
+            <NinthFormProvider>
+              <Suspense fallback={<LoadingComponent />}>
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<App />}>
+                      <Route index element={<LandingPage />} />
+                      <Route path="signup" element={<Signup />} />
+                      <Route path="login" element={<Login />} />
+                      <Route path="firstForm" element={<FirstFormPage />} />
+                      <Route path="secondForm" element={<SecondFormPage />} />
+                      <Route path="thirdForm" element={<ThirdFormPage />} />
+                      <Route path="fourthForm" element={<FourthFormPage />} />
+                      <Route path="fifthForm" element={<FifthFormPage />} />
+                      <Route path="sixthForm" element={<SixthFormPage />} />
+                      <Route path="seventhForm" element={<SeventhFormPage />} />
+                      <Route path="eighthForm" element={<EighthFormPage />} />
+                      <Route path="ninthForm" element={<NinthFormPage />} />
+                      <Route path="finalResult" element={<FinalResultPage />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </Suspense>
+            </NinthFormProvider>
           </FileDataProvider>
         </FormDataProvider>
       </AuthProvider>
