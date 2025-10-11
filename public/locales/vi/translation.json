@@ -267,8 +267,7 @@
     "semester2": "Học kỳ 2",
     "score": "Điểm",
     "chooseSubject": "Môn học",
-    "ocrDataLoaded": "Dữ liệu OCR đã được tải thành công",
-    "ocrDataLoadError": "Lỗi khi tải dữ liệu OCR"
+    "scoreBoardDataLoaded": "Bảng điểm đã được tải thành công"
   },
   "popup": {
     "saveResultMessage": "Bạn có muốn lưu kết quả bằng cách đăng nhập để xem lại lần sau không?"
@@ -293,6 +292,33 @@
       "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
       "cannotLoadData": "Không thể tải dữ liệu tuyển sinh",
       "cannotLoadDataRetry": "Không thể tải dữ liệu tuyển sinh. Vui lòng thử lại."
+    }
+  },
+  "history": {
+    "title": "Lịch sử dự đoán đại học",
+    "subtitle": "Xem lại các dự đoán về việc nhập học đại học trong quá khứ của bạn và khám phá các tùy chọn của bạn",
+    "loading": "Đang tải lịch sử dự đoán của bạn...",
+    "errorOccurred": "Đã xảy ra lỗi",
+    "totalRecords": "Bạn có {{count}} bản ghi dự đoán",
+    "showingRecords": "Đang hiển thị {{showing}} trong số {{total}} bản ghi",
+    "noHistory": "Chưa có lịch sử dự đoán.",
+    "noHistoryDescription": "Bắt đầu hành trình dự đoán đại học của bạn để xem kết quả ở đây",
+    "startPrediction": "Bắt đầu Dự đoán Mới",
+    "createdOn": "Ngày Tạo",
+    "lastModified": "Ngày Chỉnh Sửa",
+    "viewResults": "Xem Kết Quả",
+    "pageInfo": "Trang {{current}} / {{total}}",
+    "today": "Hôm Nay",
+    "yesterday": "Hôm Qua",
+    "daysAgo": "{{count}} ngày trước",
+    "weeksAgo": "{{count}} tuần trước",
+    "monthsAgo": "{{count}} tháng trước",
+    "errors": {
+      "notAuthenticated": "Bạn phải đăng nhập để xem lịch sử",
+      "unauthorized": "Phiên của bạn đã hết hạn. Đang chuyển hướng đến trang đăng nhập...",
+      "forbidden": "Bạn không có quyền truy cập vào tài nguyên này",
+      "failedToFetch": "Không thể tải lịch sử dự đoán",
+      "unknownError": "Đã xảy ra lỗi không xác định"
     }
   }
 }

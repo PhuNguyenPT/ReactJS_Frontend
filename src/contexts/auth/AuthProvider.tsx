@@ -21,6 +21,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("studentId");
   };
 
   useTokenRefresh({

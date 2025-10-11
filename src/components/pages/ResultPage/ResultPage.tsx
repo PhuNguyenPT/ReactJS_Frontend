@@ -1,6 +1,6 @@
 import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { Box, Button, Typography } from "@mui/material";
-import FinalResult from "./FinalResult";
+import FinalResult from "./Result";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -59,7 +59,7 @@ export default function FinalResultPage() {
             backgroundColor: "white",
             color: "#A657AE",
             borderRadius: "20px",
-            px: 5,
+            px: 4,
             fontSize: "1.5rem",
             zIndex: 1000,
             "&:hover": { backgroundColor: "#f0f0f0" },

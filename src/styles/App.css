@@ -10,6 +10,122 @@
   color: #888;
 }
 
+/* Error Boundary Styles */
+
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.error-boundary__content {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-boundary__title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.error-boundary__message {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.error-boundary__details {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  text-align: left;
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.error-boundary__summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #555;
+  padding: 4px 0;
+}
+
+.error-boundary__summary:hover {
+  color: #000;
+}
+
+.error-boundary__error-text {
+  margin-top: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 13px;
+  color: #c7254e;
+  font-family: "Courier New", Courier, monospace;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.error-boundary__button {
+  margin-top: 24px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.error-boundary__button:hover {
+  background-color: #0056b3;
+}
+
+.error-boundary__button:active {
+  background-color: #004085;
+}
+
+.error-boundary__button:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .error-boundary__content {
+    padding: 24px;
+  }
+
+  .error-boundary__title {
+    font-size: 24px;
+  }
+
+  .error-boundary__message {
+    font-size: 14px;
+  }
+
+  .error-boundary__button {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
 /* Reset */
 * {
   margin: 0;

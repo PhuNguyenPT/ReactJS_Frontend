@@ -451,7 +451,7 @@ export default function NinthForm() {
       {/* OCR Load Status Message */}
       {hasOcrData && showAlert && (
         <Alert severity="success" onClose={handleCloseAlert} sx={{ mb: 2 }}>
-          {t("ninthForm.ocrDataLoaded")}
+          {t("ninthForm.scoreBoardDataLoaded")}
         </Alert>
       )}
 

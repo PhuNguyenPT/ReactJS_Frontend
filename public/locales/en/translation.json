@@ -267,8 +267,7 @@
     "semester2": "Semester 2",
     "score": "Score",
     "chooseSubject": "Subject",
-    "ocrDataLoaded": "OCR data loaded successfully",
-    "ocrDataLoadError": "Error loading OCR data"
+    "scoreBoardDataLoaded": "Score board loaded successfully"
   },
   "popup": {
     "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?"
@@ -293,6 +292,33 @@
       "studentIdNotFound": "Student ID not found. Please complete previous steps.",
       "cannotLoadData": "Cannot load admission data",
       "cannotLoadDataRetry": "Cannot load admission data. Please try again."
+    }
+  },
+  "history": {
+    "title": "University Prediction History",
+    "subtitle": "Review your past university admission predictions and explore your options",
+    "loading": "Loading your prediction history...",
+    "errorOccurred": "Error Occurred",
+    "totalRecords": "You have {{count}} prediction records",
+    "showingRecords": "Showing {{showing}} of {{total}} records",
+    "noHistory": "No Prediction History Yet",
+    "noHistoryDescription": "Start your university prediction journey to see your results here",
+    "startPrediction": "Start New Prediction",
+    "createdOn": "Created On",
+    "lastModified": "Last Modified",
+    "viewResults": "View Results",
+    "pageInfo": "Page {{current}} of {{total}}",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago",
+    "weeksAgo": "{{count}} weeks ago",
+    "monthsAgo": "{{count}} months ago",
+    "errors": {
+      "notAuthenticated": "You must be logged in to view history",
+      "unauthorized": "Your session has expired. Redirecting to login...",
+      "forbidden": "You don't have permission to access this resource",
+      "failedToFetch": "Failed to fetch prediction history",
+      "unknownError": "An unknown error occurred"
     }
   }
 }
