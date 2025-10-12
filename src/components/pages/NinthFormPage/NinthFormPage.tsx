@@ -7,6 +7,7 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
+  LinearProgress,
 } from "@mui/material";
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
@@ -26,12 +27,15 @@ export default function NinthFormPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   // Use the admission handler hook
-  const { processAdmission } = useAdmissionHandler();
+  const { processAdmission, isAdmissionSuccessful } = useAdmissionHandler();
 
   // Local state for loading and errors
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
+  const [processingStatus, setProcessingStatus] = useState<string>("");
+  const [retryAttempt, setRetryAttempt] = useState<number>(0);
+  const [maxRetries, setMaxRetries] = useState<number>(0);
 
   // Use ref to track if we've already logged auth status
   const hasLoggedAuthStatus = useRef(false);
@@ -111,7 +115,7 @@ export default function NinthFormPage() {
   }, [isAuthenticated, isLoading, user, studentId]);
 
   /**
-   * Handle form submission
+   * Handle form submission with retry callback for UI updates
    */
   const handleSubmit = async () => {
     if (!studentId) {
@@ -121,20 +125,40 @@ export default function NinthFormPage() {
 
     setIsSubmitting(true);
     setErrorMessage(null);
+    setProcessingStatus(t("ninthForm.processingPrediction"));
+    setRetryAttempt(0);
 
     try {
       console.log("[NinthFormPage] Submitting for user:", studentId);
 
-      // Use the hook with proper wait time and retries
-      const admissionData = await processAdmission(
-        studentId,
-        isAuthenticated,
-        15000, // 15 second initial wait
-        3, // 3 retries
-        2000, // 2 second delay between retries
-      );
+      // Use the refactored hook with options object
+      const admissionData = await processAdmission(studentId, isAuthenticated, {
+        initialDelay: 3000, // 3 second initial wait (faster first check)
+        maxRetries: 12, // 12 retries for ML processing
+        retryDelay: 3000, // 3 second base delay between retries
+        useExponentialBackoff: true, // Gradually increase delay
+        maxBackoffDelay: 10000, // Max 10 seconds between retries
+        onRetry: (attempt, max) => {
+          // Update UI with retry progress
+          setRetryAttempt(attempt);
+          setMaxRetries(max);
+          setProcessingStatus(t("ninthForm.gettingResults"));
+        },
+      });
 
       console.log("[NinthFormPage] Admission data received:", admissionData);
+
+      // Check if we got valid results
+      if (!admissionData || !isAdmissionSuccessful(admissionData)) {
+        // ML processing might still be ongoing
+        setErrorMessage(t("errors.predictionTimeout"));
+        setIsSubmitting(false);
+        setProcessingStatus("");
+        return;
+      }
+
+      // Success! Update status
+      setProcessingStatus(t("ninthForm.predictionComplete"));
 
       // Extract user info safely (only for authenticated users)
       const userData =
@@ -157,12 +181,13 @@ export default function NinthFormPage() {
           studentId,
           savedToAccount: isAuthenticated,
           isGuest: !isAuthenticated,
-          admissionData: admissionData?.data,
+          admissionData: admissionData.data,
         },
       });
     } catch (error) {
       console.error("[NinthFormPage] Error submitting form:", error);
       setErrorMessage(t("errors.submissionFailed"));
+      setProcessingStatus("");
     } finally {
       setIsSubmitting(false);
     }
@@ -182,6 +207,10 @@ export default function NinthFormPage() {
   const handleCloseError = () => {
     setErrorMessage(null);
   };
+
+  // Calculate progress percentage for visual feedback
+  const progressPercentage =
+    maxRetries > 0 ? (retryAttempt / maxRetries) * 100 : 0;
 
   return (
     <>
@@ -215,6 +244,50 @@ export default function NinthFormPage() {
         </Typography>
 
         <NinthForm />
+
+        {/* Processing Status Alert */}
+        {isSubmitting && processingStatus && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: 20,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 2000,
+              width: "90%",
+              maxWidth: "500px",
+            }}
+          >
+            <Alert
+              severity="info"
+              sx={{
+                backgroundColor: "rgba(166, 87, 174, 0.95)",
+                backdropFilter: "blur(10px)",
+                color: "white",
+                "& .MuiAlert-icon": {
+                  color: "white",
+                },
+              }}
+            >
+              <Typography variant="body1" sx={{ mb: 1, color: "white" }}>
+                {processingStatus}
+              </Typography>
+              {maxRetries > 0 && (
+                <LinearProgress
+                  variant="determinate"
+                  value={progressPercentage}
+                  sx={{
+                    mt: 1,
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "white",
+                    },
+                  }}
+                />
+              )}
+            </Alert>
+          </Box>
+        )}
 
         {/* Back button */}
         <Button
