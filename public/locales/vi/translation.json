@@ -64,6 +64,20 @@
     "enterEmail": "Nhập email của bạn",
     "enterPassword": "Nhập mật khẩu của bạn"
   },
+  "signupForm": {
+    "title": "Bắt đầu với UniGuide",
+    "subTitle": "Tạo tài khoản của bạn ngay bây giờ",
+    "email": "Email",
+    "emailPlaceholder": "E-mail",
+    "password": "Mật khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu của bạn",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "confirmPasswordPlaceholder": "Nhập lại mật khẩu của bạn",
+    "alreadyHaveAccount": "Bạn đã có tài khoản?",
+    "loginHere": "Đăng nhập ở đây",
+    "signingUp": "ĐANG ĐĂNG KÝ...",
+    "signUp": "ĐĂNG KÝ"
+  },
   "header": {
     "viewHistory": "Xem Lịch Sử"
   },
@@ -130,7 +144,7 @@
     "dia_ly": "Địa lý",
     "doc_hieu": "Đọc hiểu",
     "doc_ke_dien_cam": "Đọc kể diễn cảm",
-    "gdktpl": "GDKTPL",
+    "gdktpl": "Giáo dục kinh tế và pháp luật",
     "hat": "Hát",
     "hat_bieu_dien_nhac_cu": "Hát hoặc Biểu diễn nhạc cụ",
     "hat_mua": "Hát - Múa",

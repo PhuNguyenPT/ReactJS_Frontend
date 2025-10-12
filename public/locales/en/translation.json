@@ -55,14 +55,28 @@
     "start": "START"
   },
   "loginForm": {
-    "tilte": "Welcome to Unizy",
-    "subTilte": "Login to your account",
+    "title": "Welcome to Unizy",
+    "subTitle": "Login to your account",
     "noAccount": "Don't have an account?",
     "signupLink": "Sign up here",
     "login": "LOGIN",
     "logging_in": "LOGGING IN...",
     "enterEmail": "Enter your email",
     "enterPassword": "Enter your password"
+  },
+  "signupForm": {
+    "title": "Get started with UniGuide",
+    "subTitle": "Create your account now",
+    "email": "Email",
+    "emailPlaceholder": "E-mail",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat your password",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginHere": "Login here",
+    "signingUp": "SIGNING UP...",
+    "signUp": "SIGN UP"
   },
   "header": {
     "viewHistory": "View History"
@@ -130,7 +144,7 @@
     "dia_ly": "Geography",
     "doc_hieu": "Reading Comprehension",
     "doc_ke_dien_cam": "Reading and Emotional Expression",
-    "gdktpl": "GDKTPL",
+    "gdktpl": "Economic and Legal Education",
     "hat": "Singing",
     "hat_bieu_dien_nhac_cu": "Singing or Musical Performance",
     "hat_mua": "Singing - Dancing",

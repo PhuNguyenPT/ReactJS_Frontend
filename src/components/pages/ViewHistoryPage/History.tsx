@@ -373,7 +373,7 @@ export default function History() {
                           fontWeight: 500,
                         }}
                       >
-                        {formatDate(student.modifiedAt)}
+                        {formatDate(student.updatedAt)}
                       </Typography>
                       <Typography
                         sx={{
@@ -381,7 +381,7 @@ export default function History() {
                           fontSize: "1rem",
                         }}
                       >
-                        {formatTime(student.modifiedAt)}
+                        {formatTime(student.updatedAt)}
                       </Typography>
                     </Box>
 

@@ -2,15 +2,25 @@ import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { Box, Button, Typography } from "@mui/material";
 import FinalResult from "./Result";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function FinalResultPage() {
   usePageTitle("Unizy | Final Result");
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handlePrev = () => {
-    void navigate("/ninthForm");
+    // Check if user came from history page
+    const state = location.state as { fromHistory?: boolean } | null;
+
+    if (state?.fromHistory) {
+      // If from history, go back to history page
+      void navigate("/history");
+    } else {
+      // Otherwise, go back to ninthForm
+      void navigate("/ninthForm");
+    }
   };
 
   return (
@@ -29,7 +39,6 @@ export default function FinalResultPage() {
           paddingX: "1rem",
         }}
       >
-        {/* Title */}
         <Typography
           variant="h3"
           className="final-result-title"
@@ -45,10 +54,8 @@ export default function FinalResultPage() {
           {t("finalResult.title")}
         </Typography>
 
-        {/* Result Component */}
         <FinalResult />
 
-        {/* Back button */}
         <Button
           variant="contained"
           onClick={handlePrev}
@@ -64,10 +71,6 @@ export default function FinalResultPage() {
             zIndex: 1000,
             "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
-            "&:disabled": {
-              backgroundColor: "#cccccc",
-              color: "#666666",
-            },
           }}
         >
           {t("buttons.back", "BACK")}

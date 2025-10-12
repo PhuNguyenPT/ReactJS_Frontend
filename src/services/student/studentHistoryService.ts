@@ -3,7 +3,7 @@ import apiFetch from "../../utils/apiFetch";
 export interface StudentRecord {
   createdAt: string;
   id: string;
-  modifiedAt: string;
+  updatedAt: string;
   userId: string;
 }
 
