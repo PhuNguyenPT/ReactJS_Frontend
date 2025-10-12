@@ -150,7 +150,7 @@ export default function EighthFormPage() {
             backgroundColor: "white",
             color: "#A657AE",
             borderRadius: "20px",
-            px: 5,
+            px: 4,
             fontSize: "1.5rem",
             zIndex: 1000,
             "&:hover": {
@@ -177,7 +177,7 @@ export default function EighthFormPage() {
             backgroundColor: "#A657AE",
             color: "white",
             borderRadius: "20px",
-            px: 5,
+            px: 4,
             fontSize: "1.5rem",
             zIndex: 1000,
             minWidth: "120px",

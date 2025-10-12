@@ -11,8 +11,8 @@ export default function LoginPage() {
       <div className="background" />
       <div className="signup-container">
         <div className="signup-card">
-          <h1 className="title">{t("loginForm.tilte")}</h1>
-          <p className="subtitle">{t("loginForm.subTilte")}</p>
+          <h1 className="title">{t("loginForm.title")}</h1>
+          <p className="subtitle">{t("loginForm.subTitle")}</p>
           <LoginForm />
         </div>
       </div>

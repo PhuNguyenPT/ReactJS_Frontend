@@ -115,12 +115,7 @@ export default function NinthFormPage() {
    */
   const handleSubmit = async () => {
     if (!studentId) {
-      setErrorMessage(
-        t(
-          "errors.studentIdNotFound",
-          "Student ID not found. Please complete previous steps.",
-        ),
-      );
+      setErrorMessage(t("errors.studentIdNotFound"));
       return;
     }
 
@@ -167,12 +162,7 @@ export default function NinthFormPage() {
       });
     } catch (error) {
       console.error("[NinthFormPage] Error submitting form:", error);
-      setErrorMessage(
-        t(
-          "errors.submissionFailed",
-          "Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại!",
-        ),
-      );
+      setErrorMessage(t("errors.submissionFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -238,7 +228,7 @@ export default function NinthFormPage() {
             backgroundColor: "white",
             color: "#A657AE",
             borderRadius: "20px",
-            px: 5,
+            px: 4,
             fontSize: "1.5rem",
             zIndex: 1000,
             height: "56px",
@@ -265,7 +255,7 @@ export default function NinthFormPage() {
             backgroundColor: "#A657AE",
             color: "white",
             borderRadius: "20px",
-            px: 5,
+            px: 4,
             fontSize: "1.5rem",
             zIndex: 1000,
             height: "56px",

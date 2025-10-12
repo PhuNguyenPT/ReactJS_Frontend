@@ -28,7 +28,7 @@ function Header() {
           {isAuthenticated ? (
             <>
               <li>
-                <Link to="/history">{t("header.viewHistory")}</Link>
+                <Link to="/History">{t("header.viewHistory")}</Link>
               </li>
               <li className="username-section">
                 {displayName}

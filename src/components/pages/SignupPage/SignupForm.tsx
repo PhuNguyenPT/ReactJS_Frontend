@@ -9,8 +9,10 @@ import {
 import { Link } from "react-router-dom";
 import { useSignupForm } from "../../../hooks/auth/useSignupForm";
 import PasswordField from "../../common/PasswordField/PasswordField";
+import { useTranslation } from "react-i18next";
 
 export default function SignupForm() {
+  const { t } = useTranslation();
   const {
     email,
     setEmail,
@@ -40,10 +42,10 @@ export default function SignupForm() {
       >
         {/* Email */}
         <label className="form-label" htmlFor="email">
-          Email
+          {t("signupForm.email")}
         </label>
         <TextField
-          placeholder="E-mail"
+          placeholder={t("signupForm.emailPlaceholder")}
           fullWidth
           required
           variant="outlined"
@@ -60,9 +62,9 @@ export default function SignupForm() {
         />
 
         {/* Password */}
-        <label className="form-label">Password</label>
+        <label className="form-label">{t("signupForm.password")}</label>
         <PasswordField
-          placeholder="Enter your password"
+          placeholder={t("signupForm.passwordPlaceholder")}
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);
@@ -76,9 +78,9 @@ export default function SignupForm() {
         />
 
         {/* Confirm Password */}
-        <label className="form-label">Confirm Password</label>
+        <label className="form-label">{t("signupForm.confirmPassword")}</label>
         <PasswordField
-          placeholder="Repeat your password"
+          placeholder={t("signupForm.confirmPasswordPlaceholder")}
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.target.value);
@@ -95,7 +97,7 @@ export default function SignupForm() {
           variant="body2"
           sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
         >
-          Already have an account?{" "}
+          {t("signupForm.alreadyHaveAccount")}{" "}
           <Link
             to="/login"
             style={{
@@ -106,7 +108,7 @@ export default function SignupForm() {
             onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
           >
-            Login here
+            {t("signupForm.loginHere")}
           </Link>
         </Typography>
 
@@ -143,10 +145,10 @@ export default function SignupForm() {
           {loading ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CircularProgress size={20} color="inherit" />
-              SIGNING UP...
+              {t("signupForm.signingUp")}
             </Box>
           ) : (
-            "SIGN UP"
+            t("signupForm.signUp")
           )}
         </Button>
       </Box>
