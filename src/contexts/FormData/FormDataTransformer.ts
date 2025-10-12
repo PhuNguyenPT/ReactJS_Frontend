@@ -182,15 +182,11 @@ export function transformFormDataToApiSchema(formData: FormData) {
     payload.certifications = certifications;
   }
 
-  // Add budget only if values are meaningful (not default 0, 900000000)
-  const minBudget = formData.fifthForm.costRange[0];
-  const maxBudget = formData.fifthForm.costRange[1];
-
-  if (minBudget > 0 || maxBudget < 900000000) {
-    payload.minBudget = minBudget;
-    payload.maxBudget = maxBudget;
+  if (formData.fifthForm.costRange.length === 2) {
+    const [min, max] = formData.fifthForm.costRange;
+    payload.minBudget = min;
+    payload.maxBudget = max;
   }
-
   // Add special student cases if available
   if (formData.sixthForm.specialStudentCases.length > 0) {
     payload.specialStudentCases = formData.sixthForm.specialStudentCases;

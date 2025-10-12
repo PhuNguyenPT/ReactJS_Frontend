@@ -134,7 +134,7 @@ export const initialFormData: FormData = {
       },
     ],
   },
-  fifthForm: { costRange: [0, 900] },
+  fifthForm: { costRange: [1, 900] },
   sixthForm: { specialStudentCases: [] },
   seventhForm: {
     grades: {
