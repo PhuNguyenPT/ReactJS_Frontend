@@ -281,7 +281,15 @@
     "semester2": "Học kỳ 2",
     "score": "Điểm",
     "chooseSubject": "Môn học",
-    "scoreBoardDataLoaded": "Bảng điểm đã được tải thành công"
+    "scoreBoardDataLoaded": "Bảng điểm đã được tải thành công",
+    "processingPrediction": "Đang xử lý dự đoán tuyển sinh của bạn...",
+    "gettingResults": "Đang lấy kết quả dự đoán...",
+    "predictionComplete": "Dự đoán hoàn tất! Đang chuyển hướng...",
+    "errors": {
+      "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
+      "predictionTimeout": "Dự đoán mất nhiều thời gian hơn dự kiến. Vui lòng thử lại sau vài phút.",
+      "submissionFailed": "Không thể xử lý việc gửi của bạn. Vui lòng thử lại."
+    }
   },
   "popup": {
     "saveResultMessage": "Bạn có muốn lưu kết quả bằng cách đăng nhập để xem lại lần sau không?"

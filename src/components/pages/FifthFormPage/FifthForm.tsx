@@ -51,7 +51,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
             value={costRange}
             onChange={handleSliderChange}
             valueLabelFormat={formatValue}
-            min={0}
+            min={1}
             max={900}
             sx={{
               color: "#A657AE",
