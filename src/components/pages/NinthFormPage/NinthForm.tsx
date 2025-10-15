@@ -127,22 +127,27 @@ export default function NinthForm() {
         // Map to grade-semester keys: 10-1, 10-2, 11-1, 11-2, 12-1, 12-2
         const gradeKeys = ["10-1", "10-2", "11-1", "11-2", "12-1", "12-2"];
 
+        // ✅ FIX: Process ALL results, handle cases where we have more or fewer than 6
         validResults.forEach((result, index) => {
+          // ✅ FIX: Changed from return to warning only - continue processing
           if (index >= gradeKeys.length) {
             console.warn(
-              `[NinthForm] More OCR results than expected: ${String(index + 1)} results`,
+              `[NinthForm] ⚠️ Extra OCR result at index ${String(index)} - only 6 semesters supported`,
             );
-            return;
+            return; // Skip extra results beyond 6 semesters
           }
 
           const gradeKey = gradeKeys[index];
           console.log(
-            `[NinthForm] Processing ${gradeKey}:`,
+            `[NinthForm] Processing ${gradeKey} (index ${String(index)}):`,
             String(result.scores?.length),
             "subjects",
           );
 
-          if (!result.scores) return;
+          if (!result.scores) {
+            console.warn(`[NinthForm] ⚠️ No scores for ${gradeKey}`);
+            return;
+          }
 
           // Initialize scores for this grade-semester
           newScores[gradeKey] = {};
@@ -161,7 +166,7 @@ export default function NinthForm() {
               `[NinthForm] ${gradeKey} - Processing: "${subjectNameVietnamese}" -> "${subjectTranslationKey}" = ${scoreValue}`,
             );
 
-            // ✅ FIX: Check if it's a valid subject key first
+            // ✅ Check if it's a valid subject key first
             if (isValidSubjectKey(subjectTranslationKey)) {
               const isFixedSubject = fixedSubjects.includes(
                 subjectTranslationKey,
@@ -171,13 +176,13 @@ export default function NinthForm() {
               );
 
               if (isFixedSubject) {
-                // Store using translation key
+                // Store fixed subject using translation key
                 newScores[gradeKey][subjectTranslationKey] = scoreValue;
                 console.log(
                   `[NinthForm] ✓ Fixed subject stored: ${subjectTranslationKey} = ${scoreValue}`,
                 );
               } else if (isOptionalSubject) {
-                // Store using translation key
+                // Store optional subject using translation key
                 newScores[gradeKey][subjectTranslationKey] = scoreValue;
                 optionalSubjectsForGrade.push(subjectTranslationKey);
                 console.log(
@@ -227,6 +232,21 @@ export default function NinthForm() {
             optionalSubjectsForGrade,
           );
         });
+
+        // ✅ FIX: Verify how many semesters were actually processed
+        const processedSemesters = Object.keys(newScores).filter(
+          (key) => Object.keys(newScores[key]).length > 0,
+        );
+        console.log(
+          `[NinthForm] ✅ Processed ${String(processedSemesters.length)}/6 semesters:`,
+          processedSemesters,
+        );
+
+        if (processedSemesters.length < 6) {
+          console.warn(
+            `[NinthForm] ⚠️ Only ${String(processedSemesters.length)} out of 6 semesters have data`,
+          );
+        }
 
         // Load into context
         loadOcrData(newScores, newSelectedSubjects);

@@ -72,9 +72,18 @@ const LanguageSwitcher: React.FC = () => {
           color="inherit"
           disableRipple
         >
-          {/* Show current flag instead of generic icon */}
+          {/* Show current language code instead of flag */}
           {currentLang ? (
-            <Box sx={{ fontSize: "1.25rem" }}>{currentLang.flag}</Box>
+            <Box
+              sx={{
+                marginTop: "5px",
+                fontSize: "1.5rem",
+                fontWeight: 600,
+                letterSpacing: "0.5px",
+              }}
+            >
+              {currentLang.code.toUpperCase()}
+            </Box>
           ) : (
             <LanguageIcon />
           )}

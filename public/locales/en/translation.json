@@ -289,31 +289,31 @@
       "studentIdNotFound": "Student ID not found. Please complete previous steps.",
       "predictionTimeout": "Prediction is taking longer than expected. Please try again in a few moments.",
       "submissionFailed": "Failed to process your submission. Please try again."
-    },
-    "popup": {
-      "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?"
-    },
-    "finalResult": {
-      "title": "LIST OF UNIVERSITIES AND PROGRAMS SUITABLE FOR YOUR PROFILE",
-      "loading": "Loading admission results...",
-      "errorOccurred": "An error occurred",
-      "searchPlaceholder": "Search for universities or programs...",
-      "foundResults": "Found <strong>{{count}}</strong> matching universities",
-      "noResultsForKeyword": "No universities found matching keyword \"{{keyword}}\"",
-      "noAdmissionData": "No admission data available",
-      "coursesCount": "Programs ({{count}} programs):",
-      "courseCode": "Program code",
-      "subjectCombination": "Subject combination",
-      "applicationMethod": "Application method:",
-      "tuitionFee": "Tuition fee:",
-      "website": "Website:",
-      "pageInfo": "Page {{current}} / {{total}}",
-      "errors": {
-        "noDataFound": "No admission data found",
-        "studentIdNotFound": "Student ID not found. Please complete previous steps.",
-        "cannotLoadData": "Cannot load admission data",
-        "cannotLoadDataRetry": "Cannot load admission data. Please try again."
-      }
+    }
+  },
+  "popup": {
+    "saveResultMessage": "Do you want to save the result by logging in to see it for the next time ?"
+  },
+  "finalResult": {
+    "title": "LIST OF UNIVERSITIES AND PROGRAMS SUITABLE FOR YOUR PROFILE",
+    "loading": "Loading admission results...",
+    "errorOccurred": "An error occurred",
+    "searchPlaceholder": "Search for universities or programs...",
+    "foundResults": "Found <strong>{{count}}</strong> matching universities",
+    "noResultsForKeyword": "No universities found matching keyword \"{{keyword}}\"",
+    "noAdmissionData": "No admission data available",
+    "coursesCount": "Programs ({{count}} programs):",
+    "courseCode": "Program code",
+    "subjectCombination": "Subject combination",
+    "applicationMethod": "Application method:",
+    "tuitionFee": "Tuition fee:",
+    "website": "Website:",
+    "pageInfo": "Page {{current}} / {{total}}",
+    "errors": {
+      "noDataFound": "No admission data found",
+      "studentIdNotFound": "Student ID not found. Please complete previous steps.",
+      "cannotLoadData": "Cannot load admission data",
+      "cannotLoadDataRetry": "Cannot load admission data. Please try again."
     }
   },
   "history": {

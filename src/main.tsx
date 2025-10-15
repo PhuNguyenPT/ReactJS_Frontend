@@ -56,7 +56,7 @@ const EighthFormPage = lazy(
 const NinthFormPage = lazy(
   () => import("./components/pages/NinthFormPage/NinthFormPage"),
 );
-const FinalResultPage = lazy(
+const ResultPage = lazy(
   () => import("./components/pages/ResultPage/ResultPage"),
 );
 
@@ -95,7 +95,7 @@ createRoot(rootElement).render(
                       <Route path="seventhForm" element={<SeventhFormPage />} />
                       <Route path="eighthForm" element={<EighthFormPage />} />
                       <Route path="ninthForm" element={<NinthFormPage />} />
-                      <Route path="finalResult" element={<FinalResultPage />} />
+                      <Route path="result" element={<ResultPage />} />
                     </Route>
                   </Routes>
                 </BrowserRouter>

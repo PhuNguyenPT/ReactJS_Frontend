@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect, useRef } from "react";
 import useAuth from "../../../hooks/auth/useAuth";
 import { useAdmissionHandler } from "../../../hooks/studentAdmission/useAdmissionHandler";
+import { getFilterFieldsForStudent } from "../../../services/studentAdmission/admissionFilterService";
 import type { StudentResponse } from "../../../type/interface/profileTypes";
 import type { NinthFormNavigationState } from "../../../type/interface/navigationTypes";
 
@@ -23,13 +24,9 @@ export default function NinthFormPage() {
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Use your existing auth hook
   const { isAuthenticated, isLoading, user } = useAuth();
-
-  // Use the admission handler hook
   const { processAdmission, isAdmissionSuccessful } = useAdmissionHandler();
 
-  // Local state for loading and errors
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
@@ -37,17 +34,13 @@ export default function NinthFormPage() {
   const [retryAttempt, setRetryAttempt] = useState<number>(0);
   const [maxRetries, setMaxRetries] = useState<number>(0);
 
-  // Use ref to track if we've already logged auth status
   const hasLoggedAuthStatus = useRef(false);
 
-  // Get student ID from navigation state or sessionStorage
   useEffect(() => {
-    // First, try to get from navigation state
     const navigationState = location.state as
       | NinthFormNavigationState
       | undefined;
 
-    // Check if navigationState has the studentId from previous page
     const navStudentId =
       navigationState?.responseData &&
       typeof navigationState.responseData === "object" &&
@@ -65,7 +58,6 @@ export default function NinthFormPage() {
       return;
     }
 
-    // Fallback: check sessionStorage
     const storedStudentId = sessionStorage.getItem("studentId");
     if (storedStudentId) {
       console.log(
@@ -76,7 +68,6 @@ export default function NinthFormPage() {
       return;
     }
 
-    // Last resort: check user object
     if (user && typeof user === "object" && "id" in user) {
       const userId = (user as StudentResponse).id;
       if (userId) {
@@ -90,7 +81,6 @@ export default function NinthFormPage() {
     console.warn("[NinthFormPage] No student ID found");
   }, [location.state, user]);
 
-  // Log auth status only once when component mounts or when auth state actually changes
   useEffect(() => {
     if (!hasLoggedAuthStatus.current || isLoading) {
       const userData =
@@ -114,9 +104,6 @@ export default function NinthFormPage() {
     }
   }, [isAuthenticated, isLoading, user, studentId]);
 
-  /**
-   * Handle form submission with retry callback for UI updates
-   */
   const handleSubmit = async () => {
     if (!studentId) {
       setErrorMessage(t("errors.studentIdNotFound"));
@@ -131,15 +118,14 @@ export default function NinthFormPage() {
     try {
       console.log("[NinthFormPage] Submitting for user:", studentId);
 
-      // Use the refactored hook with options object
+      // Step 1: Process admission
       const admissionData = await processAdmission(studentId, isAuthenticated, {
-        initialDelay: 3000, // 3 second initial wait (faster first check)
-        maxRetries: 12, // 12 retries for ML processing
-        retryDelay: 3000, // 3 second base delay between retries
-        useExponentialBackoff: true, // Gradually increase delay
-        maxBackoffDelay: 10000, // Max 10 seconds between retries
+        initialDelay: 3000,
+        maxRetries: 12,
+        retryDelay: 3000,
+        useExponentialBackoff: true,
+        maxBackoffDelay: 10000,
         onRetry: (attempt, max) => {
-          // Update UI with retry progress
           setRetryAttempt(attempt);
           setMaxRetries(max);
           setProcessingStatus(t("ninthForm.gettingResults"));
@@ -148,19 +134,29 @@ export default function NinthFormPage() {
 
       console.log("[NinthFormPage] Admission data received:", admissionData);
 
-      // Check if we got valid results
       if (!admissionData || !isAdmissionSuccessful(admissionData)) {
-        // ML processing might still be ongoing
         setErrorMessage(t("errors.predictionTimeout"));
         setIsSubmitting(false);
         setProcessingStatus("");
         return;
       }
 
-      // Success! Update status
+      // Step 2: Fetch filter fields after successful admission
+      setProcessingStatus(
+        t("ninthForm.loadingFilters", "Loading filter options..."),
+      );
+      console.log("[NinthFormPage] Fetching filter fields for:", studentId);
+
+      const filterResponse = await getFilterFieldsForStudent(
+        studentId,
+        isAuthenticated,
+      );
+
+      console.log("[NinthFormPage] Filter fields received:", filterResponse);
+
+      // Step 3: Navigate with both admission data and filter fields
       setProcessingStatus(t("ninthForm.predictionComplete"));
 
-      // Extract user info safely (only for authenticated users)
       const userData =
         user && typeof user === "object" && "data" in user
           ? (user as StudentResponse).data
@@ -173,8 +169,7 @@ export default function NinthFormPage() {
 
       const userName = isAuthenticated ? userData?.name : undefined;
 
-      // Navigate to final result page with admission data
-      void navigate("/finalResult", {
+      void navigate("/result", {
         state: {
           userId,
           userName,
@@ -182,6 +177,7 @@ export default function NinthFormPage() {
           savedToAccount: isAuthenticated,
           isGuest: !isAuthenticated,
           admissionData: admissionData.data,
+          filterFields: filterResponse.success ? filterResponse.data : null,
         },
       });
     } catch (error) {
@@ -208,7 +204,6 @@ export default function NinthFormPage() {
     setErrorMessage(null);
   };
 
-  // Calculate progress percentage for visual feedback
   const progressPercentage =
     maxRetries > 0 ? (retryAttempt / maxRetries) * 100 : 0;
 
@@ -228,7 +223,6 @@ export default function NinthFormPage() {
           paddingX: "1rem",
         }}
       >
-        {/* Title above form */}
         <Typography
           variant="h3"
           className="ninth-title"
@@ -245,7 +239,6 @@ export default function NinthFormPage() {
 
         <NinthForm />
 
-        {/* Processing Status Alert */}
         {isSubmitting && processingStatus && (
           <Box
             sx={{
@@ -289,7 +282,6 @@ export default function NinthFormPage() {
           </Box>
         )}
 
-        {/* Back button */}
         <Button
           variant="contained"
           onClick={handlePrev}
@@ -316,7 +308,6 @@ export default function NinthFormPage() {
           {t("buttons.back", "BACK")}
         </Button>
 
-        {/* Submit button */}
         <Button
           variant="contained"
           onClick={handleNext}
@@ -344,12 +335,11 @@ export default function NinthFormPage() {
           {isLoading || isSubmitting ? (
             <CircularProgress size={28} sx={{ color: "white" }} />
           ) : (
-            t("common.submit", "SUBMIT")
+            t("common.submit")
           )}
         </Button>
       </Box>
 
-      {/* Error Snackbar */}
       <Snackbar
         open={!!errorMessage}
         autoHideDuration={6000}
