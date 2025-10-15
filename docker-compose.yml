@@ -1,33 +1,24 @@
 services:
   frontend:
-    # Use the built image from Docker Hub
     image: phunpt01/react-frontend:latest
-    # Or build locally if you prefer:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    container_name: react-frontend
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      # Mount SSL certificates (adjust paths as needed)
+      # Mount SSL certificates from host
       - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
       - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
       - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
     restart: unless-stopped
     networks:
       - app-network
-
-  # If you have a backend service, uncomment and configure:
-  # backend:
-  #   image: phunpt01/nodejs:backend-latest
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NODE_ENV=production
-  #   networks:
-  #     - app-network
-  #   restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 networks:
   app-network:
