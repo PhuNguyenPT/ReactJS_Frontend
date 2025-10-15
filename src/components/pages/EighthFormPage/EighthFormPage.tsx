@@ -226,10 +226,7 @@ export default function EighthFormPage() {
               mb: 3,
             }}
           >
-            {t(
-              "popup.saveResultMessage",
-              "Bạn có muốn đăng nhập để lưu kết quả không?",
-            )}
+            {t("popup.saveResultMessage")}
           </DialogContentText>
         </DialogContent>
         <DialogActions

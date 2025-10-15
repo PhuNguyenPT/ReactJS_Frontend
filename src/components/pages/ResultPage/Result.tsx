@@ -19,16 +19,21 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useLocation } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import useAuth from "../../../hooks/auth/useAuth";
-import { getAdmissionForStudent } from "../../../services/studentAdmission/studentAdmissionService";
+import {
+  getInitialAdmissionData,
+  getFilteredAdmissionData,
+  convertFilterCriteriaToParams,
+} from "../../../services/studentAdmission/studentAdmissionService";
 import { transformAdmissionData } from "../../../utils/transformAdmissionData";
+import ResultFilter, { type FilterCriteria } from "./ResultFilter";
 import type {
   AdmissionProgram,
   University,
 } from "../../../type/interface/admissionTypes";
+import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
 
 const ITEMS_PER_PAGE = 5;
 
-// Helper function to extract programs from API response
 function extractPrograms(data: unknown): AdmissionProgram[] {
   if (Array.isArray(data)) {
     return data as AdmissionProgram[];
@@ -46,12 +51,12 @@ function extractPrograms(data: unknown): AdmissionProgram[] {
   return [];
 }
 
-// Define the navigation state interface
 interface FinalResultState {
   studentId?: string;
   admissionData?: unknown;
   isGuest?: boolean;
   savedToAccount?: boolean;
+  filterFields?: FilterFieldsResponse | null;
 }
 
 export default function FinalResult() {
@@ -60,21 +65,43 @@ export default function FinalResult() {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [universities, setUniversities] = useState<University[]>([]);
+  const [allUniversities, setAllUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [, setActiveFilters] = useState<FilterCriteria>({});
+  const [filterFields, setFilterFields] = useState<FilterFieldsResponse | null>(
+    null,
+  );
+  const [studentId, setStudentId] = useState<string | null>(null);
+  const [isFiltered, setIsFiltered] = useState(false);
 
-  // Fetch admission data on mount
+  // Initial data loading
   useEffect(() => {
-    const fetchAdmissionData = async () => {
+    const fetchInitialData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Get data from navigation state
         const state = location.state as FinalResultState | null;
 
-        // First, try to use admissionData from navigation state if available
+        // Load filter fields from navigation state
+        if (state?.filterFields) {
+          console.log(
+            "[FinalResult] Loading filter fields from navigation state",
+          );
+          setFilterFields(state.filterFields);
+        }
+
+        // Get student ID
+        const id = state?.studentId ?? sessionStorage.getItem("studentId");
+        if (!id) {
+          throw new Error(t("finalResult.errors.studentIdNotFound"));
+        }
+        setStudentId(id);
+
+        // Check if we have data in navigation state
         if (state?.admissionData) {
           console.log(
             "[FinalResult] Using admission data from navigation state",
@@ -87,27 +114,15 @@ export default function FinalResult() {
 
           const transformedData = transformAdmissionData(programs);
           setUniversities(transformedData);
+          setAllUniversities(transformedData);
           setLoading(false);
           return;
         }
 
-        // If no data in navigation state, fetch it
-        console.log("[FinalResult] No data in navigation state, fetching...");
+        console.log("[FinalResult] Fetching all admission data from API");
 
-        // Get studentId from navigation state or sessionStorage
-        const studentId =
-          state?.studentId ?? sessionStorage.getItem("studentId");
-
-        if (!studentId) {
-          throw new Error(t("finalResult.errors.studentIdNotFound"));
-        }
-
-        console.log("[FinalResult] Fetching admission data for:", studentId);
-
-        const response = await getAdmissionForStudent(
-          studentId,
-          isAuthenticated,
-        );
+        // Fetch all data using the new service method
+        const response = await getInitialAdmissionData(id, isAuthenticated);
 
         if (response.success && response.data) {
           const programs = extractPrograms(response.data);
@@ -118,13 +133,14 @@ export default function FinalResult() {
 
           const transformedData = transformAdmissionData(programs);
           setUniversities(transformedData);
+          setAllUniversities(transformedData); // Store all data for client-side filtering
         } else {
           throw new Error(
             response.message ?? t("finalResult.errors.cannotLoadData"),
           );
         }
       } catch (err) {
-        console.error("[FinalResult] Error fetching admission data:", err);
+        console.error("[FinalResult] Error fetching initial data:", err);
         setError(
           err instanceof Error
             ? err.message
@@ -135,10 +151,110 @@ export default function FinalResult() {
       }
     };
 
-    void fetchAdmissionData();
+    void fetchInitialData();
   }, [location.state, isAuthenticated, t]);
 
-  // Filter universities based on search query
+  // Handle filter application with API call
+  const handleFilterApply = useCallback(
+    (filters: FilterCriteria) => {
+      console.log("[FinalResult] Applying filters:", filters);
+
+      // Check if any filters are actually selected
+      const hasActiveFilters = Object.keys(filters).some((key) => {
+        const value = filters[key as keyof FilterCriteria];
+        if (key === "tuitionFeeRange") {
+          const feeRange = value as { min?: number; max?: number } | undefined;
+          return feeRange?.min !== undefined || feeRange?.max !== undefined;
+        }
+        return Array.isArray(value) && value.length > 0;
+      });
+
+      if (!hasActiveFilters) {
+        // No filters selected, show all data
+        console.log("[FinalResult] No filters selected, showing all data");
+        setUniversities(allUniversities);
+        setActiveFilters({});
+        setIsFiltered(false);
+        setCurrentPage(1);
+        return;
+      }
+
+      if (!studentId) {
+        console.error("[FinalResult] No student ID available for filtering");
+        return;
+      }
+
+      // Execute async logic without making the callback itself async
+      const applyFiltersAsync = async () => {
+        try {
+          setFilterLoading(true);
+          setError(null);
+
+          // Convert UI filter criteria to API parameters
+          const apiParams = convertFilterCriteriaToParams(filters);
+
+          console.log(
+            "[FinalResult] Fetching filtered data with params:",
+            apiParams,
+          );
+
+          // Fetch filtered data from API
+          const response = await getFilteredAdmissionData(
+            studentId,
+            isAuthenticated,
+            apiParams,
+          );
+
+          if (response.success && response.data) {
+            const programs = extractPrograms(response.data);
+
+            if (programs.length === 0) {
+              // No results for these filters
+              setUniversities([]);
+              setActiveFilters(filters);
+              setIsFiltered(true);
+              setCurrentPage(1);
+              return;
+            }
+
+            const transformedData = transformAdmissionData(programs);
+            setUniversities(transformedData);
+            setActiveFilters(filters);
+            setIsFiltered(true);
+            setCurrentPage(1);
+          } else {
+            throw new Error(
+              response.message ?? t("finalResult.errors.filterFailed"),
+            );
+          }
+        } catch (err) {
+          console.error("[FinalResult] Error applying filters:", err);
+          setError(
+            err instanceof Error
+              ? err.message
+              : t("finalResult.errors.filterFailed"),
+          );
+        } finally {
+          setFilterLoading(false);
+        }
+      };
+
+      // Call the async function but don't await it
+      void applyFiltersAsync();
+    },
+    [studentId, isAuthenticated, allUniversities, t],
+  );
+
+  // Handle filter clear
+  const handleFilterClear = useCallback(() => {
+    console.log("[FinalResult] Clearing filters");
+    setActiveFilters({});
+    setUniversities(allUniversities);
+    setIsFiltered(false);
+    setCurrentPage(1);
+  }, [allUniversities]);
+
+  // Client-side search filtering
   const filteredUniversities = useMemo(() => {
     if (!searchQuery.trim()) {
       return universities;
@@ -154,7 +270,7 @@ export default function FinalResult() {
     );
   }, [searchQuery, universities]);
 
-  // Paginate filtered results
+  // Pagination
   const paginatedUniversities = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -179,7 +295,6 @@ export default function FinalResult() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Loading state
   if (loading) {
     return (
       <Box
@@ -200,7 +315,6 @@ export default function FinalResult() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <Box sx={{ maxWidth: "800px", margin: "0 auto", px: 2 }}>
@@ -225,6 +339,48 @@ export default function FinalResult() {
         py: 3,
       }}
     >
+      {/* Filter Component */}
+      {filterFields && (
+        <ResultFilter
+          filterFields={filterFields}
+          onFilterApply={handleFilterApply}
+          onFilterClear={handleFilterClear}
+        />
+      )}
+
+      {/* Loading overlay for filter operations */}
+      {filterLoading && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              padding: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <CircularProgress sx={{ color: "#A657AE" }} />
+            <Typography>{t("finalResult.applyingFilters")}</Typography>
+          </Box>
+        </Box>
+      )}
+
       {/* Search Bar */}
       <Box sx={{ mb: 4 }}>
         <TextField
@@ -266,22 +422,35 @@ export default function FinalResult() {
         />
       </Box>
 
-      {/* Results count */}
+      {/* Results count and filter status */}
       {universities.length > 0 && (
-        <Typography
-          sx={{
-            color: "white",
-            fontSize: "1rem",
-            mb: 2,
-            textAlign: "center",
-          }}
-        >
-          <Trans
-            i18nKey="finalResult.foundResults"
-            values={{ count: filteredUniversities.length }}
-            components={{ strong: <strong /> }}
-          />
-        </Typography>
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            sx={{
+              color: "white",
+              fontSize: "1rem",
+              textAlign: "center",
+            }}
+          >
+            <Trans
+              i18nKey="finalResult.foundResults"
+              values={{ count: filteredUniversities.length }}
+              components={{ strong: <strong /> }}
+            />
+          </Typography>
+          {isFiltered && (
+            <Typography
+              sx={{
+                color: "white",
+                fontSize: "0.9rem",
+                textAlign: "center",
+                mt: 1,
+              }}
+            >
+              {t("finalResult.filteredResults")}
+            </Typography>
+          )}
+        </Box>
       )}
 
       {/* University Results */}
@@ -298,8 +467,21 @@ export default function FinalResult() {
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
               {searchQuery
                 ? t("finalResult.noResultsForKeyword", { keyword: searchQuery })
-                : t("finalResult.noAdmissionData")}
+                : isFiltered
+                  ? t("finalResult.noResultsForFilters")
+                  : t("finalResult.noAdmissionData")}
             </Typography>
+            {isFiltered && (
+              <Typography
+                sx={{
+                  color: "#666",
+                  mt: 2,
+                  fontSize: "0.95rem",
+                }}
+              >
+                {t("finalResult.tryDifferentFilters")}
+              </Typography>
+            )}
           </Box>
         ) : (
           <>

@@ -87,7 +87,7 @@ export default function History() {
 
   const handleViewResult = (studentId: string) => {
     // Navigate to final result page with the student ID
-    void navigate("/finalResult", {
+    void navigate("/result", {
       state: {
         studentId: studentId,
         fromHistory: true,
