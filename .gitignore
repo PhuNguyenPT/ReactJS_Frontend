@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 coverage/
+
+# Environment files - ignore all except example
+.env*
+!.env.example
