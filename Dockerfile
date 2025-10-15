@@ -1,5 +1,5 @@
 # Multi-stage build for React + Vite frontend
-FROM node:lts-bookworm-slim AS base
+FROM node:lts-trixie-slim AS base
 
 # Set working directory
 WORKDIR /app
@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies
-RUN npm ci --only=production --ignore-scripts
+# Install dependencies (production only)
+RUN npm ci --omit=dev --ignore-scripts
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -35,7 +35,7 @@ RUN npm run type-check
 RUN npm run build
 
 # Production image, copy all the files and run nginx
-FROM nginx:stable-bookworm AS runner
+FROM nginx:1.29-trixie AS runner
 
 # Install wget for health check
 RUN apt-get update && apt-get install -y --no-install-recommends \
