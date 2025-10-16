@@ -196,11 +196,11 @@ export default function ResultFilter({
                   fontWeight: 600,
                 }}
               >
-                {t("finalResult.filter.title", "Filter Results")}
+                {t("finalResult.filter.title")}
               </Typography>
               {activeFilterCount > 0 && (
                 <Chip
-                  label={`${String(activeFilterCount)} ${t("finalResult.filter.active", "active")}`}
+                  label={`${String(activeFilterCount)} ${t("finalResult.filter.active")}`}
                   size="small"
                   sx={{
                     backgroundColor: "#A657AE",
@@ -265,7 +265,7 @@ export default function ResultFilter({
                   fontWeight: 500,
                 }}
               >
-                {t("finalResult.filter.university", "University")}
+                {t("finalResult.filter.university")}
               </Typography>
               <Autocomplete
                 multiple
@@ -277,10 +277,7 @@ export default function ResultFilter({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder={t(
-                      "finalResult.filter.selectUniversity",
-                      "Select universities...",
-                    )}
+                    placeholder={t("finalResult.filter.selectUniversity")}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
@@ -323,7 +320,7 @@ export default function ResultFilter({
                   fontWeight: 500,
                 }}
               >
-                {t("finalResult.filter.major", "Major")}
+                {t("finalResult.filter.major")}
               </Typography>
               <Autocomplete
                 multiple
@@ -335,10 +332,7 @@ export default function ResultFilter({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder={t(
-                      "finalResult.filter.selectMajor",
-                      "Select majors...",
-                    )}
+                    placeholder={t("finalResult.filter.selectMajor")}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
@@ -381,7 +375,7 @@ export default function ResultFilter({
                   fontWeight: 500,
                 }}
               >
-                {t("finalResult.filter.admissionType", "Admission Type")}
+                {t("finalResult.filter.admissionType")}
               </Typography>
               <Autocomplete
                 multiple
@@ -393,10 +387,7 @@ export default function ResultFilter({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder={t(
-                      "finalResult.filter.selectAdmissionType",
-                      "Select admission types...",
-                    )}
+                    placeholder={t("finalResult.filter.selectAdmissionType")}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
@@ -439,7 +430,7 @@ export default function ResultFilter({
                   fontWeight: 500,
                 }}
               >
-                {t("finalResult.filter.studyProgram", "Study Program")}
+                {t("finalResult.filter.studyProgram")}
               </Typography>
               <Autocomplete
                 multiple
@@ -451,10 +442,7 @@ export default function ResultFilter({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    placeholder={t(
-                      "finalResult.filter.selectStudyProgram",
-                      "Select study programs...",
-                    )}
+                    placeholder={t("finalResult.filter.selectStudyProgram")}
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
@@ -497,10 +485,7 @@ export default function ResultFilter({
                   fontWeight: 500,
                 }}
               >
-                {t(
-                  "finalResult.filter.subjectCombination",
-                  "Subject Combination",
-                )}
+                {t("finalResult.filter.subjectCombination")}
               </Typography>
               <Autocomplete
                 multiple
@@ -510,14 +495,13 @@ export default function ResultFilter({
                   handleFilterChange("subjectCombination", newValue);
                 }}
                 getOptionLabel={(option) =>
-                  option || t("finalResult.filter.none", "None")
+                  option || t("finalResult.filter.none")
                 }
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     placeholder={t(
                       "finalResult.filter.selectSubjectCombination",
-                      "Select subject combinations...",
                     )}
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -563,7 +547,7 @@ export default function ResultFilter({
                   fontWeight: 500,
                 }}
               >
-                {t("finalResult.filter.tuitionFeeRange", "Tuition Fee Range")}
+                {t("finalResult.filter.tuitionFeeRange")}
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Box>
@@ -575,7 +559,7 @@ export default function ResultFilter({
                       display: "block",
                     }}
                   >
-                    {t("finalResult.filter.minFee", "Min Fee")}
+                    {t("finalResult.filter.minFee")}
                   </Typography>
                   <Autocomplete
                     options={sortedTuitionFees}
@@ -588,12 +572,12 @@ export default function ResultFilter({
                     getOptionLabel={(option) =>
                       option
                         ? `${parseInt(option, 10).toLocaleString()} VND`
-                        : t("finalResult.filter.any", "Any")
+                        : t("finalResult.filter.any")
                     }
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        placeholder={t("finalResult.filter.any", "Any")}
+                        placeholder={t("finalResult.filter.any")}
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "17px",
@@ -625,7 +609,7 @@ export default function ResultFilter({
                       display: "block",
                     }}
                   >
-                    {t("finalResult.filter.maxFee", "Max Fee")}
+                    {t("finalResult.filter.maxFee")}
                   </Typography>
                   <Autocomplete
                     options={sortedTuitionFees}
@@ -638,12 +622,12 @@ export default function ResultFilter({
                     getOptionLabel={(option) =>
                       option
                         ? `${parseInt(option, 10).toLocaleString()} VND`
-                        : t("finalResult.filter.any", "Any")
+                        : t("finalResult.filter.any")
                     }
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        placeholder={t("finalResult.filter.any", "Any")}
+                        placeholder={t("finalResult.filter.any")}
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "17px",
@@ -699,7 +683,7 @@ export default function ResultFilter({
                 },
               }}
             >
-              {t("finalResult.filter.clear", "Clear")}
+              {t("finalResult.filter.clear")}
             </Button>
             <Button
               fullWidth
@@ -714,7 +698,7 @@ export default function ResultFilter({
                 },
               }}
             >
-              {t("finalResult.filter.apply", "Apply Filters")}
+              {t("finalResult.filter.apply")}
             </Button>
           </Box>
         </Box>
