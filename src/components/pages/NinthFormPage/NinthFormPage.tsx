@@ -142,9 +142,7 @@ export default function NinthFormPage() {
       }
 
       // Step 2: Fetch filter fields after successful admission
-      setProcessingStatus(
-        t("ninthForm.loadingFilters", "Loading filter options..."),
-      );
+      setProcessingStatus(t("ninthForm.loadingFilters"));
       console.log("[NinthFormPage] Fetching filter fields for:", studentId);
 
       const filterResponse = await getFilterFieldsForStudent(
@@ -155,7 +153,7 @@ export default function NinthFormPage() {
       console.log("[NinthFormPage] Filter fields received:", filterResponse);
 
       // Step 3: Navigate with both admission data and filter fields
-      setProcessingStatus(t("ninthForm.predictionComplete"));
+      setProcessingStatus(t("ninthForm.predictionCompleted"));
 
       const userData =
         user && typeof user === "object" && "data" in user

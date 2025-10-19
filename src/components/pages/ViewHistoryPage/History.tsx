@@ -15,9 +15,10 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+//import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { getStudentHistory } from "../../../services/student/studentHistoryService";
 import type { StudentRecord } from "../../../services/student/studentHistoryService";
+import { getFilterFieldsForStudent } from "../../../services/studentAdmission/admissionFilterService";
 import APIError from "../../../utils/apiError";
 
 const ITEMS_PER_PAGE = 6;
@@ -30,6 +31,7 @@ export default function History() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const [viewingResultLoading, setViewingResultLoading] = useState(false);
 
   useEffect(() => {
     const fetchStudentHistory = async () => {
@@ -85,14 +87,43 @@ export default function History() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleViewResult = (studentId: string) => {
-    // Navigate to final result page with the student ID
-    void navigate("/result", {
-      state: {
-        studentId: studentId,
-        fromHistory: true,
-      },
-    });
+  const handleViewResult = async (studentId: string) => {
+    try {
+      setViewingResultLoading(true);
+
+      // Since we're in History, user is authenticated
+      const isAuthenticated = true;
+
+      // Fetch filter fields for this student
+      console.log("[History] Fetching filter fields for student:", studentId);
+      const filterResponse = await getFilterFieldsForStudent(
+        studentId,
+        isAuthenticated,
+      );
+
+      // Navigate to final result page with both student ID and filter fields
+      void navigate("/result", {
+        state: {
+          studentId: studentId,
+          fromHistory: true,
+          filterFields: filterResponse.success ? filterResponse.data : null,
+        },
+      });
+    } catch (err) {
+      console.error("[History] Error fetching filter fields:", err);
+
+      // Even if filter fields fail, still navigate to results
+      // The result page can work without filters
+      void navigate("/result", {
+        state: {
+          studentId: studentId,
+          fromHistory: true,
+          filterFields: null,
+        },
+      });
+    } finally {
+      setViewingResultLoading(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -115,8 +146,18 @@ export default function History() {
   const getRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    // Reset times to midnight for date-only comparison
+    const dateOnly = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+    );
+    const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Calculate difference in days
+    const diffMs = nowOnly.getTime() - dateOnly.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) return t("history.today");
     if (diffDays === 1) return t("history.yesterday");
@@ -181,6 +222,39 @@ export default function History() {
         py: 3,
       }}
     >
+      {/* Loading overlay for viewing result */}
+      {viewingResultLoading && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              padding: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <CircularProgress sx={{ color: "#A657AE" }} />
+            <Typography>{t("history.loadingResults")}</Typography>
+          </Box>
+        </Box>
+      )}
+
       {/* Summary Info */}
       {students.length > 0 && (
         <Box
@@ -326,26 +400,28 @@ export default function History() {
                       >
                         {t("history.createdOn")}
                       </Typography>
+
                       <Typography
                         sx={{
-                          color: "#333",
+                          color: "#000000ff",
+                          fontSize: "1.25rem",
+                        }}
+                      >
+                        {formatTime(student.createdAt)}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "#000000ff",
                           fontSize: "1.25rem",
                           fontWeight: 500,
                         }}
                       >
                         {formatDate(student.createdAt)}
                       </Typography>
-                      <Typography
-                        sx={{
-                          color: "#999",
-                          fontSize: "1rem",
-                        }}
-                      >
-                        {formatTime(student.createdAt)}
-                      </Typography>
                     </Box>
 
                     {/* Modified Date */}
+                    {/*
                     <Box
                       sx={{
                         display: "flex",
@@ -384,11 +460,11 @@ export default function History() {
                         {formatTime(student.updatedAt)}
                       </Typography>
                     </Box>
-
+                    */}
                     {/* Student ID (truncated) */}
                     <Typography
                       sx={{
-                        color: "#999",
+                        color: "#888",
                         fontSize: "1rem",
                         mb: 2,
                         fontFamily: "monospace",
@@ -403,8 +479,9 @@ export default function History() {
                       variant="contained"
                       startIcon={<VisibilityIcon />}
                       onClick={() => {
-                        handleViewResult(student.id);
+                        void handleViewResult(student.id);
                       }}
+                      disabled={viewingResultLoading}
                       sx={{
                         backgroundColor: "#A657AE",
                         color: "white",
@@ -415,6 +492,9 @@ export default function History() {
                         textTransform: "none",
                         "&:hover": {
                           backgroundColor: "#8e4a96",
+                        },
+                        "&:disabled": {
+                          backgroundColor: "#ccc",
                         },
                       }}
                     >

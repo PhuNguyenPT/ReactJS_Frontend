@@ -26,12 +26,32 @@ export interface StudentsResponse {
 
 export const getStudentHistory = async (): Promise<StudentsResponse> => {
   try {
-    const response = await apiFetch<StudentsResponse>("/students", {
-      method: "GET",
-      requiresAuth: true,
-    });
+    // First API call: Get total count with minimal data (size=1)
+    const initialResponse = await apiFetch<StudentsResponse>(
+      "/students?page=1&size=1&sort=createdAt,DESC",
+      {
+        method: "GET",
+        requiresAuth: true,
+      },
+    );
 
-    return response;
+    const totalElements = initialResponse.totalElements;
+
+    // If there are no records or only one, return the initial response
+    if (totalElements <= 1) {
+      return initialResponse;
+    }
+
+    // Second API call: Fetch all records at once using the total count as size
+    const allRecordsResponse = await apiFetch<StudentsResponse>(
+      `/students?page=1&size=${totalElements.toString()}&sort=createdAt,DESC`,
+      {
+        method: "GET",
+        requiresAuth: true,
+      },
+    );
+
+    return allRecordsResponse;
   } catch (error) {
     console.error("Error fetching student history:", error);
     throw error;

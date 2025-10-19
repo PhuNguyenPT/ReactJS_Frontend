@@ -28,15 +28,87 @@ interface UseThirdOptionalFormProps {
   setCategories: (categories: CategoryData[]) => void;
 }
 
+// Score limits configuration
+const SCORE_LIMITS = {
+  DGNL: {
+    maxEntries: 3,
+    subjects: {
+      "examTypes.hsa": { min: 0, max: 150 },
+      "examTypes.tsa": { min: 0, max: 100 },
+      "examTypes.vnuhcm": { min: 0, max: 1200 },
+    },
+  },
+  VSAT: {
+    min: 0,
+    max: 150,
+    minRequiredEntries: 3,
+  },
+  TALENT: {
+    min: 0,
+    max: 10,
+  },
+} as const;
+
 export const useThirdOptionalForm = ({
   categories,
   setCategories,
 }: UseThirdOptionalFormProps) => {
   const { t } = useTranslation();
 
+  // Get score limits based on category and subject
+  const getScoreLimits = (categoryName: string, subject?: string) => {
+    switch (categoryName) {
+      case "ĐGNL":
+        if (
+          subject &&
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          SCORE_LIMITS.DGNL.subjects[
+            subject as keyof typeof SCORE_LIMITS.DGNL.subjects
+          ]
+        ) {
+          return SCORE_LIMITS.DGNL.subjects[
+            subject as keyof typeof SCORE_LIMITS.DGNL.subjects
+          ];
+        }
+        return { min: 0, max: 100 }; // Default for DGNL
+      case "V-SAT":
+        return { min: SCORE_LIMITS.VSAT.min, max: SCORE_LIMITS.VSAT.max };
+      case "Năng khiếu":
+        return { min: SCORE_LIMITS.TALENT.min, max: SCORE_LIMITS.TALENT.max };
+      default:
+        return { min: 0, max: 100 };
+    }
+  };
+
+  // Validate score value against limits
+  const validateScoreValue = (
+    categoryName: string,
+    subject: string,
+    scoreValue: string,
+  ): string | null => {
+    if (!scoreValue) return null; // Empty is valid
+
+    const numericScore = parseFloat(scoreValue);
+    if (isNaN(numericScore)) {
+      return t("thirdForm.invalidNumber");
+    }
+
+    const limits = getScoreLimits(categoryName, subject);
+
+    if (numericScore < limits.min) {
+      return t("thirdForm.scoreTooLow", { min: limits.min });
+    }
+
+    if (numericScore > limits.max) {
+      return t("thirdForm.scoreTooHigh", { max: limits.max });
+    }
+
+    return null; // Valid
+  };
+
   // Check if a specific score row has validation errors
   const getScoreRowErrors = (
-    _categoryName: string,
+    categoryName: string,
     score: OptionalScore,
   ): string[] => {
     const errors: string[] = [];
@@ -46,6 +118,18 @@ export const useThirdOptionalForm = ({
       errors.push(t("thirdForm.errorWarning"));
     }
 
+    // Validate score value against limits
+    if (score.subject && score.score) {
+      const scoreError = validateScoreValue(
+        categoryName,
+        score.subject,
+        score.score,
+      );
+      if (scoreError) {
+        errors.push(scoreError);
+      }
+    }
+
     return errors;
   };
 
@@ -53,14 +137,32 @@ export const useThirdOptionalForm = ({
   const getCategoryErrors = (category: CategoryData): string[] => {
     const errors: string[] = [];
 
-    // V-SAT specific validation
+    // ĐGNL specific validation - max 3 entries
+    if (category.name === "ĐGNL") {
+      const filledScores = category.scores.filter(
+        (score) => score.subject && score.score,
+      );
+
+      if (filledScores.length > SCORE_LIMITS.DGNL.maxEntries) {
+        errors.push(
+          t("thirdForm.dgnlMaxEntriesError", {
+            max: SCORE_LIMITS.DGNL.maxEntries,
+          }),
+        );
+      }
+    }
+
+    // V-SAT specific validation - minimum 3 entries if started
     if (category.name === "V-SAT") {
       const filledScores = category.scores.filter(
         (score) => score.subject && score.score,
       );
 
       // If user has started filling V-SAT but has less than 3 complete entries
-      if (filledScores.length > 0 && filledScores.length < 3) {
+      if (
+        filledScores.length > 0 &&
+        filledScores.length < SCORE_LIMITS.VSAT.minRequiredEntries
+      ) {
         errors.push(t("thirdForm.vsatMinimumError"));
       }
     }
@@ -92,8 +194,12 @@ export const useThirdOptionalForm = ({
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
-  // Validate and sanitize score input
-  const handleScoreValidation = (value: string): string => {
+  // Validate and sanitize score input with category-specific limits
+  const handleScoreValidation = (
+    value: string,
+    categoryName: string,
+    subject: string,
+  ): string => {
     // Allow empty string
     if (value === "") return "";
 
@@ -101,23 +207,62 @@ export const useThirdOptionalForm = ({
     const regex = /^\d*\.?\d*$/;
     if (!regex.test(value)) return value.slice(0, -1);
 
+    // Check if the value exceeds the maximum allowed
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue)) {
+      const limits = getScoreLimits(categoryName, subject);
+
+      // Prevent typing values that exceed the maximum
+      if (numericValue > limits.max) {
+        return limits.max.toString();
+      }
+    }
+
     return value;
+  };
+
+  // Check if can add more scores to a category
+  const canAddScore = (categoryName: string): boolean => {
+    if (categoryName === "ĐGNL") {
+      const category = categories.find((cat) => cat.name === categoryName);
+      if (category) {
+        const filledScores = category.scores.filter(
+          (score) => score.subject && score.score,
+        );
+        return filledScores.length < SCORE_LIMITS.DGNL.maxEntries;
+      }
+    }
+    return true; // No restriction for other categories
   };
 
   // Add a new score row to a category
   const handleAddScore = (categoryId: string) => {
-    const updated = categories.map((category) => {
-      if (category.id === categoryId) {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (!category) return;
+
+    // Check if we can add more scores for ĐGNL category
+    if (!canAddScore(category.name)) {
+      // Optionally, you can show an alert or notification here
+      console.warn(
+        t("thirdForm.dgnlMaxEntriesReached", {
+          max: SCORE_LIMITS.DGNL.maxEntries,
+        }),
+      );
+      return;
+    }
+
+    const updated = categories.map((cat) => {
+      if (cat.id === categoryId) {
         return {
-          ...category,
+          ...cat,
           scores: [
-            ...category.scores,
+            ...cat.scores,
             { id: generateId(), subject: "", subjectOther: "", score: "" },
           ],
           isExpanded: true,
         };
       }
-      return category;
+      return cat;
     });
     setCategories(updated);
   };
@@ -179,7 +324,17 @@ export const useThirdOptionalForm = ({
     scoreId: string,
     value: string,
   ) => {
-    const validatedValue = handleScoreValidation(value);
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (!category) return;
+
+    const score = category.scores.find((s) => s.id === scoreId);
+    if (!score) return;
+
+    const validatedValue = handleScoreValidation(
+      value,
+      category.name,
+      score.subject,
+    );
     handleScoreChange(categoryId, scoreId, "score", validatedValue);
   };
 
@@ -241,6 +396,15 @@ export const useThirdOptionalForm = ({
     };
   };
 
+  // Get display text for score limits
+  const getScoreLimitText = (
+    categoryName: string,
+    subject?: string,
+  ): string => {
+    const limits = getScoreLimits(categoryName, subject);
+    return t("thirdForm.scoreLimitHint", { min: limits.min, max: limits.max });
+  };
+
   return {
     // Data
     categories,
@@ -254,11 +418,17 @@ export const useThirdOptionalForm = ({
     // Helper functions
     getTranslatedCategoryName,
     getScoreRowData,
+    getScoreLimitText,
+    canAddScore,
 
     // Validation functions
     validateForm,
     getCategoryErrors,
     getScoreRowErrors,
+    validateScoreValue,
+
+    // Score limits
+    getScoreLimits,
 
     // Translation function
     t,

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   FormControl,
@@ -5,48 +6,10 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { SpecialStudentCase } from "../../../type/enum/special-student-case";
-import { useFormData } from "../../../contexts/FormData/useFormData";
+import { useSixthForm } from "../../../hooks/formPages/useSixthForm";
 
-const SixthForm = () => {
-  const { t } = useTranslation();
-  const { formData, updateSixthForm } = useFormData();
-
-  // Get current checked values from context (these are translation keys)
-  const checkedValues = formData.sixthForm.specialStudentCases;
-
-  const handleToggle = (translationKey: string) => {
-    const newCheckedValues = checkedValues.includes(translationKey)
-      ? checkedValues.filter((v) => v !== translationKey)
-      : [...checkedValues, translationKey];
-
-    updateSixthForm({ specialStudentCases: newCheckedValues });
-  };
-
-  // Define the options using the SpecialStudentCase enum with translation keys
-  const specialStudentOptions = [
-    {
-      key: "HEROES_AND_CONTRIBUTORS",
-      value: SpecialStudentCase.HEROES_AND_CONTRIBUTORS,
-      label: t(SpecialStudentCase.HEROES_AND_CONTRIBUTORS),
-    },
-    {
-      key: "TRANSFER_STUDENT",
-      value: SpecialStudentCase.TRANSFER_STUDENT,
-      label: t(SpecialStudentCase.TRANSFER_STUDENT),
-    },
-    {
-      key: "ETHNIC_MINORITY_STUDENT",
-      value: SpecialStudentCase.ETHNIC_MINORITY_STUDENT,
-      label: t(SpecialStudentCase.ETHNIC_MINORITY_STUDENT),
-    },
-    {
-      key: "VERY_FEW_ETHNIC_MINORITY",
-      value: SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY,
-      label: t(SpecialStudentCase.VERY_FEW_ETHNIC_MINORITY),
-    },
-  ];
+const SixthForm: React.FC = () => {
+  const { specialStudentOptions, handleToggle, isChecked } = useSixthForm();
 
   return (
     <Box
@@ -71,7 +34,7 @@ const SixthForm = () => {
               key={opt.key}
               control={
                 <Checkbox
-                  checked={checkedValues.includes(opt.value)}
+                  checked={isChecked(opt.value)}
                   onChange={() => {
                     handleToggle(opt.value);
                   }}
