@@ -1,73 +1,23 @@
+import React from "react";
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import ClearIcon from "@mui/icons-material/Clear";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import ImageIcon from "@mui/icons-material/Image";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import DescriptionIcon from "@mui/icons-material/Description";
-import { useTranslation } from "react-i18next";
-import { useFileData } from "../../../contexts/FileData/useFileData";
-import type {
-  GradeKey,
-  SemesterKey,
-} from "../../../contexts/FileData/FileDataContext";
-
-// Supported file types
-const ACCEPTED_FILE_TYPES = {
-  images: ".jpg,.jpeg,.png,.gif,.bmp,.webp,.svg",
-  documents: ".pdf,.doc,.docx,.txt,.odt,.rtf",
-};
-
-const ALL_ACCEPTED_TYPES = `${ACCEPTED_FILE_TYPES.images},${ACCEPTED_FILE_TYPES.documents}`;
+import { useEighthForm } from "../../../hooks/formPages/useEighthForm";
+import type { SemesterKey } from "../../../contexts/FileData/FileDataContext";
 
 export default function EighthForm() {
-  const { t } = useTranslation();
-  const { updateEighthFormFile, getEighthFormFile, getEighthFormPreviewUrl } =
-    useFileData();
-
-  const grades: GradeKey[] = ["10", "11", "12"];
-  const semesters = [t("eighthForm.semester1"), t("eighthForm.semester2")];
-
-  const handleFileChange = (
-    grade: GradeKey,
-    semesterIndex: SemesterKey,
-    file: File | null,
-  ) => {
-    updateEighthFormFile(grade, semesterIndex, file);
-  };
-
-  const handleClearFile = (
-    grade: GradeKey,
-    semesterIndex: SemesterKey,
-    event: React.MouseEvent,
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-    handleFileChange(grade, semesterIndex, null);
-  };
-
-  const getFileIcon = (file: File) => {
-    const fileType = file.type;
-    const fileName = file.name.toLowerCase();
-
-    if (fileType.startsWith("image/")) {
-      return <ImageIcon sx={{ fontSize: 48, color: "#4CAF50" }} />;
-    } else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
-      return <PictureAsPdfIcon sx={{ fontSize: 48, color: "#F44336" }} />;
-    } else if (
-      fileType.includes("document") ||
-      fileName.endsWith(".doc") ||
-      fileName.endsWith(".docx")
-    ) {
-      return <DescriptionIcon sx={{ fontSize: 48, color: "#2196F3" }} />;
-    } else {
-      return <InsertDriveFileIcon sx={{ fontSize: 48, color: "#757575" }} />;
-    }
-  };
-
-  const isImageFile = (file: File) => {
-    return file.type.startsWith("image/");
-  };
+  const {
+    grades,
+    semesters,
+    acceptedTypes,
+    handleFileChange,
+    handleClearFile,
+    getFileIcon,
+    isImageFile,
+    getEighthFormFile,
+    getEighthFormPreviewUrl,
+    translations,
+  } = useEighthForm();
 
   return (
     <Box
@@ -83,7 +33,7 @@ export default function EighthForm() {
               className="grade-title"
               sx={{ mb: 1, marginLeft: "110px" }}
             >
-              {t("eighthForm.grade")} {grade}
+              {translations.grade} {grade}
             </Typography>
 
             {/* Two upload rows with semester labels */}
@@ -164,7 +114,7 @@ export default function EighthForm() {
                         >
                           {/* Clear button - shows when there's a file */}
                           {currentFile && (
-                            <Tooltip title={t("eighthForm.clearFile")}>
+                            <Tooltip title={translations.clearFile}>
                               <IconButton
                                 onClick={(e) => {
                                   handleClearFile(grade, semesterIndex, e);
@@ -190,7 +140,7 @@ export default function EighthForm() {
                           <Box
                             component="input"
                             type="file"
-                            accept={ALL_ACCEPTED_TYPES}
+                            accept={acceptedTypes}
                             onChange={(
                               e: React.ChangeEvent<HTMLInputElement>,
                             ) => {
@@ -250,7 +200,7 @@ export default function EighthForm() {
                                       fontWeight: 500,
                                     }}
                                   >
-                                    {t("eighthForm.replace")}
+                                    {translations.replace}
                                   </Typography>
                                 </Box>
                               </>
@@ -312,7 +262,7 @@ export default function EighthForm() {
                                       fontWeight: 500,
                                     }}
                                   >
-                                    {t("eighthForm.replace")}
+                                    {translations.replace}
                                   </Typography>
                                 </Box>
                               </>
@@ -334,7 +284,7 @@ export default function EighthForm() {
                                 variant="caption"
                                 sx={{ color: "#666", textAlign: "center" }}
                               >
-                                {t("eighthForm.upload")}
+                                {translations.upload}
                               </Typography>
                               <Typography
                                 variant="caption"
@@ -345,7 +295,7 @@ export default function EighthForm() {
                                   mt: 0.5,
                                 }}
                               >
-                                {t("eighthForm.imageDocument")}
+                                {translations.imageDocument}
                               </Typography>
                             </Box>
                           )}

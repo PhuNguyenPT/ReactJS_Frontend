@@ -1,36 +1,23 @@
-import { useImperativeHandle } from "react";
+import React from "react";
 import { Box, FormControl, Slider, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { useFormData } from "../../../contexts/FormData/useFormData";
-
-export interface FifthFormRef {
-  validate: () => boolean;
-}
+import {
+  useFifthForm,
+  type FifthFormRef,
+} from "../../../hooks/formPages/useFifthForm";
 
 interface FifthFormProps {
   ref?: React.Ref<FifthFormRef>;
 }
 
 const FifthForm = ({ ref }: FifthFormProps) => {
-  const { t } = useTranslation();
-  const { formData, updateFifthForm } = useFormData();
-
-  // Expose validate() to parent
-  useImperativeHandle(ref, () => ({
-    validate: () => {
-      return true;
-    },
-  }));
-
-  const handleSliderChange = (_: Event, newValue: number | number[]) => {
-    updateFifthForm({ costRange: newValue as number[] });
-  };
-
-  const formatValue = (value: number) => {
-    return `${String(value)} ${t("fifthForm.millionVND")}`;
-  };
-
-  const { costRange } = formData.fifthForm;
+  const {
+    costRange,
+    handleSliderChange,
+    formatValue,
+    formatRangeText,
+    sliderConfig,
+    subTitle,
+  } = useFifthForm({ ref });
 
   return (
     <Box component="form" className="fifth-form" sx={{ position: "relative" }}>
@@ -43,7 +30,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
             textAlign: "left",
           }}
         >
-          {t("fifthForm.subTitle1")}
+          {subTitle}
         </Typography>
 
         <Box sx={{ px: 2 }}>
@@ -51,8 +38,8 @@ const FifthForm = ({ ref }: FifthFormProps) => {
             value={costRange}
             onChange={handleSliderChange}
             valueLabelFormat={formatValue}
-            min={1}
-            max={900}
+            min={sliderConfig.min}
+            max={sliderConfig.max}
             sx={{
               color: "#A657AE",
               maxWidth: "450px",
@@ -100,7 +87,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
           {/* Centered result text */}
           <Box sx={{ mt: 2, textAlign: "center" }}>
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
-              {`${String(costRange[0])} - ${String(costRange[1])} ${t("fifthForm.millionVND/year")}`}
+              {formatRangeText(costRange)}
             </Typography>
           </Box>
         </Box>

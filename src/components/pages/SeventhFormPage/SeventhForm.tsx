@@ -5,11 +5,10 @@ import {
   Autocomplete,
   FormHelperText,
 } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { AcademicPerformance } from "../../../type/enum/academic-performance";
-import { Conduct } from "../../../type/enum/conduct";
-import { useFormData } from "../../../contexts/FormData/useFormData";
-import type { GradeKey } from "../../../contexts/FormData/FormDataContext";
+import {
+  useSeventhForm,
+  type TranslatedOption,
+} from "../../../hooks/formPages/useSeventhForm";
 
 interface SeventhFormProps {
   shouldValidate?: boolean;
@@ -18,41 +17,17 @@ interface SeventhFormProps {
 export default function SeventhForm({
   shouldValidate = false,
 }: SeventhFormProps) {
-  const { t } = useTranslation();
-  const { formData, updateSeventhFormGrade } = useFormData();
-
-  const conductOptions = Object.values(Conduct);
-  const academicPerformanceOptions = Object.values(AcademicPerformance);
-
-  // Convert translation keys to display options
-  const getTranslatedOptions = (options: string[]) => {
-    return options.map((translationKey) => ({
-      key: translationKey,
-      label: t(translationKey),
-    }));
-  };
-
-  // Get selected value as option object
-  const getSelectedValue = (translationKey: string | null) => {
-    if (!translationKey) return null;
-    return {
-      key: translationKey,
-      label: t(translationKey),
-    };
-  };
-
-  const translatedConductOptions = getTranslatedOptions(conductOptions);
-  const translatedAcademicPerformanceOptions = getTranslatedOptions(
-    academicPerformanceOptions,
-  );
-
-  const grades = [
-    { key: "10" as GradeKey, label: t("seventhForm.subTitle10") },
-    { key: "11" as GradeKey, label: t("seventhForm.subTitle11") },
-    { key: "12" as GradeKey, label: t("seventhForm.subTitle12") },
-  ];
-
-  const { grades: values } = formData.seventhForm;
+  const {
+    grades,
+    translatedConductOptions,
+    translatedAcademicPerformanceOptions,
+    handleConductChange,
+    handleAcademicPerformanceChange,
+    getValidationState,
+    getGradeValues,
+    placeholders,
+    errors,
+  } = useSeventhForm({ shouldValidate });
 
   return (
     <Box
@@ -65,16 +40,8 @@ export default function SeventhForm({
       }}
     >
       {grades.map((grade) => {
-        const conductEmpty = shouldValidate && values[grade.key].conduct === "";
-        const performanceEmpty =
-          shouldValidate && values[grade.key].academicPerformance === "";
-
-        const selectedConductValue = getSelectedValue(
-          values[grade.key].conduct || null,
-        );
-        const selectedPerformanceValue = getSelectedValue(
-          values[grade.key].academicPerformance || null,
-        );
+        const validation = getValidationState(grade.key);
+        const gradeValues = getGradeValues(grade.key);
 
         return (
           <Box
@@ -101,37 +68,38 @@ export default function SeventhForm({
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Autocomplete
                   options={translatedConductOptions}
-                  value={selectedConductValue}
+                  value={gradeValues.conduct}
                   onChange={(_, newValue) => {
-                    const translationKey = newValue?.key ?? "";
-                    updateSeventhFormGrade(
-                      grade.key,
-                      "conduct",
-                      translationKey,
-                    );
+                    handleConductChange(grade.key, newValue);
                   }}
-                  getOptionLabel={(option) => option.label}
+                  getOptionLabel={(option: TranslatedOption) => option.label}
                   isOptionEqualToValue={(option, value) =>
                     option.key === value.key
                   }
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder={t("seventhForm.practiceResults")}
-                      error={conductEmpty}
+                      placeholder={placeholders.practiceResults}
+                      error={validation.conduct}
                       sx={{
                         width: 230,
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "17px",
                           height: "40px",
                           "& fieldset": {
-                            borderColor: conductEmpty ? "#d32f2f" : "#A657AE",
+                            borderColor: validation.conduct
+                              ? "#d32f2f"
+                              : "#A657AE",
                           },
                           "&:hover fieldset": {
-                            borderColor: conductEmpty ? "#d32f2f" : "#8B4A8F",
+                            borderColor: validation.conduct
+                              ? "#d32f2f"
+                              : "#8B4A8F",
                           },
                           "&.Mui-focused fieldset": {
-                            borderColor: conductEmpty ? "#d32f2f" : "#A657AE",
+                            borderColor: validation.conduct
+                              ? "#d32f2f"
+                              : "#A657AE",
                           },
                         },
                         "& input": { color: "#A657AE" },
@@ -139,12 +107,12 @@ export default function SeventhForm({
                     />
                   )}
                 />
-                {conductEmpty && (
+                {validation.conduct && (
                   <FormHelperText
                     error
                     sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
                   >
-                    {t("seventhForm.errorWarning2")}
+                    {errors.conductError}
                   </FormHelperText>
                 )}
               </Box>
@@ -153,41 +121,36 @@ export default function SeventhForm({
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Autocomplete
                   options={translatedAcademicPerformanceOptions}
-                  value={selectedPerformanceValue}
+                  value={gradeValues.academicPerformance}
                   onChange={(_, newValue) => {
-                    const translationKey = newValue?.key ?? "";
-                    updateSeventhFormGrade(
-                      grade.key,
-                      "academicPerformance",
-                      translationKey,
-                    );
+                    handleAcademicPerformanceChange(grade.key, newValue);
                   }}
-                  getOptionLabel={(option) => option.label}
+                  getOptionLabel={(option: TranslatedOption) => option.label}
                   isOptionEqualToValue={(option, value) =>
                     option.key === value.key
                   }
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      placeholder={t("seventhForm.academicScore")}
-                      error={performanceEmpty}
+                      placeholder={placeholders.academicScore}
+                      error={validation.academicPerformance}
                       sx={{
                         width: 240,
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "17px",
                           height: "40px",
                           "& fieldset": {
-                            borderColor: performanceEmpty
+                            borderColor: validation.academicPerformance
                               ? "#d32f2f"
                               : "#A657AE",
                           },
                           "&:hover fieldset": {
-                            borderColor: performanceEmpty
+                            borderColor: validation.academicPerformance
                               ? "#d32f2f"
                               : "#8B4A8F",
                           },
                           "&.Mui-focused fieldset": {
-                            borderColor: performanceEmpty
+                            borderColor: validation.academicPerformance
                               ? "#d32f2f"
                               : "#A657AE",
                           },
@@ -197,12 +160,12 @@ export default function SeventhForm({
                     />
                   )}
                 />
-                {performanceEmpty && (
+                {validation.academicPerformance && (
                   <FormHelperText
                     error
                     sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
                   >
-                    {t("seventhForm.errorWarning1")}
+                    {errors.performanceError}
                   </FormHelperText>
                 )}
               </Box>
