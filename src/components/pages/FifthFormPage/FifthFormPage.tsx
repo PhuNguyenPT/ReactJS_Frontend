@@ -1,6 +1,7 @@
 import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
 import { useTranslation } from "react-i18next";
-import FifthForm, { type FifthFormRef } from "./FifthForm";
+import FifthForm from "./FifthForm";
+import { type FifthFormRef } from "../../../hooks/formPages/useFifthForm";
 import { Box, IconButton } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
