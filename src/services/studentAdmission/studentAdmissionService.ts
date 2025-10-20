@@ -27,7 +27,8 @@ export interface AdmissionParams {
   province?: string[];
   studyProgram?: string[];
   subjectCombination?: string[];
-  tuitionFee?: number[];
+  tuitionFeeMin?: number;
+  tuitionFeeMax?: number;
   uniCode?: string[];
   uniName?: string[];
   uniType?: string[];
@@ -150,10 +151,12 @@ function buildQueryString(params: AdmissionParams): string {
     });
   }
 
-  if (params.tuitionFee && params.tuitionFee.length > 0) {
-    params.tuitionFee.forEach((fee) => {
-      queryParams.append("tuitionFee", fee.toString());
-    });
+  // Handle tuition fee min/max
+  if (params.tuitionFeeMin !== undefined) {
+    queryParams.append("tuitionFeeMin", params.tuitionFeeMin.toString());
+  }
+  if (params.tuitionFeeMax !== undefined) {
+    queryParams.append("tuitionFeeMax", params.tuitionFeeMax.toString());
   }
 
   const queryString = queryParams.toString();
@@ -284,6 +287,11 @@ export async function getFilteredAdmissionData(
 
     const initialQueryString = buildQueryString(initialParams);
 
+    console.log(
+      "[AdmissionService] Initial filtered query:",
+      `${endpoint}${initialQueryString}`,
+    );
+
     const initialResponse = await apiFetch<PaginatedAdmissionResponse>(
       `${endpoint}${initialQueryString}`,
       {
@@ -390,23 +398,17 @@ export function convertFilterCriteriaToParams(filters: {
     params.subjectCombination = filters.subjectCombination;
   }
 
-  // Handle tuition fee range
-  // Note: The API expects exact tuition fee values, not a range
-  // You might need to adjust this based on your API's actual behavior
+  // Handle tuition fee range with separate min/max parameters
   if (filters.tuitionFeeRange) {
-    // This is a simplified approach - you may need to adjust based on your API
-    // For now, we'll pass the range values if they exist
-    const fees: number[] = [];
     if (filters.tuitionFeeRange.min !== undefined) {
-      fees.push(filters.tuitionFeeRange.min);
+      params.tuitionFeeMin = filters.tuitionFeeRange.min;
     }
     if (filters.tuitionFeeRange.max !== undefined) {
-      fees.push(filters.tuitionFeeRange.max);
-    }
-    if (fees.length > 0) {
-      params.tuitionFee = fees;
+      params.tuitionFeeMax = filters.tuitionFeeRange.max;
     }
   }
+
+  console.log("[AdmissionService] Converted filter params:", params);
 
   return params;
 }
