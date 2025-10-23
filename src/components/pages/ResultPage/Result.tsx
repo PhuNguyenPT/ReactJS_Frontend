@@ -13,15 +13,14 @@ import {
   Pagination,
   Stack,
 } from "@mui/material";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import useAuth from "../../../hooks/auth/useAuth";
 import {
-  getInitialAdmissionData,
-  getFilteredAdmissionData,
+  getPaginatedAdmissionData,
   convertFilterCriteriaToParams,
 } from "../../../services/studentAdmission/studentAdmissionService";
 import { transformAdmissionData } from "../../../utils/transformAdmissionData";
@@ -29,23 +28,26 @@ import ResultFilter, { type FilterCriteria } from "./ResultFilter";
 import type {
   AdmissionProgram,
   University,
+  AdmissionApiResponse,
 } from "../../../type/interface/admissionTypes";
 import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 20; // Changed to match API default
 
 function extractPrograms(data: unknown): AdmissionProgram[] {
-  if (Array.isArray(data)) {
-    return data as AdmissionProgram[];
-  }
-
+  // Check if data is AdmissionApiResponse (has content property)
   if (
     data &&
     typeof data === "object" &&
     "content" in data &&
-    Array.isArray((data as { content: unknown }).content)
+    Array.isArray((data as AdmissionApiResponse).content)
   ) {
-    return (data as { content: AdmissionProgram[] }).content;
+    return (data as AdmissionApiResponse).content;
+  }
+
+  // Check if data is already an array of programs
+  if (Array.isArray(data)) {
+    return data as AdmissionProgram[];
   }
 
   return [];
@@ -65,21 +67,75 @@ export default function FinalResult() {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [universities, setUniversities] = useState<University[]>([]);
-  const [allUniversities, setAllUniversities] = useState<University[]>([]);
+  const [filteredUniversities, setFilteredUniversities] = useState<
+    University[]
+  >([]);
   const [loading, setLoading] = useState(true);
-  const [filterLoading, setFilterLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [, setActiveFilters] = useState<FilterCriteria>({});
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+  const [activeFilters, setActiveFilters] = useState<FilterCriteria>({});
   const [filterFields, setFilterFields] = useState<FilterFieldsResponse | null>(
     null,
   );
   const [studentId, setStudentId] = useState<string | null>(null);
   const [isFiltered, setIsFiltered] = useState(false);
 
+  // Function to fetch data for a specific page
+  const fetchPageData = useCallback(
+    async (
+      page: number,
+      filters?: Partial<ReturnType<typeof convertFilterCriteriaToParams>>,
+    ) => {
+      if (!studentId) {
+        console.error("[FinalResult] No student ID available");
+        return;
+      }
+
+      try {
+        setPageLoading(true);
+        setError(null);
+
+        const response = await getPaginatedAdmissionData(
+          studentId,
+          isAuthenticated,
+          page,
+          ITEMS_PER_PAGE,
+          filters,
+        );
+
+        if (response.success && response.data) {
+          const programs = extractPrograms(response.data);
+          const transformedData = transformAdmissionData(programs);
+
+          setUniversities(transformedData);
+          setTotalPages(response.totalPages ?? 1);
+          setTotalElements(response.totalElements ?? 0);
+          setCurrentPage(page);
+        } else {
+          throw new Error(
+            response.message ?? t("finalResult.errors.cannotLoadData"),
+          );
+        }
+      } catch (err) {
+        console.error("[FinalResult] Error fetching page data:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : t("finalResult.errors.cannotLoadDataRetry"),
+        );
+      } finally {
+        setPageLoading(false);
+      }
+    },
+    [studentId, isAuthenticated, t],
+  );
+
   // Initial data loading
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const initializeData = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -101,46 +157,10 @@ export default function FinalResult() {
         }
         setStudentId(id);
 
-        // Check if we have data in navigation state
-        if (state?.admissionData) {
-          console.log(
-            "[FinalResult] Using admission data from navigation state",
-          );
-          const programs = extractPrograms(state.admissionData);
-
-          if (programs.length === 0) {
-            throw new Error(t("finalResult.errors.noDataFound"));
-          }
-
-          const transformedData = transformAdmissionData(programs);
-          setUniversities(transformedData);
-          setAllUniversities(transformedData);
-          setLoading(false);
-          return;
-        }
-
-        console.log("[FinalResult] Fetching all admission data from API");
-
-        // Fetch all data using the new service method
-        const response = await getInitialAdmissionData(id, isAuthenticated);
-
-        if (response.success && response.data) {
-          const programs = extractPrograms(response.data);
-
-          if (programs.length === 0) {
-            throw new Error(t("finalResult.errors.noDataFound"));
-          }
-
-          const transformedData = transformAdmissionData(programs);
-          setUniversities(transformedData);
-          setAllUniversities(transformedData); // Store all data for client-side filtering
-        } else {
-          throw new Error(
-            response.message ?? t("finalResult.errors.cannotLoadData"),
-          );
-        }
+        // Fetch first page of data
+        await fetchPageData(1);
       } catch (err) {
-        console.error("[FinalResult] Error fetching initial data:", err);
+        console.error("[FinalResult] Error initializing:", err);
         setError(
           err instanceof Error
             ? err.message
@@ -151,10 +171,28 @@ export default function FinalResult() {
       }
     };
 
-    void fetchInitialData();
-  }, [location.state, isAuthenticated, t]);
+    void initializeData();
+  }, [fetchPageData, location.state, t]); // Remove fetchPageData from dependencies to avoid loop
 
-  // Handle filter application with API call
+  // Handle page change
+  const handlePageChange = useCallback(
+    (_event: React.ChangeEvent<unknown>, page: number) => {
+      console.log(`[FinalResult] Navigating to page ${String(page)}`);
+
+      // Convert active filters to API params if any filters are applied
+      const apiParams = isFiltered
+        ? convertFilterCriteriaToParams(activeFilters)
+        : undefined;
+
+      void fetchPageData(page, apiParams);
+
+      // Scroll to top when changing pages
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [fetchPageData, isFiltered, activeFilters],
+  );
+
+  // Handle filter application
   const handleFilterApply = useCallback(
     (filters: FilterCriteria) => {
       console.log("[FinalResult] Applying filters:", filters);
@@ -170,130 +208,62 @@ export default function FinalResult() {
       });
 
       if (!hasActiveFilters) {
-        // No filters selected, show all data
-        console.log("[FinalResult] No filters selected, showing all data");
-        setUniversities(allUniversities);
+        // No filters selected, fetch unfiltered data
+        console.log("[FinalResult] No filters selected, fetching all data");
         setActiveFilters({});
         setIsFiltered(false);
-        setCurrentPage(1);
+        void fetchPageData(1); // Reset to first page
         return;
       }
 
-      if (!studentId) {
-        console.error("[FinalResult] No student ID available for filtering");
-        return;
-      }
+      // Convert UI filter criteria to API parameters
+      const apiParams = convertFilterCriteriaToParams(filters);
 
-      // Execute async logic without making the callback itself async
-      const applyFiltersAsync = async () => {
-        try {
-          setFilterLoading(true);
-          setError(null);
+      console.log(
+        "[FinalResult] Fetching filtered data with params:",
+        apiParams,
+      );
 
-          // Convert UI filter criteria to API parameters
-          const apiParams = convertFilterCriteriaToParams(filters);
-
-          console.log(
-            "[FinalResult] Fetching filtered data with params:",
-            apiParams,
-          );
-
-          // Fetch filtered data from API
-          const response = await getFilteredAdmissionData(
-            studentId,
-            isAuthenticated,
-            apiParams,
-          );
-
-          if (response.success && response.data) {
-            const programs = extractPrograms(response.data);
-
-            if (programs.length === 0) {
-              // No results for these filters
-              setUniversities([]);
-              setActiveFilters(filters);
-              setIsFiltered(true);
-              setCurrentPage(1);
-              return;
-            }
-
-            const transformedData = transformAdmissionData(programs);
-            setUniversities(transformedData);
-            setActiveFilters(filters);
-            setIsFiltered(true);
-            setCurrentPage(1);
-          } else {
-            throw new Error(
-              response.message ?? t("finalResult.errors.filterFailed"),
-            );
-          }
-        } catch (err) {
-          console.error("[FinalResult] Error applying filters:", err);
-          setError(
-            err instanceof Error
-              ? err.message
-              : t("finalResult.errors.filterFailed"),
-          );
-        } finally {
-          setFilterLoading(false);
-        }
-      };
-
-      // Call the async function but don't await it
-      void applyFiltersAsync();
+      setActiveFilters(filters);
+      setIsFiltered(true);
+      void fetchPageData(1, apiParams); // Always start from page 1 when applying filters
     },
-    [studentId, isAuthenticated, allUniversities, t],
+    [fetchPageData],
   );
 
   // Handle filter clear
   const handleFilterClear = useCallback(() => {
     console.log("[FinalResult] Clearing filters");
     setActiveFilters({});
-    setUniversities(allUniversities);
     setIsFiltered(false);
-    setCurrentPage(1);
-  }, [allUniversities]);
+    void fetchPageData(1); // Reset to first page without filters
+  }, [fetchPageData]);
 
-  // Client-side search filtering
-  const filteredUniversities = useMemo(() => {
+  // Client-side search filtering (applied to current page data)
+  useEffect(() => {
     if (!searchQuery.trim()) {
-      return universities;
+      setFilteredUniversities(universities);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = universities.filter(
+        (uni) =>
+          uni.name.toLowerCase().includes(query) ||
+          uni.shortName.toLowerCase().includes(query) ||
+          uni.location.toLowerCase().includes(query) ||
+          uni.courses.some((course) =>
+            course.name.toLowerCase().includes(query),
+          ),
+      );
+      setFilteredUniversities(filtered);
     }
-
-    const query = searchQuery.toLowerCase();
-    return universities.filter(
-      (uni) =>
-        uni.name.toLowerCase().includes(query) ||
-        uni.shortName.toLowerCase().includes(query) ||
-        uni.location.toLowerCase().includes(query) ||
-        uni.courses.some((course) => course.name.toLowerCase().includes(query)),
-    );
   }, [searchQuery, universities]);
-
-  // Pagination
-  const paginatedUniversities = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredUniversities.slice(startIndex, endIndex);
-  }, [filteredUniversities, currentPage]);
-
-  const totalPages = Math.ceil(filteredUniversities.length / ITEMS_PER_PAGE);
 
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
-      setCurrentPage(1);
     },
     [],
   );
-
-  const handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    page: number,
-  ) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   if (loading) {
     return (
@@ -315,7 +285,7 @@ export default function FinalResult() {
     );
   }
 
-  if (error) {
+  if (error && !pageLoading) {
     return (
       <Box sx={{ maxWidth: "800px", margin: "0 auto", px: 2 }}>
         <Alert severity="error" sx={{ borderRadius: "12px" }}>
@@ -348,8 +318,8 @@ export default function FinalResult() {
         />
       )}
 
-      {/* Loading overlay for filter operations */}
-      {filterLoading && (
+      {/* Loading overlay for page/filter operations */}
+      {pageLoading && (
         <Box
           sx={{
             position: "fixed",
@@ -376,7 +346,11 @@ export default function FinalResult() {
             }}
           >
             <CircularProgress sx={{ color: "#A657AE" }} />
-            <Typography>{t("finalResult.applyingFilters")}</Typography>
+            <Typography>
+              {isFiltered
+                ? t("finalResult.applyingFilters")
+                : t("finalResult.loadingPage", { page: currentPage })}
+            </Typography>
           </Box>
         </Box>
       )}
@@ -423,7 +397,7 @@ export default function FinalResult() {
       </Box>
 
       {/* Results count and filter status */}
-      {universities.length > 0 && (
+      {!pageLoading && totalElements > 0 && (
         <Box sx={{ mb: 2 }}>
           <Typography
             sx={{
@@ -433,8 +407,12 @@ export default function FinalResult() {
             }}
           >
             <Trans
-              i18nKey="finalResult.foundResults"
-              values={{ count: filteredUniversities.length }}
+              i18nKey="finalResult.totalResults"
+              values={{
+                total: totalElements,
+                showing: filteredUniversities.length,
+                page: currentPage,
+              }}
               components={{ strong: <strong /> }}
             />
           </Typography>
@@ -450,12 +428,24 @@ export default function FinalResult() {
               {t("finalResult.filteredResults")}
             </Typography>
           )}
+          {searchQuery && (
+            <Typography
+              sx={{
+                color: "white",
+                fontSize: "0.9rem",
+                textAlign: "center",
+                mt: 1,
+              }}
+            >
+              {t("finalResult.searchingInCurrentPage", { query: searchQuery })}
+            </Typography>
+          )}
         </Box>
       )}
 
       {/* University Results */}
       <Box>
-        {filteredUniversities.length === 0 ? (
+        {!pageLoading && filteredUniversities.length === 0 ? (
           <Box
             sx={{
               textAlign: "center",
@@ -466,7 +456,10 @@ export default function FinalResult() {
           >
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
               {searchQuery
-                ? t("finalResult.noResultsForKeyword", { keyword: searchQuery })
+                ? t("finalResult.noResultsForKeywordInPage", {
+                    keyword: searchQuery,
+                    page: currentPage,
+                  })
                 : isFiltered
                   ? t("finalResult.noResultsForFilters")
                   : t("finalResult.noAdmissionData")}
@@ -482,10 +475,21 @@ export default function FinalResult() {
                 {t("finalResult.tryDifferentFilters")}
               </Typography>
             )}
+            {searchQuery && (
+              <Typography
+                sx={{
+                  color: "#666",
+                  mt: 2,
+                  fontSize: "0.95rem",
+                }}
+              >
+                {t("finalResult.tryDifferentPageOrClearSearch")}
+              </Typography>
+            )}
           </Box>
         ) : (
           <>
-            {paginatedUniversities.map((university) => (
+            {filteredUniversities.map((university) => (
               <Accordion
                 key={university.id}
                 sx={{
@@ -727,6 +731,7 @@ export default function FinalResult() {
                   onChange={handlePageChange}
                   color="primary"
                   size="large"
+                  disabled={pageLoading}
                   sx={{
                     "& .MuiPaginationItem-root": {
                       color: "white",
@@ -742,6 +747,9 @@ export default function FinalResult() {
                       "&:hover": {
                         backgroundColor: "rgba(166, 87, 174, 0.2)",
                       },
+                      "&.Mui-disabled": {
+                        opacity: 0.5,
+                      },
                     },
                   }}
                 />
@@ -749,6 +757,7 @@ export default function FinalResult() {
                   {t("finalResult.pageInfo", {
                     current: currentPage,
                     total: totalPages,
+                    totalItems: totalElements,
                   })}
                 </Typography>
               </Stack>
