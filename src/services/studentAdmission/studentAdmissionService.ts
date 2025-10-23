@@ -299,6 +299,41 @@ export function convertFilterCriteriaToParams(filters: {
 }
 
 /**
+ * Get admission prediction for guest users (no authentication required)
+ * @param studentId - The student ID from profile
+ * @returns Promise with admission data
+ */
+export async function getGuestAdmission(
+  studentId: string,
+): Promise<AdmissionResponse> {
+  return getInitialAdmissionData(studentId, false);
+}
+
+/**
+ * Get admission prediction for authenticated users (requires bearer token)
+ * @param studentId - The student ID from profile
+ * @returns Promise with admission data
+ */
+export async function getAuthenticatedAdmission(
+  studentId: string,
+): Promise<AdmissionResponse> {
+  return getInitialAdmissionData(studentId, true);
+}
+
+/**
+ * Smart admission function that chooses the right endpoint based on authentication
+ * @param studentId - The student ID from profile
+ * @param isAuthenticated - Whether the user is authenticated
+ * @returns Promise with admission data
+ */
+export async function getAdmissionForStudent(
+  studentId: string,
+  isAuthenticated: boolean,
+): Promise<AdmissionResponse> {
+  return getInitialAdmissionData(studentId, isAuthenticated);
+}
+
+/**
  * Helper function to get student ID from user object or storage
  * This is a convenience wrapper around extractStudentId
  * @param user - User object from auth context
