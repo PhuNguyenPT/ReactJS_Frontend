@@ -1,6 +1,8 @@
 import apiFetch from "../../utils/apiFetch";
-import type { StudentResponse } from "../../type/interface/profileTypes";
-import { hasUserId } from "../../type/interface/profileTypes";
+import {
+  hasUserId,
+  type StudentResponse,
+} from "../../type/interface/profileTypes";
 import type {
   AdmissionApiResponse,
   AdmissionProgram,
@@ -11,6 +13,9 @@ export interface AdmissionResponse {
   success: boolean;
   message?: string;
   data?: AdmissionApiResponse | AdmissionProgram[];
+  totalPages?: number;
+  totalElements?: number;
+  currentPage?: number;
 }
 
 // Parameters for admission API
@@ -46,6 +51,12 @@ export interface PaginatedAdmissionResponse {
   last: boolean;
   numberOfElements: number;
   empty: boolean;
+  sort: {
+    orders: {
+      direction: string;
+      field: string;
+    }[];
+  };
   pageable: {
     pageNumber: number;
     pageSize: number;
@@ -164,32 +175,42 @@ function buildQueryString(params: AdmissionParams): string {
 }
 
 /**
- * Get initial admission data (fetch all results)
+ * Get paginated admission data
  * @param studentId - The student ID
  * @param isAuthenticated - Whether the user is authenticated
- * @returns Promise with all admission data
+ * @param page - Page number (1-indexed)
+ * @param size - Items per page
+ * @param filterParams - Optional filter parameters
+ * @returns Promise with paginated admission data
  */
-export async function getInitialAdmissionData(
+export async function getPaginatedAdmissionData(
   studentId: string,
   isAuthenticated: boolean,
+  page = 1,
+  size = 20,
+  filterParams?: Partial<AdmissionParams>,
 ): Promise<AdmissionResponse> {
   try {
-    console.log("[AdmissionService] Fetching initial data to get total count");
+    console.log(
+      `[AdmissionService] Fetching page ${String(page)} with size ${String(size)}`,
+    );
 
-    // First call to get total elements
     const endpoint = isAuthenticated
       ? `/admission/${studentId}`
       : `/admission/guest/${studentId}`;
 
-    const initialParams: AdmissionParams = {
-      page: 1,
-      size: 10,
-      sort: "createdAt,DESC",
+    const params: AdmissionParams = {
+      ...filterParams,
+      page: page,
+      size: size,
+      sort: filterParams?.sort ?? "createdAt,DESC",
     };
 
-    const queryString = buildQueryString(initialParams);
+    const queryString = buildQueryString(params);
 
-    const initialResponse = await apiFetch<PaginatedAdmissionResponse>(
+    console.log("[AdmissionService] Query:", `${endpoint}${queryString}`);
+
+    const response = await apiFetch<PaginatedAdmissionResponse>(
       `${endpoint}${queryString}`,
       {
         method: "GET",
@@ -198,51 +219,19 @@ export async function getInitialAdmissionData(
     );
 
     console.log(
-      "[AdmissionService] Initial response - Total elements:",
-      initialResponse.totalElements,
-    );
-
-    // If total elements is less than or equal to initial size, return as is
-    if (initialResponse.totalElements <= 10) {
-      return {
-        success: true,
-        message: "Admission data retrieved successfully",
-        data: initialResponse.content,
-      };
-    }
-
-    // Fetch all data using totalElements as size
-    const allDataParams: AdmissionParams = {
-      page: 1,
-      size: initialResponse.totalElements,
-      sort: "createdAt,DESC",
-    };
-
-    const allDataQueryString = buildQueryString(allDataParams);
-
-    const allDataResponse = await apiFetch<PaginatedAdmissionResponse>(
-      `${endpoint}${allDataQueryString}`,
-      {
-        method: "GET",
-        requiresAuth: isAuthenticated,
-      },
-    );
-
-    console.log(
-      "[AdmissionService] Retrieved all data - Count:",
-      allDataResponse.content.length,
+      `[AdmissionService] Retrieved page ${String(response.number + 1)} of ${String(response.totalPages)}`,
     );
 
     return {
       success: true,
-      message: "All admission data retrieved successfully",
-      data: allDataResponse.content,
+      message: "Admission data retrieved successfully",
+      data: response,
+      totalPages: response.totalPages,
+      totalElements: response.totalElements,
+      currentPage: response.number + 1, // API returns 0-indexed, we use 1-indexed
     };
   } catch (error) {
-    console.error(
-      "[AdmissionService] Error fetching initial admission data:",
-      error,
-    );
+    console.error("[AdmissionService] Error fetching admission data:", error);
 
     return {
       success: false,
@@ -250,110 +239,6 @@ export async function getInitialAdmissionData(
         error instanceof Error
           ? error.message
           : "Failed to fetch admission data",
-      data: undefined,
-    };
-  }
-}
-
-/**
- * Get filtered admission data
- * @param studentId - The student ID
- * @param isAuthenticated - Whether the user is authenticated
- * @param filterParams - Filter parameters from the filter form
- * @returns Promise with filtered admission data
- */
-export async function getFilteredAdmissionData(
-  studentId: string,
-  isAuthenticated: boolean,
-  filterParams: Partial<AdmissionParams>,
-): Promise<AdmissionResponse> {
-  try {
-    console.log(
-      "[AdmissionService] Fetching filtered data with params:",
-      filterParams,
-    );
-
-    const endpoint = isAuthenticated
-      ? `/admission/${studentId}`
-      : `/admission/guest/${studentId}`;
-
-    // First get total count with filters
-    const initialParams: AdmissionParams = {
-      ...filterParams,
-      page: 1,
-      size: 10,
-      sort: filterParams.sort ?? "createdAt,DESC",
-    };
-
-    const initialQueryString = buildQueryString(initialParams);
-
-    console.log(
-      "[AdmissionService] Initial filtered query:",
-      `${endpoint}${initialQueryString}`,
-    );
-
-    const initialResponse = await apiFetch<PaginatedAdmissionResponse>(
-      `${endpoint}${initialQueryString}`,
-      {
-        method: "GET",
-        requiresAuth: isAuthenticated,
-      },
-    );
-
-    console.log(
-      "[AdmissionService] Filtered response - Total elements:",
-      initialResponse.totalElements,
-    );
-
-    // If total elements is less than or equal to initial size, return as is
-    if (initialResponse.totalElements <= 10) {
-      return {
-        success: true,
-        message: "Filtered data retrieved successfully",
-        data: initialResponse.content,
-      };
-    }
-
-    // Fetch all filtered data
-    const allFilteredParams: AdmissionParams = {
-      ...filterParams,
-      page: 1,
-      size: initialResponse.totalElements,
-      sort: filterParams.sort ?? "createdAt,DESC",
-    };
-
-    const allFilteredQueryString = buildQueryString(allFilteredParams);
-
-    const allFilteredResponse = await apiFetch<PaginatedAdmissionResponse>(
-      `${endpoint}${allFilteredQueryString}`,
-      {
-        method: "GET",
-        requiresAuth: isAuthenticated,
-      },
-    );
-
-    console.log(
-      "[AdmissionService] Retrieved all filtered data - Count:",
-      allFilteredResponse.content.length,
-    );
-
-    return {
-      success: true,
-      message: "All filtered data retrieved successfully",
-      data: allFilteredResponse.content,
-    };
-  } catch (error) {
-    console.error(
-      "[AdmissionService] Error fetching filtered admission data:",
-      error,
-    );
-
-    return {
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch filtered admission data",
       data: undefined,
     };
   }
@@ -414,41 +299,6 @@ export function convertFilterCriteriaToParams(filters: {
 }
 
 /**
- * Get admission prediction for guest users (no authentication required)
- * @param studentId - The student ID from profile
- * @returns Promise with admission data
- */
-export async function getGuestAdmission(
-  studentId: string,
-): Promise<AdmissionResponse> {
-  return getInitialAdmissionData(studentId, false);
-}
-
-/**
- * Get admission prediction for authenticated users (requires bearer token)
- * @param studentId - The student ID from profile
- * @returns Promise with admission data
- */
-export async function getAuthenticatedAdmission(
-  studentId: string,
-): Promise<AdmissionResponse> {
-  return getInitialAdmissionData(studentId, true);
-}
-
-/**
- * Smart admission function that chooses the right endpoint based on authentication
- * @param studentId - The student ID from profile
- * @param isAuthenticated - Whether the user is authenticated
- * @returns Promise with admission data
- */
-export async function getAdmissionForStudent(
-  studentId: string,
-  isAuthenticated: boolean,
-): Promise<AdmissionResponse> {
-  return getInitialAdmissionData(studentId, isAuthenticated);
-}
-
-/**
  * Helper function to get student ID from user object or storage
  * This is a convenience wrapper around extractStudentId
  * @param user - User object from auth context
@@ -466,3 +316,25 @@ export function getStudentIdOrThrow(user: unknown): string {
 
 // Export the helper for use in components
 export { extractStudentId };
+
+// Backward compatibility exports (deprecated - use getPaginatedAdmissionData instead)
+export async function getInitialAdmissionData(
+  studentId: string,
+  isAuthenticated: boolean,
+): Promise<AdmissionResponse> {
+  return getPaginatedAdmissionData(studentId, isAuthenticated, 1, 20);
+}
+
+export async function getFilteredAdmissionData(
+  studentId: string,
+  isAuthenticated: boolean,
+  filterParams: Partial<AdmissionParams>,
+): Promise<AdmissionResponse> {
+  return getPaginatedAdmissionData(
+    studentId,
+    isAuthenticated,
+    1,
+    20,
+    filterParams,
+  );
+}
