@@ -135,8 +135,9 @@
     "score": "Score",
     "chooseExam": "Choose exam",
     "firstTypo": "Enter your ",
-    "secondTypo": "exam scores of yours. (if any)",
-    "vsatMinimumError": "V-Sat must contains at least 3 subjects."
+    "secondTypo": "exam scores of yours. (If any)",
+    "vsatMinimumError": "V-Sat must contains at least 3 subjects.",
+    "maxEntriesReached": "Max entries reached."
   },
   "subjects": {
     "bieu_dien_nghe_thuat": "Performing Arts",
@@ -214,10 +215,11 @@
     "firstField": "Subject",
     "secondField": "Certificate Type",
     "thirdField": "Language",
-    "award": "Award",
+    "rank": "Rank",
     "score": "Score",
     "scoreRequiredError": "Please enter your scores",
-    "awardRequiredError": "Please enter your awards"
+    "awardRequiredError": "Please enter your awards",
+    "maxEntriesReached": "Max entries reached."
   },
   "ranks": {
     "first": "First Place",
@@ -308,8 +310,9 @@
     "tryDifferentFilters": "Try adjusting your filters to see more results",
     "applyingFilters": "Applying filters...",
     "coursesCount": "Programs ({{count}} programs):",
-    "courseCode": "Program code",
+    "courseCode": "Major code",
     "subjectCombination": "Subject combination",
+    "studyProgram": "Study program",
     "applicationMethod": "Application method:",
     "tuitionFee": "Tuition fee:",
     "website": "Website:",

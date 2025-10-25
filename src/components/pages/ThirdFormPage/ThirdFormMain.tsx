@@ -64,12 +64,12 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
 
   const subjectFieldStyle = {
     ...pillStyle,
-    width: "190px",
+    width: "200px",
   };
 
   const scoreFieldStyle = {
     ...pillStyle,
-    width: "130px",
+    width: "150px",
     "& input[type=number]": {
       MozAppearance: "textfield",
     },
@@ -180,7 +180,7 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         height: "40px",
-                        width: "190px",
+                        width: "200px",
                         borderRadius: "17px",
                         fontSize: "0.9rem",
                         "& fieldset": {
