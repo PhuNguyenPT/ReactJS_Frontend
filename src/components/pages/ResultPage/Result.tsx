@@ -17,7 +17,7 @@ import { useState, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation } from "react-router-dom";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import useAuth from "../../../hooks/auth/useAuth";
 import {
   getPaginatedAdmissionData,
@@ -32,7 +32,7 @@ import type {
 } from "../../../type/interface/admissionTypes";
 import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
 
-const ITEMS_PER_PAGE = 20; // Changed to match API default
+const ITEMS_PER_PAGE = import.meta.env.VITE_PAGINATION_DEFAULT_SIZE; // Changed to match API default
 
 function extractPrograms(data: unknown): AdmissionProgram[] {
   // Check if data is AdmissionApiResponse (has content property)
@@ -101,7 +101,7 @@ export default function FinalResult() {
         const response = await getPaginatedAdmissionData(
           studentId,
           isAuthenticated,
-          page,
+          page.toString(),
           ITEMS_PER_PAGE,
           filters,
         );
@@ -405,17 +405,7 @@ export default function FinalResult() {
               fontSize: "1rem",
               textAlign: "center",
             }}
-          >
-            <Trans
-              i18nKey="finalResult.totalResults"
-              values={{
-                total: totalElements,
-                showing: filteredUniversities.length,
-                page: currentPage,
-              }}
-              components={{ strong: <strong /> }}
-            />
-          </Typography>
+          ></Typography>
           {isFiltered && (
             <Typography
               sx={{
@@ -607,6 +597,17 @@ export default function FinalResult() {
                             >
                               {t("finalResult.subjectCombination")}:{" "}
                               {course.subjectCombination}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                color: "#666",
+                                fontSize: "0.85rem",
+                                mt: 0.5,
+                                textAlign: "left",
+                              }}
+                            >
+                              {t("finalResult.studyProgram")}:{" "}
+                              {course.studyProgram}
                             </Typography>
                           </Box>
                           <Chip

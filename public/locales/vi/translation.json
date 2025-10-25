@@ -135,8 +135,9 @@
     "score": "Điểm",
     "chooseExam": "Chọn kỳ thi",
     "firstTypo": "Nhập vào điểm thi",
-    "secondTypo": "của bạn. (nếu có)",
-    "vsatMinimumError": "V-SAT phải có ít nhất 3 môn học."
+    "secondTypo": "của bạn. (Nếu có)",
+    "vsatMinimumError": "V-SAT phải có ít nhất 3 môn học.",
+    "maxEntriesReached": "Đã đạt số mục tối đa."
   },
   "subjects": {
     "bieu_dien_nghe_thuat": "Biểu diễn nghệ thuật",
@@ -214,10 +215,11 @@
     "firstField": "Môn thi",
     "secondField": "Loại chứng chỉ",
     "thirdField": "Ngoại ngữ",
-    "award": "Giải thưởng",
+    "rank": "Hạng giải",
     "score": "Điểm",
     "scoreRequiredError": "Vui lòng nhập điểm của bạn",
-    "awardRequiredError": "Vui lòng nhập giải thưởng của bạn"
+    "awardRequiredError": "Vui lòng nhập giải thưởng của bạn",
+    "maxEntriesReached": "Đã đạt số mục tối đa."
   },
   "ranks": {
     "first": "Hạng Nhất",
@@ -310,6 +312,7 @@
     "coursesCount": "Các ngành học ({{count}} ngành):",
     "courseCode": "Mã ngành",
     "subjectCombination": "Tổ hợp",
+    "studyProgram": "Chương trình đào tạo",
     "applicationMethod": "Phương thức xét tuyển:",
     "tuitionFee": "Học phí:",
     "website": "Website:",

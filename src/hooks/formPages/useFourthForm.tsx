@@ -27,6 +27,9 @@ interface Category {
   isExpanded: boolean;
 }
 
+// Maximum entries configuration for all categories
+const MAX_ENTRIES_PER_CATEGORY = 3;
+
 export const useFourthForm = () => {
   const { t } = useTranslation();
   const { formData, updateFourthForm } = useFormData();
@@ -96,7 +99,7 @@ export const useFourthForm = () => {
               ? t("fourthForm.secondField")
               : t("fourthForm.thirdField");
         const expectedSecondLabel =
-          index === 2 ? t("fourthForm.score") : t("fourthForm.award");
+          index === 0 ? t("fourthForm.rank") : t("fourthForm.score");
 
         return (
           category.name !== expectedName ||
@@ -118,7 +121,7 @@ export const useFourthForm = () => {
                 ? t("fourthForm.secondField")
                 : t("fourthForm.thirdField"),
           secondFieldLabel:
-            index === 2 ? t("fourthForm.score") : t("fourthForm.award"),
+            index === 0 ? t("fourthForm.rank") : t("fourthForm.score"),
         }),
       );
 
@@ -130,8 +133,52 @@ export const useFourthForm = () => {
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
+  // Check if can add more entries to a category
+  const canAddEntry = (categoryId: string): boolean => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    if (!category) return false;
+
+    return category.entries.length < MAX_ENTRIES_PER_CATEGORY;
+  };
+
+  // Get remaining slots for a category
+  const getRemainingSlots = (categoryId: string): number => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    if (!category) return 0;
+
+    return Math.max(0, MAX_ENTRIES_PER_CATEGORY - category.entries.length);
+  };
+
+  // Get button text with remaining slots information
+  const getAddButtonText = (categoryId: string): string => {
+    const remainingSlots = getRemainingSlots(categoryId);
+
+    if (remainingSlots === 0) {
+      return t("fourthForm.maxEntriesReached", {
+        max: MAX_ENTRIES_PER_CATEGORY,
+      });
+    }
+
+    return (
+      t("buttons.add") +
+      ` (${String(remainingSlots)}/${String(MAX_ENTRIES_PER_CATEGORY)})`
+    );
+  };
+
   // Add a new entry to a category
   const handleAddEntry = (categoryId: string) => {
+    // Check if we can add more entries
+    if (!canAddEntry(categoryId)) {
+      console.warn(
+        `Maximum entries reached for category ${categoryId}: ${String(MAX_ENTRIES_PER_CATEGORY)}`,
+      );
+      return;
+    }
+
     const updatedCategories = formData.fourthForm.categories.map((category) =>
       category.id === categoryId
         ? {
@@ -245,8 +292,16 @@ export const useFourthForm = () => {
   const getCategoryErrors = (category: Category): string[] => {
     const errors: string[] = [];
 
+    // Check if category has exceeded maximum entries (shouldn't happen with UI controls)
+    if (category.entries.length > MAX_ENTRIES_PER_CATEGORY) {
+      errors.push(
+        t("fourthForm.maxEntriesError", { max: MAX_ENTRIES_PER_CATEGORY }),
+      );
+    }
+
+    // Add individual entry errors
     category.entries.forEach((entry) => {
-      errors.push(...getEntryErrors(entry, category.categoryType)); // Added categoryType
+      errors.push(...getEntryErrors(entry, category.categoryType));
     });
 
     return errors;
@@ -279,12 +334,19 @@ export const useFourthForm = () => {
     getSecondFieldOptions,
     getSelectedValue,
     isSecondFieldTextInput,
+    canAddEntry,
+    getRemainingSlots,
+    getAddButtonText,
 
     // Validation functions
     validateForm,
     getEntryErrors,
+    getCategoryErrors,
 
     // Translation function
     t,
+
+    // Constants
+    maxEntries: MAX_ENTRIES_PER_CATEGORY,
   };
 };

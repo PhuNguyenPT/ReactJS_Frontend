@@ -20,8 +20,8 @@ export interface AdmissionResponse {
 
 // Parameters for admission API
 export interface AdmissionParams {
-  page?: number;
-  size?: number;
+  page?: string;
+  size?: string;
   sort?: string;
   admissionCode?: string[];
   admissionType?: string[];
@@ -186,8 +186,8 @@ function buildQueryString(params: AdmissionParams): string {
 export async function getPaginatedAdmissionData(
   studentId: string,
   isAuthenticated: boolean,
-  page = 1,
-  size = 20,
+  page = import.meta.env.VITE_PAGINATION_DEFAULT_PAGE,
+  size = import.meta.env.VITE_PAGINATION_DEFAULT_SIZE,
   filterParams?: Partial<AdmissionParams>,
 ): Promise<AdmissionResponse> {
   try {
@@ -203,7 +203,7 @@ export async function getPaginatedAdmissionData(
       ...filterParams,
       page: page,
       size: size,
-      sort: filterParams?.sort ?? "createdAt,DESC",
+      sort: filterParams?.sort ?? import.meta.env.VITE_PAGINATION_DEFAULT_SORT,
     };
 
     const queryString = buildQueryString(params);
@@ -357,7 +357,12 @@ export async function getInitialAdmissionData(
   studentId: string,
   isAuthenticated: boolean,
 ): Promise<AdmissionResponse> {
-  return getPaginatedAdmissionData(studentId, isAuthenticated, 1, 20);
+  return getPaginatedAdmissionData(
+    studentId,
+    isAuthenticated,
+    import.meta.env.VITE_PAGINATION_DEFAULT_PAGE,
+    import.meta.env.VITE_PAGINATION_DEFAULT_SIZE,
+  );
 }
 
 export async function getFilteredAdmissionData(
@@ -368,8 +373,8 @@ export async function getFilteredAdmissionData(
   return getPaginatedAdmissionData(
     studentId,
     isAuthenticated,
-    1,
-    20,
+    import.meta.env.VITE_PAGINATION_DEFAULT_PAGE,
+    import.meta.env.VITE_PAGINATION_DEFAULT_SIZE,
     filterParams,
   );
 }

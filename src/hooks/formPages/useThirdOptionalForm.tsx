@@ -28,10 +28,11 @@ interface UseThirdOptionalFormProps {
   setCategories: (categories: CategoryData[]) => void;
 }
 
-// Score limits configuration
+// Score limits configuration - Updated with new requirements
 const SCORE_LIMITS = {
   DGNL: {
     maxEntries: 3,
+    minRequiredEntries: 0, // No minimum requirement
     subjects: {
       "examTypes.hsa": { min: 0, max: 150 },
       "examTypes.tsa": { min: 0, max: 100 },
@@ -42,10 +43,13 @@ const SCORE_LIMITS = {
     min: 0,
     max: 150,
     minRequiredEntries: 3,
+    maxEntries: 8, // New: Maximum 8 subjects
   },
   TALENT: {
     min: 0,
     max: 10,
+    maxEntries: 3, // New: Maximum 3 subjects
+    minRequiredEntries: 0, // No minimum requirement
   },
 } as const;
 
@@ -152,7 +156,7 @@ export const useThirdOptionalForm = ({
       }
     }
 
-    // V-SAT specific validation - minimum 3 entries if started
+    // V-SAT specific validation - minimum 3 entries, maximum 8 entries
     if (category.name === "V-SAT") {
       const filledScores = category.scores.filter(
         (score) => score.subject && score.score,
@@ -163,7 +167,35 @@ export const useThirdOptionalForm = ({
         filledScores.length > 0 &&
         filledScores.length < SCORE_LIMITS.VSAT.minRequiredEntries
       ) {
-        errors.push(t("thirdForm.vsatMinimumError"));
+        errors.push(
+          t("thirdForm.vsatMinimumError", {
+            min: SCORE_LIMITS.VSAT.minRequiredEntries,
+          }),
+        );
+      }
+
+      // Check maximum entries
+      if (filledScores.length > SCORE_LIMITS.VSAT.maxEntries) {
+        errors.push(
+          t("thirdForm.vsatMaximumError", {
+            max: SCORE_LIMITS.VSAT.maxEntries,
+          }),
+        );
+      }
+    }
+
+    // Năng khiếu specific validation - max 3 entries
+    if (category.name === "Năng khiếu") {
+      const filledScores = category.scores.filter(
+        (score) => score.subject && score.score,
+      );
+
+      if (filledScores.length > SCORE_LIMITS.TALENT.maxEntries) {
+        errors.push(
+          t("thirdForm.talentMaxEntriesError", {
+            max: SCORE_LIMITS.TALENT.maxEntries,
+          }),
+        );
       }
     }
 
@@ -221,18 +253,57 @@ export const useThirdOptionalForm = ({
     return value;
   };
 
+  // Get the maximum number of entries allowed for a category
+  const getMaxEntries = (categoryName: string): number => {
+    switch (categoryName) {
+      case "ĐGNL":
+        return SCORE_LIMITS.DGNL.maxEntries;
+      case "V-SAT":
+        return SCORE_LIMITS.VSAT.maxEntries;
+      case "Năng khiếu":
+        return SCORE_LIMITS.TALENT.maxEntries;
+      default:
+        return Infinity; // No limit for other categories
+    }
+  };
+
   // Check if can add more scores to a category
   const canAddScore = (categoryName: string): boolean => {
-    if (categoryName === "ĐGNL") {
-      const category = categories.find((cat) => cat.name === categoryName);
-      if (category) {
-        const filledScores = category.scores.filter(
-          (score) => score.subject && score.score,
-        );
-        return filledScores.length < SCORE_LIMITS.DGNL.maxEntries;
-      }
+    const category = categories.find((cat) => cat.name === categoryName);
+    if (!category) return false;
+
+    const maxEntries = getMaxEntries(categoryName);
+
+    // Count the number of rows (not just filled rows)
+    // This ensures we disable the button when we reach the max number of rows
+    return category.scores.length < maxEntries;
+  };
+
+  // Get remaining slots for a category
+  const getRemainingSlots = (categoryName: string): number => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    if (!category) return 0;
+
+    const maxEntries = getMaxEntries(categoryName);
+    return Math.max(0, maxEntries - category.scores.length);
+  };
+
+  // Get button text with remaining slots information
+  const getAddButtonText = (categoryName: string): string => {
+    const remainingSlots = getRemainingSlots(categoryName);
+    const maxEntries = getMaxEntries(categoryName);
+
+    if (maxEntries === Infinity) {
+      return t("buttons.add");
     }
-    return true; // No restriction for other categories
+
+    if (remainingSlots === 0) {
+      return t("thirdForm.maxEntriesReached", { max: maxEntries });
+    }
+
+    return (
+      t("buttons.add") + ` (${String(remainingSlots)}/${String(maxEntries)})`
+    );
   };
 
   // Add a new score row to a category
@@ -240,13 +311,10 @@ export const useThirdOptionalForm = ({
     const category = categories.find((cat) => cat.id === categoryId);
     if (!category) return;
 
-    // Check if we can add more scores for ĐGNL category
+    // Check if we can add more scores
     if (!canAddScore(category.name)) {
-      // Optionally, you can show an alert or notification here
       console.warn(
-        t("thirdForm.dgnlMaxEntriesReached", {
-          max: SCORE_LIMITS.DGNL.maxEntries,
-        }),
+        `Maximum entries reached for ${category.name}: ${String(getMaxEntries(category.name))}`,
       );
       return;
     }
@@ -420,6 +488,9 @@ export const useThirdOptionalForm = ({
     getScoreRowData,
     getScoreLimitText,
     canAddScore,
+    getRemainingSlots,
+    getAddButtonText,
+    getMaxEntries,
 
     // Validation functions
     validateForm,
