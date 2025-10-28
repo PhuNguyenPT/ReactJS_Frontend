@@ -27,134 +27,261 @@ const wait = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
+ * Check if all OCR results have valid scores
+ * @param response - The OCR response to check
+ * @returns boolean indicating if all files have scores
+ */
+const hasAllValidScores = (response: OcrResponse | null): boolean => {
+  if (!response?.success || !response.data || response.data.length === 0) {
+    return false;
+  }
+
+  // Check if ALL files have scores (not just some)
+  return response.data.every(
+    (item) =>
+      item.scores !== null &&
+      Array.isArray(item.scores) &&
+      item.scores.length > 0,
+  );
+};
+
+/**
  * Custom hook for handling OCR processing
  * Provides a clean interface for triggering and managing OCR operations
  */
 export function useOcrHandler() {
   /**
-   * Handle OCR processing for uploaded files with retry logic
+   * Handle OCR processing for uploaded files with polling until all files have scores
    * @param isAuthenticated - Whether the user is authenticated
    * @param studentId - Optional student ID (defaults to localStorage value)
-   * @param initialWaitTime - Fixed wait time before first attempt (default: 10000ms = 10s)
-   * @param maxRetries - Maximum number of retry attempts (default: 3)
-   * @param retryDelay - Delay between retries in milliseconds (default: 2000ms)
+   * @param options - Configuration options for polling behavior
    * @returns Promise with OCR response or null if error occurs
    */
   const processOcr = async (
     isAuthenticated: boolean,
     studentId?: string,
-    initialWaitTime = 7000,
-    maxRetries = 3,
-    retryDelay = 2000,
+    options?: {
+      initialWaitTime?: number; // Initial wait before first attempt (default: 7000ms)
+      maxPollingTime?: number; // Maximum total time to poll (default: 120000ms = 2 minutes)
+      pollingInterval?: number; // Interval between polling attempts (default: 3000ms)
+      maxAttempts?: number; // Maximum number of attempts (default: 40)
+    },
   ): Promise<OcrResponse | null> => {
+    const {
+      initialWaitTime = 7000,
+      maxPollingTime = 120000,
+      pollingInterval = 3000,
+      maxAttempts = 40,
+    } = options ?? {};
+
     const targetStudentId = studentId ?? getStudentIdFromStorage();
+    const startTime = Date.now();
 
     try {
       console.log(
         "[OCR Handler] Initiating OCR processing for uploaded files...",
       );
       console.log("[OCR Handler] Using student ID:", targetStudentId);
+      console.log("[OCR Handler] Configuration:", {
+        initialWaitTime: `${String(initialWaitTime)}ms`,
+        maxPollingTime: `${String(maxPollingTime)}ms`,
+        pollingInterval: `${String(pollingInterval)}ms`,
+        maxAttempts: String(maxAttempts),
+      });
 
-      // Wait for the initial fixed time (10s by default) to allow OCR processing to complete
-      console.log(
-        `[OCR Handler]Waiting ${String(initialWaitTime / 1000)} seconds for OCR processing to complete...`,
-      );
-      await wait(initialWaitTime);
-      console.log(
-        "[OCR Handler] ✓ Initial wait complete, checking OCR results...",
-      );
+      // Initial wait to give the backend time to start processing
+      if (initialWaitTime > 0) {
+        console.log(
+          `[OCR Handler] Waiting ${String(initialWaitTime / 1000)} seconds before first check...`,
+        );
+        await wait(initialWaitTime);
+      }
 
       let lastResponse: OcrResponse | null = null;
+      let attempt = 0;
 
-      // Try multiple times with delay, as OCR processing might take time
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        console.log(
-          `[OCR Handler] Attempt ${String(attempt)}/${String(maxRetries)}`,
-        );
+      // Continue polling until we have all scores or hit limits
+      while (attempt < maxAttempts) {
+        const elapsedTime = Date.now() - startTime;
 
-        const response = await triggerOcrForStudent(
-          isAuthenticated,
-          targetStudentId,
-        );
-        lastResponse = response;
-
-        // Check if we got successful results
-        if (isOcrSuccessful(response)) {
-          console.log(
-            `[OCR Handler] ✓ Successfully received OCR results on attempt ${String(attempt)}`,
+        // Check if we've exceeded max polling time
+        if (elapsedTime > maxPollingTime) {
+          console.warn(
+            `[OCR Handler] ⏱️ Maximum polling time (${String(maxPollingTime)}ms) exceeded after ${String(attempt)} attempts`,
           );
-          const statusMessage = getOcrStatusMessage(response, isAuthenticated);
-          console.log(statusMessage);
-          return response;
+          break;
         }
 
-        // If not the last attempt, wait before retrying
-        if (attempt < maxRetries) {
-          const hasData = response.data && response.data.length > 0;
-          const allNull = response.data?.every((item) => item.scores === null);
+        attempt++;
+        console.log(
+          `[OCR Handler] Attempt ${String(attempt)}/${String(maxAttempts)} (${String(Math.round(elapsedTime / 1000))}s elapsed)`,
+        );
 
-          if (hasData && allNull) {
+        try {
+          const response = await triggerOcrForStudent(
+            isAuthenticated,
+            targetStudentId,
+          );
+          lastResponse = response;
+
+          // Check if ALL files have valid scores
+          if (hasAllValidScores(response)) {
+            const totalFiles = response.data?.length ?? 0;
             console.log(
-              `[OCR Handler] ⏳ OCR processing still in progress, waiting ${String(retryDelay)}ms before retry...`,
+              `[OCR Handler] ✅ SUCCESS! All ${String(totalFiles)} files have valid scores after ${String(attempt)} attempts (${String(Math.round(elapsedTime / 1000))}s)`,
             );
-            await wait(retryDelay);
-          } else if (!hasData) {
+
+            // Log summary of scores
+            if (response.data) {
+              response.data.forEach((item, index) => {
+                const avgScore = item.scores
+                  ? item.scores.reduce((sum, s) => sum + s.score, 0) /
+                    item.scores.length
+                  : 0;
+                console.log(
+                  `[OCR Handler]   File ${String(index + 1)}: ${String(item.scores?.length ?? 0)} subjects, avg score: ${String(avgScore.toFixed(1))}`,
+                );
+              });
+            }
+
+            return response;
+          }
+
+          // Log progress
+          if (response.data) {
+            const totalFiles = response.data.length;
+            const filesWithScores = response.data.filter(
+              (item) => item.scores !== null && item.scores.length > 0,
+            ).length;
+            const progress =
+              totalFiles > 0
+                ? Math.round((filesWithScores / totalFiles) * 100)
+                : 0;
+
             console.log(
-              `[OCR Handler] ⚠ No OCR data found, waiting ${String(retryDelay)}ms before retry...`,
+              `[OCR Handler] ⏳ Progress: ${String(filesWithScores)}/${String(totalFiles)} files processed (${String(progress)}%)`,
             );
-            await wait(retryDelay);
+
+            // If we have partial results, show which files are still pending
+            if (filesWithScores < totalFiles) {
+              const pendingFiles = response.data
+                .filter((item) => !item.scores || item.scores.length === 0)
+                .map((item) => item.fileId);
+              console.log(
+                `[OCR Handler]   Pending files: ${pendingFiles.slice(0, 3).join(", ")}${pendingFiles.length > 3 ? "..." : ""}`,
+              );
+            }
+          }
+
+          // Wait before next poll
+          console.log(
+            `[OCR Handler] Waiting ${String(pollingInterval)}ms before next check...`,
+          );
+          await wait(pollingInterval);
+        } catch (apiError) {
+          console.error(
+            `[OCR Handler] ⚠️ API error on attempt ${String(attempt)}:`,
+            apiError,
+          );
+
+          // Continue polling even if there's an API error
+          // The backend might be temporarily unavailable
+          if (attempt < maxAttempts) {
+            console.log(
+              `[OCR Handler] Retrying after error, waiting ${String(pollingInterval)}ms...`,
+            );
+            await wait(pollingInterval);
           }
         }
       }
 
-      // All retries exhausted
-      const statusMessage = getOcrStatusMessage(lastResponse, isAuthenticated);
-      console.warn(`[OCR Handler] ⚠ ${statusMessage}`);
+      // Polling completed without getting all scores
+      const finalElapsedTime = Date.now() - startTime;
       console.warn(
-        `[OCR Handler] OCR processing may still be in progress. Results will be available later.`,
+        `[OCR Handler] ⚠️ Polling completed after ${String(attempt)} attempts (${String(Math.round(finalElapsedTime / 1000))}s)`,
       );
 
+      if (lastResponse?.data) {
+        const totalFiles = lastResponse.data.length;
+        const filesWithScores = lastResponse.data.filter(
+          (item) => item.scores !== null && item.scores.length > 0,
+        ).length;
+
+        if (filesWithScores > 0) {
+          console.log(
+            `[OCR Handler] Partial results: ${String(filesWithScores)}/${String(totalFiles)} files processed`,
+          );
+          console.log(
+            `[OCR Handler] Returning partial results. Remaining files may complete later.`,
+          );
+        } else {
+          console.warn(
+            `[OCR Handler] No files were successfully processed. OCR may still be in progress.`,
+          );
+        }
+      }
+
       return lastResponse;
-    } catch (ocrError) {
-      console.error("[OCR Handler] ✗ OCR processing error:", ocrError);
-      // Don't fail the entire process if OCR fails
-      // OCR is supplementary to the main profile
+    } catch (error) {
+      console.error("[OCR Handler] ✗ Fatal OCR processing error:", error);
       return null;
     }
   };
 
   /**
-   * Process OCR without retries and with custom wait time
-   * @param isAuthenticated - Whether the user is authenticated
-   * @param studentId - Optional student ID (defaults to localStorage value)
-   * @param waitTime - Time to wait before checking (default: 30000ms = 30s)
-   * @returns Promise with OCR response or null if error occurs
+   * Process OCR with quick polling for fast results
+   * Best for small files or when you expect quick processing
    */
-  const processOcrWithWait = async (
+  const processOcrQuick = async (
     isAuthenticated: boolean,
     studentId?: string,
-    waitTime = 30000,
   ): Promise<OcrResponse | null> => {
-    return processOcr(isAuthenticated, studentId, waitTime, 1, 0);
+    return processOcr(isAuthenticated, studentId, {
+      initialWaitTime: 3000,
+      maxPollingTime: 30000, // 30 seconds max
+      pollingInterval: 2000, // Check every 2 seconds
+      maxAttempts: 15,
+    });
   };
 
   /**
-   * Process OCR without any wait time (immediate single call)
-   * @param isAuthenticated - Whether the user is authenticated
-   * @param studentId - Optional student ID (defaults to localStorage value)
-   * @returns Promise with OCR response or null if error occurs
+   * Process OCR with patient polling for larger batches
+   * Best for multiple or large files that may take longer
+   */
+  const processOcrPatient = async (
+    isAuthenticated: boolean,
+    studentId?: string,
+  ): Promise<OcrResponse | null> => {
+    return processOcr(isAuthenticated, studentId, {
+      initialWaitTime: 10000,
+      maxPollingTime: 180000, // 3 minutes max
+      pollingInterval: 5000, // Check every 5 seconds
+      maxAttempts: 36,
+    });
+  };
+
+  /**
+   * Process OCR with a single immediate check (no polling)
+   * Best for checking status of previously submitted files
    */
   const processOcrImmediate = async (
     isAuthenticated: boolean,
     studentId?: string,
   ): Promise<OcrResponse | null> => {
-    return processOcr(isAuthenticated, studentId, 0, 1, 0);
+    return processOcr(isAuthenticated, studentId, {
+      initialWaitTime: 0,
+      maxPollingTime: 1000,
+      pollingInterval: 0,
+      maxAttempts: 1,
+    });
   };
 
   return {
     processOcr,
-    processOcrWithWait,
+    processOcrQuick,
+    processOcrPatient,
     processOcrImmediate,
+    hasAllValidScores,
     isOcrSuccessful,
     getOcrStatusMessage,
   };

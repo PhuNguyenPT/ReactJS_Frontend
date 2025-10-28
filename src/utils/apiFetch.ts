@@ -8,8 +8,6 @@ import axios, {
 import APIError from "./apiError";
 import type { ErrorDetails } from "../type/interface/error.details";
 
-console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // ✅ Preconfigured axios instance - REMOVED default Content-Type
