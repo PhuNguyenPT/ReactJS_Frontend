@@ -12,10 +12,14 @@ import {
   Alert,
   Pagination,
   Stack,
+  Collapse,
+  IconButton,
 } from "@mui/material";
 import { useState, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useAuth from "../../../hooks/auth/useAuth";
@@ -32,10 +36,9 @@ import type {
 } from "../../../type/interface/admissionTypes";
 import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
 
-const ITEMS_PER_PAGE = import.meta.env.VITE_PAGINATION_DEFAULT_SIZE; // Changed to match API default
+const ITEMS_PER_PAGE = import.meta.env.VITE_PAGINATION_DEFAULT_SIZE;
 
 function extractPrograms(data: unknown): AdmissionProgram[] {
-  // Check if data is AdmissionApiResponse (has content property)
   if (
     data &&
     typeof data === "object" &&
@@ -45,7 +48,6 @@ function extractPrograms(data: unknown): AdmissionProgram[] {
     return (data as AdmissionApiResponse).content;
   }
 
-  // Check if data is already an array of programs
   if (Array.isArray(data)) {
     return data as AdmissionProgram[];
   }
@@ -59,6 +61,13 @@ interface FinalResultState {
   isGuest?: boolean;
   savedToAccount?: boolean;
   filterFields?: FilterFieldsResponse | null;
+}
+
+// Helper function to format tuition fee
+function formatTuitionFee(fee: string): string {
+  const numFee = parseFloat(fee);
+  if (isNaN(numFee)) return fee;
+  return `${(numFee / 1000000).toFixed(1)} triệu VNĐ`;
 }
 
 export default function FinalResult() {
@@ -83,7 +92,84 @@ export default function FinalResult() {
   const [studentId, setStudentId] = useState<string | null>(null);
   const [isFiltered, setIsFiltered] = useState(false);
 
-  // Function to fetch data for a specific page
+  // Store raw API data for detailed views
+  const [rawProgramData, setRawProgramData] = useState<AdmissionProgram[]>([]);
+
+  // Expansion states for different sections
+  const [expandedMajors, setExpandedMajors] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [expandedAdmissionTypes, setExpandedAdmissionTypes] = useState<
+    Record<string, boolean>
+  >({});
+  const [expandedTuitionFees, setExpandedTuitionFees] = useState<
+    Record<string, boolean>
+  >({});
+
+  // Toggle expansion handlers
+  const toggleMajorExpansion = (universityId: string, majorCode: string) => {
+    const key = `${universityId}-${majorCode}`;
+    setExpandedMajors((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleAdmissionTypeExpansion = (
+    universityId: string,
+    admissionType: string,
+  ) => {
+    const key = `${universityId}-${admissionType}`;
+    setExpandedAdmissionTypes((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleTuitionFeeExpansion = (
+    universityId: string,
+    tuitionFee: string,
+  ) => {
+    const key = `${universityId}-${tuitionFee}`;
+    setExpandedTuitionFees((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Get programs for a specific university from raw data
+  const getUniversityPrograms = useCallback(
+    (uniCode: string): AdmissionProgram[] => {
+      return rawProgramData.filter((program) => program.uniCode === uniCode);
+    },
+    [rawProgramData],
+  );
+
+  // Get programs for a specific major
+  const getMajorPrograms = useCallback(
+    (uniCode: string, majorCode: string): AdmissionProgram[] => {
+      return rawProgramData.filter(
+        (program) =>
+          program.uniCode === uniCode && program.majorCode === majorCode,
+      );
+    },
+    [rawProgramData],
+  );
+
+  // Get programs for a specific admission type
+  const getAdmissionTypePrograms = useCallback(
+    (uniCode: string, admissionType: string): AdmissionProgram[] => {
+      return rawProgramData.filter(
+        (program) =>
+          program.uniCode === uniCode &&
+          program.admissionType === admissionType,
+      );
+    },
+    [rawProgramData],
+  );
+
+  // Get programs for a specific tuition fee
+  const getTuitionFeePrograms = useCallback(
+    (uniCode: string, tuitionFee: string): AdmissionProgram[] => {
+      return rawProgramData.filter(
+        (program) =>
+          program.uniCode === uniCode && program.tuitionFee === tuitionFee,
+      );
+    },
+    [rawProgramData],
+  );
+
   const fetchPageData = useCallback(
     async (
       page: number,
@@ -108,6 +194,10 @@ export default function FinalResult() {
 
         if (response.success && response.data) {
           const programs = extractPrograms(response.data);
+
+          // Store raw program data
+          setRawProgramData(programs);
+
           const transformedData = transformAdmissionData(programs);
 
           setUniversities(transformedData);
@@ -133,7 +223,6 @@ export default function FinalResult() {
     [studentId, isAuthenticated, t],
   );
 
-  // Initial data loading
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -142,7 +231,6 @@ export default function FinalResult() {
 
         const state = location.state as FinalResultState | null;
 
-        // Load filter fields from navigation state
         if (state?.filterFields) {
           console.log(
             "[FinalResult] Loading filter fields from navigation state",
@@ -150,14 +238,12 @@ export default function FinalResult() {
           setFilterFields(state.filterFields);
         }
 
-        // Get student ID
         const id = state?.studentId ?? sessionStorage.getItem("studentId");
         if (!id) {
           throw new Error(t("finalResult.errors.studentIdNotFound"));
         }
         setStudentId(id);
 
-        // Fetch first page of data
         await fetchPageData(1);
       } catch (err) {
         console.error("[FinalResult] Error initializing:", err);
@@ -172,32 +258,27 @@ export default function FinalResult() {
     };
 
     void initializeData();
-  }, [fetchPageData, location.state, t]); // Remove fetchPageData from dependencies to avoid loop
+  }, [fetchPageData, location.state, t]);
 
-  // Handle page change
   const handlePageChange = useCallback(
     (_event: React.ChangeEvent<unknown>, page: number) => {
-      console.log(`[FinalResult] Navigating to page ${String(page)}`);
+      console.log(`[FinalResult] Navigating to page ${page.toString()}`);
 
-      // Convert active filters to API params if any filters are applied
       const apiParams = isFiltered
         ? convertFilterCriteriaToParams(activeFilters)
         : undefined;
 
       void fetchPageData(page, apiParams);
 
-      // Scroll to top when changing pages
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
     [fetchPageData, isFiltered, activeFilters],
   );
 
-  // Handle filter application
   const handleFilterApply = useCallback(
     (filters: FilterCriteria) => {
       console.log("[FinalResult] Applying filters:", filters);
 
-      // Check if any filters are actually selected
       const hasActiveFilters = Object.keys(filters).some((key) => {
         const value = filters[key as keyof FilterCriteria];
         if (key === "tuitionFeeRange") {
@@ -208,15 +289,13 @@ export default function FinalResult() {
       });
 
       if (!hasActiveFilters) {
-        // No filters selected, fetch unfiltered data
         console.log("[FinalResult] No filters selected, fetching all data");
         setActiveFilters({});
         setIsFiltered(false);
-        void fetchPageData(1); // Reset to first page
+        void fetchPageData(1);
         return;
       }
 
-      // Convert UI filter criteria to API parameters
       const apiParams = convertFilterCriteriaToParams(filters);
 
       console.log(
@@ -226,20 +305,18 @@ export default function FinalResult() {
 
       setActiveFilters(filters);
       setIsFiltered(true);
-      void fetchPageData(1, apiParams); // Always start from page 1 when applying filters
+      void fetchPageData(1, apiParams);
     },
     [fetchPageData],
   );
 
-  // Handle filter clear
   const handleFilterClear = useCallback(() => {
     console.log("[FinalResult] Clearing filters");
     setActiveFilters({});
     setIsFiltered(false);
-    void fetchPageData(1); // Reset to first page without filters
+    void fetchPageData(1);
   }, [fetchPageData]);
 
-  // Client-side search filtering (applied to current page data)
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredUniversities(universities);
@@ -309,7 +386,6 @@ export default function FinalResult() {
         py: 3,
       }}
     >
-      {/* Filter Component */}
       {filterFields && (
         <ResultFilter
           filterFields={filterFields}
@@ -318,7 +394,6 @@ export default function FinalResult() {
         />
       )}
 
-      {/* Loading overlay for page/filter operations */}
       {pageLoading && (
         <Box
           sx={{
@@ -355,7 +430,6 @@ export default function FinalResult() {
         </Box>
       )}
 
-      {/* Search Bar */}
       <Box sx={{ mb: 4 }}>
         <TextField
           fullWidth
@@ -396,7 +470,6 @@ export default function FinalResult() {
         />
       </Box>
 
-      {/* Results count and filter status */}
       {!pageLoading && totalElements > 0 && (
         <Box sx={{ mb: 2 }}>
           <Typography
@@ -433,7 +506,6 @@ export default function FinalResult() {
         </Box>
       )}
 
-      {/* University Results */}
       <Box>
         {!pageLoading && filteredUniversities.length === 0 ? (
           <Box
@@ -479,249 +551,577 @@ export default function FinalResult() {
           </Box>
         ) : (
           <>
-            {filteredUniversities.map((university) => (
-              <Accordion
-                key={university.id}
-                sx={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  borderRadius: "12px !important",
-                  mb: 3,
-                  "&:before": { display: "none" },
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon sx={{ color: "#A657AE" }} />}
+            {filteredUniversities.map((university) => {
+              const uniPrograms = getUniversityPrograms(university.shortName);
+
+              // Get unique values for summary
+              const uniqueMajors = Array.from(
+                new Set(uniPrograms.map((p) => p.majorCode)),
+              );
+              const uniqueSubjectCombinations = Array.from(
+                new Set(uniPrograms.map((p) => p.subjectCombination)),
+              );
+              const uniqueStudyPrograms = Array.from(
+                new Set(uniPrograms.map((p) => p.studyProgram)),
+              );
+
+              return (
+                <Accordion
+                  key={university.id}
                   sx={{
-                    backgroundColor: "rgba(166, 87, 174, 0.1)",
-                    borderRadius: "12px",
-                    minHeight: "70px",
-                    "& .MuiAccordionSummary-content": {
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      my: 1.5,
-                    },
+                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                    borderRadius: "12px !important",
+                    mb: 3,
+                    "&:before": { display: "none" },
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                   }}
                 >
-                  <Box
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon sx={{ color: "#A657AE" }} />}
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 0.5,
-                      flex: 1,
+                      backgroundColor: "rgba(166, 87, 174, 0.1)",
+                      borderRadius: "12px",
+                      minHeight: "70px",
+                      "& .MuiAccordionSummary-content": {
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        my: 1.5,
+                      },
                     }}
                   >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: "#A657AE",
-                        fontWeight: 600,
-                        fontSize: "1.2rem",
-                      }}
-                    >
-                      {university.name} ({university.shortName})
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "#666",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {university.location} • {university.uniType}
-                    </Typography>
-                  </Box>
-                </AccordionSummary>
-
-                <AccordionDetails sx={{ px: 4, py: 3 }}>
-                  {/* Courses Section */}
-                  <Box sx={{ mb: 3 }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color: "#A657AE",
-                        fontWeight: 600,
-                        mb: 2,
-                        fontSize: "1.1rem",
-                      }}
-                    >
-                      {t("finalResult.coursesCount", {
-                        count: university.courses.length,
-                      })}
-                    </Typography>
-                    <Box
-                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                    >
-                      {university.courses.map((course) => (
-                        <Box
-                          key={`${university.id}-${course.code}`}
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            backgroundColor: "rgba(166, 87, 174, 0.05)",
-                            padding: "12px 20px",
-                            borderRadius: "8px",
-                            border: "1px solid rgba(166, 87, 174, 0.2)",
-                            flexWrap: "wrap",
-                            gap: 2,
-                          }}
-                        >
-                          <Box sx={{ flex: 1, minWidth: "200px" }}>
-                            <Typography
-                              sx={{
-                                color: "#333",
-                                fontWeight: 500,
-                                fontSize: "1rem",
-                                textAlign: "left",
-                              }}
-                            >
-                              {course.name}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                color: "#666",
-                                fontSize: "0.85rem",
-                                mt: 0.5,
-                                textAlign: "left",
-                              }}
-                            >
-                              {t("finalResult.courseCode")}: {course.code}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                color: "#666",
-                                fontSize: "0.85rem",
-                                mt: 0.5,
-                                textAlign: "left",
-                              }}
-                            >
-                              {t("finalResult.subjectCombination")}:{" "}
-                              {course.subjectCombination}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                color: "#666",
-                                fontSize: "0.85rem",
-                                mt: 0.5,
-                                textAlign: "left",
-                              }}
-                            >
-                              {t("finalResult.studyProgram")}:{" "}
-                              {course.studyProgram}
-                            </Typography>
-                          </Box>
-                          <Chip
-                            label={course.tuitionFee}
-                            sx={{
-                              backgroundColor: "#A657AE",
-                              color: "white",
-                              fontWeight: 600,
-                            }}
-                          />
-                        </Box>
-                      ))}
-                    </Box>
-                  </Box>
-
-                  <Divider sx={{ my: 3 }} />
-
-                  {/* Application Method */}
-                  <Box sx={{ mb: 3 }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color: "#A657AE",
-                        fontWeight: 600,
-                        mb: 2,
-                        fontSize: "1.1rem",
-                        textAlign: "center",
-                      }}
-                    >
-                      {t("finalResult.applicationMethod")}
-                    </Typography>
                     <Box
                       sx={{
                         display: "flex",
-                        flexWrap: "wrap",
-                        gap: 1,
-                        justifyContent: "center",
+                        flexDirection: "column",
+                        gap: 0.5,
+                        flex: 1,
                       }}
                     >
-                      {university.applicationMethods.map((method) => (
-                        <Chip
-                          key={`${university.id}-${method}`}
-                          label={method}
-                          sx={{
-                            backgroundColor: "rgba(166, 87, 174, 0.15)",
-                            color: "#A657AE",
-                            fontWeight: 500,
-                            fontSize: "0.9rem",
-                          }}
-                        />
-                      ))}
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: "#A657AE",
+                          fontWeight: 600,
+                          fontSize: "1.2rem",
+                        }}
+                      >
+                        {university.name} ({university.shortName})
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "#666",
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        {university.location} • {university.uniType}
+                      </Typography>
                     </Box>
-                  </Box>
+                  </AccordionSummary>
 
-                  <Divider sx={{ my: 3 }} />
+                  <AccordionDetails sx={{ px: 4, py: 3 }}>
+                    {/* Majors Section with Expandable Details */}
+                    <Box sx={{ mb: 3 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          color: "#A657AE",
+                          fontWeight: 600,
+                          mb: 2,
+                          fontSize: "1.1rem",
+                        }}
+                      >
+                        Các ngành học ({uniqueMajors.length} ngành)
+                      </Typography>
 
-                  {/* Tuition Fee Range */}
-                  <Box sx={{ mb: 3 }}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color: "#A657AE",
-                        fontWeight: 600,
-                        mb: 1,
-                        fontSize: "1.1rem",
-                      }}
-                    >
-                      {t("finalResult.tuitionFee")}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "#333",
-                        fontSize: "1rem",
-                      }}
-                    >
-                      {university.tuitionFeeRange}
-                    </Typography>
-                  </Box>
+                      {/* Summary Information */}
+                      <Box
+                        sx={{
+                          mb: 2,
+                          p: 2,
+                          backgroundColor: "rgba(166, 87, 174, 0.05)",
+                          borderRadius: "8px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <Typography
+                          sx={{ fontSize: "0.9rem", color: "#666", mb: 1 }}
+                        >
+                          <strong>Tổ hợp môn:</strong>{" "}
+                          {uniqueSubjectCombinations.join(", ")}
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.9rem", color: "#666" }}>
+                          <strong>Chương trình đào tạo:</strong>{" "}
+                          {uniqueStudyPrograms.join(", ")}
+                        </Typography>
+                      </Box>
 
-                  <Divider sx={{ my: 3 }} />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 2,
+                        }}
+                      >
+                        {university.courses.map((course) => {
+                          const majorPrograms = getMajorPrograms(
+                            university.shortName,
+                            course.code,
+                          );
+                          const expandKey = `${university.id}-${course.code}`;
+                          const isExpanded = expandedMajors[expandKey] || false;
 
-                  {/* Website Link */}
-                  <Box>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        color: "#A657AE",
-                        fontWeight: 600,
-                        mb: 1,
-                        fontSize: "1.1rem",
-                      }}
-                    >
-                      {t("finalResult.website")}
-                    </Typography>
-                    <Typography
-                      component="a"
-                      href={university.webLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        color: "#A657AE",
-                        fontSize: "1rem",
-                        textDecoration: "none",
-                        "&:hover": {
-                          textDecoration: "underline",
-                        },
-                      }}
-                    >
-                      {university.webLink}
-                    </Typography>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+                          return (
+                            <Box key={`${university.id}-${course.code}`}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  backgroundColor: "rgba(166, 87, 174, 0.05)",
+                                  padding: "12px 20px",
+                                  borderRadius: "8px",
+                                  border: "1px solid rgba(166, 87, 174, 0.2)",
+                                  cursor: "pointer",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(166, 87, 174, 0.1)",
+                                  },
+                                }}
+                                onClick={() => {
+                                  toggleMajorExpansion(
+                                    university.id,
+                                    course.code,
+                                  );
+                                }}
+                              >
+                                <Box sx={{ flex: 1, textAlign: "center" }}>
+                                  <Typography
+                                    sx={{
+                                      color: "#333",
+                                      fontWeight: 500,
+                                      fontSize: "1rem",
+                                    }}
+                                  >
+                                    {course.name}
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      color: "#666",
+                                      fontSize: "0.85rem",
+                                      mt: 0.5,
+                                    }}
+                                  >
+                                    Mã ngành: {course.code}
+                                  </Typography>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <IconButton size="small">
+                                    {isExpanded ? (
+                                      <KeyboardArrowUpIcon />
+                                    ) : (
+                                      <KeyboardArrowDownIcon />
+                                    )}
+                                  </IconButton>
+                                </Box>
+                              </Box>
+
+                              <Collapse in={isExpanded}>
+                                <Box
+                                  sx={{
+                                    mt: 1,
+                                    ml: 3,
+                                    p: 2,
+                                    backgroundColor: "rgba(0, 0, 0, 0.02)",
+                                    borderRadius: "8px",
+                                  }}
+                                >
+                                  {majorPrograms.map((program) => (
+                                    <Box
+                                      key={`${program.id}-${program.subjectCombination}`}
+                                      sx={{
+                                        mb: 2,
+                                        pb: 2,
+                                        borderBottom:
+                                          "1px solid rgba(0, 0, 0, 0.1)",
+                                        "&:last-child": {
+                                          borderBottom: "none",
+                                        },
+                                      }}
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <strong>Tổ hợp:</strong>{" "}
+                                        {program.subjectCombination} |{" "}
+                                        <strong>Chương trình:</strong>{" "}
+                                        {program.studyProgram}
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <strong>Học phí:</strong>{" "}
+                                        {formatTuitionFee(program.tuitionFee)}
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.85rem",
+                                          color: "#666",
+                                        }}
+                                      >
+                                        <strong>Phương thức:</strong>{" "}
+                                        {program.admissionTypeName}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+                                </Box>
+                              </Collapse>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Application Method Section with Expandable Details */}
+                    <Box sx={{ mb: 3 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          color: "#A657AE",
+                          fontWeight: 600,
+                          mb: 2,
+                          fontSize: "1.1rem",
+                          textAlign: "center",
+                        }}
+                      >
+                        {t("finalResult.applicationMethod")}
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                        }}
+                      >
+                        {Array.from(
+                          new Set(uniPrograms.map((p) => p.admissionType)),
+                        ).map((admissionType) => {
+                          const admissionPrograms = getAdmissionTypePrograms(
+                            university.shortName,
+                            admissionType,
+                          );
+                          const expandKey = `${university.id}-${admissionType}`;
+                          const isExpanded =
+                            expandedAdmissionTypes[expandKey] || false;
+
+                          return (
+                            <Box key={`${university.id}-${admissionType}`}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  backgroundColor: "rgba(166, 87, 174, 0.05)",
+                                  padding: "12px 20px",
+                                  borderRadius: "8px",
+                                  border: "1px solid rgba(166, 87, 174, 0.2)",
+                                  cursor: "pointer",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(166, 87, 174, 0.1)",
+                                  },
+                                }}
+                                onClick={() => {
+                                  toggleAdmissionTypeExpansion(
+                                    university.id,
+                                    admissionType,
+                                  );
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    color: "#A657AE",
+                                    fontWeight: 500,
+                                    fontSize: "0.9rem",
+                                    flex: 1,
+                                  }}
+                                >
+                                  {admissionPrograms[0]?.admissionTypeName ||
+                                    admissionType}
+                                </Typography>
+                                <IconButton size="small">
+                                  {isExpanded ? (
+                                    <KeyboardArrowUpIcon />
+                                  ) : (
+                                    <KeyboardArrowDownIcon />
+                                  )}
+                                </IconButton>
+                              </Box>
+
+                              <Collapse in={isExpanded}>
+                                <Box
+                                  sx={{
+                                    mt: 1,
+                                    ml: 3,
+                                    p: 2,
+                                    backgroundColor: "rgba(0, 0, 0, 0.02)",
+                                    borderRadius: "8px",
+                                  }}
+                                >
+                                  {admissionPrograms.map((program) => (
+                                    <Box
+                                      key={`${program.id}-${program.majorCode}`}
+                                      sx={{
+                                        mb: 2,
+                                        pb: 2,
+                                        borderBottom:
+                                          "1px solid rgba(0, 0, 0, 0.1)",
+                                        "&:last-child": {
+                                          borderBottom: "none",
+                                        },
+                                      }}
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <strong>Ngành:</strong>{" "}
+                                        {program.majorName} ({program.majorCode}
+                                        )
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <strong>Tổ hợp:</strong>{" "}
+                                        {program.subjectCombination} |{" "}
+                                        <strong>Chương trình:</strong>{" "}
+                                        {program.studyProgram}
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                        }}
+                                      >
+                                        <strong>Học phí:</strong>{" "}
+                                        {formatTuitionFee(program.tuitionFee)}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+                                </Box>
+                              </Collapse>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Tuition Fee Range Section with Expandable Details */}
+                    <Box sx={{ mb: 3 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          color: "#A657AE",
+                          fontWeight: 600,
+                          mb: 1,
+                          fontSize: "1.1rem",
+                        }}
+                      >
+                        {t("finalResult.tuitionFee")}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "#333",
+                          fontSize: "1rem",
+                          mb: 2,
+                        }}
+                      >
+                        {university.tuitionFeeRange}
+                      </Typography>
+
+                      {/* Individual Tuition Fees with Details */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                        }}
+                      >
+                        {Array.from(
+                          new Set(uniPrograms.map((p) => p.tuitionFee)),
+                        ).map((fee) => {
+                          const feePrograms = getTuitionFeePrograms(
+                            university.shortName,
+                            fee,
+                          );
+                          const expandKey = `${university.id}-${fee}`;
+                          const isExpanded =
+                            expandedTuitionFees[expandKey] || false;
+
+                          return (
+                            <Box key={`${university.id}-${fee}`}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  position: "relative",
+                                  alignItems: "center",
+                                  backgroundColor: "rgba(166, 87, 174, 0.05)",
+                                  padding: "12px 20px",
+                                  borderRadius: "8px",
+                                  border: "1px solid rgba(166, 87, 174, 0.2)",
+                                  cursor: "pointer",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(166, 87, 174, 0.1)",
+                                  },
+                                }}
+                                onClick={() => {
+                                  toggleTuitionFeeExpansion(university.id, fee);
+                                }}
+                              >
+                                <Chip
+                                  label={formatTuitionFee(fee)}
+                                  sx={{
+                                    backgroundColor: "#A657AE",
+                                    color: "white",
+                                    fontWeight: 600,
+                                  }}
+                                />
+                                <IconButton
+                                  size="small"
+                                  sx={{ position: "absolute", right: "20px" }}
+                                >
+                                  {isExpanded ? (
+                                    <KeyboardArrowUpIcon />
+                                  ) : (
+                                    <KeyboardArrowDownIcon />
+                                  )}
+                                </IconButton>
+                              </Box>
+
+                              <Collapse in={isExpanded}>
+                                <Box
+                                  sx={{
+                                    mt: 1,
+                                    ml: 3,
+                                    p: 2,
+                                    backgroundColor: "rgba(0, 0, 0, 0.02)",
+                                    borderRadius: "8px",
+                                  }}
+                                >
+                                  {feePrograms.map((program) => (
+                                    <Box
+                                      key={`${program.id}-${program.admissionCode}`}
+                                      sx={{
+                                        mb: 2,
+                                        pb: 2,
+                                        borderBottom:
+                                          "1px solid rgba(0, 0, 0, 0.1)",
+                                        "&:last-child": {
+                                          borderBottom: "none",
+                                        },
+                                      }}
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <strong>Ngành:</strong>{" "}
+                                        {program.majorName} ({program.majorCode}
+                                        )
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.9rem",
+                                          color: "#333",
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <strong>Tổ hợp:</strong>{" "}
+                                        {program.subjectCombination} |{" "}
+                                        <strong>Chương trình:</strong>{" "}
+                                        {program.studyProgram}
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: "0.85rem",
+                                          color: "#666",
+                                        }}
+                                      >
+                                        <strong>Phương thức:</strong>{" "}
+                                        {program.admissionTypeName}
+                                      </Typography>
+                                    </Box>
+                                  ))}
+                                </Box>
+                              </Collapse>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
+
+                    {/* Website Link */}
+                    <Box>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          color: "#A657AE",
+                          fontWeight: 600,
+                          mb: 1,
+                          fontSize: "1.1rem",
+                        }}
+                      >
+                        {t("finalResult.website")}
+                      </Typography>
+                      <Typography
+                        component="a"
+                        href={university.webLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          color: "#A657AE",
+                          fontSize: "1rem",
+                          textDecoration: "none",
+                          "&:hover": {
+                            textDecoration: "underline",
+                          },
+                        }}
+                      >
+                        {university.webLink}
+                      </Typography>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
 
             {/* Pagination */}
             {totalPages > 1 && (

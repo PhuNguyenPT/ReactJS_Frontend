@@ -287,23 +287,6 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
             >
               {getAddButtonText(category.name)}
             </Button>
-
-            {/* Special note for V-SAT minimum requirement */}
-            {category.name === "V-SAT" &&
-              category.scores.length > 0 &&
-              category.scores.length < 3 && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "#ff9800",
-                    textAlign: "left",
-                    ml: 1,
-                    mb: 2,
-                  }}
-                >
-                  {t("thirdForm.vsatMinimumNote")}
-                </Typography>
-              )}
           </Box>
         );
       })}
