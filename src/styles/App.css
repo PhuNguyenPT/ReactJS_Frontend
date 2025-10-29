@@ -139,7 +139,43 @@ html,
   height: 100%;
   width: 100%;
   font-family: "Poppins", sans-serif;
-  overflow-x: hidden;
+  overflow: auto;
+}
+
+/* Custom Scrollbar Styling for Entire Website */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 1px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Fully transparent track to see background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(166, 87, 174, 0.8); /* Semi-transparent purple */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 74, 150, 0.9); /* Slightly more opaque on hover */
+}
+
+/* Hide scrollbar by default */
+body:not(.scrolling)::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+/* Show scrollbar when scrolling */
+body.scrolling::-webkit-scrollbar-thumb {
+  background: rgba(166, 87, 174, 0.8);
+}
+
+/* Smooth transition */
+::-webkit-scrollbar-thumb {
+  transition: background 0.3s ease;
 }
 
 .loading-container {
@@ -236,10 +272,12 @@ html,
 /* HEADER */
 .landing-header {
   position: fixed;
-  width: 100%;
+  width: calc(100% - 10px); /* Subtract scrollbar width */
   padding: 15px 30px;
   z-index: 10;
   background: #16143d;
+  right: 10px; /* Push left to avoid scrollbar */
+  left: 0;
 }
 
 .landing-header-toolbar {
