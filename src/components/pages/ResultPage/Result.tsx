@@ -14,6 +14,7 @@ import {
   Stack,
   Collapse,
   IconButton,
+  Button,
 } from "@mui/material";
 import { useState, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -37,6 +38,7 @@ import type {
 import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
 
 const ITEMS_PER_PAGE = import.meta.env.VITE_PAGINATION_DEFAULT_SIZE;
+const INITIAL_DISPLAY_LIMIT = Number(import.meta.env.VITE_DISPLAY_LIMIT);
 
 function extractPrograms(data: unknown): AdmissionProgram[] {
   if (
@@ -106,6 +108,17 @@ export default function FinalResult() {
     Record<string, boolean>
   >({});
 
+  // Show more states for limiting initial display
+  const [showAllMajorPrograms, setShowAllMajorPrograms] = useState<
+    Record<string, boolean>
+  >({});
+  const [showAllAdmissionPrograms, setShowAllAdmissionPrograms] = useState<
+    Record<string, boolean>
+  >({});
+  const [showAllTuitionPrograms, setShowAllTuitionPrograms] = useState<
+    Record<string, boolean>
+  >({});
+
   // Toggle expansion handlers
   const toggleMajorExpansion = (universityId: string, majorCode: string) => {
     const key = `${universityId}-${majorCode}`;
@@ -126,6 +139,31 @@ export default function FinalResult() {
   ) => {
     const key = `${universityId}-${tuitionFee}`;
     setExpandedTuitionFees((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Toggle show more handlers
+  const toggleShowAllMajorPrograms = (
+    universityId: string,
+    majorCode: string,
+  ) => {
+    const key = `${universityId}-${majorCode}`;
+    setShowAllMajorPrograms((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleShowAllAdmissionPrograms = (
+    universityId: string,
+    admissionType: string,
+  ) => {
+    const key = `${universityId}-${admissionType}`;
+    setShowAllAdmissionPrograms((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleShowAllTuitionPrograms = (
+    universityId: string,
+    tuitionFee: string,
+  ) => {
+    const key = `${universityId}-${tuitionFee}`;
+    setShowAllTuitionPrograms((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   // Get programs for a specific university from raw data
@@ -669,6 +707,13 @@ export default function FinalResult() {
                           );
                           const expandKey = `${university.id}-${course.code}`;
                           const isExpanded = expandedMajors[expandKey] || false;
+                          const showAll =
+                            showAllMajorPrograms[expandKey] || false;
+                          const displayedPrograms = showAll
+                            ? majorPrograms
+                            : majorPrograms.slice(0, INITIAL_DISPLAY_LIMIT);
+                          const hasMore =
+                            majorPrograms.length > INITIAL_DISPLAY_LIMIT;
 
                           return (
                             <Box key={`${university.id}-${course.code}`}>
@@ -734,13 +779,12 @@ export default function FinalResult() {
                                 <Box
                                   sx={{
                                     mt: 1,
-                                    ml: 3,
                                     p: 2,
                                     backgroundColor: "rgba(0, 0, 0, 0.02)",
                                     borderRadius: "8px",
                                   }}
                                 >
-                                  {majorPrograms.map((program) => (
+                                  {displayedPrograms.map((program) => (
                                     <Box
                                       key={`${program.id}-${program.subjectCombination}`}
                                       sx={{
@@ -749,7 +793,9 @@ export default function FinalResult() {
                                         borderBottom:
                                           "1px solid rgba(0, 0, 0, 0.1)",
                                         "&:last-child": {
-                                          borderBottom: "none",
+                                          borderBottom: hasMore
+                                            ? "1px solid rgba(0, 0, 0, 0.1)"
+                                            : "none",
                                         },
                                       }}
                                     >
@@ -773,19 +819,45 @@ export default function FinalResult() {
                                         }}
                                       >
                                         <strong>Học phí:</strong>{" "}
-                                        {formatTuitionFee(program.tuitionFee)}
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: "0.85rem",
-                                          color: "#666",
-                                        }}
-                                      >
+                                        {formatTuitionFee(program.tuitionFee)} |{" "}
                                         <strong>Phương thức:</strong>{" "}
                                         {program.admissionTypeName}
                                       </Typography>
                                     </Box>
                                   ))}
+
+                                  {hasMore && (
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        mt: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleShowAllMajorPrograms(
+                                            university.id,
+                                            course.code,
+                                          );
+                                        }}
+                                        sx={{
+                                          color: "#A657AE",
+                                          textTransform: "none",
+                                          fontWeight: 500,
+                                          "&:hover": {
+                                            backgroundColor:
+                                              "rgba(166, 87, 174, 0.1)",
+                                          },
+                                        }}
+                                      >
+                                        {showAll
+                                          ? `Ẩn bớt (${String(majorPrograms.length - INITIAL_DISPLAY_LIMIT)})`
+                                          : `Xem thêm (${String(majorPrograms.length - INITIAL_DISPLAY_LIMIT)})`}{" "}
+                                      </Button>
+                                    </Box>
+                                  )}
                                 </Box>
                               </Collapse>
                             </Box>
@@ -827,6 +899,13 @@ export default function FinalResult() {
                           const expandKey = `${university.id}-${admissionType}`;
                           const isExpanded =
                             expandedAdmissionTypes[expandKey] || false;
+                          const showAll =
+                            showAllAdmissionPrograms[expandKey] || false;
+                          const displayedPrograms = showAll
+                            ? admissionPrograms
+                            : admissionPrograms.slice(0, INITIAL_DISPLAY_LIMIT);
+                          const hasMore =
+                            admissionPrograms.length > INITIAL_DISPLAY_LIMIT;
 
                           return (
                             <Box key={`${university.id}-${admissionType}`}>
@@ -875,13 +954,12 @@ export default function FinalResult() {
                                 <Box
                                   sx={{
                                     mt: 1,
-                                    ml: 3,
                                     p: 2,
                                     backgroundColor: "rgba(0, 0, 0, 0.02)",
                                     borderRadius: "8px",
                                   }}
                                 >
-                                  {admissionPrograms.map((program) => (
+                                  {displayedPrograms.map((program) => (
                                     <Box
                                       key={`${program.id}-${program.majorCode}`}
                                       sx={{
@@ -890,7 +968,9 @@ export default function FinalResult() {
                                         borderBottom:
                                           "1px solid rgba(0, 0, 0, 0.1)",
                                         "&:last-child": {
-                                          borderBottom: "none",
+                                          borderBottom: hasMore
+                                            ? "1px solid rgba(0, 0, 0, 0.1)"
+                                            : "none",
                                         },
                                       }}
                                     >
@@ -903,7 +983,8 @@ export default function FinalResult() {
                                       >
                                         <strong>Ngành:</strong>{" "}
                                         {program.majorName} ({program.majorCode}
-                                        )
+                                        ) | <strong>Tổ hợp:</strong>{" "}
+                                        {program.subjectCombination}
                                       </Typography>
                                       <Typography
                                         sx={{
@@ -912,22 +993,46 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Tổ hợp:</strong>{" "}
-                                        {program.subjectCombination} |{" "}
+                                        <strong>Học phí:</strong>{" "}
+                                        {formatTuitionFee(program.tuitionFee)} |{" "}
                                         <strong>Chương trình:</strong>{" "}
                                         {program.studyProgram}
                                       </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: "0.9rem",
-                                          color: "#333",
-                                        }}
-                                      >
-                                        <strong>Học phí:</strong>{" "}
-                                        {formatTuitionFee(program.tuitionFee)}
-                                      </Typography>
                                     </Box>
                                   ))}
+
+                                  {hasMore && (
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        mt: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleShowAllAdmissionPrograms(
+                                            university.id,
+                                            admissionType,
+                                          );
+                                        }}
+                                        sx={{
+                                          color: "#A657AE",
+                                          textTransform: "none",
+                                          fontWeight: 500,
+                                          "&:hover": {
+                                            backgroundColor:
+                                              "rgba(166, 87, 174, 0.1)",
+                                          },
+                                        }}
+                                      >
+                                        {showAll
+                                          ? `Ẩn bớt (${String(admissionPrograms.length - INITIAL_DISPLAY_LIMIT)})`
+                                          : `Xem thêm (${String(admissionPrograms.length - INITIAL_DISPLAY_LIMIT)})`}
+                                      </Button>
+                                    </Box>
+                                  )}
                                 </Box>
                               </Collapse>
                             </Box>
@@ -979,6 +1084,13 @@ export default function FinalResult() {
                           const expandKey = `${university.id}-${fee}`;
                           const isExpanded =
                             expandedTuitionFees[expandKey] || false;
+                          const showAll =
+                            showAllTuitionPrograms[expandKey] || false;
+                          const displayedPrograms = showAll
+                            ? feePrograms
+                            : feePrograms.slice(0, INITIAL_DISPLAY_LIMIT);
+                          const hasMore =
+                            feePrograms.length > INITIAL_DISPLAY_LIMIT;
 
                           return (
                             <Box key={`${university.id}-${fee}`}>
@@ -1025,13 +1137,12 @@ export default function FinalResult() {
                                 <Box
                                   sx={{
                                     mt: 1,
-                                    ml: 3,
                                     p: 2,
                                     backgroundColor: "rgba(0, 0, 0, 0.02)",
                                     borderRadius: "8px",
                                   }}
                                 >
-                                  {feePrograms.map((program) => (
+                                  {displayedPrograms.map((program) => (
                                     <Box
                                       key={`${program.id}-${program.admissionCode}`}
                                       sx={{
@@ -1040,7 +1151,9 @@ export default function FinalResult() {
                                         borderBottom:
                                           "1px solid rgba(0, 0, 0, 0.1)",
                                         "&:last-child": {
-                                          borderBottom: "none",
+                                          borderBottom: hasMore
+                                            ? "1px solid rgba(0, 0, 0, 0.1)"
+                                            : "none",
                                         },
                                       }}
                                     >
@@ -1078,6 +1191,39 @@ export default function FinalResult() {
                                       </Typography>
                                     </Box>
                                   ))}
+
+                                  {hasMore && (
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        mt: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleShowAllTuitionPrograms(
+                                            university.id,
+                                            fee,
+                                          );
+                                        }}
+                                        sx={{
+                                          color: "#A657AE",
+                                          textTransform: "none",
+                                          fontWeight: 500,
+                                          "&:hover": {
+                                            backgroundColor:
+                                              "rgba(166, 87, 174, 0.1)",
+                                          },
+                                        }}
+                                      >
+                                        {showAll
+                                          ? `Ẩn bớt (${String(feePrograms.length - INITIAL_DISPLAY_LIMIT)})`
+                                          : `Xem thêm (${String(feePrograms.length - INITIAL_DISPLAY_LIMIT)})`}
+                                      </Button>
+                                    </Box>
+                                  )}
                                 </Box>
                               </Collapse>
                             </Box>

@@ -122,13 +122,19 @@ export default function ResultFilter({
         }}
         sx={{
           position: "fixed",
-          bottom: 100,
+          bottom: 150,
           right: 30,
           backgroundColor: "#A657AE",
           color: "white",
           zIndex: 1000,
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+          transition: "all 0.3s ease-in-out",
           "&:hover": {
             backgroundColor: "#8e4a96",
+            transform: "scale(1.1)",
+          },
+          "&:active": {
+            transform: "scale(0.95)",
           },
         }}
       >

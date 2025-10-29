@@ -1,8 +1,9 @@
 import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Fab } from "@mui/material";
 import FinalResult from "./Result";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 export default function FinalResultPage() {
   usePageTitle("Unizy | Final Result");
@@ -11,16 +12,22 @@ export default function FinalResultPage() {
   const location = useLocation();
 
   const handlePrev = () => {
-    // Check if user came from history page
     const state = location.state as { fromHistory?: boolean } | null;
 
     if (state?.fromHistory) {
-      // If from history, go back to history page
       void navigate("/history");
     } else {
-      // Otherwise, go back to ninthForm
       void navigate("/ninthForm");
     }
+  };
+
+  const handleScrollToTop = () => {
+    setTimeout(() => {
+      const titleElement = document.querySelector(".final-result-page");
+      if (titleElement) {
+        titleElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
   };
 
   return (
@@ -39,9 +46,7 @@ export default function FinalResultPage() {
           paddingX: "1rem",
         }}
       >
-        <Typography
-          variant="h3"
-          className="final-result-title"
+        <Box
           sx={{
             textAlign: "center",
             fontWeight: "bold",
@@ -49,13 +54,17 @@ export default function FinalResultPage() {
             mb: 5,
             marginTop: "2rem",
             px: 2,
+            fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
           }}
+          component="h3"
+          id="page-top" // Add ID for easier targeting
         >
           {t("finalResult.title")}
-        </Typography>
+        </Box>
 
         <FinalResult />
 
+        {/* Back Button */}
         <Button
           variant="contained"
           onClick={handlePrev}
@@ -75,6 +84,32 @@ export default function FinalResultPage() {
         >
           {t("buttons.back")}
         </Button>
+
+        {/* Scroll to Top Button - Always visible, matching filter button style */}
+        <Fab
+          color="primary"
+          aria-label="scroll to top"
+          onClick={handleScrollToTop}
+          sx={{
+            position: "fixed",
+            bottom: 50, // Positioned above filter button (at 100px)
+            right: 30,
+            backgroundColor: "#A657AE",
+            color: "white",
+            zIndex: 1000,
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+            transition: "all 0.3s ease-in-out",
+            "&:hover": {
+              backgroundColor: "#8e4a96",
+              transform: "scale(1.1)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          }}
+        >
+          <KeyboardArrowUpIcon sx={{ fontSize: "2rem" }} />
+        </Fab>
       </Box>
     </>
   );
