@@ -64,14 +64,14 @@ export function useOcrHandler() {
       initialWaitTime?: number; // Initial wait before first attempt (default: 7000ms)
       maxPollingTime?: number; // Maximum total time to poll (default: 120000ms = 2 minutes)
       pollingInterval?: number; // Interval between polling attempts (default: 3000ms)
-      maxAttempts?: number; // Maximum number of attempts (default: 40)
+      maxAttempts?: number; // Maximum number of attempts (default: 12)
     },
   ): Promise<OcrResponse | null> => {
     const {
       initialWaitTime = 7000,
       maxPollingTime = 120000,
       pollingInterval = 3000,
-      maxAttempts = 40,
+      maxAttempts = 20,
     } = options ?? {};
 
     const targetStudentId = studentId ?? getStudentIdFromStorage();
@@ -228,59 +228,8 @@ export function useOcrHandler() {
     }
   };
 
-  /**
-   * Process OCR with quick polling for fast results
-   * Best for small files or when you expect quick processing
-   */
-  const processOcrQuick = async (
-    isAuthenticated: boolean,
-    studentId?: string,
-  ): Promise<OcrResponse | null> => {
-    return processOcr(isAuthenticated, studentId, {
-      initialWaitTime: 3000,
-      maxPollingTime: 30000, // 30 seconds max
-      pollingInterval: 2000, // Check every 2 seconds
-      maxAttempts: 15,
-    });
-  };
-
-  /**
-   * Process OCR with patient polling for larger batches
-   * Best for multiple or large files that may take longer
-   */
-  const processOcrPatient = async (
-    isAuthenticated: boolean,
-    studentId?: string,
-  ): Promise<OcrResponse | null> => {
-    return processOcr(isAuthenticated, studentId, {
-      initialWaitTime: 10000,
-      maxPollingTime: 180000, // 3 minutes max
-      pollingInterval: 5000, // Check every 5 seconds
-      maxAttempts: 36,
-    });
-  };
-
-  /**
-   * Process OCR with a single immediate check (no polling)
-   * Best for checking status of previously submitted files
-   */
-  const processOcrImmediate = async (
-    isAuthenticated: boolean,
-    studentId?: string,
-  ): Promise<OcrResponse | null> => {
-    return processOcr(isAuthenticated, studentId, {
-      initialWaitTime: 0,
-      maxPollingTime: 1000,
-      pollingInterval: 0,
-      maxAttempts: 1,
-    });
-  };
-
   return {
     processOcr,
-    processOcrQuick,
-    processOcrPatient,
-    processOcrImmediate,
     hasAllValidScores,
     isOcrSuccessful,
     getOcrStatusMessage,

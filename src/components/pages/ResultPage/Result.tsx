@@ -4,8 +4,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  TextField,
-  InputAdornment,
   Chip,
   Divider,
   CircularProgress,
@@ -18,7 +16,6 @@ import {
 } from "@mui/material";
 import { useState, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useLocation } from "react-router-dom";
@@ -76,11 +73,7 @@ export default function FinalResult() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const [searchQuery, setSearchQuery] = useState("");
   const [universities, setUniversities] = useState<University[]>([]);
-  const [filteredUniversities, setFilteredUniversities] = useState<
-    University[]
-  >([]);
   const [loading, setLoading] = useState(true);
   const [pageLoading, setPageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,15 +101,15 @@ export default function FinalResult() {
     Record<string, boolean>
   >({});
 
-  // Show more states for limiting initial display
-  const [showAllMajorPrograms, setShowAllMajorPrograms] = useState<
-    Record<string, boolean>
+  // Visible count states - tracks how many items to show (default: INITIAL_DISPLAY_LIMIT)
+  const [visibleMajorCount, setVisibleMajorCount] = useState<
+    Record<string, number>
   >({});
-  const [showAllAdmissionPrograms, setShowAllAdmissionPrograms] = useState<
-    Record<string, boolean>
+  const [visibleAdmissionCount, setVisibleAdmissionCount] = useState<
+    Record<string, number>
   >({});
-  const [showAllTuitionPrograms, setShowAllTuitionPrograms] = useState<
-    Record<string, boolean>
+  const [visibleTuitionCount, setVisibleTuitionCount] = useState<
+    Record<string, number>
   >({});
 
   // Toggle expansion handlers
@@ -141,29 +134,66 @@ export default function FinalResult() {
     setExpandedTuitionFees((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Toggle show more handlers
-  const toggleShowAllMajorPrograms = (
-    universityId: string,
-    majorCode: string,
-  ) => {
+  // Load more handlers - shows 10 more items at a time
+  const loadMoreMajorPrograms = (universityId: string, majorCode: string) => {
     const key = `${universityId}-${majorCode}`;
-    setShowAllMajorPrograms((prev) => ({ ...prev, [key]: !prev[key] }));
+    setVisibleMajorCount((prev) => ({
+      ...prev,
+      [key]: (prev[key] || INITIAL_DISPLAY_LIMIT) + INITIAL_DISPLAY_LIMIT,
+    }));
   };
 
-  const toggleShowAllAdmissionPrograms = (
+  const loadMoreAdmissionPrograms = (
     universityId: string,
     admissionType: string,
   ) => {
     const key = `${universityId}-${admissionType}`;
-    setShowAllAdmissionPrograms((prev) => ({ ...prev, [key]: !prev[key] }));
+    setVisibleAdmissionCount((prev) => ({
+      ...prev,
+      [key]: (prev[key] || INITIAL_DISPLAY_LIMIT) + INITIAL_DISPLAY_LIMIT,
+    }));
   };
 
-  const toggleShowAllTuitionPrograms = (
+  const loadMoreTuitionPrograms = (
     universityId: string,
     tuitionFee: string,
   ) => {
     const key = `${universityId}-${tuitionFee}`;
-    setShowAllTuitionPrograms((prev) => ({ ...prev, [key]: !prev[key] }));
+    setVisibleTuitionCount((prev) => ({
+      ...prev,
+      [key]: (prev[key] || INITIAL_DISPLAY_LIMIT) + INITIAL_DISPLAY_LIMIT,
+    }));
+  };
+
+  // Show less handlers - resets to initial display limit
+  const showLessMajorPrograms = (universityId: string, majorCode: string) => {
+    const key = `${universityId}-${majorCode}`;
+    setVisibleMajorCount((prev) => ({
+      ...prev,
+      [key]: INITIAL_DISPLAY_LIMIT,
+    }));
+  };
+
+  const showLessAdmissionPrograms = (
+    universityId: string,
+    admissionType: string,
+  ) => {
+    const key = `${universityId}-${admissionType}`;
+    setVisibleAdmissionCount((prev) => ({
+      ...prev,
+      [key]: INITIAL_DISPLAY_LIMIT,
+    }));
+  };
+
+  const showLessTuitionPrograms = (
+    universityId: string,
+    tuitionFee: string,
+  ) => {
+    const key = `${universityId}-${tuitionFee}`;
+    setVisibleTuitionCount((prev) => ({
+      ...prev,
+      [key]: INITIAL_DISPLAY_LIMIT,
+    }));
   };
 
   // Get programs for a specific university from raw data
@@ -355,31 +385,6 @@ export default function FinalResult() {
     void fetchPageData(1);
   }, [fetchPageData]);
 
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredUniversities(universities);
-    } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = universities.filter(
-        (uni) =>
-          uni.name.toLowerCase().includes(query) ||
-          uni.shortName.toLowerCase().includes(query) ||
-          uni.location.toLowerCase().includes(query) ||
-          uni.courses.some((course) =>
-            course.name.toLowerCase().includes(query),
-          ),
-      );
-      setFilteredUniversities(filtered);
-    }
-  }, [searchQuery, universities]);
-
-  const handleSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value);
-    },
-    [],
-  );
-
   if (loading) {
     return (
       <Box
@@ -468,60 +473,13 @@ export default function FinalResult() {
         </Box>
       )}
 
-      <Box sx={{ mb: 4 }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder={t("finalResult.searchPlaceholder")}
-          value={searchQuery}
-          onChange={handleSearchChange}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon sx={{ color: "#A657AE", fontSize: "1.8rem" }} />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "30px",
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "30px",
-              "& fieldset": {
-                borderColor: "rgba(166, 87, 174, 0.3)",
-              },
-              "&:hover fieldset": {
-                borderColor: "#A657AE",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#A657AE",
-                borderWidth: "2px",
-              },
-            },
-            "& input": {
-              padding: "16px 20px",
-              fontSize: "1rem",
-            },
-          }}
-        />
-      </Box>
-
       {!pageLoading && totalElements > 0 && (
-        <Box sx={{ mb: 2 }}>
-          <Typography
-            sx={{
-              color: "white",
-              fontSize: "1rem",
-              textAlign: "center",
-            }}
-          ></Typography>
+        <Box sx={{ mb: 3 }}>
           {isFiltered && (
             <Typography
               sx={{
                 color: "white",
-                fontSize: "0.9rem",
+                fontSize: "1.5rem",
                 textAlign: "center",
                 mt: 1,
               }}
@@ -529,23 +487,11 @@ export default function FinalResult() {
               {t("finalResult.filteredResults")}
             </Typography>
           )}
-          {searchQuery && (
-            <Typography
-              sx={{
-                color: "white",
-                fontSize: "0.9rem",
-                textAlign: "center",
-                mt: 1,
-              }}
-            >
-              {t("finalResult.searchingInCurrentPage", { query: searchQuery })}
-            </Typography>
-          )}
         </Box>
       )}
 
       <Box>
-        {!pageLoading && filteredUniversities.length === 0 ? (
+        {!pageLoading && universities.length === 0 ? (
           <Box
             sx={{
               textAlign: "center",
@@ -555,14 +501,9 @@ export default function FinalResult() {
             }}
           >
             <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
-              {searchQuery
-                ? t("finalResult.noResultsForKeywordInPage", {
-                    keyword: searchQuery,
-                    page: currentPage,
-                  })
-                : isFiltered
-                  ? t("finalResult.noResultsForFilters")
-                  : t("finalResult.noAdmissionData")}
+              {isFiltered
+                ? t("finalResult.noResultsForFilters")
+                : t("finalResult.noAdmissionData")}
             </Typography>
             {isFiltered && (
               <Typography
@@ -575,21 +516,10 @@ export default function FinalResult() {
                 {t("finalResult.tryDifferentFilters")}
               </Typography>
             )}
-            {searchQuery && (
-              <Typography
-                sx={{
-                  color: "#666",
-                  mt: 2,
-                  fontSize: "0.95rem",
-                }}
-              >
-                {t("finalResult.tryDifferentPageOrClearSearch")}
-              </Typography>
-            )}
           </Box>
         ) : (
           <>
-            {filteredUniversities.map((university) => {
+            {universities.map((university) => {
               const uniPrograms = getUniversityPrograms(university.shortName);
 
               // Get unique values for summary
@@ -668,7 +598,9 @@ export default function FinalResult() {
                           fontSize: "1.1rem",
                         }}
                       >
-                        Các ngành học ({uniqueMajors.length} ngành)
+                        {t("finalResult.majors", {
+                          count: uniqueMajors.length,
+                        })}
                       </Typography>
 
                       {/* Summary Information */}
@@ -684,11 +616,13 @@ export default function FinalResult() {
                         <Typography
                           sx={{ fontSize: "0.9rem", color: "#666", mb: 1 }}
                         >
-                          <strong>Tổ hợp môn:</strong>{" "}
+                          <strong>
+                            {t("finalResult.subjectCombination")}:
+                          </strong>{" "}
                           {uniqueSubjectCombinations.join(", ")}
                         </Typography>
                         <Typography sx={{ fontSize: "0.9rem", color: "#666" }}>
-                          <strong>Chương trình đào tạo:</strong>{" "}
+                          <strong>{t("finalResult.studyProgram")}:</strong>{" "}
                           {uniqueStudyPrograms.join(", ")}
                         </Typography>
                       </Box>
@@ -707,13 +641,20 @@ export default function FinalResult() {
                           );
                           const expandKey = `${university.id}-${course.code}`;
                           const isExpanded = expandedMajors[expandKey] || false;
-                          const showAll =
-                            showAllMajorPrograms[expandKey] || false;
-                          const displayedPrograms = showAll
-                            ? majorPrograms
-                            : majorPrograms.slice(0, INITIAL_DISPLAY_LIMIT);
-                          const hasMore =
-                            majorPrograms.length > INITIAL_DISPLAY_LIMIT;
+
+                          // Get current visible count or use default
+                          const currentVisibleCount =
+                            visibleMajorCount[expandKey] ||
+                            INITIAL_DISPLAY_LIMIT;
+                          const displayedPrograms = majorPrograms.slice(
+                            0,
+                            currentVisibleCount,
+                          );
+                          const remainingCount =
+                            majorPrograms.length - currentVisibleCount;
+                          const hasMore = remainingCount > 0;
+                          const canShowLess =
+                            currentVisibleCount > INITIAL_DISPLAY_LIMIT;
 
                           return (
                             <Box key={`${university.id}-${course.code}`}>
@@ -755,7 +696,7 @@ export default function FinalResult() {
                                       mt: 0.5,
                                     }}
                                   >
-                                    Mã ngành: {course.code}
+                                    {t("finalResult.majorCode")}: {course.code}
                                   </Typography>
                                 </Box>
                                 <Box
@@ -784,19 +725,19 @@ export default function FinalResult() {
                                     borderRadius: "8px",
                                   }}
                                 >
-                                  {displayedPrograms.map((program) => (
+                                  {displayedPrograms.map((program, index) => (
                                     <Box
                                       key={`${program.id}-${program.subjectCombination}`}
                                       sx={{
                                         mb: 2,
                                         pb: 2,
                                         borderBottom:
-                                          "1px solid rgba(0, 0, 0, 0.1)",
-                                        "&:last-child": {
-                                          borderBottom: hasMore
+                                          index <
+                                            displayedPrograms.length - 1 ||
+                                          hasMore ||
+                                          canShowLess
                                             ? "1px solid rgba(0, 0, 0, 0.1)"
                                             : "none",
-                                        },
                                       }}
                                     >
                                       <Typography
@@ -806,9 +747,13 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Tổ hợp:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.combination")}:
+                                        </strong>{" "}
                                         {program.subjectCombination} |{" "}
-                                        <strong>Chương trình:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.program")}:
+                                        </strong>{" "}
                                         {program.studyProgram}
                                       </Typography>
                                       <Typography
@@ -818,44 +763,77 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Học phí:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.tuitionFee")}:
+                                        </strong>{" "}
                                         {formatTuitionFee(program.tuitionFee)} |{" "}
-                                        <strong>Phương thức:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.method")}:
+                                        </strong>{" "}
                                         {program.admissionTypeName}
                                       </Typography>
                                     </Box>
                                   ))}
 
-                                  {hasMore && (
+                                  {(hasMore || canShowLess) && (
                                     <Box
                                       sx={{
                                         display: "flex",
                                         justifyContent: "center",
+                                        gap: 2,
                                         mt: 2,
                                       }}
                                     >
-                                      <Button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleShowAllMajorPrograms(
-                                            university.id,
-                                            course.code,
-                                          );
-                                        }}
-                                        sx={{
-                                          color: "#A657AE",
-                                          textTransform: "none",
-                                          fontWeight: 500,
-                                          "&:hover": {
-                                            backgroundColor:
-                                              "rgba(166, 87, 174, 0.1)",
-                                          },
-                                        }}
-                                      >
-                                        {showAll
-                                          ? `Ẩn bớt (${String(majorPrograms.length - INITIAL_DISPLAY_LIMIT)})`
-                                          : `Xem thêm (${String(majorPrograms.length - INITIAL_DISPLAY_LIMIT)})`}{" "}
-                                      </Button>
+                                      {hasMore && (
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            loadMoreMajorPrograms(
+                                              university.id,
+                                              course.code,
+                                            );
+                                          }}
+                                          sx={{
+                                            color: "#A657AE",
+                                            textTransform: "none",
+                                            fontWeight: 500,
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(166, 87, 174, 0.1)",
+                                            },
+                                          }}
+                                        >
+                                          {t("finalResult.loadMore", {
+                                            count: Math.min(
+                                              remainingCount,
+                                              INITIAL_DISPLAY_LIMIT,
+                                            ),
+                                            remaining: remainingCount,
+                                          })}
+                                        </Button>
+                                      )}
+                                      {canShowLess && (
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            showLessMajorPrograms(
+                                              university.id,
+                                              course.code,
+                                            );
+                                          }}
+                                          sx={{
+                                            color: "#666",
+                                            textTransform: "none",
+                                            fontWeight: 500,
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(0, 0, 0, 0.05)",
+                                            },
+                                          }}
+                                        >
+                                          {t("finalResult.showLess")}
+                                        </Button>
+                                      )}
                                     </Box>
                                   )}
                                 </Box>
@@ -899,13 +877,20 @@ export default function FinalResult() {
                           const expandKey = `${university.id}-${admissionType}`;
                           const isExpanded =
                             expandedAdmissionTypes[expandKey] || false;
-                          const showAll =
-                            showAllAdmissionPrograms[expandKey] || false;
-                          const displayedPrograms = showAll
-                            ? admissionPrograms
-                            : admissionPrograms.slice(0, INITIAL_DISPLAY_LIMIT);
-                          const hasMore =
-                            admissionPrograms.length > INITIAL_DISPLAY_LIMIT;
+
+                          // Get current visible count or use default
+                          const currentVisibleCount =
+                            visibleAdmissionCount[expandKey] ||
+                            INITIAL_DISPLAY_LIMIT;
+                          const displayedPrograms = admissionPrograms.slice(
+                            0,
+                            currentVisibleCount,
+                          );
+                          const remainingCount =
+                            admissionPrograms.length - currentVisibleCount;
+                          const hasMore = remainingCount > 0;
+                          const canShowLess =
+                            currentVisibleCount > INITIAL_DISPLAY_LIMIT;
 
                           return (
                             <Box key={`${university.id}-${admissionType}`}>
@@ -959,19 +944,19 @@ export default function FinalResult() {
                                     borderRadius: "8px",
                                   }}
                                 >
-                                  {displayedPrograms.map((program) => (
+                                  {displayedPrograms.map((program, index) => (
                                     <Box
                                       key={`${program.id}-${program.majorCode}`}
                                       sx={{
                                         mb: 2,
                                         pb: 2,
                                         borderBottom:
-                                          "1px solid rgba(0, 0, 0, 0.1)",
-                                        "&:last-child": {
-                                          borderBottom: hasMore
+                                          index <
+                                            displayedPrograms.length - 1 ||
+                                          hasMore ||
+                                          canShowLess
                                             ? "1px solid rgba(0, 0, 0, 0.1)"
                                             : "none",
-                                        },
                                       }}
                                     >
                                       <Typography
@@ -981,9 +966,14 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Ngành:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.major")}:
+                                        </strong>{" "}
                                         {program.majorName} ({program.majorCode}
-                                        ) | <strong>Tổ hợp:</strong>{" "}
+                                        ) |{" "}
+                                        <strong>
+                                          {t("finalResult.combination")}:
+                                        </strong>{" "}
                                         {program.subjectCombination}
                                       </Typography>
                                       <Typography
@@ -993,44 +983,77 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Học phí:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.tuitionFee")}:
+                                        </strong>{" "}
                                         {formatTuitionFee(program.tuitionFee)} |{" "}
-                                        <strong>Chương trình:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.program")}:
+                                        </strong>{" "}
                                         {program.studyProgram}
                                       </Typography>
                                     </Box>
                                   ))}
 
-                                  {hasMore && (
+                                  {(hasMore || canShowLess) && (
                                     <Box
                                       sx={{
                                         display: "flex",
                                         justifyContent: "center",
+                                        gap: 2,
                                         mt: 2,
                                       }}
                                     >
-                                      <Button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleShowAllAdmissionPrograms(
-                                            university.id,
-                                            admissionType,
-                                          );
-                                        }}
-                                        sx={{
-                                          color: "#A657AE",
-                                          textTransform: "none",
-                                          fontWeight: 500,
-                                          "&:hover": {
-                                            backgroundColor:
-                                              "rgba(166, 87, 174, 0.1)",
-                                          },
-                                        }}
-                                      >
-                                        {showAll
-                                          ? `Ẩn bớt (${String(admissionPrograms.length - INITIAL_DISPLAY_LIMIT)})`
-                                          : `Xem thêm (${String(admissionPrograms.length - INITIAL_DISPLAY_LIMIT)})`}
-                                      </Button>
+                                      {hasMore && (
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            loadMoreAdmissionPrograms(
+                                              university.id,
+                                              admissionType,
+                                            );
+                                          }}
+                                          sx={{
+                                            color: "#A657AE",
+                                            textTransform: "none",
+                                            fontWeight: 500,
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(166, 87, 174, 0.1)",
+                                            },
+                                          }}
+                                        >
+                                          {t("finalResult.loadMore", {
+                                            count: Math.min(
+                                              remainingCount,
+                                              INITIAL_DISPLAY_LIMIT,
+                                            ),
+                                            remaining: remainingCount,
+                                          })}
+                                        </Button>
+                                      )}
+                                      {canShowLess && (
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            showLessAdmissionPrograms(
+                                              university.id,
+                                              admissionType,
+                                            );
+                                          }}
+                                          sx={{
+                                            color: "#666",
+                                            textTransform: "none",
+                                            fontWeight: 500,
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(0, 0, 0, 0.05)",
+                                            },
+                                          }}
+                                        >
+                                          {t("finalResult.showLess")}
+                                        </Button>
+                                      )}
                                     </Box>
                                   )}
                                 </Box>
@@ -1054,7 +1077,7 @@ export default function FinalResult() {
                           fontSize: "1.1rem",
                         }}
                       >
-                        {t("finalResult.tuitionFee")}
+                        {t("finalResult.tuitionFeeRange")}
                       </Typography>
                       <Typography
                         sx={{
@@ -1084,13 +1107,20 @@ export default function FinalResult() {
                           const expandKey = `${university.id}-${fee}`;
                           const isExpanded =
                             expandedTuitionFees[expandKey] || false;
-                          const showAll =
-                            showAllTuitionPrograms[expandKey] || false;
-                          const displayedPrograms = showAll
-                            ? feePrograms
-                            : feePrograms.slice(0, INITIAL_DISPLAY_LIMIT);
-                          const hasMore =
-                            feePrograms.length > INITIAL_DISPLAY_LIMIT;
+
+                          // Get current visible count or use default
+                          const currentVisibleCount =
+                            visibleTuitionCount[expandKey] ||
+                            INITIAL_DISPLAY_LIMIT;
+                          const displayedPrograms = feePrograms.slice(
+                            0,
+                            currentVisibleCount,
+                          );
+                          const remainingCount =
+                            feePrograms.length - currentVisibleCount;
+                          const hasMore = remainingCount > 0;
+                          const canShowLess =
+                            currentVisibleCount > INITIAL_DISPLAY_LIMIT;
 
                           return (
                             <Box key={`${university.id}-${fee}`}>
@@ -1142,19 +1172,19 @@ export default function FinalResult() {
                                     borderRadius: "8px",
                                   }}
                                 >
-                                  {displayedPrograms.map((program) => (
+                                  {displayedPrograms.map((program, index) => (
                                     <Box
                                       key={`${program.id}-${program.admissionCode}`}
                                       sx={{
                                         mb: 2,
                                         pb: 2,
                                         borderBottom:
-                                          "1px solid rgba(0, 0, 0, 0.1)",
-                                        "&:last-child": {
-                                          borderBottom: hasMore
+                                          index <
+                                            displayedPrograms.length - 1 ||
+                                          hasMore ||
+                                          canShowLess
                                             ? "1px solid rgba(0, 0, 0, 0.1)"
                                             : "none",
-                                        },
                                       }}
                                     >
                                       <Typography
@@ -1164,7 +1194,9 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Ngành:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.major")}:
+                                        </strong>{" "}
                                         {program.majorName} ({program.majorCode}
                                         )
                                       </Typography>
@@ -1175,53 +1207,88 @@ export default function FinalResult() {
                                           mb: 0.5,
                                         }}
                                       >
-                                        <strong>Tổ hợp:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.combination")}:
+                                        </strong>{" "}
                                         {program.subjectCombination} |{" "}
-                                        <strong>Chương trình:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.program")}:
+                                        </strong>{" "}
                                         {program.studyProgram}
                                       </Typography>
                                       <Typography
                                         sx={{
-                                          fontSize: "0.85rem",
-                                          color: "#666",
+                                          fontSize: "0.9rem",
+                                          color: "#333",
                                         }}
                                       >
-                                        <strong>Phương thức:</strong>{" "}
+                                        <strong>
+                                          {t("finalResult.method")}:
+                                        </strong>{" "}
                                         {program.admissionTypeName}
                                       </Typography>
                                     </Box>
                                   ))}
 
-                                  {hasMore && (
+                                  {(hasMore || canShowLess) && (
                                     <Box
                                       sx={{
                                         display: "flex",
                                         justifyContent: "center",
+                                        gap: 2,
                                         mt: 2,
                                       }}
                                     >
-                                      <Button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleShowAllTuitionPrograms(
-                                            university.id,
-                                            fee,
-                                          );
-                                        }}
-                                        sx={{
-                                          color: "#A657AE",
-                                          textTransform: "none",
-                                          fontWeight: 500,
-                                          "&:hover": {
-                                            backgroundColor:
-                                              "rgba(166, 87, 174, 0.1)",
-                                          },
-                                        }}
-                                      >
-                                        {showAll
-                                          ? `Ẩn bớt (${String(feePrograms.length - INITIAL_DISPLAY_LIMIT)})`
-                                          : `Xem thêm (${String(feePrograms.length - INITIAL_DISPLAY_LIMIT)})`}
-                                      </Button>
+                                      {hasMore && (
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            loadMoreTuitionPrograms(
+                                              university.id,
+                                              fee,
+                                            );
+                                          }}
+                                          sx={{
+                                            color: "#A657AE",
+                                            textTransform: "none",
+                                            fontWeight: 500,
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(166, 87, 174, 0.1)",
+                                            },
+                                          }}
+                                        >
+                                          {t("finalResult.loadMore", {
+                                            count: Math.min(
+                                              remainingCount,
+                                              INITIAL_DISPLAY_LIMIT,
+                                            ),
+                                            remaining: remainingCount,
+                                          })}
+                                        </Button>
+                                      )}
+                                      {canShowLess && (
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            showLessTuitionPrograms(
+                                              university.id,
+                                              fee,
+                                            );
+                                          }}
+                                          sx={{
+                                            color: "#666",
+                                            textTransform: "none",
+                                            fontWeight: 500,
+                                            "&:hover": {
+                                              backgroundColor:
+                                                "rgba(0, 0, 0, 0.05)",
+                                            },
+                                          }}
+                                        >
+                                          {t("finalResult.showLess")}
+                                        </Button>
+                                      )}
                                     </Box>
                                   )}
                                 </Box>

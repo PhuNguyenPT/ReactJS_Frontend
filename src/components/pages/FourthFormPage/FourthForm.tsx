@@ -5,7 +5,6 @@ import {
   Button,
   IconButton,
   Autocomplete,
-  Tooltip,
   Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -289,44 +288,30 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
               })}
 
             {/* Add Button - Disabled when max entries reached */}
-            <Tooltip
-              title={
-                !canAdd
-                  ? t("fourthForm.maxEntriesReachedTooltip", {
-                      category: category.name,
-                    })
-                  : ""
-              }
-              arrow
-              placement="top"
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => {
+                handleAddEntry(category.id);
+              }}
+              disabled={!canAdd}
+              sx={{
+                mb: 2,
+                backgroundColor: canAdd ? "#9c27b0" : "#ccc",
+                borderRadius: "10px",
+                textTransform: "none",
+                alignSelf: "flex-start",
+                "&:hover": {
+                  backgroundColor: canAdd ? "#7b1fa2" : "#ccc",
+                },
+                "&.Mui-disabled": {
+                  backgroundColor: "#e0e0e0",
+                  color: "#9e9e9e",
+                },
+              }}
             >
-              <span>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => {
-                    handleAddEntry(category.id);
-                  }}
-                  disabled={!canAdd}
-                  sx={{
-                    mb: 2,
-                    backgroundColor: canAdd ? "#9c27b0" : "#ccc",
-                    borderRadius: "10px",
-                    textTransform: "none",
-                    alignSelf: "flex-start",
-                    "&:hover": {
-                      backgroundColor: canAdd ? "#7b1fa2" : "#ccc",
-                    },
-                    "&.Mui-disabled": {
-                      backgroundColor: "#e0e0e0",
-                      color: "#9e9e9e",
-                    },
-                  }}
-                >
-                  {getAddButtonText(category.id)}
-                </Button>
-              </span>
-            </Tooltip>
+              {getAddButtonText(category.id)}
+            </Button>
           </Box>
         );
       })}
