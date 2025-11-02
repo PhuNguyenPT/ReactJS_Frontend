@@ -6,7 +6,6 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # Mount SSL certificates from host
       - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
       - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
       - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
@@ -22,4 +21,5 @@ services:
 
 networks:
   app-network:
-    driver: bridge
+    external: true
+    name: app-network
