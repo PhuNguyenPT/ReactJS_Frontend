@@ -85,14 +85,14 @@ export default function FinalResultPage() {
           {t("buttons.back")}
         </Button>
 
-        {/* Scroll to Top Button - Always visible, matching filter button style */}
+        {/* Scroll to Top Button*/}
         <Fab
           color="primary"
           aria-label="scroll to top"
           onClick={handleScrollToTop}
           sx={{
             position: "fixed",
-            bottom: 50, // Positioned above filter button (at 100px)
+            bottom: 50,
             right: 30,
             backgroundColor: "#A657AE",
             color: "white",

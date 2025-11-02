@@ -14,376 +14,69 @@ import {
   IconButton,
   Button,
 } from "@mui/material";
-import { useState, useCallback, useEffect } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import useAuth from "../../../hooks/auth/useAuth";
-import {
-  getPaginatedAdmissionData,
-  convertFilterCriteriaToParams,
-} from "../../../services/studentAdmission/studentAdmissionService";
-import { transformAdmissionData } from "../../../utils/transformAdmissionData";
-import ResultFilter, { type FilterCriteria } from "./ResultFilter";
-import type {
-  AdmissionProgram,
-  University,
-  AdmissionApiResponse,
-} from "../../../type/interface/admissionTypes";
-import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
-
-const ITEMS_PER_PAGE = import.meta.env.VITE_PAGINATION_DEFAULT_SIZE;
-const INITIAL_DISPLAY_LIMIT = Number(import.meta.env.VITE_DISPLAY_LIMIT);
-
-function extractPrograms(data: unknown): AdmissionProgram[] {
-  if (
-    data &&
-    typeof data === "object" &&
-    "content" in data &&
-    Array.isArray((data as AdmissionApiResponse).content)
-  ) {
-    return (data as AdmissionApiResponse).content;
-  }
-
-  if (Array.isArray(data)) {
-    return data as AdmissionProgram[];
-  }
-
-  return [];
-}
-
-interface FinalResultState {
-  studentId?: string;
-  admissionData?: unknown;
-  isGuest?: boolean;
-  savedToAccount?: boolean;
-  filterFields?: FilterFieldsResponse | null;
-}
-
-// Helper function to format tuition fee
-function formatTuitionFee(fee: string): string {
-  const numFee = parseFloat(fee);
-  if (isNaN(numFee)) return fee;
-  return `${(numFee / 1000000).toFixed(1)} triệu VNĐ`;
-}
+import ResultFilter from "./ResultFilter";
+import { useResultPage } from "../../../hooks/formPages/useResultPage";
+import { formatTuitionFee } from "../../../utils/resultUtils";
 
 export default function FinalResult() {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
-  const [universities, setUniversities] = useState<University[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pageLoading, setPageLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalElements, setTotalElements] = useState(0);
-  const [activeFilters, setActiveFilters] = useState<FilterCriteria>({});
-  const [filterFields, setFilterFields] = useState<FilterFieldsResponse | null>(
-    null,
-  );
-  const [studentId, setStudentId] = useState<string | null>(null);
-  const [isFiltered, setIsFiltered] = useState(false);
+  const {
+    // Data
+    universities,
+    filterFields,
 
-  // Store raw API data for detailed views
-  const [rawProgramData, setRawProgramData] = useState<AdmissionProgram[]>([]);
+    // Loading and error states
+    loading,
+    pageLoading,
+    error,
 
-  // Expansion states for different sections
-  const [expandedMajors, setExpandedMajors] = useState<Record<string, boolean>>(
-    {},
-  );
-  const [expandedAdmissionTypes, setExpandedAdmissionTypes] = useState<
-    Record<string, boolean>
-  >({});
-  const [expandedTuitionFees, setExpandedTuitionFees] = useState<
-    Record<string, boolean>
-  >({});
+    // Pagination
+    currentPage,
+    totalPages,
+    totalElements,
 
-  // Visible count states - tracks how many items to show (default: INITIAL_DISPLAY_LIMIT)
-  const [visibleMajorCount, setVisibleMajorCount] = useState<
-    Record<string, number>
-  >({});
-  const [visibleAdmissionCount, setVisibleAdmissionCount] = useState<
-    Record<string, number>
-  >({});
-  const [visibleTuitionCount, setVisibleTuitionCount] = useState<
-    Record<string, number>
-  >({});
+    // Filter states
+    isFiltered,
 
-  // Toggle expansion handlers
-  const toggleMajorExpansion = (universityId: string, majorCode: string) => {
-    const key = `${universityId}-${majorCode}`;
-    setExpandedMajors((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+    // Expansion states
+    expandedMajors,
+    expandedAdmissionTypes,
+    expandedTuitionFees,
 
-  const toggleAdmissionTypeExpansion = (
-    universityId: string,
-    admissionType: string,
-  ) => {
-    const key = `${universityId}-${admissionType}`;
-    setExpandedAdmissionTypes((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+    // Visible counts
+    visibleMajorCount,
+    visibleAdmissionCount,
+    visibleTuitionCount,
 
-  const toggleTuitionFeeExpansion = (
-    universityId: string,
-    tuitionFee: string,
-  ) => {
-    const key = `${universityId}-${tuitionFee}`;
-    setExpandedTuitionFees((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+    // Constants
+    INITIAL_DISPLAY_LIMIT,
 
-  // Load more handlers - shows 10 more items at a time
-  const loadMoreMajorPrograms = (universityId: string, majorCode: string) => {
-    const key = `${universityId}-${majorCode}`;
-    setVisibleMajorCount((prev) => ({
-      ...prev,
-      [key]: (prev[key] || INITIAL_DISPLAY_LIMIT) + INITIAL_DISPLAY_LIMIT,
-    }));
-  };
+    // Handlers
+    toggleMajorExpansion,
+    toggleAdmissionTypeExpansion,
+    toggleTuitionFeeExpansion,
+    loadMoreMajorPrograms,
+    loadMoreAdmissionPrograms,
+    loadMoreTuitionPrograms,
+    showLessMajorPrograms,
+    showLessAdmissionPrograms,
+    showLessTuitionPrograms,
 
-  const loadMoreAdmissionPrograms = (
-    universityId: string,
-    admissionType: string,
-  ) => {
-    const key = `${universityId}-${admissionType}`;
-    setVisibleAdmissionCount((prev) => ({
-      ...prev,
-      [key]: (prev[key] || INITIAL_DISPLAY_LIMIT) + INITIAL_DISPLAY_LIMIT,
-    }));
-  };
+    // Data getters
+    getUniversityPrograms,
+    getMajorPrograms,
+    getAdmissionTypePrograms,
+    getTuitionFeePrograms,
 
-  const loadMoreTuitionPrograms = (
-    universityId: string,
-    tuitionFee: string,
-  ) => {
-    const key = `${universityId}-${tuitionFee}`;
-    setVisibleTuitionCount((prev) => ({
-      ...prev,
-      [key]: (prev[key] || INITIAL_DISPLAY_LIMIT) + INITIAL_DISPLAY_LIMIT,
-    }));
-  };
-
-  // Show less handlers - resets to initial display limit
-  const showLessMajorPrograms = (universityId: string, majorCode: string) => {
-    const key = `${universityId}-${majorCode}`;
-    setVisibleMajorCount((prev) => ({
-      ...prev,
-      [key]: INITIAL_DISPLAY_LIMIT,
-    }));
-  };
-
-  const showLessAdmissionPrograms = (
-    universityId: string,
-    admissionType: string,
-  ) => {
-    const key = `${universityId}-${admissionType}`;
-    setVisibleAdmissionCount((prev) => ({
-      ...prev,
-      [key]: INITIAL_DISPLAY_LIMIT,
-    }));
-  };
-
-  const showLessTuitionPrograms = (
-    universityId: string,
-    tuitionFee: string,
-  ) => {
-    const key = `${universityId}-${tuitionFee}`;
-    setVisibleTuitionCount((prev) => ({
-      ...prev,
-      [key]: INITIAL_DISPLAY_LIMIT,
-    }));
-  };
-
-  // Get programs for a specific university from raw data
-  const getUniversityPrograms = useCallback(
-    (uniCode: string): AdmissionProgram[] => {
-      return rawProgramData.filter((program) => program.uniCode === uniCode);
-    },
-    [rawProgramData],
-  );
-
-  // Get programs for a specific major
-  const getMajorPrograms = useCallback(
-    (uniCode: string, majorCode: string): AdmissionProgram[] => {
-      return rawProgramData.filter(
-        (program) =>
-          program.uniCode === uniCode && program.majorCode === majorCode,
-      );
-    },
-    [rawProgramData],
-  );
-
-  // Get programs for a specific admission type
-  const getAdmissionTypePrograms = useCallback(
-    (uniCode: string, admissionType: string): AdmissionProgram[] => {
-      return rawProgramData.filter(
-        (program) =>
-          program.uniCode === uniCode &&
-          program.admissionType === admissionType,
-      );
-    },
-    [rawProgramData],
-  );
-
-  // Get programs for a specific tuition fee
-  const getTuitionFeePrograms = useCallback(
-    (uniCode: string, tuitionFee: string): AdmissionProgram[] => {
-      return rawProgramData.filter(
-        (program) =>
-          program.uniCode === uniCode && program.tuitionFee === tuitionFee,
-      );
-    },
-    [rawProgramData],
-  );
-
-  const fetchPageData = useCallback(
-    async (
-      page: number,
-      filters?: Partial<ReturnType<typeof convertFilterCriteriaToParams>>,
-    ) => {
-      if (!studentId) {
-        console.error("[FinalResult] No student ID available");
-        return;
-      }
-
-      try {
-        setPageLoading(true);
-        setError(null);
-
-        const response = await getPaginatedAdmissionData(
-          studentId,
-          isAuthenticated,
-          page.toString(),
-          ITEMS_PER_PAGE,
-          filters,
-        );
-
-        if (response.success && response.data) {
-          const programs = extractPrograms(response.data);
-
-          // Store raw program data
-          setRawProgramData(programs);
-
-          const transformedData = transformAdmissionData(programs);
-
-          setUniversities(transformedData);
-          setTotalPages(response.totalPages ?? 1);
-          setTotalElements(response.totalElements ?? 0);
-          setCurrentPage(page);
-        } else {
-          throw new Error(
-            response.message ?? t("finalResult.errors.cannotLoadData"),
-          );
-        }
-      } catch (err) {
-        console.error("[FinalResult] Error fetching page data:", err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : t("finalResult.errors.cannotLoadDataRetry"),
-        );
-      } finally {
-        setPageLoading(false);
-      }
-    },
-    [studentId, isAuthenticated, t],
-  );
-
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const state = location.state as FinalResultState | null;
-
-        if (state?.filterFields) {
-          console.log(
-            "[FinalResult] Loading filter fields from navigation state",
-          );
-          setFilterFields(state.filterFields);
-        }
-
-        const id = state?.studentId ?? sessionStorage.getItem("studentId");
-        if (!id) {
-          throw new Error(t("finalResult.errors.studentIdNotFound"));
-        }
-        setStudentId(id);
-
-        await fetchPageData(1);
-      } catch (err) {
-        console.error("[FinalResult] Error initializing:", err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : t("finalResult.errors.cannotLoadDataRetry"),
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void initializeData();
-  }, [fetchPageData, location.state, t]);
-
-  const handlePageChange = useCallback(
-    (_event: React.ChangeEvent<unknown>, page: number) => {
-      console.log(`[FinalResult] Navigating to page ${page.toString()}`);
-
-      const apiParams = isFiltered
-        ? convertFilterCriteriaToParams(activeFilters)
-        : undefined;
-
-      void fetchPageData(page, apiParams);
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-    [fetchPageData, isFiltered, activeFilters],
-  );
-
-  const handleFilterApply = useCallback(
-    (filters: FilterCriteria) => {
-      console.log("[FinalResult] Applying filters:", filters);
-
-      const hasActiveFilters = Object.keys(filters).some((key) => {
-        const value = filters[key as keyof FilterCriteria];
-        if (key === "tuitionFeeRange") {
-          const feeRange = value as { min?: number; max?: number } | undefined;
-          return feeRange?.min !== undefined || feeRange?.max !== undefined;
-        }
-        return Array.isArray(value) && value.length > 0;
-      });
-
-      if (!hasActiveFilters) {
-        console.log("[FinalResult] No filters selected, fetching all data");
-        setActiveFilters({});
-        setIsFiltered(false);
-        void fetchPageData(1);
-        return;
-      }
-
-      const apiParams = convertFilterCriteriaToParams(filters);
-
-      console.log(
-        "[FinalResult] Fetching filtered data with params:",
-        apiParams,
-      );
-
-      setActiveFilters(filters);
-      setIsFiltered(true);
-      void fetchPageData(1, apiParams);
-    },
-    [fetchPageData],
-  );
-
-  const handleFilterClear = useCallback(() => {
-    console.log("[FinalResult] Clearing filters");
-    setActiveFilters({});
-    setIsFiltered(false);
-    void fetchPageData(1);
-  }, [fetchPageData]);
+    // API handlers
+    handlePageChange,
+    handleFilterApply,
+    handleFilterClear,
+  } = useResultPage();
 
   if (loading) {
     return (
@@ -587,7 +280,7 @@ export default function FinalResult() {
                   </AccordionSummary>
 
                   <AccordionDetails sx={{ px: 4, py: 3 }}>
-                    {/* Majors Section with Expandable Details */}
+                    {/* Majors Section */}
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="subtitle1"
@@ -642,7 +335,6 @@ export default function FinalResult() {
                           const expandKey = `${university.id}-${course.code}`;
                           const isExpanded = expandedMajors[expandKey] || false;
 
-                          // Get current visible count or use default
                           const currentVisibleCount =
                             visibleMajorCount[expandKey] ||
                             INITIAL_DISPLAY_LIMIT;
@@ -804,10 +496,6 @@ export default function FinalResult() {
                                           }}
                                         >
                                           {t("finalResult.loadMore", {
-                                            count: Math.min(
-                                              remainingCount,
-                                              INITIAL_DISPLAY_LIMIT,
-                                            ),
                                             remaining: remainingCount,
                                           })}
                                         </Button>
@@ -846,7 +534,7 @@ export default function FinalResult() {
 
                     <Divider sx={{ my: 3 }} />
 
-                    {/* Application Method Section with Expandable Details */}
+                    {/* Application Method Section */}
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="subtitle1"
@@ -878,7 +566,6 @@ export default function FinalResult() {
                           const isExpanded =
                             expandedAdmissionTypes[expandKey] || false;
 
-                          // Get current visible count or use default
                           const currentVisibleCount =
                             visibleAdmissionCount[expandKey] ||
                             INITIAL_DISPLAY_LIMIT;
@@ -1024,10 +711,6 @@ export default function FinalResult() {
                                           }}
                                         >
                                           {t("finalResult.loadMore", {
-                                            count: Math.min(
-                                              remainingCount,
-                                              INITIAL_DISPLAY_LIMIT,
-                                            ),
                                             remaining: remainingCount,
                                           })}
                                         </Button>
@@ -1066,7 +749,7 @@ export default function FinalResult() {
 
                     <Divider sx={{ my: 3 }} />
 
-                    {/* Tuition Fee Range Section with Expandable Details */}
+                    {/* Tuition Fee Range Section */}
                     <Box sx={{ mb: 3 }}>
                       <Typography
                         variant="subtitle1"
@@ -1108,7 +791,6 @@ export default function FinalResult() {
                           const isExpanded =
                             expandedTuitionFees[expandKey] || false;
 
-                          // Get current visible count or use default
                           const currentVisibleCount =
                             visibleTuitionCount[expandKey] ||
                             INITIAL_DISPLAY_LIMIT;
@@ -1259,10 +941,6 @@ export default function FinalResult() {
                                           }}
                                         >
                                           {t("finalResult.loadMore", {
-                                            count: Math.min(
-                                              remainingCount,
-                                              INITIAL_DISPLAY_LIMIT,
-                                            ),
                                             remaining: remainingCount,
                                           })}
                                         </Button>
@@ -1369,8 +1047,6 @@ export default function FinalResult() {
                 />
                 <Typography sx={{ color: "white", fontSize: "0.9rem" }}>
                   {t("finalResult.pageInfo", {
-                    current: currentPage,
-                    total: totalPages,
                     totalItems: totalElements,
                   })}
                 </Typography>
