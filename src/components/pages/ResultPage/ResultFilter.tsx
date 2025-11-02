@@ -10,11 +10,14 @@ import {
   Drawer,
   Fab,
 } from "@mui/material";
-import { useState, useEffect } from "react";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ClearIcon from "@mui/icons-material/Clear";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
+import {
+  useResultFilter,
+  type FilterCriteria,
+} from "../../../hooks/formPages/useResultFilter";
 import type { FilterFieldsResponse } from "../../../services/studentAdmission/admissionFilterService";
 
 interface ResultFilterProps {
@@ -23,93 +26,33 @@ interface ResultFilterProps {
   onFilterClear: () => void;
 }
 
-export interface FilterCriteria {
-  uniName?: string[];
-  majorName?: string[];
-  admissionTypeName?: string[];
-  tuitionFeeRange?: {
-    min?: number;
-    max?: number;
-  };
-  province?: string[];
-  studyProgram?: string[];
-  subjectCombination?: string[];
-}
-
 export default function ResultFilter({
   filterFields,
   onFilterApply,
   onFilterClear,
 }: ResultFilterProps) {
   const { t } = useTranslation();
-  const [selectedFilters, setSelectedFilters] = useState<FilterCriteria>({});
-  const [isOpen, setIsOpen] = useState(false);
 
-  // Reset filters when filter fields change
-  useEffect(() => {
-    setSelectedFilters({});
-  }, [filterFields]);
+  const {
+    selectedFilters,
+    isOpen,
+    hasActiveFilters,
+    activeFilterCount,
+    sortedTuitionFees,
+    isFilterFieldsAvailable,
+    handleFilterChange,
+    handleTuitionFeeChange,
+    handleApplyFilters,
+    handleClearFilters,
+    openDrawer,
+    closeDrawer,
+  } = useResultFilter({ filterFields, onFilterApply, onFilterClear });
 
-  if (!filterFields?.fields) {
+  if (!isFilterFieldsAvailable || !filterFields?.fields) {
     return null;
   }
 
   const { fields } = filterFields;
-
-  const handleFilterChange = (
-    filterType: keyof FilterCriteria,
-    value: string | string[],
-  ) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [filterType]: Array.isArray(value) ? value : [value],
-    }));
-  };
-
-  const handleTuitionFeeChange = (type: "min" | "max", value: string) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      tuitionFeeRange: {
-        ...prev.tuitionFeeRange,
-        [type]: value ? parseInt(value, 10) : undefined,
-      },
-    }));
-  };
-
-  const handleApplyFilters = () => {
-    onFilterApply(selectedFilters);
-    setIsOpen(false);
-  };
-
-  const handleClearFilters = () => {
-    setSelectedFilters({});
-    onFilterClear();
-  };
-
-  const hasActiveFilters = Object.keys(selectedFilters).some((key) => {
-    const value = selectedFilters[key as keyof FilterCriteria];
-    if (key === "tuitionFeeRange") {
-      const feeRange = value as { min?: number; max?: number } | undefined;
-      return feeRange?.min !== undefined || feeRange?.max !== undefined;
-    }
-    return Array.isArray(value) && value.length > 0;
-  });
-
-  const activeFilterCount = Object.entries(selectedFilters).reduce(
-    (count, [key, value]) => {
-      if (key === "tuitionFeeRange") {
-        const feeRange = value as { min?: number; max?: number } | undefined;
-        return count + (feeRange?.min || feeRange?.max ? 1 : 0);
-      }
-      return count + (Array.isArray(value) && value.length > 0 ? 1 : 0);
-    },
-    0,
-  );
-
-  // Sort tuition fees numerically
-  const sortedTuitionFees = [...fields.tuitionFee].sort(
-    (a, b) => parseInt(a, 10) - parseInt(b, 10),
-  );
 
   return (
     <>
@@ -117,9 +60,7 @@ export default function ResultFilter({
       <Fab
         color="primary"
         aria-label="filter"
-        onClick={() => {
-          setIsOpen(true);
-        }}
+        onClick={openDrawer}
         sx={{
           position: "fixed",
           bottom: 150,
@@ -166,9 +107,7 @@ export default function ResultFilter({
       <Drawer
         anchor="right"
         open={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-        }}
+        onClose={closeDrawer}
         sx={{
           "& .MuiDrawer-paper": {
             width: {
@@ -217,9 +156,7 @@ export default function ResultFilter({
               )}
             </Box>
             <IconButton
-              onClick={() => {
-                setIsOpen(false);
-              }}
+              onClick={closeDrawer}
               sx={{
                 color: "#A657AE",
                 "&:hover": {
@@ -712,3 +649,5 @@ export default function ResultFilter({
     </>
   );
 }
+
+export type { FilterCriteria };

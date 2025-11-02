@@ -24,9 +24,28 @@ const FirstForm = () => {
   } = useFirstForm();
 
   return (
-    <Box component="form" className="first-form">
+    <Box
+      component="form"
+      className="first-form"
+      sx={{
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
       {/* Province dropdown */}
-      <FormControl fullWidth error={hasProvinceError} sx={{ mb: 1 }}>
+      <FormControl
+        error={hasProvinceError}
+        sx={{
+          mb: 1,
+          width: {
+            xs: "100%",
+            sm: "100%",
+            md: 450,
+          },
+        }}
+      >
         <Autocomplete
           options={provinces}
           value={selectedProvinces}
@@ -34,8 +53,7 @@ const FirstForm = () => {
             handleProvinceChange(newValue);
           }}
           sx={{
-            width: 450,
-            marginRight: 63,
+            width: "100%",
           }}
           filterSelectedOptions
           renderInput={(params) => (
@@ -45,7 +63,16 @@ const FirstForm = () => {
               error={hasProvinceError}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: 999,
+                  borderRadius: {
+                    xs: 20,
+                    sm: 30,
+                    md: 999,
+                  },
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.95rem",
+                    md: "1rem",
+                  },
                   "& fieldset": {
                     borderColor: "#A657AE",
                   },
@@ -58,19 +85,65 @@ const FirstForm = () => {
                 },
                 "& input": {
                   color: "#A657AE",
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.95rem",
+                    md: "1rem",
+                  },
+                  padding: {
+                    xs: "10px 14px",
+                    sm: "12px 14px",
+                    md: "16.5px 14px",
+                  },
                 },
               }}
             />
           )}
         />
-        <FormHelperText sx={{ minHeight: "1.5em" }}>
+        <FormHelperText
+          sx={{
+            minHeight: "1.5em",
+            fontSize: {
+              xs: "0.7rem",
+              sm: "0.75rem",
+              md: "0.75rem",
+            },
+          }}
+        >
           {hasProvinceError ? t("firstForm.errorWarning1") : " "}
         </FormHelperText>
       </FormControl>
-      <p className="form-subtitle">{t("firstForm.subTitle2")}</p>
+
+      <Box
+        component="p"
+        className="form-subtitle"
+        sx={{
+          fontSize: {
+            xs: "0.875rem",
+            sm: "0.95rem",
+            md: "1rem",
+          },
+        }}
+      >
+        {t("firstForm.subTitle2")}
+      </Box>
 
       {/* University type dropdown */}
-      <FormControl fullWidth error={hasUniTypeError} sx={{ mt: 2 }}>
+      <FormControl
+        error={hasUniTypeError}
+        sx={{
+          mt: {
+            xs: 1.5,
+            sm: 1.5,
+            md: 2,
+          },
+          width: {
+            xs: "100%",
+            sm: "100%",
+            md: 450,
+          },
+        }}
+      >
         <Autocomplete
           options={translatedUniTypeOptions}
           value={selectedUniTypeValue}
@@ -80,8 +153,7 @@ const FirstForm = () => {
           getOptionLabel={(option) => option.label}
           isOptionEqualToValue={(option, value) => option.key === value.key}
           sx={{
-            width: 450,
-            marginRight: 63,
+            width: "100%",
           }}
           filterSelectedOptions
           renderInput={(params) => (
@@ -91,7 +163,16 @@ const FirstForm = () => {
               error={hasUniTypeError}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: 999,
+                  borderRadius: {
+                    xs: 20,
+                    sm: 30,
+                    md: 999,
+                  },
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.95rem",
+                    md: "1rem",
+                  },
                   "& fieldset": {
                     borderColor: "#A657AE",
                   },
@@ -104,37 +185,97 @@ const FirstForm = () => {
                 },
                 "& input": {
                   color: "#A657AE",
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.95rem",
+                    md: "1rem",
+                  },
+                  padding: {
+                    xs: "10px 14px",
+                    sm: "12px 14px",
+                    md: "16.5px 14px",
+                  },
                 },
               }}
             />
           )}
         />
-        <FormHelperText sx={{ minHeight: "1.5em" }}>
+        <FormHelperText
+          sx={{
+            minHeight: "1.5em",
+            fontSize: {
+              xs: "0.7rem",
+              sm: "0.75rem",
+              md: "0.75rem",
+            },
+          }}
+        >
           {hasUniTypeError ? t("firstForm.errorWarning2") : " "}
         </FormHelperText>
       </FormControl>
 
-      <Button
-        variant="contained"
+      {/* Button container for right alignment */}
+      <Box
         sx={{
-          mt: 4,
-          px: 3,
-          py: 1,
-          borderRadius: 2,
-          fontSize: "1.1rem",
-          backgroundColor: "#A657AE",
-          textTransform: "none",
-          fontWeight: "bold",
-          marginLeft: 18.5,
-          marginTop: 6.5,
-          "&:hover": {
-            backgroundColor: "#8B4A8F",
+          width: "100%",
+          display: "flex",
+          justifyContent: {
+            xs: "center",
+            sm: "flex-end",
+            md: "flex-end",
+          },
+          mt: {
+            xs: 3,
+            sm: 4,
+            md: 6.5,
           },
         }}
-        onClick={handleNext}
       >
-        {t("firstForm.enterButton")}
-      </Button>
+        <Button
+          variant="contained"
+          sx={{
+            px: {
+              xs: 2,
+              sm: 2.5,
+              md: 3,
+            },
+            py: {
+              xs: 0.8,
+              sm: 0.9,
+              md: 1,
+            },
+            borderRadius: {
+              xs: 1.5,
+              sm: 2,
+              md: 2,
+            },
+            fontSize: {
+              xs: "0.9rem",
+              sm: "1rem",
+              md: "1.1rem",
+            },
+            backgroundColor: "#A657AE",
+            textTransform: "none",
+            fontWeight: "bold",
+            width: {
+              xs: "100%",
+              sm: "auto",
+              md: "auto",
+            },
+            minWidth: {
+              xs: "100%",
+              sm: 120,
+              md: 120,
+            },
+            "&:hover": {
+              backgroundColor: "#8B4A8F",
+            },
+          }}
+          onClick={handleNext}
+        >
+          {t("firstForm.enterButton")}
+        </Button>
+      </Box>
     </Box>
   );
 };

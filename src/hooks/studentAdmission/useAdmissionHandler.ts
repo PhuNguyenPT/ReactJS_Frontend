@@ -69,6 +69,24 @@ const getAdmissionStatusMessage = (
 };
 
 /**
+ * Configuration options for admission processing retry behavior
+ */
+export interface AdmissionProcessingOptions {
+  /** Initial delay before first attempt (ms). Default: 3000 */
+  initialDelay?: number;
+  /** Maximum number of retry attempts. Default: 12 */
+  maxRetries?: number;
+  /** Base delay between retries (ms). Default: 3000 */
+  retryDelay?: number;
+  /** Whether to use exponential backoff. Default: true */
+  useExponentialBackoff?: boolean;
+  /** Maximum delay for exponential backoff (ms). Default: 10000 */
+  maxBackoffDelay?: number;
+  /** Callback function called on each retry attempt */
+  onRetry?: (attempt: number, maxRetries: number) => void;
+}
+
+/**
  * Custom hook for handling admission processing
  * Provides a clean interface for triggering and managing admission operations
  */
@@ -83,28 +101,30 @@ export function useAdmissionHandler() {
   const processAdmission = async (
     studentId: string,
     isAuthenticated: boolean,
-    options: {
-      initialDelay?: number;
-      maxRetries?: number;
-      retryDelay?: number;
-      useExponentialBackoff?: boolean;
-      maxBackoffDelay?: number;
-      onRetry?: (attempt: number, maxRetries: number) => void;
-    } = {},
+    options: AdmissionProcessingOptions = {},
   ): Promise<AdmissionResponse | null> => {
+    // Updated defaults to match common usage pattern from NinthFormPage
     const {
-      initialDelay = 3000, // Wait 3s initially (reduced from 20s for faster first check)
-      maxRetries = 10, // Increased from 5 for ML processing
-      retryDelay = 3000, // Base retry delay
-      useExponentialBackoff = true,
-      maxBackoffDelay = 15000, // Max 15s between retries
+      initialDelay = 3000, // Wait 3s for ML to initialize
+      maxRetries = 12, // Try up to 12 times (aligned with NinthFormPage)
+      retryDelay = 3000, // Start with 3s between retries
+      useExponentialBackoff = true, // Enable smart retry delays
+      maxBackoffDelay = 10000, // Cap retry delay at 10s (aligned with NinthFormPage)
       onRetry,
     } = options;
 
     try {
       console.log(
-        "[Admission Handler] Initiating admission processing for student...",
+        "[Admission Handler] Initiating admission processing for student:",
+        studentId,
       );
+      console.log("[Admission Handler] Configuration:", {
+        initialDelay: `${String(initialDelay / 1000)}s`,
+        maxRetries,
+        retryDelay: `${String(retryDelay / 1000)}s`,
+        useExponentialBackoff,
+        maxBackoffDelay: `${String(maxBackoffDelay / 1000)}s`,
+      });
 
       // Initial wait to allow ML processing to start
       if (initialDelay > 0) {
@@ -139,7 +159,7 @@ export function useAdmissionHandler() {
               response,
               isAuthenticated,
             );
-            console.log(statusMessage);
+            console.log(`[Admission Handler] ${statusMessage}`);
             return response;
           }
 
@@ -180,6 +200,12 @@ export function useAdmissionHandler() {
             console.log(
               `[Admission Handler] Retrying after error in ${String(currentDelay / 1000)}s...`,
             );
+
+            // Call retry callback even on error
+            if (onRetry) {
+              onRetry(attempt, maxRetries);
+            }
+
             await wait(currentDelay);
 
             if (useExponentialBackoff) {
@@ -198,6 +224,9 @@ export function useAdmissionHandler() {
       console.warn(
         `[Admission Handler] Max retries (${String(maxRetries)}) reached. ML processing may still be ongoing.`,
       );
+      console.warn(
+        "[Admission Handler] Consider increasing maxRetries or checking ML service status.",
+      );
 
       return lastResponse;
     } catch (error) {
@@ -209,67 +238,8 @@ export function useAdmissionHandler() {
     }
   };
 
-  /**
-   * Process admission with custom wait time and single retry
-   * Useful when you know the ML processing time
-   * @param studentId - The student ID
-   * @param isAuthenticated - Whether the user is authenticated
-   * @param waitTime - Time to wait before checking (default: 30000ms)
-   * @returns Promise with admission response or null
-   */
-  const processAdmissionWithWait = async (
-    studentId: string,
-    isAuthenticated: boolean,
-    waitTime = 30000,
-  ): Promise<AdmissionResponse | null> => {
-    return processAdmission(studentId, isAuthenticated, {
-      initialDelay: waitTime,
-      maxRetries: 1,
-      retryDelay: 0,
-    });
-  };
-
-  /**
-   * Process admission with immediate polling (no initial wait)
-   * Starts checking immediately with retries
-   * @param studentId - The student ID
-   * @param isAuthenticated - Whether the user is authenticated
-   * @returns Promise with admission response or null
-   */
-  const processAdmissionWithPolling = async (
-    studentId: string,
-    isAuthenticated: boolean,
-  ): Promise<AdmissionResponse | null> => {
-    return processAdmission(studentId, isAuthenticated, {
-      initialDelay: 0,
-      maxRetries: 15,
-      retryDelay: 2000,
-      useExponentialBackoff: true,
-    });
-  };
-
-  /**
-   * Process admission without any wait time (immediate single call)
-   * @param studentId - The student ID
-   * @param isAuthenticated - Whether the user is authenticated
-   * @returns Promise with admission response or null
-   */
-  const processAdmissionImmediate = async (
-    studentId: string,
-    isAuthenticated: boolean,
-  ): Promise<AdmissionResponse | null> => {
-    return processAdmission(studentId, isAuthenticated, {
-      initialDelay: 0,
-      maxRetries: 1,
-      retryDelay: 0,
-    });
-  };
-
   return {
     processAdmission,
-    processAdmissionWithWait,
-    processAdmissionWithPolling,
-    processAdmissionImmediate,
     isAdmissionSuccessful,
     getAdmissionStatusMessage,
   };

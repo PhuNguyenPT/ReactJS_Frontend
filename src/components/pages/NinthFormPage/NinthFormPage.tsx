@@ -7,7 +7,6 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
-  LinearProgress,
 } from "@mui/material";
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
@@ -30,9 +29,9 @@ export default function NinthFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
-  const [processingStatus, setProcessingStatus] = useState<string>("");
-  const [retryAttempt, setRetryAttempt] = useState<number>(0);
-  const [maxRetries, setMaxRetries] = useState<number>(0);
+  const [, setProcessingStatus] = useState<string>("");
+  const [, setRetryAttempt] = useState<number>(0);
+  const [, setMaxRetries] = useState<number>(0);
 
   const hasLoggedAuthStatus = useRef(false);
 
@@ -120,22 +119,16 @@ export default function NinthFormPage() {
 
       // Step 1: Process admission
       const admissionData = await processAdmission(studentId, isAuthenticated, {
-        initialDelay: 3000,
-        maxRetries: 12,
-        retryDelay: 3000,
-        useExponentialBackoff: true,
-        maxBackoffDelay: 10000,
         onRetry: (attempt, max) => {
           setRetryAttempt(attempt);
           setMaxRetries(max);
           setProcessingStatus(t("ninthForm.gettingResults"));
         },
       });
-
       console.log("[NinthFormPage] Admission data received:", admissionData);
 
       if (!admissionData || !isAdmissionSuccessful(admissionData)) {
-        setErrorMessage(t("errors.predictionTimeout"));
+        setErrorMessage(t("ninthForm.errors.predictionTimeout"));
         setIsSubmitting(false);
         setProcessingStatus("");
         return;
@@ -201,10 +194,6 @@ export default function NinthFormPage() {
   const handleCloseError = () => {
     setErrorMessage(null);
   };
-
-  const progressPercentage =
-    maxRetries > 0 ? (retryAttempt / maxRetries) * 100 : 0;
-
   return (
     <>
       <div className="background" />
@@ -236,49 +225,6 @@ export default function NinthFormPage() {
         </Typography>
 
         <NinthForm />
-
-        {isSubmitting && processingStatus && (
-          <Box
-            sx={{
-              position: "fixed",
-              top: 20,
-              left: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 2000,
-              width: "90%",
-              maxWidth: "500px",
-            }}
-          >
-            <Alert
-              severity="info"
-              sx={{
-                backgroundColor: "rgba(166, 87, 174, 0.95)",
-                backdropFilter: "blur(10px)",
-                color: "white",
-                "& .MuiAlert-icon": {
-                  color: "white",
-                },
-              }}
-            >
-              <Typography variant="body1" sx={{ mb: 1, color: "white" }}>
-                {processingStatus}
-              </Typography>
-              {maxRetries > 0 && (
-                <LinearProgress
-                  variant="determinate"
-                  value={progressPercentage}
-                  sx={{
-                    mt: 1,
-                    backgroundColor: "rgba(255, 255, 255, 0.3)",
-                    "& .MuiLinearProgress-bar": {
-                      backgroundColor: "white",
-                    },
-                  }}
-                />
-              )}
-            </Alert>
-          </Box>
-        )}
 
         <Button
           variant="contained"

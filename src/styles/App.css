@@ -1,132 +1,23 @@
-#root {
-  text-align: center;
-}
+/* ============================================
+   TABLE OF CONTENTS
+   ============================================
+   1. Reset & Base Styles
+   2. Custom Scrollbar
+   3. Loading Container
+   4. Background
+   5. Content Section
+   6. Header
+   7. Footer
+   8. Signup Page
+   9. Form Container
+   10. File Upload Section
+   11. Error Boundary
+   12. Mobile Responsiveness
+   ============================================ */
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Error Boundary Styles */
-
-.error-boundary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-  background-color: #f8f9fa;
-}
-
-.error-boundary__content {
-  max-width: 600px;
-  width: 100%;
-  text-align: center;
-  background: white;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.error-boundary__title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 16px;
-}
-
-.error-boundary__message {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 24px;
-  line-height: 1.5;
-}
-
-.error-boundary__details {
-  margin-top: 24px;
-  margin-bottom: 24px;
-  text-align: left;
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 16px;
-}
-
-.error-boundary__summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: #555;
-  padding: 4px 0;
-}
-
-.error-boundary__summary:hover {
-  color: #000;
-}
-
-.error-boundary__error-text {
-  margin-top: 12px;
-  padding: 12px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: auto;
-  font-size: 13px;
-  color: #c7254e;
-  font-family: "Courier New", Courier, monospace;
-  line-height: 1.4;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-.error-boundary__button {
-  margin-top: 24px;
-  padding: 12px 32px;
-  font-size: 16px;
-  font-weight: 500;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.error-boundary__button:hover {
-  background-color: #0056b3;
-}
-
-.error-boundary__button:active {
-  background-color: #004085;
-}
-
-.error-boundary__button:focus {
-  outline: 2px solid #0056b3;
-  outline-offset: 2px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .error-boundary__content {
-    padding: 24px;
-  }
-
-  .error-boundary__title {
-    font-size: 24px;
-  }
-
-  .error-boundary__message {
-    font-size: 14px;
-  }
-
-  .error-boundary__button {
-    padding: 10px 24px;
-    font-size: 14px;
-  }
-}
-
-/* Reset */
+/* ============================================
+   1. RESET & BASE STYLES
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
@@ -142,7 +33,21 @@ html,
   overflow: auto;
 }
 
-/* Custom Scrollbar Styling for Entire Website */
+#root {
+  text-align: center;
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* ============================================
+   2. CUSTOM SCROLLBAR
+   ============================================ */
 /* Webkit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 7px;
@@ -150,17 +55,17 @@ html,
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* Fully transparent track to see background */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(166, 87, 174, 0.8); /* Semi-transparent purple */
+  background: rgba(166, 87, 174, 0.8);
   border-radius: 10px;
   transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(142, 74, 150, 0.9); /* Slightly more opaque on hover */
+  background: rgba(142, 74, 150, 0.9);
 }
 
 /* Hide scrollbar by default */
@@ -178,6 +83,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   transition: background 0.3s ease;
 }
 
+/* ============================================
+   3. LOADING CONTAINER
+   ============================================ */
 .loading-container {
   display: flex;
   justify-content: center;
@@ -188,24 +96,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   background: transparent url("/assets/images/background.png");
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .content {
-    padding: 1rem;
-  }
-
-  .content h1 {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
-    margin-bottom: 1.5rem;
-  }
-
-  .start-button {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-  }
-}
-
-/* Background */
+/* ============================================
+   4. BACKGROUND
+   ============================================ */
 .background {
   position: fixed;
   width: 100%;
@@ -216,7 +109,20 @@ body.scrolling::-webkit-scrollbar-thumb {
   z-index: -1;
 }
 
-/* Content */
+/* File Upload Background */
+.eighth-form-page .background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ============================================
+   5. CONTENT SECTION
+   ============================================ */
 .content {
   display: flex;
   flex-direction: column;
@@ -257,7 +163,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   font-weight: 600;
   transition: background-color 0.3s;
   font-family: "Neon80s", sans-serif;
-  font-size: 4rem;
+  font-size: 5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -269,14 +175,16 @@ body.scrolling::-webkit-scrollbar-thumb {
   box-shadow: 0 0 10px rgb(255, 255, 255);
 }
 
-/* HEADER */
+/* ============================================
+   6. HEADER
+   ============================================ */
 .landing-header {
   position: fixed;
-  width: calc(100% - 10px); /* Subtract scrollbar width */
+  width: calc(100% - 10px);
   padding: 15px 30px;
   z-index: 10;
   background: #16143d;
-  right: 10px; /* Push left to avoid scrollbar */
+  right: 10px;
   left: 0;
 }
 
@@ -386,7 +294,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   border-radius: 100%;
 }
 
-/* FOOTER */
+/* ============================================
+   7. FOOTER
+   ============================================ */
 .landing-footer {
   position: absolute;
   bottom: 0;
@@ -412,7 +322,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   color: #ff69b4;
 }
 
-/* SIGNUP PAGE */
+/* ============================================
+   8. SIGNUP PAGE
+   ============================================ */
 .signup-container {
   min-height: 100vh;
   display: flex;
@@ -457,7 +369,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   margin-top: 20px;
 }
 
-/* FORM CONTAINER */
+/* ============================================
+   9. FORM CONTAINER
+   ============================================ */
 .form-container {
   display: flex;
   justify-content: center;
@@ -499,19 +413,23 @@ body.scrolling::-webkit-scrollbar-thumb {
   overflow-x: hidden;
   margin-left: 83px;
 }
+
 .form-2-content::-webkit-scrollbar {
   width: 8px;
 }
+
 .form-2-content::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   margin-top: 90px;
   margin-bottom: 90px;
 }
+
 .form-2-content::-webkit-scrollbar-thumb {
   background: #a657ae;
   border-radius: 4px;
 }
+
 .form-2-content::-webkit-scrollbar-thumb:hover {
   background: #8b4a8f;
 }
@@ -527,7 +445,14 @@ body.scrolling::-webkit-scrollbar-thumb {
   text-align: left;
 }
 
-/*SCROLL BAR STYLES */
+.first-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* MUI Autocomplete Scrollbar Styles */
 .MuiAutocomplete-listbox {
   max-height: 300px;
   overflow-y: auto;
@@ -551,13 +476,16 @@ body.scrolling::-webkit-scrollbar-thumb {
 .MuiAutocomplete-listbox::-webkit-scrollbar-thumb:hover {
   background: #8b4a8f;
 }
+
 .MuiAutocomplete-paper {
   border: 2px solid #a657ae;
   overflow: hidden;
 }
+
 .MuiAutocomplete-popper {
   margin-top: 10px !important;
 }
+
 .MuiAutocomplete-popper[data-popper-placement*="top"] {
   margin-bottom: 10px !important;
 }
@@ -567,10 +495,12 @@ body.scrolling::-webkit-scrollbar-thumb {
   border-radius: 40px;
   overflow: hidden;
 }
+
 .MuiAutocomplete-option {
   color: #a657ae;
   padding: 10px 16px !important;
 }
+
 .MuiAutocomplete-option[aria-selected="true"],
 .MuiAutocomplete-option.Mui-focused,
 .MuiAutocomplete-option:hover {
@@ -580,7 +510,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   margin: 2px 8px;
 }
 
-/* FILE UPLOAD STYLES */
+/* ============================================
+   10. FILE UPLOAD SECTION
+   ============================================ */
 .eighth-form-page {
   height: 100vh;
   width: 100vw;
@@ -603,6 +535,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   z-index: 10;
   position: relative;
 }
+
 .eighth-form {
   display: flex;
   flex-direction: row;
@@ -614,6 +547,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   z-index: 10;
   position: relative;
 }
+
 .grade-section {
   display: flex;
   flex-direction: column;
@@ -622,12 +556,14 @@ body.scrolling::-webkit-scrollbar-thumb {
   z-index: 10;
   position: relative;
 }
+
 .grade-title {
   font-weight: 600;
   margin-bottom: 10px;
   z-index: 10;
   position: relative;
 }
+
 .upload-column {
   display: flex;
   flex-direction: column;
@@ -635,6 +571,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   z-index: 10;
   position: relative;
 }
+
 .upload-box {
   position: relative;
   border: 2px dashed #aaa;
@@ -650,9 +587,11 @@ body.scrolling::-webkit-scrollbar-thumb {
   overflow: hidden;
   z-index: 10;
 }
+
 .upload-box:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
 .upload-input {
   position: absolute;
   opacity: 0;
@@ -660,6 +599,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   height: 0;
   pointer-events: none;
 }
+
 .upload-label {
   position: absolute;
   top: 0;
@@ -672,6 +612,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   cursor: pointer;
   z-index: 20;
 }
+
 .upload-icon {
   font-size: 40px;
   color: #fff;
@@ -681,18 +622,459 @@ body.scrolling::-webkit-scrollbar-thumb {
   word-break: break-word;
   font-size: 14px;
 }
+
 .instruction {
   font-style: italic;
   margin-top: 20px;
   z-index: 10;
   position: relative;
 }
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
+
+/* ============================================
+   11. ERROR BOUNDARY
+   ============================================ */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.error-boundary__content {
+  max-width: 600px;
   width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-boundary__title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.error-boundary__message {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.error-boundary__details {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  text-align: left;
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.error-boundary__summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #555;
+  padding: 4px 0;
+}
+
+.error-boundary__summary:hover {
+  color: #000;
+}
+
+.error-boundary__error-text {
+  margin-top: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 13px;
+  color: #c7254e;
+  font-family: "Courier New", Courier, monospace;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.error-boundary__button {
+  margin-top: 24px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.error-boundary__button:hover {
+  background-color: #0056b3;
+}
+
+.error-boundary__button:active {
+  background-color: #004085;
+}
+
+.error-boundary__button:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   12. MOBILE RESPONSIVENESS
+   ============================================ */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+  /* Content Section */
+  .content {
+    padding: 1rem;
+  }
+
+  .content h1 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin-bottom: 1.5rem;
+  }
+
+  .start-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* Header */
+  .landing-header {
+    padding: 10px 15px;
+    width: 100%;
+    right: 0;
+  }
+
+  .landing-header-toolbar {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .logo-img {
+    height: 2.5rem;
+    margin-top: 10px;
+  }
+
+  .logo-text {
+    font-size: 2rem;
+    right: 5px;
+    bottom: 5px;
+  }
+
+  .nav-links {
+    font-size: 1.2rem;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .signup-button {
+    padding: 6px 15px;
+    font-size: 0.9rem;
+  }
+
+  .username-section {
+    font-size: 1.2rem;
+    gap: 5px;
+  }
+
+  .profile-circle {
+    width: 35px;
+    height: 35px;
+  }
+
+  /* Footer */
+  .landing-footer {
+    padding: 10px 20px;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.8rem;
+  }
+
+  .social-icons a {
+    margin-left: 10px;
+    font-size: 1rem;
+  }
+
+  /* Error Boundary */
+  .error-boundary__content {
+    padding: 24px;
+  }
+
+  .error-boundary__title {
+    font-size: 24px;
+  }
+
+  .error-boundary__message {
+    font-size: 14px;
+  }
+
+  .error-boundary__button {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+
+  /* Signup Page */
+  .signup-container {
+    padding: 20px;
+  }
+
+  .signup-card {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  /* Form Container */
+  .form-content {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    min-height: 400px;
+    padding: 20px;
+  }
+
+  .form-2-content {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    min-height: 400px;
+    padding: 20px;
+    margin-left: 0;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.9rem;
+  }
+
+  /* File Upload Section */
+  .eighth-form-page {
+    padding: 80px 15px 120px;
+  }
+
+  .eighth-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .eighth-form {
+    gap: 40px;
+  }
+
+  .grade-section {
+    gap: 10px;
+  }
+
+  .grade-title {
+    font-size: 1.1rem;
+  }
+
+  .upload-column {
+    gap: 15px;
+  }
+
+  .upload-box {
+    width: 140px;
+    height: 140px;
+  }
+
+  .upload-icon {
+    font-size: 30px;
+    max-width: 100px;
+    font-size: 12px;
+  }
+
+  .instruction {
+    font-size: 0.9rem;
+    margin-top: 15px;
+  }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+  /* Content Section */
+  .content h1 {
+    font-size: clamp(2rem, 5vw, 2rem);
+  }
+
+  .start-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1.2rem;
+  }
+
+  /* Header */
+  .landing-header {
+    padding: 8px 10px;
+  }
+
+  .logo-img {
+    height: 2rem;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .nav-links {
+    font-size: 1rem;
+    gap: 8px;
+  }
+
+  .signup-button {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+  }
+
+  .username-section {
+    font-size: 1rem;
+  }
+
+  .profile-circle {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Footer */
+  .landing-footer {
+    padding: 8px 15px;
+    font-size: 0.7rem;
+  }
+
+  .social-icons a {
+    margin-left: 8px;
+    font-size: 0.9rem;
+  }
+
+  /* Signup Page */
+  .signup-container {
+    padding: 15px;
+  }
+
+  .signup-card {
+    padding: 15px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  /* Form Container */
+  .form-content {
+    max-width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  .form-2-content {
+    max-width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  .form-title {
+    font-size: 1.2rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.8rem;
+  }
+
+  /* File Upload Section */
+  .eighth-form-page {
+    padding: 70px 10px 100px;
+  }
+
+  .eighth-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+
+  .eighth-form {
+    gap: 30px;
+  }
+
+  .grade-title {
+    font-size: 1rem;
+  }
+
+  .upload-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .upload-icon {
+    font-size: 25px;
+    max-width: 80px;
+    font-size: 11px;
+  }
+
+  .instruction {
+    font-size: 0.8rem;
+  }
+}
+
+/* Small Mobile (360px and below) */
+@media (max-width: 360px) {
+  .content h1 {
+    font-size: 1.3rem;
+  }
+
+  .start-button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .logo-img {
+    height: 1.8rem;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
+  }
+
+  .nav-links {
+    font-size: 0.9rem;
+    gap: 5px;
+  }
+
+  .upload-box {
+    width: 100px;
+    height: 100px;
+  }
+
+  .upload-icon {
+    font-size: 20px;
+    max-width: 70px;
+    font-size: 10px;
+  }
+
+  .form-content,
+  .form-2-content {
+    padding: 12px;
+  }
 }

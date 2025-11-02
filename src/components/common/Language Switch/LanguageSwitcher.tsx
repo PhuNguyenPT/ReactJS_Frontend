@@ -7,6 +7,8 @@ import {
   ListItemText,
   Tooltip,
   Box,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import LanguageIcon from "@mui/icons-material/Language";
 import { useTranslation } from "../../../hooks/locales/useTranslation";
@@ -29,6 +31,10 @@ const LanguageSwitcher: React.FC = () => {
   const { currentLanguage, changeLanguage } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  // Responsive breakpoints
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // < 600px
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -56,14 +62,20 @@ const LanguageSwitcher: React.FC = () => {
       <Tooltip title="Change Language">
         <IconButton
           onClick={handleClick}
-          size="small"
+          size={isMobile ? "small" : "medium"}
           sx={{
-            ml: 2,
+            ml: isMobile ? 1 : 2,
             "&:focus": {
               outline: "none",
             },
             "&:focus-visible": {
               outline: "none",
+            },
+            // Responsive padding
+            padding: {
+              xs: "4px",
+              sm: "8px",
+              md: "8px",
             },
           }}
           aria-controls={open ? "language-menu" : undefined}
@@ -76,16 +88,36 @@ const LanguageSwitcher: React.FC = () => {
           {currentLang ? (
             <Box
               sx={{
-                marginTop: "5px",
-                fontSize: "1.5rem",
+                marginTop: {
+                  xs: "3px",
+                  sm: "4px",
+                  md: "5px",
+                },
+                fontSize: {
+                  xs: "0.9rem",
+                  sm: "1.2rem",
+                  md: "1.5rem",
+                },
                 fontWeight: 600,
-                letterSpacing: "0.5px",
+                letterSpacing: {
+                  xs: "0.3px",
+                  sm: "0.4px",
+                  md: "0.5px",
+                },
               }}
             >
               {currentLang.code.toUpperCase()}
             </Box>
           ) : (
-            <LanguageIcon />
+            <LanguageIcon
+              sx={{
+                fontSize: {
+                  xs: "1.2rem",
+                  sm: "1.5rem",
+                  md: "1.8rem",
+                },
+              }}
+            />
           )}
         </IconButton>
       </Tooltip>
@@ -96,10 +128,23 @@ const LanguageSwitcher: React.FC = () => {
         onClose={handleClose}
         slotProps={{
           paper: {
-            elevation: 2,
+            elevation: isMobile ? 1 : 2,
             sx: {
-              minWidth: 180,
-              mt: 1,
+              minWidth: {
+                xs: 140,
+                sm: 160,
+                md: 180,
+              },
+              mt: {
+                xs: 0.5,
+                sm: 0.8,
+                md: 1,
+              },
+              // Adjust max width on mobile to prevent overflow
+              maxWidth: {
+                xs: "90vw",
+                sm: "auto",
+              },
             },
           },
         }}
@@ -119,7 +164,16 @@ const LanguageSwitcher: React.FC = () => {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                py: 1.2,
+                py: {
+                  xs: 0.8,
+                  sm: 1,
+                  md: 1.2,
+                },
+                px: {
+                  xs: 1,
+                  sm: 1.5,
+                  md: 2,
+                },
                 "&.Mui-selected": {
                   backgroundColor: "action.selected",
                   "&:hover": {
@@ -129,20 +183,37 @@ const LanguageSwitcher: React.FC = () => {
                 "&:hover .MuiListItemText-primary": {
                   fontWeight: 600,
                 },
+                // Increase touch target size on mobile
+                minHeight: {
+                  xs: 44,
+                  sm: "auto",
+                },
               }}
             >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  marginRight: 1.5,
-                  marginBottom: "3px",
+                  marginRight: {
+                    xs: 1,
+                    sm: 1.2,
+                    md: 1.5,
+                  },
+                  marginBottom: {
+                    xs: "2px",
+                    sm: "2.5px",
+                    md: "3px",
+                  },
                   display: "flex",
                   alignItems: "center",
                 }}
               >
                 <Box
                   sx={{
-                    fontSize: "1.25rem",
+                    fontSize: {
+                      xs: "1rem",
+                      sm: "1.1rem",
+                      md: "1.25rem",
+                    },
                     lineHeight: 1,
                     display: "flex",
                     alignItems: "center",
@@ -161,6 +232,11 @@ const LanguageSwitcher: React.FC = () => {
                       lineHeight: 1,
                       display: "flex",
                       alignItems: "center",
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.95rem",
+                        md: "1rem",
+                      },
                     },
                   },
                 }}
