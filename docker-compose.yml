@@ -12,7 +12,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
     networks:
-      - app-network
+      - frontend-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
@@ -21,6 +21,6 @@ services:
       start_period: 10s
 
 networks:
-  app-network:
+  frontend-network:
     external: true
-    name: app-network
+    name: frontend-network
