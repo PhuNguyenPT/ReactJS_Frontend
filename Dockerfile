@@ -11,7 +11,11 @@ COPY package.json package-lock.json* ./
 RUN npm ci --ignore-scripts
 
 # Copy source code
-COPY . .
+COPY src ./src
+COPY public ./public
+
+# Copy config files
+COPY tsconfig.app.json tsconfig.json tsconfig.node.json tsconfig.test.json vite.config.ts index.html .nvmrc .env.production ./
 
 # Type check and build
 RUN npm run type-check && npm run build
