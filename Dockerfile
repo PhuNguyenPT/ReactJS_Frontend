@@ -22,9 +22,6 @@ FROM nginx:1.29-trixie AS runner
 # Remove default nginx configuration
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 # Remove default nginx static assets
 RUN rm -rf /usr/share/nginx/html/*
 
