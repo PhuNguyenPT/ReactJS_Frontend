@@ -1,11 +1,11 @@
+.github
+.husky
+.vscode
 node_modules
 dist
 .git
 .gitignore
 *.md
-.env*
-coverage
-.vscode
-.idea
-.DS_Store
-*.log
+!.env.production
+!.env.staging
+.env.dev
