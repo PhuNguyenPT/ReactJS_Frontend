@@ -33,6 +33,7 @@ const SCORE_LIMITS = {
   DGNL: {
     maxEntries: 3,
     minRequiredEntries: 0, // No minimum requirement
+    decimalPlaces: 0, // No decimal places allowed
     subjects: {
       "examTypes.hsa": { min: 0, max: 150 },
       "examTypes.tsa": { min: 0, max: 100 },
@@ -43,13 +44,15 @@ const SCORE_LIMITS = {
     min: 0,
     max: 150,
     minRequiredEntries: 3,
-    maxEntries: 8, // New: Maximum 8 subjects
+    maxEntries: 8, // Maximum 8 subjects
+    decimalPlaces: 0, // No decimal places allowed
   },
   TALENT: {
     min: 0,
     max: 10,
-    maxEntries: 3, // New: Maximum 3 subjects
+    maxEntries: 3, // Maximum 3 subjects
     minRequiredEntries: 0, // No minimum requirement
+    decimalPlaces: 2, // Allow 2 decimal places
   },
 } as const;
 
@@ -58,6 +61,20 @@ export const useThirdOptionalForm = ({
   setCategories,
 }: UseThirdOptionalFormProps) => {
   const { t } = useTranslation();
+
+  // Get decimal places allowed for a category
+  const getDecimalPlaces = (categoryName: string): number => {
+    switch (categoryName) {
+      case "ĐGNL":
+        return SCORE_LIMITS.DGNL.decimalPlaces;
+      case "V-SAT":
+        return SCORE_LIMITS.VSAT.decimalPlaces;
+      case "Năng khiếu":
+        return SCORE_LIMITS.TALENT.decimalPlaces;
+      default:
+        return 2; // Default to 2 decimal places
+    }
+  };
 
   // Get score limits based on category and subject
   const getScoreLimits = (categoryName: string, subject?: string) => {
@@ -226,7 +243,7 @@ export const useThirdOptionalForm = ({
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
-  // Validate and sanitize score input with category-specific limits
+  // Validate and sanitize score input with category-specific limits and decimal places
   const handleScoreValidation = (
     value: string,
     categoryName: string,
@@ -235,8 +252,23 @@ export const useThirdOptionalForm = ({
     // Allow empty string
     if (value === "") return "";
 
-    // Allow only numbers and one decimal point
-    const regex = /^\d*\.?\d*$/;
+    const decimalPlaces = getDecimalPlaces(categoryName);
+
+    // If no decimal places allowed, block any input containing a dot
+    if (decimalPlaces === 0 && value.includes(".")) {
+      return value.replace(".", "");
+    }
+
+    // Create regex based on decimal places allowed
+    let regex: RegExp;
+    if (decimalPlaces === 0) {
+      // Only integers allowed (no decimal point)
+      regex = /^\d*$/;
+    } else {
+      // Allow decimal point with specified number of decimal places
+      regex = new RegExp(`^\\d*\\.?\\d{0,${String(decimalPlaces)}}$`);
+    }
+
     if (!regex.test(value)) return value.slice(0, -1);
 
     // Check if the value exceeds the maximum allowed
@@ -500,6 +532,7 @@ export const useThirdOptionalForm = ({
 
     // Score limits
     getScoreLimits,
+    getDecimalPlaces,
 
     // Translation function
     t,

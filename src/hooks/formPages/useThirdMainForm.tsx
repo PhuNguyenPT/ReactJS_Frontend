@@ -45,8 +45,8 @@ export const useThirdMainForm = ({
     // Allow empty string
     if (value === "") return "";
 
-    // Allow only numbers and one decimal point
-    const regex = /^\d*\.?\d*$/;
+    // Allow only numbers and one decimal point with max 2 decimal places
+    const regex = /^\d*\.?\d{0,2}$/;
     if (!regex.test(value)) return value.slice(0, -1);
 
     // Convert to number and validate range
