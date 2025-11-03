@@ -26,7 +26,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy static assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html/admission.edu.vn
 
 EXPOSE 80 443
 
