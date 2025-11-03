@@ -7,5 +7,5 @@ dist
 .gitignore
 *.md
 !.env.production
-!.env.staging
+.env.staging
 .env.dev
