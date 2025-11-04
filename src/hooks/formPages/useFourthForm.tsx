@@ -4,6 +4,12 @@ import { CCNNType, CCQTType } from "../../type/enum/exam";
 import { NationalExcellentStudentExamSubject } from "../../type/enum/national-excellent-exam";
 import { Rank } from "../../type/enum/ranks";
 import { useFormData } from "../../contexts/FormData/useFormData";
+import {
+  validateExamScore,
+  formatScoreOnBlur,
+  getScorePlaceholder,
+  getScoreRange,
+} from "../../config/achievement-score-config";
 
 interface FieldOption {
   key: string;
@@ -219,6 +225,19 @@ export const useFourthForm = () => {
     updateFourthForm({ categories: updatedCategories });
   };
 
+  // Validate and handle score change based on exam type
+  const handleScoreChange = (
+    value: string,
+    examType: string | null,
+  ): string => {
+    return validateExamScore(value, examType);
+  };
+
+  // Format score when user leaves the input field
+  const handleScoreBlur = (value: string, examType: string | null): string => {
+    return formatScoreOnBlur(value, examType);
+  };
+
   // Update a field in an entry
   const handleEntryChange = (
     categoryId: string,
@@ -226,18 +245,107 @@ export const useFourthForm = () => {
     field: "firstField" | "firstFieldOther" | "secondField",
     value: string,
   ) => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    const entry = category?.entries.find((e) => e.id === entryId);
+
+    let validatedValue = value;
+
+    // If updating the score field (secondField) for exam types with validation
+    if (field === "secondField" && entry) {
+      const examType = entry.firstField || null;
+
+      // Only validate if it's a text input field (language_cert or international_cert)
+      if (
+        category?.categoryType === "language_cert" ||
+        category?.categoryType === "international_cert"
+      ) {
+        validatedValue = handleScoreChange(value, examType);
+      }
+    }
+
     const updatedCategories = formData.fourthForm.categories.map((category) =>
       category.id === categoryId
         ? {
             ...category,
             entries: category.entries.map((entry) =>
-              entry.id === entryId ? { ...entry, [field]: value } : entry,
+              entry.id === entryId
+                ? { ...entry, [field]: validatedValue }
+                : entry,
             ),
           }
         : category,
     );
 
     updateFourthForm({ categories: updatedCategories });
+  };
+
+  // Handle score blur event (format on blur)
+  const handleEntryScoreBlur = (categoryId: string, entryId: string) => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    const entry = category?.entries.find((e) => e.id === entryId);
+
+    if (!entry?.secondField) return;
+
+    const examType = entry.firstField || null;
+
+    // Only format if it's a text input field
+    if (
+      category?.categoryType === "language_cert" ||
+      category?.categoryType === "international_cert"
+    ) {
+      const formattedScore = handleScoreBlur(entry.secondField, examType);
+
+      if (formattedScore !== entry.secondField) {
+        const updatedCategories = formData.fourthForm.categories.map((cat) =>
+          cat.id === categoryId
+            ? {
+                ...cat,
+                entries: cat.entries.map((e) =>
+                  e.id === entryId ? { ...e, secondField: formattedScore } : e,
+                ),
+              }
+            : cat,
+        );
+
+        updateFourthForm({ categories: updatedCategories });
+      }
+    }
+  };
+
+  // Get placeholder text for score input based on exam type
+  const getScoreInputPlaceholder = (
+    examType: string | null,
+    categoryType: string,
+  ): string => {
+    const defaultPlaceholder = t("fourthForm.scorePlaceholder");
+
+    // Only show custom placeholder for exam types with validation
+    if (
+      categoryType === "language_cert" ||
+      categoryType === "international_cert"
+    ) {
+      return getScorePlaceholder(examType, defaultPlaceholder);
+    }
+
+    return defaultPlaceholder;
+  };
+
+  // Get score range info for display
+  const getScoreRangeInfo = (examType: string | null): string | null => {
+    const scoreRange = getScoreRange(examType);
+    if (!scoreRange) return null;
+
+    const { min, max, step } = scoreRange;
+
+    if (step) {
+      return `${String(min)}-${String(max)} (${String(step)} ${t("fourthForm.increment")})`;
+    }
+
+    return `${String(min)}-${String(max)}`;
   };
 
   // Get first field options based on category type
@@ -286,6 +394,29 @@ export const useFourthForm = () => {
       }
     }
 
+    // Validate score range if applicable
+    if (
+      entry.firstField &&
+      entry.secondField &&
+      (categoryType === "language_cert" ||
+        categoryType === "international_cert")
+    ) {
+      const scoreRange = getScoreRange(entry.firstField);
+      if (scoreRange) {
+        const score = parseFloat(entry.secondField);
+        if (!isNaN(score)) {
+          if (score < scoreRange.min || score > scoreRange.max) {
+            errors.push(
+              t("fourthForm.scoreOutOfRangeError", {
+                min: scoreRange.min,
+                max: scoreRange.max,
+              }),
+            );
+          }
+        }
+      }
+    }
+
     return errors;
   };
 
@@ -328,6 +459,7 @@ export const useFourthForm = () => {
     handleAddEntry,
     handleRemoveEntry,
     handleEntryChange,
+    handleEntryScoreBlur,
 
     // Helper functions
     getFirstFieldOptions,
@@ -337,6 +469,8 @@ export const useFourthForm = () => {
     canAddEntry,
     getRemainingSlots,
     getAddButtonText,
+    getScoreInputPlaceholder,
+    getScoreRangeInfo,
 
     // Validation functions
     validateForm,

@@ -8,7 +8,6 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
 import { useFormData } from "../../../contexts/FormData/useFormData";
-import { useThirdOptionalForm } from "../../../hooks/formPages/useThirdOptionalForm";
 
 export default function ThirdFormPage() {
   usePageTitle("Unizy | Third Form");
@@ -27,14 +26,6 @@ export default function ThirdFormPage() {
     chosenScores,
     optionalCategories,
   } = formData.thirdForm;
-
-  // Get validation function from optional form hook
-  const { validateForm } = useThirdOptionalForm({
-    categories: optionalCategories,
-    setCategories: (value) => {
-      updateThirdForm({ optionalCategories: value });
-    },
-  });
 
   // Update functions that sync with context
   const setMathScore = (value: string) => {
@@ -74,6 +65,53 @@ export default function ThirdFormPage() {
     );
   };
 
+  // Validate optional categories manually
+  const validateOptionalCategories = (): boolean => {
+    // Check each category for validation errors
+    for (const category of optionalCategories) {
+      const filledScores = category.scores.filter(
+        (score) => score.subject && score.score,
+      );
+
+      // V-SAT specific validation
+      if (category.name === "V-SAT") {
+        if (filledScores.length > 0 && filledScores.length < 3) {
+          return false; // Invalid - needs at least 3
+        }
+        if (filledScores.length > 8) {
+          return false; // Invalid - max 8
+        }
+      }
+
+      // ĐGNL specific validation
+      if (category.name === "ĐGNL") {
+        if (filledScores.length > 3) {
+          return false; // Invalid - max 3
+        }
+      }
+
+      // Năng khiếu specific validation
+      if (category.name === "Năng khiếu") {
+        if (filledScores.length > 3) {
+          return false; // Invalid - max 3
+        }
+      }
+
+      // Check for incomplete entries (subject without score or vice versa)
+      for (const score of category.scores) {
+        if (
+          (score.subject && !score.score) ||
+          (!score.subject && score.score)
+        ) {
+          console.log("Incomplete entry found in", category.name);
+          return false; // Invalid - incomplete entry
+        }
+      }
+    }
+
+    return true; // All valid
+  };
+
   // Pass showErrors directly as hasError
   const hasError = showErrors;
 
@@ -83,15 +121,18 @@ export default function ThirdFormPage() {
 
   const handleNext = () => {
     const mainFormValid = isMainFormValid();
-    const optionalFormValidation = validateForm();
-    const optionalFormValid = optionalFormValidation.isValid;
+    const optionalFormValid = validateOptionalCategories();
 
     // Check both main form and optional form
     if (mainFormValid && optionalFormValid) {
+      // Both valid - navigate
       void navigate("/fourthForm");
     } else {
       // Show errors when user tries to proceed with incomplete form
       setShowErrors(true);
+
+      // Optional: Scroll to first error
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
