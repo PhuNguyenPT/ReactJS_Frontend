@@ -57,7 +57,7 @@ export const useThirdOptionalForm = ({
     subject: string,
     scoreValue: string,
   ): string | null => {
-    if (!scoreValue) return null; // Empty is valid
+    if (!scoreValue) return null;
 
     const error = validateOptionalExamScoreValue(
       categoryName,

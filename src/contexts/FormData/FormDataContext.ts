@@ -17,7 +17,6 @@ export interface AwardCertificate {
   id: string;
   firstField: string;
   secondField: string;
-  firstFieldOther?: string;
 }
 
 export interface FourthFormCategoryData {
@@ -134,7 +133,12 @@ export const initialFormData: FormData = {
       },
     ],
   },
-  fifthForm: { costRange: [1, 900] },
+  fifthForm: {
+    costRange: [
+      Number(import.meta.env.VITE_SLIDER_MIN),
+      Number(import.meta.env.VITE_SLIDER_MAX),
+    ],
+  },
   sixthForm: { specialStudentCases: [] },
   seventhForm: {
     grades: {

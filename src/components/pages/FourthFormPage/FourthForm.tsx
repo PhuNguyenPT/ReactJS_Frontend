@@ -182,8 +182,13 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                               e.target.value,
                             );
                           }}
-                          placeholder={category.secondFieldLabel}
+                          placeholder={
+                            entry.firstField
+                              ? category.secondFieldLabel
+                              : category.secondFieldLabel
+                          }
                           error={hasError}
+                          disabled={!entry.firstField}
                           sx={{
                             width: 170,
                             "& .MuiOutlinedInput-root": {
@@ -221,10 +226,15 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                           }
                           sx={{ width: 170 }}
                           filterSelectedOptions
+                          disabled={!entry.firstField}
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              placeholder={category.secondFieldLabel}
+                              placeholder={
+                                entry.firstField
+                                  ? category.secondFieldLabel
+                                  : category.secondFieldLabel
+                              }
                               error={hasError}
                               sx={{
                                 "& .MuiOutlinedInput-root": {

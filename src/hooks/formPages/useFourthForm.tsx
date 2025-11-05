@@ -19,7 +19,6 @@ interface FieldOption {
 interface Entry {
   id: string;
   firstField: string;
-  firstFieldOther?: string;
   secondField: string;
 }
 
@@ -34,7 +33,9 @@ interface Category {
 }
 
 // Maximum entries configuration for all categories
-const MAX_ENTRIES_PER_CATEGORY = 3;
+const MAX_ENTRIES_PER_CATEGORY = Number(
+  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY,
+);
 
 export const useFourthForm = () => {
   const { t } = useTranslation();
@@ -194,7 +195,6 @@ export const useFourthForm = () => {
               {
                 id: generateId(),
                 firstField: "",
-                firstFieldOther: "",
                 secondField: "",
               },
             ],
@@ -242,7 +242,7 @@ export const useFourthForm = () => {
   const handleEntryChange = (
     categoryId: string,
     entryId: string,
-    field: "firstField" | "firstFieldOther" | "secondField",
+    field: "firstField" | "secondField",
     value: string,
   ) => {
     const category = formData.fourthForm.categories.find(
