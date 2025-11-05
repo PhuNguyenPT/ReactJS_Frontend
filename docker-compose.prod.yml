@@ -1,15 +1,30 @@
+secrets:
+  backend_ca:
+    file: ./tls/ca.crt
+  nginx_client_crt:
+    file: ./tls/nginx-client.crt
+  nginx_client_key:
+    file: ./tls/nginx-client.key
+
 services:
-  frontend:
+  frontend-prod:
     image: phunpt01/react-frontend:latest
-    container_name: react-frontend
+    container_name: frontend-prod
     ports:
       - "80:80"
       - "443:443"
     volumes:
+      # Cloudflare SSL certificates (for external HTTPS)
       - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
       - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
       - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
+      # Nginx configuration
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    secrets:
+      # Backend mTLS certificates (for internal communication)
+      - backend_ca
+      - nginx_client_crt
+      - nginx_client_key
     restart: unless-stopped
     networks:
       - frontend-network
