@@ -87,9 +87,14 @@ export const useThirdOptionalForm = ({
   ): string[] => {
     const errors: string[] = [];
 
-    // If subject is selected but score is empty
+    // CASE 1: Subject is selected but score is empty
     if (score.subject && !score.score) {
       errors.push(t("thirdForm.errorWarning"));
+    }
+
+    // CASE 2: Score is filled but subject is empty (shouldn't happen with UI controls, but adding for safety)
+    if (!score.subject && score.score) {
+      errors.push(t("thirdForm.subjectRequiredError") || "Subject is required");
     }
 
     // Validate score value against limits
@@ -296,12 +301,39 @@ export const useThirdOptionalForm = ({
     setCategories(updated);
   };
 
-  // Handle subject change with validation
+  // Handle subject change with validation and auto-clear score when subject is cleared
   const handleSubjectChange = (
     categoryId: string,
     scoreId: string,
     translationKey: string,
   ) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (!category) return;
+
+    const score = category.scores.find((s) => s.id === scoreId);
+    if (!score) return;
+
+    // CASE: If clearing the subject (selecting empty), also clear the score
+    if (!translationKey && score.score) {
+      const updated = categories.map((cat) => {
+        if (cat.id === categoryId) {
+          return {
+            ...cat,
+            scores: cat.scores.map((s) => {
+              if (s.id === scoreId) {
+                return { ...s, subject: "", score: "", subjectOther: "" };
+              }
+              return s;
+            }),
+          };
+        }
+        return cat;
+      });
+      setCategories(updated);
+      return;
+    }
+
+    // Normal subject change
     handleScoreChange(categoryId, scoreId, "subject", translationKey);
   };
 

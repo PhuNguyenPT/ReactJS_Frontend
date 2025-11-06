@@ -8,17 +8,13 @@ interface ScoreRange {
 }
 
 // Score ranges for CCNN (Language Certification) exams
+// Note: JLPT has been removed as it now uses level dropdown instead
 export const CCNN_SCORE_RANGES: Record<string, ScoreRange> = {
   [CCNNType.IELTS]: {
     min: 0,
     max: 9,
-    step: 0.5, // IELTS scores increment by 0.5
+    step: 0.5,
     decimalPlaces: 1,
-  },
-  [CCNNType.JLPT]: {
-    min: 0,
-    max: 180,
-    decimalPlaces: 0, // JLPT uses whole numbers
   },
   [CCNNType.TOEFL_CBT]: {
     min: 0,
@@ -43,16 +39,12 @@ export const CCNN_SCORE_RANGES: Record<string, ScoreRange> = {
 };
 
 // Score ranges for CCQT (International Certification) exams
+// Note: ALevel has been removed as it now uses grade dropdown instead
 export const CCQT_SCORE_RANGES: Record<string, ScoreRange> = {
   [CCQTType.ACT]: {
     min: 1,
     max: 36,
     decimalPlaces: 0,
-  },
-  [CCQTType.ALevel]: {
-    min: 0,
-    max: 100,
-    decimalPlaces: 2, // A-Level can have decimal scores
   },
   [CCQTType.DoulingoEnglishTest]: {
     min: 10,
@@ -93,6 +85,13 @@ export const EXAM_SCORE_RANGES: Partial<Record<string, ScoreRange>> = {
 export const getScoreRange = (examType: string | null): ScoreRange | null => {
   if (!examType) return null;
   return EXAM_SCORE_RANGES[examType] ?? null;
+};
+
+/**
+ * Check if exam type uses grade/level dropdown instead of numeric score
+ */
+export const usesGradeDropdown = (examType: string | null): boolean => {
+  return examType === CCQTType.ALevel || examType === CCNNType.JLPT;
 };
 
 /**
@@ -213,7 +212,7 @@ export const getScorePlaceholder = (
   const { min, max, step } = scoreRange;
 
   if (step) {
-    return `${String(min)}-${String(max)} (${String(step)} increment)`;
+    return `${String(min)}-${String(max)}`;
   }
 
   return `${String(min)}-${String(max)}`;
