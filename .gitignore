@@ -28,3 +28,5 @@ coverage/
 # Environment files - ignore all except example
 .env*
 !.env.example
+
+tls/
