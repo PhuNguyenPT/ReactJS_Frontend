@@ -53,15 +53,6 @@ export const useSixthForm = () => {
     },
   ];
 
-  // Validation function (can be expanded based on requirements)
-  const validate = (): boolean => {
-    // Example: You might want to require at least one selection
-    // return checkedValues.length > 0;
-
-    // Or no validation required for optional checkboxes
-    return true;
-  };
-
   // Get selected options with full details
   const getSelectedOptions = (): SixthFormOption[] => {
     return specialStudentOptions.filter((opt) =>
@@ -92,7 +83,6 @@ export const useSixthForm = () => {
 
     // Utilities
     isChecked,
-    validate,
     getSelectedOptions,
   };
 };

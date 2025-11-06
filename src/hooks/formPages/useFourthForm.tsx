@@ -3,7 +3,16 @@ import { useTranslation } from "react-i18next";
 import { CCNNType, CCQTType } from "../../type/enum/exam";
 import { NationalExcellentStudentExamSubject } from "../../type/enum/national-excellent-exam";
 import { Rank } from "../../type/enum/ranks";
+import { ALevelGrade } from "../../type/enum/A-Level-grade";
+import { JPLTLevel } from "../../type/enum/JLPT-Level";
 import { useFormData } from "../../contexts/FormData/useFormData";
+import {
+  validateExamScore,
+  formatScoreOnBlur,
+  getScorePlaceholder,
+  getScoreRange,
+  usesGradeDropdown,
+} from "../../config/achievement-score-config";
 
 interface FieldOption {
   key: string;
@@ -13,7 +22,6 @@ interface FieldOption {
 interface Entry {
   id: string;
   firstField: string;
-  firstFieldOther?: string;
   secondField: string;
 }
 
@@ -28,7 +36,9 @@ interface Category {
 }
 
 // Maximum entries configuration for all categories
-const MAX_ENTRIES_PER_CATEGORY = 3;
+const MAX_ENTRIES_PER_CATEGORY = Number(
+  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY,
+);
 
 export const useFourthForm = () => {
   const { t } = useTranslation();
@@ -41,6 +51,8 @@ export const useFourthForm = () => {
     [],
   );
   const rankOptions = useMemo(() => Object.values(Rank), []);
+  const alevelGradeOptions = useMemo(() => Object.values(ALevelGrade), []);
+  const jlptLevelOptions = useMemo(() => Object.values(JPLTLevel), []);
 
   // Convert translation keys to display options
   const getTranslatedOptions = useCallback(
@@ -56,12 +68,29 @@ export const useFourthForm = () => {
   // Get selected value as option object
   const getSelectedValue = (
     translationKey: string | null,
+    useRawValue = false,
   ): FieldOption | null => {
     if (!translationKey) return null;
     return {
       key: translationKey,
-      label: t(translationKey),
+      label: useRawValue ? translationKey : t(translationKey),
     };
+  };
+
+  // Get A-Level grade options (no translation needed, use raw values)
+  const getALevelGradeOptions = (): FieldOption[] => {
+    return alevelGradeOptions.map((grade) => ({
+      key: grade,
+      label: grade,
+    }));
+  };
+
+  // Get JLPT level options (no translation needed, use raw values)
+  const getJLPTLevelOptions = (): FieldOption[] => {
+    return jlptLevelOptions.map((level) => ({
+      key: level,
+      label: level,
+    }));
   };
 
   // Options for each category
@@ -188,7 +217,6 @@ export const useFourthForm = () => {
               {
                 id: generateId(),
                 firstField: "",
-                firstFieldOther: "",
                 secondField: "",
               },
             ],
@@ -219,25 +247,176 @@ export const useFourthForm = () => {
     updateFourthForm({ categories: updatedCategories });
   };
 
+  // Validate and handle score change based on exam type
+  const handleScoreChange = (
+    value: string,
+    examType: string | null,
+  ): string => {
+    return validateExamScore(value, examType);
+  };
+
+  // Format score when user leaves the input field
+  const handleScoreBlur = (value: string, examType: string | null): string => {
+    return formatScoreOnBlur(value, examType);
+  };
+
   // Update a field in an entry
   const handleEntryChange = (
     categoryId: string,
     entryId: string,
-    field: "firstField" | "firstFieldOther" | "secondField",
+    field: "firstField" | "secondField",
     value: string,
   ) => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    const entry = category?.entries.find((e) => e.id === entryId);
+
+    let validatedValue = value;
+
+    // If updating the first field (exam type)
+    if (field === "firstField" && entry) {
+      const oldExamType = entry.firstField;
+      const newExamType = value;
+
+      // CASE 1: If clearing the first field (selecting empty), always clear the second field
+      if (!newExamType && entry.secondField) {
+        const updatedCategories = formData.fourthForm.categories.map((cat) =>
+          cat.id === categoryId
+            ? {
+                ...cat,
+                entries: cat.entries.map((e) =>
+                  e.id === entryId
+                    ? { ...e, firstField: "", secondField: "" }
+                    : e,
+                ),
+              }
+            : cat,
+        );
+        updateFourthForm({ categories: updatedCategories });
+        return;
+      }
+
+      // CASE 2: If switching between different field types (dropdown vs text input), clear the second field
+      const wasGradeDropdown = usesGradeDropdown(oldExamType || null);
+      const isNowGradeDropdown = usesGradeDropdown(newExamType || null);
+
+      if (wasGradeDropdown !== isNowGradeDropdown && entry.secondField) {
+        const updatedCategories = formData.fourthForm.categories.map((cat) =>
+          cat.id === categoryId
+            ? {
+                ...cat,
+                entries: cat.entries.map((e) =>
+                  e.id === entryId
+                    ? { ...e, firstField: value, secondField: "" }
+                    : e,
+                ),
+              }
+            : cat,
+        );
+        updateFourthForm({ categories: updatedCategories });
+        return;
+      }
+    }
+
+    // If updating the score field (secondField) for exam types with validation
+    if (field === "secondField" && entry) {
+      const examType = entry.firstField || null;
+
+      // Only validate if it's a text input field (not ALevel grade dropdown or JLPT level dropdown)
+      if (
+        !usesGradeDropdown(examType) &&
+        (category?.categoryType === "language_cert" ||
+          category?.categoryType === "international_cert")
+      ) {
+        validatedValue = handleScoreChange(value, examType);
+      }
+    }
+
     const updatedCategories = formData.fourthForm.categories.map((category) =>
       category.id === categoryId
         ? {
             ...category,
             entries: category.entries.map((entry) =>
-              entry.id === entryId ? { ...entry, [field]: value } : entry,
+              entry.id === entryId
+                ? { ...entry, [field]: validatedValue }
+                : entry,
             ),
           }
         : category,
     );
 
     updateFourthForm({ categories: updatedCategories });
+  };
+
+  // Handle score blur event (format on blur)
+  const handleEntryScoreBlur = (categoryId: string, entryId: string) => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    const entry = category?.entries.find((e) => e.id === entryId);
+
+    if (!entry?.secondField) return;
+
+    const examType = entry.firstField || null;
+
+    // Don't format if it's ALevel (uses dropdown)
+    if (usesGradeDropdown(examType)) return;
+
+    // Only format if it's a text input field
+    if (
+      category?.categoryType === "language_cert" ||
+      category?.categoryType === "international_cert"
+    ) {
+      const formattedScore = handleScoreBlur(entry.secondField, examType);
+
+      if (formattedScore !== entry.secondField) {
+        const updatedCategories = formData.fourthForm.categories.map((cat) =>
+          cat.id === categoryId
+            ? {
+                ...cat,
+                entries: cat.entries.map((e) =>
+                  e.id === entryId ? { ...e, secondField: formattedScore } : e,
+                ),
+              }
+            : cat,
+        );
+
+        updateFourthForm({ categories: updatedCategories });
+      }
+    }
+  };
+
+  // Get placeholder text for score input based on exam type
+  const getScoreInputPlaceholder = (
+    examType: string | null,
+    categoryType: string,
+  ): string => {
+    const defaultPlaceholder = t("fourthForm.scorePlaceholder");
+
+    // Only show custom placeholder for exam types with validation
+    if (
+      categoryType === "language_cert" ||
+      categoryType === "international_cert"
+    ) {
+      return getScorePlaceholder(examType, defaultPlaceholder);
+    }
+
+    return defaultPlaceholder;
+  };
+
+  // Get score range info for display
+  const getScoreRangeInfo = (examType: string | null): string | null => {
+    const scoreRange = getScoreRange(examType);
+    if (!scoreRange) return null;
+
+    const { min, max, step } = scoreRange;
+
+    if (step) {
+      return `${String(min)}-${String(max)} (${String(step)} ${t("fourthForm.increment")})`;
+    }
+
+    return `${String(min)}-${String(max)}`;
   };
 
   // Get first field options based on category type
@@ -254,28 +433,67 @@ export const useFourthForm = () => {
     }
   };
 
-  // Get second field options based on category type
-  const getSecondFieldOptions = (categoryType: string): FieldOption[] => {
+  // Get second field options based on category type and exam type
+  const getSecondFieldOptions = (
+    categoryType: string,
+    examType: string | null,
+  ): FieldOption[] => {
     switch (categoryType) {
       case "national_award":
         return categoryOptions.national_award.awards;
+      case "international_cert":
+        // If ALevel is selected, return grade options
+        if (usesGradeDropdown(examType)) {
+          return getALevelGradeOptions();
+        }
+        return [];
+      case "language_cert":
+        // If JLPT is selected, return level options
+        if (usesGradeDropdown(examType)) {
+          return getJLPTLevelOptions();
+        }
+        return [];
       default:
         return [];
     }
   };
 
-  // Check if second field should be text input (for language_cert and international_cert)
-  const isSecondFieldTextInput = (categoryType: string): boolean => {
-    return (
-      categoryType === "language_cert" || categoryType === "international_cert"
-    );
+  // Check if second field should be a dropdown (for national_award, ALevel, or JLPT)
+  const isSecondFieldDropdown = (
+    categoryType: string,
+    examType: string | null,
+  ): boolean => {
+    if (categoryType === "national_award") {
+      return true;
+    }
+    if (
+      categoryType === "international_cert" ||
+      categoryType === "language_cert"
+    ) {
+      return usesGradeDropdown(examType);
+    }
+    return false;
+  };
+
+  // Check if second field should be text input (for non-JLPT language_cert and non-ALevel international_cert)
+  const isSecondFieldTextInput = (
+    categoryType: string,
+    examType: string | null,
+  ): boolean => {
+    if (categoryType === "language_cert") {
+      return !usesGradeDropdown(examType);
+    }
+    if (categoryType === "international_cert") {
+      return !usesGradeDropdown(examType);
+    }
+    return false;
   };
 
   // Validation functions
   const getEntryErrors = (entry: Entry, categoryType: string): string[] => {
     const errors: string[] = [];
 
-    // If first field (subject/certificate) is selected but second field is empty
+    // CASE 1: First field is selected but second field is empty
     if (entry.firstField && !entry.secondField) {
       // Different error messages based on category type
       if (categoryType === "national_award") {
@@ -283,6 +501,47 @@ export const useFourthForm = () => {
       } else {
         // For language_cert and international_cert
         errors.push(t("fourthForm.scoreRequiredError"));
+      }
+    }
+
+    // CASE 2: Second field is filled but first field is empty (shouldn't happen with UI controls, but adding for safety)
+    if (!entry.firstField && entry.secondField) {
+      if (categoryType === "national_award") {
+        errors.push(
+          t("fourthForm.subjectRequiredError") || "Subject is required",
+        );
+      } else if (categoryType === "international_cert") {
+        errors.push(
+          t("fourthForm.certificateRequiredError") || "Certificate is required",
+        );
+      } else if (categoryType === "language_cert") {
+        errors.push(
+          t("fourthForm.certificateRequiredError") || "Certificate is required",
+        );
+      }
+    }
+
+    // Validate score range if applicable (only for numeric scores, not grades)
+    if (
+      entry.firstField &&
+      entry.secondField &&
+      !usesGradeDropdown(entry.firstField) &&
+      (categoryType === "language_cert" ||
+        categoryType === "international_cert")
+    ) {
+      const scoreRange = getScoreRange(entry.firstField);
+      if (scoreRange) {
+        const score = parseFloat(entry.secondField);
+        if (!isNaN(score)) {
+          if (score < scoreRange.min || score > scoreRange.max) {
+            errors.push(
+              t("fourthForm.scoreOutOfRangeError", {
+                min: scoreRange.min,
+                max: scoreRange.max,
+              }),
+            );
+          }
+        }
       }
     }
 
@@ -328,15 +587,19 @@ export const useFourthForm = () => {
     handleAddEntry,
     handleRemoveEntry,
     handleEntryChange,
+    handleEntryScoreBlur,
 
     // Helper functions
     getFirstFieldOptions,
     getSecondFieldOptions,
     getSelectedValue,
+    isSecondFieldDropdown,
     isSecondFieldTextInput,
     canAddEntry,
     getRemainingSlots,
     getAddButtonText,
+    getScoreInputPlaceholder,
+    getScoreRangeInfo,
 
     // Validation functions
     validateForm,

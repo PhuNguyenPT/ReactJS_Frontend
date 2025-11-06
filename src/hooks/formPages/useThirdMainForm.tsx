@@ -4,6 +4,12 @@ import {
   NationalExamSubjects,
   getSelectableSubjects,
 } from "../../type/enum/national-exam-subject";
+import {
+  validateNationalExamScore,
+  formatNationalExamScoreOnBlur,
+  getNationalExamScorePlaceholder,
+  getNationalExamScoreRangeInfo,
+} from "../../config/national-exam-score-config";
 
 interface SubjectOption {
   key: string;
@@ -40,26 +46,14 @@ export const useThirdMainForm = ({
   // Get selectable subjects (excluding mandatory TOAN and VAN)
   const selectableSubjects = useMemo(() => getSelectableSubjects(), []);
 
-  // Validate and sanitize score input
+  // Validate and sanitize score input using config
   const handleScoreChange = (value: string): string => {
-    // Allow empty string
-    if (value === "") return "";
+    return validateNationalExamScore(value);
+  };
 
-    // Allow only numbers and one decimal point with max 2 decimal places
-    const regex = /^\d*\.?\d{0,2}$/;
-    if (!regex.test(value)) return value.slice(0, -1);
-
-    // Convert to number and validate range
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return value;
-
-    // If greater than 10, return "10"
-    if (numValue > 10) return "10";
-
-    // If less than 0, return "0"
-    if (numValue < 0) return "0";
-
-    return value;
+  // Format score on blur using config
+  const handleScoreBlur = (value: string): string => {
+    return formatNationalExamScoreOnBlur(value);
   };
 
   // Handle math score change
@@ -69,11 +63,27 @@ export const useThirdMainForm = ({
     setHasError(false);
   };
 
+  // Handle math score blur
+  const handleMathScoreBlur = () => {
+    const formattedValue = handleScoreBlur(mathScore);
+    if (formattedValue !== mathScore) {
+      setMathScore(formattedValue);
+    }
+  };
+
   // Handle literature score change
   const handleLiteratureScoreChange = (value: string) => {
     const validatedValue = handleScoreChange(value);
     setLiteratureScore(validatedValue);
     setHasError(false);
+  };
+
+  // Handle literature score blur
+  const handleLiteratureScoreBlur = () => {
+    const formattedValue = handleScoreBlur(literatureScore);
+    if (formattedValue !== literatureScore) {
+      setLiteratureScore(formattedValue);
+    }
   };
 
   // Handle chosen subject change
@@ -94,6 +104,16 @@ export const useThirdMainForm = ({
     updated[index] = validatedValue;
     setChosenScores(updated);
     setHasError(false);
+  };
+
+  // Handle chosen subject score blur
+  const handleChosenScoreBlur = (index: number) => {
+    const formattedValue = handleScoreBlur(chosenScores[index]);
+    if (formattedValue !== chosenScores[index]) {
+      const updated = [...chosenScores];
+      updated[index] = formattedValue;
+      setChosenScores(updated);
+    }
   };
 
   // Convert translation keys to display options for subjects
@@ -167,6 +187,16 @@ export const useThirdMainForm = ({
     };
   };
 
+  // Get placeholder text for score input
+  const getScorePlaceholder = (): string => {
+    return getNationalExamScorePlaceholder();
+  };
+
+  // Get score range info for display
+  const getScoreRangeInfo = (): string => {
+    return getNationalExamScoreRangeInfo();
+  };
+
   return {
     // Data
     mathScore,
@@ -176,14 +206,19 @@ export const useThirdMainForm = ({
 
     // Handlers
     handleMathScoreChange,
+    handleMathScoreBlur,
     handleLiteratureScoreChange,
+    handleLiteratureScoreBlur,
     handleChosenSubjectChange,
     handleChosenScoreChange,
+    handleChosenScoreBlur,
 
     // Helper functions
     getOptionalSubjectData,
     shouldShowMathError,
     shouldShowLiteratureError,
+    getScorePlaceholder,
+    getScoreRangeInfo,
 
     // Constants
     mandatorySubjects: {

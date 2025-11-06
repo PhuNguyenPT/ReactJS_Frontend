@@ -6,7 +6,7 @@ import type { StudentRecord } from "../../services/student/studentHistoryService
 import { getFilterFieldsForStudent } from "../../services/studentAdmission/admissionFilterService";
 import APIError from "../../utils/apiError";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = Number(import.meta.env.VITE_ITEMS_PER_PAGE);
 
 export function useHistoryPage() {
   const { t } = useTranslation();

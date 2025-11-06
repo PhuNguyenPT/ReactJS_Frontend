@@ -19,16 +19,14 @@ export const useFifthForm = ({ ref }: UseFifthFormProps = {}) => {
     validate: () => {
       // Add your validation logic here
       const { costRange } = formData.fifthForm;
-
-      // Example validation rules:
-      // - Check if range is valid
-      // - Check if minimum is less than maximum
-      // - Check if values are within allowed bounds
       if (costRange[0] >= costRange[1]) {
         return false;
       }
 
-      if (costRange[0] < 1 || costRange[1] > 900) {
+      if (
+        costRange[0] < Number(import.meta.env.VITE_SLIDER_MIN) ||
+        costRange[1] > Number(import.meta.env.VITE_SLIDER_MAX)
+      ) {
         return false;
       }
 
@@ -53,9 +51,12 @@ export const useFifthForm = ({ ref }: UseFifthFormProps = {}) => {
 
   // Configuration values
   const sliderConfig = {
-    min: 1,
-    max: 900,
-    defaultValue: [1, 900] as number[],
+    min: Number(import.meta.env.VITE_SLIDER_MIN),
+    max: Number(import.meta.env.VITE_SLIDER_MAX),
+    defaultValue: [
+      Number(import.meta.env.VITE_SLIDER_MIN),
+      Number(import.meta.env.VITE_SLIDER_MAX),
+    ] as number[],
   };
 
   return {

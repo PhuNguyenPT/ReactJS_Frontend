@@ -39,12 +39,13 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
     handleRemoveScore,
     handleSubjectChange,
     handleScoreValueChange,
+    handleScoreValueBlur,
     getTranslatedCategoryName,
     getScoreRowData,
-    getCategoryErrors,
     getScoreRowErrors,
     canAddScore,
     getAddButtonText,
+    getScorePlaceholder,
     t,
   } = useThirdOptionalForm(props);
 
@@ -60,6 +61,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
       {categories.map((category) => {
         const canAdd = canAddScore(category.name);
 
+        // Count filled scores for validation
+        const filledScores = category.scores.filter(
+          (score) => score.subject && score.score,
+        );
+
         return (
           <Box
             key={category.id}
@@ -71,7 +77,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
               alignItems: "flex-start",
             }}
           >
-            {/* Category Header with Helper Text */}
+            {/* Category Header */}
             <Box
               sx={{
                 display: "flex",
@@ -93,17 +99,58 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
               </Typography>
             </Box>
 
-            {/* Category-level error messages - only show when showErrors is true */}
+            {/* V-SAT Validation Errors - Direct Check */}
             {showErrors &&
-              getCategoryErrors(category).map((error) => (
-                <Alert
-                  key={`${category.id}-${error}`}
-                  severity="error"
-                  sx={{ mb: 2, width: "100%" }}
-                >
-                  {error}
-                </Alert>
-              ))}
+              category.name === "V-SAT" &&
+              (() => {
+                // Minimum validation
+                if (filledScores.length > 0 && filledScores.length < 3) {
+                  return (
+                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                      {t("thirdForm.vsatMinimumError")}
+                    </Alert>
+                  );
+                }
+
+                // Maximum validation
+                if (filledScores.length > 8) {
+                  return (
+                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                      {t("thirdForm.maxEntriesReached")}
+                    </Alert>
+                  );
+                }
+
+                return null;
+              })()}
+
+            {/* ĐGNL Validation Errors - Direct Check */}
+            {showErrors &&
+              category.name === "ĐGNL" &&
+              (() => {
+                if (filledScores.length > 3) {
+                  return (
+                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                      {t("thirdForm.maxEntriesReached")}
+                    </Alert>
+                  );
+                }
+                return null;
+              })()}
+
+            {/* Năng khiếu Validation Errors - Direct Check */}
+            {showErrors &&
+              category.name === "Năng khiếu" &&
+              (() => {
+                if (filledScores.length > 3) {
+                  return (
+                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                      {t("thirdForm.maxEntriesReached")}
+                    </Alert>
+                  );
+                }
+                return null;
+              })()}
 
             {/* Score Inputs */}
             {category.isExpanded &&
@@ -181,7 +228,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
 
                       {/* Score Input with validation */}
                       <TextField
-                        type="number"
+                        type="text"
                         value={score.score}
                         onChange={(e) => {
                           handleScoreValueChange(
@@ -190,11 +237,16 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                             e.target.value,
                           );
                         }}
-                        placeholder={t("thirdForm.score")}
-                        error={hasError}
-                        slotProps={{
-                          htmlInput: { min: 0, max: 10, step: 0.1 },
+                        onBlur={() => {
+                          handleScoreValueBlur(category.id, score.id);
                         }}
+                        placeholder={
+                          score.subject
+                            ? getScorePlaceholder(category.name, score.subject)
+                            : t("thirdForm.score")
+                        }
+                        error={hasError}
+                        disabled={!score.subject}
                         sx={{
                           width: "150px",
                           "& .MuiOutlinedInput-root": {
@@ -247,11 +299,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                       </IconButton>
                     </Box>
 
-                    {/* Row-level error messages - only show when showErrors is true */}
+                    {/* Row-level error messages */}
                     {showErrors &&
                       scoreRowErrors.map((error) => (
                         <Typography
-                          key={`${score.id}-${error}`}
+                          key={`${score.id}-${error.substring(0, 20)}`}
                           variant="caption"
                           sx={{ color: "#d32f2f", ml: 1, textAlign: "left" }}
                         >
@@ -262,7 +314,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 );
               })}
 
-            {/* Add Button - Disabled when max entries reached */}
+            {/* Add Button */}
             <Button
               variant="contained"
               startIcon={<AddIcon />}

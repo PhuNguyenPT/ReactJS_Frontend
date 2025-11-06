@@ -9,6 +9,13 @@ interface ImportMetaEnv {
   readonly VITE_PAGINATION_DEFAULT_SORT: string;
   readonly VITE_DISPLAY_LIMIT: string;
   readonly VITE_BACKEND_URL: string;
+  readonly VITE_MAXSIZE_UPLOAD_MB: string;
+  readonly VITE_MAXSIZE_UPLOAD_IMAGE: string;
+  readonly VITE_MAXSIZE_UPLOAD_DOCUMENT: string;
+  readonly VITE_SLIDER_MIN: string;
+  readonly VITE_SLIDER_MAX: string;
+  readonly VITE_MAX_ENTRIES_PER_CATEGORY: string;
+  readonly VITE_ITEMS_PER_PAGE: string;
   // Add any other VITE_ variables you use
 }
 

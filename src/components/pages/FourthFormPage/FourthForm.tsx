@@ -24,11 +24,13 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
     getFirstFieldOptions,
     getSecondFieldOptions,
     getSelectedValue,
+    isSecondFieldDropdown,
     isSecondFieldTextInput,
     canAddEntry,
     getAddButtonText,
     getEntryErrors,
     getCategoryErrors,
+    getScoreInputPlaceholder,
     t,
   } = useFourthForm();
 
@@ -98,10 +100,37 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
               category.entries.map((entry) => {
                 const selectedFirstFieldValue = getSelectedValue(
                   entry.firstField || null,
+                  false, // Use translated labels for first field
                 );
+
+                // Determine if second field should be dropdown or text input
+                const isDropdown = isSecondFieldDropdown(
+                  category.categoryType,
+                  entry.firstField || null,
+                );
+                const isTextInput = isSecondFieldTextInput(
+                  category.categoryType,
+                  entry.firstField || null,
+                );
+
+                // Get second field options and selected value for dropdown
+                const secondFieldOptions = isDropdown
+                  ? getSecondFieldOptions(
+                      category.categoryType,
+                      entry.firstField || null,
+                    )
+                  : [];
+
+                // For A-Level grades and JLPT levels, the value is the grade/level itself (A*, N1, etc.)
+                // For national_award ranks, the value is a translation key (ranks.first, etc.)
+                // Check if it's a raw value dropdown (key === label) rather than a translation key dropdown
+                const isRawValueDropdown =
+                  secondFieldOptions.length > 0 &&
+                  secondFieldOptions[0]?.key === secondFieldOptions[0]?.label; // Raw values have key === label
+
                 const selectedSecondFieldValue =
-                  category.categoryType === "national_award"
-                    ? getSelectedValue(entry.secondField || null)
+                  isDropdown && entry.secondField
+                    ? getSelectedValue(entry.secondField, isRawValueDropdown)
                     : null;
 
                 // Pass category.categoryType to getEntryErrors
@@ -170,8 +199,8 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                         )}
                       />
 
-                      {/* Second Field - Text input or Autocomplete based on category */}
-                      {isSecondFieldTextInput(category.categoryType) ? (
+                      {/* Second Field - Text input or Autocomplete based on category and exam type */}
+                      {isTextInput ? (
                         <TextField
                           value={entry.secondField}
                           onChange={(e) => {
@@ -182,8 +211,16 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                               e.target.value,
                             );
                           }}
-                          placeholder={category.secondFieldLabel}
+                          placeholder={
+                            entry.firstField
+                              ? getScoreInputPlaceholder(
+                                  entry.firstField,
+                                  category.categoryType,
+                                )
+                              : category.secondFieldLabel
+                          }
                           error={hasError}
+                          disabled={!entry.firstField}
                           sx={{
                             width: 170,
                             "& .MuiOutlinedInput-root": {
@@ -202,17 +239,17 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                             "& input": { color: "#A657AE" },
                           }}
                         />
-                      ) : (
+                      ) : isDropdown ? (
                         <Autocomplete
-                          options={getSecondFieldOptions(category.categoryType)}
+                          options={secondFieldOptions}
                           value={selectedSecondFieldValue}
                           onChange={(_, newValue) => {
-                            const translationKey = newValue?.key ?? "";
+                            const value = newValue?.key ?? "";
                             handleEntryChange(
                               category.id,
                               entry.id,
                               "secondField",
-                              translationKey,
+                              value,
                             );
                           }}
                           getOptionLabel={(option) => option.label}
@@ -221,10 +258,15 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                           }
                           sx={{ width: 170 }}
                           filterSelectedOptions
+                          disabled={!entry.firstField}
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              placeholder={category.secondFieldLabel}
+                              placeholder={
+                                entry.firstField
+                                  ? category.secondFieldLabel
+                                  : category.secondFieldLabel
+                              }
                               error={hasError}
                               sx={{
                                 "& .MuiOutlinedInput-root": {
@@ -251,7 +293,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                             />
                           )}
                         />
-                      )}
+                      ) : null}
 
                       {/* Remove Button */}
                       <IconButton
