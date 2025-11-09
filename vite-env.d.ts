@@ -16,6 +16,7 @@ interface ImportMetaEnv {
   readonly VITE_SLIDER_MAX: string;
   readonly VITE_MAX_ENTRIES_PER_CATEGORY: string;
   readonly VITE_ITEMS_PER_PAGE: string;
+  readonly VITE_DATA_EXPIRATION_TIME: string;
   // Add any other VITE_ variables you use
 }
 

@@ -208,18 +208,12 @@ export async function getPaginatedAdmissionData(
 
     const queryString = buildQueryString(params);
 
-    console.log("[AdmissionService] Query:", `${endpoint}${queryString}`);
-
     const response = await apiFetch<PaginatedAdmissionResponse>(
       `${endpoint}${queryString}`,
       {
         method: "GET",
         requiresAuth: isAuthenticated,
       },
-    );
-
-    console.log(
-      `[AdmissionService] Retrieved page ${String(response.number + 1)} of ${String(response.totalPages)}`,
     );
 
     return {

@@ -222,7 +222,9 @@
     "awardRequiredError": "Vui lòng nhập giải thưởng của bạn",
     "maxEntriesReached": "Đã đạt số mục tối đa.",
     "scoreOutOfRangeError": "Điểm số ngoài phạm vi.",
-    "scorePlaceholder": "Nhập điểm của bạn"
+    "scorePlaceholder": "Nhập điểm của bạn",
+    "maxCombinedCertReached": "Đã đạt số mục chứng chỉ tối đa.",
+    "maxCombinedCertError": "Mục chứng chỉ bị giới hạn ở {max}."
   },
   "ranks": {
     "first": "Hạng Nhất",

@@ -101,24 +101,24 @@ export function transformFormDataToApiSchema(formData: FormData) {
   }
 
   // Add aptitude test score if available
-  if (
-    aptitudeCategory?.scores.length &&
-    !isEmpty(aptitudeCategory.scores[0].score)
-  ) {
-    const score = parseFloat(aptitudeCategory.scores[0].score);
-    if (!isNaN(score)) {
-      payload.aptitudeTestScore = {
-        examType: {
-          type: "DGNL",
-          value: "VNUHCM",
-        },
-        score,
-      };
+  // Add aptitude test scores if available (max 3 entries)
+  if (aptitudeCategory?.scores.length) {
+    const aptitudeScores = aptitudeCategory.scores
+      .filter((s) => !isEmpty(s.subject) && !isEmpty(s.score))
+      .map((s) => ({
+        examType: s.subject, // HSA, TSA, or VNUHCM
+        score: parseFloat(s.score) || 0,
+      }))
+      .filter((s) => !isNaN(s.score))
+      .slice(0, 3); // Ensure maximum 3 entries
+
+    if (aptitudeScores.length > 0) {
+      payload.aptitudeExams = aptitudeScores;
     }
   }
 
   // Add VSAT scores if available
-  const vsatScores = vsatCategory?.scores
+  const vsatExams = vsatCategory?.scores
     .filter((s) => !isEmpty(s.subject) && !isEmpty(s.score))
     .map((s) => ({
       name: s.subject,
@@ -126,12 +126,12 @@ export function transformFormDataToApiSchema(formData: FormData) {
     }))
     .filter((s) => !isNaN(s.score));
 
-  if (vsatScores && vsatScores.length > 0) {
-    payload.vsatScores = vsatScores;
+  if (vsatExams && vsatExams.length > 0) {
+    payload.vsatExams = vsatExams;
   }
 
   // Add talent scores if available
-  const talentScores = talentCategory?.scores
+  const talentExams = talentCategory?.scores
     .filter((s) => !isEmpty(s.subject) && !isEmpty(s.score))
     .map((s) => ({
       name: s.subject,
@@ -139,8 +139,8 @@ export function transformFormDataToApiSchema(formData: FormData) {
     }))
     .filter((s) => !isNaN(s.score));
 
-  if (talentScores && talentScores.length > 0) {
-    payload.talentScores = talentScores;
+  if (talentExams && talentExams.length > 0) {
+    payload.talentExams = talentExams;
   }
 
   // Add awards if available
@@ -161,19 +161,13 @@ export function transformFormDataToApiSchema(formData: FormData) {
     ...languageCerts
       .filter((c) => !isEmpty(c.firstField) && !isEmpty(c.secondField))
       .map((c) => ({
-        examType: {
-          type: "CCNN",
-          value: c.firstField,
-        },
+        examType: c.firstField,
         level: c.secondField,
       })),
     ...internationalCerts
       .filter((c) => !isEmpty(c.firstField) && !isEmpty(c.secondField))
       .map((c) => ({
-        examType: {
-          type: "CCQT",
-          value: c.firstField,
-        },
+        examType: c.firstField,
         level: c.secondField,
       })),
   ];

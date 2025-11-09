@@ -234,7 +234,6 @@ export function useResultPage() {
       filters?: Partial<ReturnType<typeof convertFilterCriteriaToParams>>,
     ) => {
       if (!studentId) {
-        console.error("[FinalResult] No student ID available");
         return;
       }
 
@@ -288,9 +287,6 @@ export function useResultPage() {
         const state = location.state as FinalResultState | null;
 
         if (state?.filterFields) {
-          console.log(
-            "[FinalResult] Loading filter fields from navigation state",
-          );
           setFilterFields(state.filterFields);
         }
 

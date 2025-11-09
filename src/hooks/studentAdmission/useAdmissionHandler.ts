@@ -2,13 +2,7 @@ import {
   getAdmissionForStudent,
   type AdmissionResponse,
 } from "../../services/studentAdmission/studentAdmissionService";
-
-/**
- * Utility function to wait for a specified time
- * @param ms - Milliseconds to wait
- */
-const wait = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+import { useRetryHandler, type RetryOptions } from "../common/useRetryHandler";
 
 /**
  * Check if admission response has valid data
@@ -69,28 +63,58 @@ const getAdmissionStatusMessage = (
 };
 
 /**
- * Configuration options for admission processing retry behavior
+ * Extract progress information from admission response
+ * Note: Admission doesn't have granular progress, so we estimate based on data presence
  */
-export interface AdmissionProcessingOptions {
-  /** Initial delay before first attempt (ms). Default: 3000 */
-  initialDelay?: number;
-  /** Maximum number of retry attempts. Default: 12 */
-  maxRetries?: number;
-  /** Base delay between retries (ms). Default: 3000 */
-  retryDelay?: number;
-  /** Whether to use exponential backoff. Default: true */
-  useExponentialBackoff?: boolean;
-  /** Maximum delay for exponential backoff (ms). Default: 10000 */
-  maxBackoffDelay?: number;
-  /** Callback function called on each retry attempt */
-  onRetry?: (attempt: number, maxRetries: number) => void;
-}
+const getAdmissionProgress = (
+  response: AdmissionResponse,
+): { processed: number; total: number; statusMessage?: string } => {
+  // Admission is binary: either we have results or we don't
+  // We use a simple 0/1 or 1/1 approach for progress tracking
+
+  if (isAdmissionSuccessful(response)) {
+    // Count number of programs for more detailed feedback
+    let programCount = 0;
+    if (Array.isArray(response.data)) {
+      programCount = response.data.length;
+    } else if (
+      response.data &&
+      typeof response.data === "object" &&
+      "content" in response.data &&
+      Array.isArray(response.data.content)
+    ) {
+      programCount = response.data.content.length;
+    }
+
+    return {
+      processed: 1,
+      total: 1,
+      statusMessage: `Successfully retrieved ${String(programCount)} admission programs`,
+    };
+  }
+
+  // Check if we have partial data (response exists but not successful yet)
+  if (response.data) {
+    return {
+      processed: 0,
+      total: 1,
+      statusMessage: "ML processing in progress...",
+    };
+  }
+
+  return {
+    processed: 0,
+    total: 1,
+    statusMessage: "Waiting for ML to start processing...",
+  };
+};
 
 /**
- * Custom hook for handling admission processing
- * Provides a clean interface for triggering and managing admission operations
+ * Custom hook for handling admission processing with advanced retry logic
  */
 export function useAdmissionHandler() {
+  const { processWithRetry } = useRetryHandler();
+
   /**
    * Handle admission processing with exponential backoff retry logic
    * @param studentId - The student ID
@@ -101,141 +125,30 @@ export function useAdmissionHandler() {
   const processAdmission = async (
     studentId: string,
     isAuthenticated: boolean,
-    options: AdmissionProcessingOptions = {},
+    options?: Partial<RetryOptions>,
   ): Promise<AdmissionResponse | null> => {
-    // Updated defaults to match common usage pattern from NinthFormPage
-    const {
-      initialDelay = 3000, // Wait 3s for ML to initialize
-      maxRetries = 12, // Try up to 12 times (aligned with NinthFormPage)
-      retryDelay = 3000, // Start with 3s between retries
-      useExponentialBackoff = true, // Enable smart retry delays
-      maxBackoffDelay = 10000, // Cap retry delay at 10s (aligned with NinthFormPage)
-      onRetry,
-    } = options;
+    // Admission-specific defaults (can be overridden)
+    const admissionDefaults: RetryOptions = {
+      initialDelay: 3000, // ML needs less initialization time
+      maxPollingTime: 60000, // 1 minute for admission (faster than OCR)
+      maxAttempts: 12, // Fewer attempts needed
+      retryDelay: 3000,
+      useExponentialBackoff: true,
+      maxBackoffDelay: 10000,
+      logPrefix: "[Admission Handler]",
+      ...options,
+    };
 
-    try {
-      console.log(
-        "[Admission Handler] Initiating admission processing for student:",
-        studentId,
-      );
-      console.log("[Admission Handler] Configuration:", {
-        initialDelay: `${String(initialDelay / 1000)}s`,
-        maxRetries,
-        retryDelay: `${String(retryDelay / 1000)}s`,
-        useExponentialBackoff,
-        maxBackoffDelay: `${String(maxBackoffDelay / 1000)}s`,
-      });
-
-      // Initial wait to allow ML processing to start
-      if (initialDelay > 0) {
-        console.log(
-          `[Admission Handler] Waiting ${String(initialDelay / 1000)}s for ML processing to initialize...`,
-        );
-        await wait(initialDelay);
-      }
-
-      let lastResponse: AdmissionResponse | null = null;
-      let currentDelay = retryDelay;
-
-      // Polling loop with retry logic
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        console.log(
-          `[Admission Handler] Attempt ${String(attempt)}/${String(maxRetries)} - Checking admission status...`,
-        );
-
-        try {
-          const response = await getAdmissionForStudent(
-            studentId,
-            isAuthenticated,
-          );
-          lastResponse = response;
-
-          // Check if we got successful results
-          if (isAdmissionSuccessful(response)) {
-            console.log(
-              `[Admission Handler] ✓ ML prediction completed successfully on attempt ${String(attempt)}`,
-            );
-            const statusMessage = getAdmissionStatusMessage(
-              response,
-              isAuthenticated,
-            );
-            console.log(`[Admission Handler] ${statusMessage}`);
-            return response;
-          }
-
-          // Check if response indicates processing is still ongoing
-          const hasPartialData = response.data !== undefined;
-
-          if (attempt < maxRetries) {
-            if (hasPartialData) {
-              console.log(
-                `[Admission Handler] ML processing in progress, retrying in ${String(currentDelay / 1000)}s...`,
-              );
-            } else {
-              console.log(
-                `[Admission Handler] No data yet, retrying in ${String(currentDelay / 1000)}s...`,
-              );
-            }
-
-            // Call retry callback if provided
-            if (onRetry) {
-              onRetry(attempt, maxRetries);
-            }
-
-            await wait(currentDelay);
-
-            // Apply exponential backoff for next attempt
-            if (useExponentialBackoff) {
-              currentDelay = Math.min(currentDelay * 1.5, maxBackoffDelay);
-            }
-          }
-        } catch (attemptError) {
-          console.warn(
-            `[Admission Handler] Attempt ${String(attempt)} failed:`,
-            attemptError,
-          );
-
-          // Continue retrying even if individual attempt fails
-          if (attempt < maxRetries) {
-            console.log(
-              `[Admission Handler] Retrying after error in ${String(currentDelay / 1000)}s...`,
-            );
-
-            // Call retry callback even on error
-            if (onRetry) {
-              onRetry(attempt, maxRetries);
-            }
-
-            await wait(currentDelay);
-
-            if (useExponentialBackoff) {
-              currentDelay = Math.min(currentDelay * 1.5, maxBackoffDelay);
-            }
-          }
-        }
-      }
-
-      // All retries exhausted
-      const statusMessage = getAdmissionStatusMessage(
-        lastResponse,
-        isAuthenticated,
-      );
-      console.warn(`[Admission Handler] ${statusMessage}`);
-      console.warn(
-        `[Admission Handler] Max retries (${String(maxRetries)}) reached. ML processing may still be ongoing.`,
-      );
-      console.warn(
-        "[Admission Handler] Consider increasing maxRetries or checking ML service status.",
-      );
-
-      return lastResponse;
-    } catch (error) {
-      console.error(
-        "[Admission Handler] Fatal error during admission processing:",
-        error,
-      );
-      return null;
-    }
+    return processWithRetry<AdmissionResponse>(
+      // Fetch function
+      () => getAdmissionForStudent(studentId, isAuthenticated),
+      // Validate function
+      isAdmissionSuccessful,
+      // Progress function
+      getAdmissionProgress,
+      // Options
+      admissionDefaults,
+    );
   };
 
   return {

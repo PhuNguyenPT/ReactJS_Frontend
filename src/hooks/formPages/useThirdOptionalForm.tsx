@@ -20,7 +20,6 @@ import {
 interface OptionalScore {
   id: string;
   subject: string;
-  subjectOther?: string;
   score: string;
 }
 
@@ -247,10 +246,7 @@ export const useThirdOptionalForm = ({
       if (cat.id === categoryId) {
         return {
           ...cat,
-          scores: [
-            ...cat.scores,
-            { id: generateId(), subject: "", subjectOther: "", score: "" },
-          ],
+          scores: [...cat.scores, { id: generateId(), subject: "", score: "" }],
           isExpanded: true,
         };
       }
@@ -281,7 +277,7 @@ export const useThirdOptionalForm = ({
   const handleScoreChange = (
     categoryId: string,
     scoreId: string,
-    field: "subject" | "subjectOther" | "score",
+    field: "subject" | "score",
     value: string,
   ) => {
     const updated = categories.map((category) => {
@@ -321,7 +317,7 @@ export const useThirdOptionalForm = ({
             ...cat,
             scores: cat.scores.map((s) => {
               if (s.id === scoreId) {
-                return { ...s, subject: "", score: "", subjectOther: "" };
+                return { ...s, subject: "", score: "" };
               }
               return s;
             }),
