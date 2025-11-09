@@ -54,7 +54,6 @@ export async function loginUser(payload: AuthPayload): Promise<AuthResponse> {
       if (response.refreshToken) {
         localStorage.setItem("refreshToken", response.refreshToken);
       }
-      console.log("✅ Login successful, tokens stored");
     }
 
     return response;
@@ -85,7 +84,6 @@ export async function signupUser(payload: AuthPayload): Promise<AuthResponse> {
       if (response.refreshToken) {
         localStorage.setItem("refreshToken", response.refreshToken);
       }
-      console.log("✅ Signup successful, tokens stored");
     }
 
     return response;
@@ -124,7 +122,6 @@ export async function logoutUser(): Promise<LogoutResponse> {
     // Clear tokens from localStorage on successful logout
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    console.log("✅ Logout successful, tokens cleared");
 
     return response;
   } catch (error) {
@@ -167,7 +164,6 @@ export async function refreshAccessToken(): Promise<AuthResponse> {
       if (response.refreshToken) {
         localStorage.setItem("refreshToken", response.refreshToken);
       }
-      console.log("✅ Token refresh successful");
     }
 
     return response;

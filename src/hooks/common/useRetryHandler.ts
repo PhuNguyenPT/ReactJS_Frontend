@@ -86,9 +86,6 @@ export function useRetryHandler() {
     try {
       // Initial wait to give the backend time to start processing
       if (initialDelay > 0) {
-        console.log(
-          `${logPrefix} Waiting ${String(initialDelay)}ms before first attempt...`,
-        );
         await wait(initialDelay);
       }
 
@@ -134,16 +131,11 @@ export function useRetryHandler() {
               progress: total > 0 ? Math.round((processed / total) * 100) : 0,
               statusMessage,
             };
-
             // Log detailed progress
-            console.log(
-              `${logPrefix} ⏳ Progress: ${String(processed)}/${String(total)} (${String(progressInfo.progress)}%) - ${statusMessage ?? "Processing..."}`,
-            );
+            // console.log(`${logPrefix} ⏳ Progress: ${String(processed)}/${String(total)} (${String(progressInfo.progress)}%) - ${statusMessage ?? "Processing..."}`,);
           } else {
             // Log basic progress for operations without trackable items
-            console.log(
-              `${logPrefix} ⏳ Attempt ${String(attempt)}/${String(maxAttempts)} (${String(Math.round(elapsedTime / 1000))}s elapsed)`,
-            );
+            // console.log(`${logPrefix} ⏳ Attempt ${String(attempt)}/${String(maxAttempts)} (${String(Math.round(elapsedTime / 1000))}s elapsed)`,);
           }
 
           // Call UI callback
@@ -153,19 +145,15 @@ export function useRetryHandler() {
 
           // Check if successful
           if (validateFn(response)) {
-            const successTime = Math.round(elapsedTime / 1000);
-            console.log(
-              `${logPrefix} ✅ SUCCESS after ${String(attempt)} attempts (${String(successTime)}s)`,
-            );
+            //const successTime = Math.round(elapsedTime / 1000);
+            //console.log(`${logPrefix} ✅ SUCCESS after ${String(attempt)} attempts (${String(successTime)}s)`,);
             return response;
           }
 
           // Wait before next attempt (if not last attempt)
           if (attempt < maxAttempts) {
-            const waitTimeSeconds = Math.round(currentDelay / 1000);
-            console.log(
-              `${logPrefix} Waiting ${String(waitTimeSeconds)}s before next attempt...`,
-            );
+            //const waitTimeSeconds = Math.round(currentDelay / 1000);
+            //console.log(`${logPrefix} Waiting ${String(waitTimeSeconds)}s before next attempt...`,);
             await wait(currentDelay);
 
             // Apply exponential backoff

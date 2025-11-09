@@ -315,8 +315,6 @@ export function useResultPage() {
   // Handle page change
   const handlePageChange = useCallback(
     (_event: React.ChangeEvent<unknown>, page: number) => {
-      console.log(`[FinalResult] Navigating to page ${page.toString()}`);
-
       const apiParams = isFiltered
         ? convertFilterCriteriaToParams(activeFilters)
         : undefined;
@@ -330,8 +328,6 @@ export function useResultPage() {
   // Handle filter apply
   const handleFilterApply = useCallback(
     (filters: FilterCriteria) => {
-      console.log("[FinalResult] Applying filters:", filters);
-
       const hasActiveFilters = Object.keys(filters).some((key) => {
         const value = filters[key as keyof FilterCriteria];
         if (key === "tuitionFeeRange") {
@@ -342,7 +338,6 @@ export function useResultPage() {
       });
 
       if (!hasActiveFilters) {
-        console.log("[FinalResult] No filters selected, fetching all data");
         setActiveFilters({});
         setIsFiltered(false);
         void fetchPageData(1);
@@ -350,10 +345,6 @@ export function useResultPage() {
       }
 
       const apiParams = convertFilterCriteriaToParams(filters);
-      console.log(
-        "[FinalResult] Fetching filtered data with params:",
-        apiParams,
-      );
 
       setActiveFilters(filters);
       setIsFiltered(true);
@@ -364,7 +355,6 @@ export function useResultPage() {
 
   // Handle filter clear
   const handleFilterClear = useCallback(() => {
-    console.log("[FinalResult] Clearing filters");
     setActiveFilters({});
     setIsFiltered(false);
     void fetchPageData(1);

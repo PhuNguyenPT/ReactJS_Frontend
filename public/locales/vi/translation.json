@@ -293,6 +293,7 @@
     "gettingResults": "Đang lấy kết quả dự đoán...",
     "predictionCompleted": "Dự đoán hoàn tất! Đang chuyển hướng...",
     "loadingFilters": "Đang tải tùy chọn bộ lọc...",
+    "retryProgress": "Thử lại lần {{attempt}} trong tổng số {{maxAttempts}}",
     "errors": {
       "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
       "predictionTimeout": "Dự đoán mất nhiều thời gian hơn dự kiến. Vui lòng thử lại sau vài phút.",

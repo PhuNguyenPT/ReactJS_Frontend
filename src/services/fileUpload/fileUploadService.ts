@@ -61,10 +61,6 @@ export async function uploadStudentFiles(
   // Append metadata JSON string
   formData.append("filesMetadata", JSON.stringify(filesMetadata));
 
-  // Log the metadata for debugging
-  console.log("Files metadata being sent (authenticated):", filesMetadata);
-  console.log("Using student ID:", targetStudentId);
-
   // Call API with authentication
   try {
     const response = await apiFetch<FileUploadResponse, FormData>(
@@ -118,10 +114,6 @@ export async function uploadGuestStudentFiles(
 
   // Append metadata JSON string
   formData.append("filesMetadata", JSON.stringify(filesMetadata));
-
-  // Log the metadata for debugging
-  console.log("Files metadata being sent (guest):", filesMetadata);
-  console.log("Using student ID:", targetStudentId);
 
   // Call API without authentication
   try {

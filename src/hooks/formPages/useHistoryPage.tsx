@@ -86,7 +86,6 @@ export function useHistoryPage() {
         const isAuthenticated = true;
 
         // Fetch filter fields for this student
-        console.log("[History] Fetching filter fields for student:", studentId);
         const filterResponse = await getFilterFieldsForStudent(
           studentId,
           isAuthenticated,

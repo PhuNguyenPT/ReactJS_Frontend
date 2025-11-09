@@ -69,8 +69,6 @@ if (!rootElement) {
   );
 }
 
-console.log("[Main] Starting application...");
-
 createRoot(rootElement).render(
   <StrictMode>
     <ErrorBoundary>

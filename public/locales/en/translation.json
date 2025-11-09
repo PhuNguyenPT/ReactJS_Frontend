@@ -293,6 +293,7 @@
     "gettingResults": "Getting prediction results...",
     "predictionCompleted": "Prediction completed! Redirecting...",
     "loadingFilters": "Loading filter options...",
+    "retryProgress": "Attempt {{attempt}} of {{maxAttempts}}",
     "errors": {
       "studentIdNotFound": "Student ID not found. Please complete previous steps.",
       "predictionTimeout": "Prediction is taking longer than expected. Please try again in a few moments.",

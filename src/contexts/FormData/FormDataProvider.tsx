@@ -55,7 +55,9 @@ const FORM_DATA_TIMESTAMP_KEY = "form_data_timestamp";
 
 // Set expiration time (in milliseconds)
 // 2 hours = 2 * 60 * 60 * 1000
-const FORM_DATA_EXPIRATION_TIME = 2 * 60 * 60 * 1000;
+const FORM_DATA_EXPIRATION_TIME = Number(
+  import.meta.env.VITE_DATA_EXPIRATION_TIME,
+);
 
 // Conversion constant for VND (million to actual value)
 const MILLION_TO_VND = 1000000;
@@ -318,7 +320,6 @@ function isFormDataExpired(): boolean {
     const isExpired = currentTime - savedTime > FORM_DATA_EXPIRATION_TIME;
 
     if (isExpired) {
-      console.log("Form data has expired, clearing storage");
       localStorage.removeItem(FORM_DATA_STORAGE_KEY);
       localStorage.removeItem(FORM_DATA_TIMESTAMP_KEY);
     }
@@ -356,7 +357,6 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
 
         // Validate that the stored data has the correct structure
         if (isValidFormData(parsedData)) {
-          console.log("Loaded valid form data from localStorage");
           // Convert Vietnamese values back to translation keys for UI
           const convertedData = convertFromVietnameseStorage(parsedData);
           return { ...initialFormData, ...convertedData };
@@ -555,7 +555,7 @@ export function FormDataProvider({ children }: { children: ReactNode }) {
       clearStoredFormData,
       getRemainingTime,
       isFormDataComplete,
-      getFormDataForApi, // New function for API calls
+      getFormDataForApi,
     }),
     [
       formData,

@@ -41,15 +41,8 @@ export function useStudentProfile(): UseStudentProfileReturn {
     const files = getAllEighthFormFiles();
 
     if (files.length === 0) {
-      console.log("No files to upload");
       return null;
     }
-
-    console.log(
-      `Uploading ${String(files.length)} files for ${
-        isAuthenticated ? "authenticated" : "guest"
-      } student (using localStorage studentId)`,
-    );
 
     try {
       const filePayloads = files.map(({ grade, semester, file }) => ({
@@ -62,7 +55,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
       const statusMessage = getUploadStatusMessage(response, isAuthenticated);
       if (isUploadSuccessful(response)) {
-        console.log(statusMessage);
+        // console.log("File upload successful:", statusMessage);
       } else {
         console.warn(statusMessage);
       }
@@ -83,10 +76,6 @@ export function useStudentProfile(): UseStudentProfileReturn {
       const formData = getFormDataForApi();
       const isAuthenticated = isUserAuthenticated();
 
-      console.log(
-        `Submitting as ${isAuthenticated ? "authenticated" : "guest"} user`,
-      );
-
       // Step 1: Submit student profile
       setUploadProgress(25);
       const response = await submitStudentProfile(formData);
@@ -102,10 +91,6 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
         // ✅ Use session manager to save studentId with proper tracking
         saveStudentId(studentId, !isAuthenticated);
-        console.log(
-          "[Profile] Stored studentId with session tracking:",
-          studentId,
-        );
 
         // Step 2: Upload files
         const fileUploadResponse = await handleFileUploads(isAuthenticated);

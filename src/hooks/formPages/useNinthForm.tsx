@@ -143,7 +143,6 @@ export const useNinthFormLogic = () => {
         };
 
         const gradeKeys = ["10-1", "10-2", "11-1", "11-2", "12-1", "12-2"];
-        let processedCount = 0;
 
         // STEP 3: Process each grade/semester from the mapped positions
         gradeKeys.forEach((gradeKey) => {
@@ -160,7 +159,6 @@ export const useNinthFormLogic = () => {
             console.log(`${gradeKey}: ⚠️  NULL or empty scores`);
             return;
           }
-          processedCount++;
 
           newScores[gradeKey] = {};
           const optionalSubjectsForGrade: (string | null)[] = [];
@@ -207,9 +205,6 @@ export const useNinthFormLogic = () => {
 
           newSelectedSubjects[gradeKey] = optionalSubjectsForGrade;
         });
-        console.log(
-          `\n[NinthForm] ✓ Successfully processed ${String(processedCount)}/6 semesters\n`,
-        );
 
         // STEP 4: Load into context
         loadOcrData(newScores, newSelectedSubjects);
