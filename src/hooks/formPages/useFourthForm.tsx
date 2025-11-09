@@ -35,8 +35,13 @@ interface Category {
   isExpanded: boolean;
 }
 
-// Maximum entries configuration for all categories
+// Maximum entries configuration
 const MAX_ENTRIES_PER_CATEGORY = Number(
+  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY,
+);
+
+// Combined maximum for CCNN and CCQT categories
+const MAX_COMBINED_CERT_ENTRIES = Number(
   import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY,
 );
 
@@ -162,6 +167,21 @@ export const useFourthForm = () => {
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
+  // Get combined count of CCNN and CCQT entries
+  const getCombinedCertCount = (): number => {
+    const ccqtCategory = formData.fourthForm.categories.find(
+      (cat) => cat.categoryType === "international_cert",
+    );
+    const ccnnCategory = formData.fourthForm.categories.find(
+      (cat) => cat.categoryType === "language_cert",
+    );
+
+    const ccqtCount = ccqtCategory?.entries.length ?? 0;
+    const ccnnCount = ccnnCategory?.entries.length ?? 0;
+
+    return ccqtCount + ccnnCount;
+  };
+
   // Check if can add more entries to a category
   const canAddEntry = (categoryId: string): boolean => {
     const category = formData.fourthForm.categories.find(
@@ -169,7 +189,20 @@ export const useFourthForm = () => {
     );
     if (!category) return false;
 
-    return category.entries.length < MAX_ENTRIES_PER_CATEGORY;
+    // For national_award, use the individual category limit
+    if (category.categoryType === "national_award") {
+      return category.entries.length < MAX_ENTRIES_PER_CATEGORY;
+    }
+
+    // For international_cert and language_cert, check combined limit
+    if (
+      category.categoryType === "international_cert" ||
+      category.categoryType === "language_cert"
+    ) {
+      return getCombinedCertCount() < MAX_COMBINED_CERT_ENTRIES;
+    }
+
+    return false;
   };
 
   // Get remaining slots for a category
@@ -179,22 +212,57 @@ export const useFourthForm = () => {
     );
     if (!category) return 0;
 
-    return Math.max(0, MAX_ENTRIES_PER_CATEGORY - category.entries.length);
+    // For national_award, show remaining slots for that category
+    if (category.categoryType === "national_award") {
+      return Math.max(0, MAX_ENTRIES_PER_CATEGORY - category.entries.length);
+    }
+
+    // For international_cert and language_cert, show combined remaining slots
+    if (
+      category.categoryType === "international_cert" ||
+      category.categoryType === "language_cert"
+    ) {
+      return Math.max(0, MAX_COMBINED_CERT_ENTRIES - getCombinedCertCount());
+    }
+
+    return 0;
   };
 
   // Get button text with remaining slots information
   const getAddButtonText = (categoryId: string): string => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    if (!category) return t("buttons.add");
+
     const remainingSlots = getRemainingSlots(categoryId);
 
     if (remainingSlots === 0) {
-      return t("fourthForm.maxEntriesReached", {
-        max: MAX_ENTRIES_PER_CATEGORY,
-      });
+      // Different messages based on category type
+      if (category.categoryType === "national_award") {
+        return t("fourthForm.maxEntriesReached", {
+          max: MAX_ENTRIES_PER_CATEGORY,
+        });
+      } else {
+        // For cert categories, show combined limit message
+        return t("fourthForm.maxCombinedCertReached", {
+          max: MAX_COMBINED_CERT_ENTRIES,
+        });
+      }
     }
 
+    // For national_award, show individual limit
+    if (category.categoryType === "national_award") {
+      return (
+        t("buttons.add") +
+        ` (${String(remainingSlots)}/${String(MAX_ENTRIES_PER_CATEGORY)})`
+      );
+    }
+
+    // For cert categories, show combined limit
     return (
       t("buttons.add") +
-      ` (${String(remainingSlots)}/${String(MAX_ENTRIES_PER_CATEGORY)})`
+      ` (${String(remainingSlots)}/${String(MAX_COMBINED_CERT_ENTRIES)})`
     );
   };
 
@@ -202,9 +270,22 @@ export const useFourthForm = () => {
   const handleAddEntry = (categoryId: string) => {
     // Check if we can add more entries
     if (!canAddEntry(categoryId)) {
-      console.warn(
-        `Maximum entries reached for category ${categoryId}: ${String(MAX_ENTRIES_PER_CATEGORY)}`,
+      const category = formData.fourthForm.categories.find(
+        (cat) => cat.id === categoryId,
       );
+
+      if (
+        category?.categoryType === "international_cert" ||
+        category?.categoryType === "language_cert"
+      ) {
+        console.warn(
+          `Maximum combined certificate entries reached: ${String(MAX_COMBINED_CERT_ENTRIES)}`,
+        );
+      } else {
+        console.warn(
+          `Maximum entries reached for category ${categoryId}: ${String(MAX_ENTRIES_PER_CATEGORY)}`,
+        );
+      }
       return;
     }
 
@@ -551,11 +632,26 @@ export const useFourthForm = () => {
   const getCategoryErrors = (category: Category): string[] => {
     const errors: string[] = [];
 
-    // Check if category has exceeded maximum entries (shouldn't happen with UI controls)
-    if (category.entries.length > MAX_ENTRIES_PER_CATEGORY) {
-      errors.push(
-        t("fourthForm.maxEntriesError", { max: MAX_ENTRIES_PER_CATEGORY }),
-      );
+    // Check if category has exceeded maximum entries
+    if (category.categoryType === "national_award") {
+      if (category.entries.length > MAX_ENTRIES_PER_CATEGORY) {
+        errors.push(
+          t("fourthForm.maxEntriesError", { max: MAX_ENTRIES_PER_CATEGORY }),
+        );
+      }
+    } else if (
+      category.categoryType === "international_cert" ||
+      category.categoryType === "language_cert"
+    ) {
+      // Check combined limit for cert categories
+      const combinedCount = getCombinedCertCount();
+      if (combinedCount > MAX_COMBINED_CERT_ENTRIES) {
+        errors.push(
+          t("fourthForm.maxCombinedCertError", {
+            max: MAX_COMBINED_CERT_ENTRIES,
+          }),
+        );
+      }
     }
 
     // Add individual entry errors
@@ -600,6 +696,7 @@ export const useFourthForm = () => {
     getAddButtonText,
     getScoreInputPlaceholder,
     getScoreRangeInfo,
+    getCombinedCertCount,
 
     // Validation functions
     validateForm,
@@ -611,5 +708,6 @@ export const useFourthForm = () => {
 
     // Constants
     maxEntries: MAX_ENTRIES_PER_CATEGORY,
+    maxCombinedCertEntries: MAX_COMBINED_CERT_ENTRIES,
   };
 };

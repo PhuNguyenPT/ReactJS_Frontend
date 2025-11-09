@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../../../hooks/auth/useAuth";
 import { useAdmissionHandler } from "../../../hooks/studentAdmission/useAdmissionHandler";
 import { getFilterFieldsForStudent } from "../../../services/studentAdmission/admissionFilterService";
@@ -29,11 +29,12 @@ export default function NinthFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
-  const [, setProcessingStatus] = useState<string>("");
-  const [, setRetryAttempt] = useState<number>(0);
-  const [, setMaxRetries] = useState<number>(0);
-
-  const hasLoggedAuthStatus = useRef(false);
+  const [processingStatus, setProcessingStatus] = useState<string>("");
+  const [retryProgress, setRetryProgress] = useState<{
+    attempt: number;
+    maxAttempts: number;
+    progress?: number;
+  }>({ attempt: 0, maxAttempts: 0 });
 
   useEffect(() => {
     const navigationState = location.state as
@@ -48,10 +49,6 @@ export default function NinthFormPage() {
         : null;
 
     if (navStudentId) {
-      console.log(
-        "[NinthFormPage] Found student ID from navigation:",
-        navStudentId,
-      );
       setStudentId(navStudentId);
       sessionStorage.setItem("studentId", navStudentId);
       return;
@@ -59,10 +56,6 @@ export default function NinthFormPage() {
 
     const storedStudentId = sessionStorage.getItem("studentId");
     if (storedStudentId) {
-      console.log(
-        "[NinthFormPage] Found student ID from sessionStorage:",
-        storedStudentId,
-      );
       setStudentId(storedStudentId);
       return;
     }
@@ -70,7 +63,6 @@ export default function NinthFormPage() {
     if (user && typeof user === "object" && "id" in user) {
       const userId = (user as StudentResponse).id;
       if (userId) {
-        console.log("[NinthFormPage] Found student ID from user:", userId);
         setStudentId(userId);
         sessionStorage.setItem("studentId", userId);
         return;
@@ -79,29 +71,6 @@ export default function NinthFormPage() {
 
     console.warn("[NinthFormPage] No student ID found");
   }, [location.state, user]);
-
-  useEffect(() => {
-    if (!hasLoggedAuthStatus.current || isLoading) {
-      const userData =
-        user && typeof user === "object" && "data" in user
-          ? (user as StudentResponse).data
-          : null;
-
-      const userDisplayName = userData?.name ?? "Unknown";
-      const userDisplayEmail = userData?.email ?? "Unknown";
-
-      console.log("Auth Status:", {
-        isAuthenticated,
-        isLoading,
-        user: user ? `${userDisplayName} (${userDisplayEmail})` : null,
-        studentId: studentId ?? "Not found",
-      });
-
-      if (!isLoading) {
-        hasLoggedAuthStatus.current = true;
-      }
-    }
-  }, [isAuthenticated, isLoading, user, studentId]);
 
   const handleSubmit = async () => {
     if (!studentId) {
@@ -112,19 +81,35 @@ export default function NinthFormPage() {
     setIsSubmitting(true);
     setErrorMessage(null);
     setProcessingStatus(t("ninthForm.processingPrediction"));
-    setRetryAttempt(0);
+    setRetryProgress({ attempt: 0, maxAttempts: 0 });
 
     try {
       console.log("[NinthFormPage] Submitting for user:", studentId);
 
-      // Step 1: Process admission
+      // Step 1: Process admission with new RetryProgress interface
       const admissionData = await processAdmission(studentId, isAuthenticated, {
-        onRetry: (attempt, max) => {
-          setRetryAttempt(attempt);
-          setMaxRetries(max);
-          setProcessingStatus(t("ninthForm.gettingResults"));
+        onRetry: (progress) => {
+          // Update retry progress with new interface
+          setRetryProgress({
+            attempt: progress.attempt,
+            maxAttempts: progress.maxAttempts,
+            progress: progress.progress,
+          });
+
+          // Update status message based on progress
+          if (progress.statusMessage) {
+            setProcessingStatus(progress.statusMessage);
+          } else {
+            setProcessingStatus(
+              t("ninthForm.gettingResults", {
+                attempt: progress.attempt,
+                maxAttempts: progress.maxAttempts,
+              }),
+            );
+          }
         },
       });
+
       console.log("[NinthFormPage] Admission data received:", admissionData);
 
       if (!admissionData || !isAdmissionSuccessful(admissionData)) {
@@ -194,6 +179,7 @@ export default function NinthFormPage() {
   const handleCloseError = () => {
     setErrorMessage(null);
   };
+
   return (
     <>
       <div className="background" />
@@ -225,6 +211,38 @@ export default function NinthFormPage() {
         </Typography>
 
         <NinthForm />
+
+        {/* Show processing status when submitting */}
+        {isSubmitting && processingStatus && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              padding: 4,
+              borderRadius: 2,
+              boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
+              zIndex: 2000,
+              minWidth: "300px",
+              textAlign: "center",
+            }}
+          >
+            <CircularProgress size={40} sx={{ mb: 2, color: "#A657AE" }} />
+            <Typography variant="h6" sx={{ mb: 1, color: "#333" }}>
+              {processingStatus}
+            </Typography>
+            {retryProgress.attempt > 0 && (
+              <Typography variant="body2" sx={{ color: "#666" }}>
+                {t("ninthForm.retryProgress", {
+                  attempt: retryProgress.attempt,
+                  maxAttempts: retryProgress.maxAttempts,
+                })}
+              </Typography>
+            )}
+          </Box>
+        )}
 
         <Button
           variant="contained"

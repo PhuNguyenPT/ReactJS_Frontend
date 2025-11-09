@@ -222,7 +222,9 @@
     "awardRequiredError": "Please enter your awards",
     "maxEntriesReached": "Max entries reached.",
     "scoreOutOfRangeError": "Score is out of range.",
-    "scorePlaceholder": "Enter your score"
+    "scorePlaceholder": "Enter your score",
+    "maxCombinedCertReached": "Max certificate entries reached.",
+    "maxCombinedCertError": "Certificate entries are limited to {max}."
   },
   "ranks": {
     "first": "First Place",

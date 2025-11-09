@@ -41,18 +41,6 @@ const mapOcrResultsToGradeSemesters = (
     }
   });
 
-  // Log final mapping
-  console.log("\n[Mapping] Final Grade/Semester Map:");
-  gradeKeys.forEach((key) => {
-    const result = gradeMap[key];
-    const status = !result
-      ? "No data"
-      : !result.scores || result.scores.length === 0
-        ? "NULL scores"
-        : `${String(result.scores.length)} subjects`;
-    console.log(`  ${key}: ${status}`);
-  });
-
   return gradeMap;
 };
 
@@ -132,11 +120,6 @@ export const useNinthFormLogic = () => {
   const processOcrData = useCallback(
     (ocrResults: OcrResultItem[]) => {
       try {
-        console.log("\n" + "=".repeat(60));
-        console.log("[NinthForm] Starting OCR data processing");
-        console.log("=".repeat(60));
-        console.log(`Total OCR results: ${String(ocrResults.length)}`);
-
         // STEP 1: Map results to their correct positions (DO NOT FILTER!)
         const gradeSemesterMap = mapOcrResultsToGradeSemesters(ocrResults);
 
@@ -162,9 +145,6 @@ export const useNinthFormLogic = () => {
         const gradeKeys = ["10-1", "10-2", "11-1", "11-2", "12-1", "12-2"];
         let processedCount = 0;
 
-        console.log("\n[NinthForm] Processing each grade/semester:");
-        console.log("-".repeat(60));
-
         // STEP 3: Process each grade/semester from the mapped positions
         gradeKeys.forEach((gradeKey) => {
           const result = gradeSemesterMap[gradeKey];
@@ -180,11 +160,6 @@ export const useNinthFormLogic = () => {
             console.log(`${gradeKey}: ⚠️  NULL or empty scores`);
             return;
           }
-
-          // Process valid scores
-          console.log(
-            `${gradeKey}: ✓ Processing ${String(result.scores.length)} subjects`,
-          );
           processedCount++;
 
           newScores[gradeKey] = {};
@@ -232,26 +207,13 @@ export const useNinthFormLogic = () => {
 
           newSelectedSubjects[gradeKey] = optionalSubjectsForGrade;
         });
-
-        console.log("-".repeat(60));
         console.log(
           `\n[NinthForm] ✓ Successfully processed ${String(processedCount)}/6 semesters\n`,
         );
 
-        // STEP 4: Log final summary
-        console.log("Final Summary:");
-        gradeKeys.forEach((key) => {
-          const scoreCount = Object.keys(newScores[key]).length;
-          const status =
-            scoreCount > 0 ? `✓ ${String(scoreCount)} subjects` : "✗ Empty";
-          console.log(`  ${key}: ${status}`);
-        });
-        console.log("=".repeat(60) + "\n");
-
-        // STEP 5: Load into context
+        // STEP 4: Load into context
         loadOcrData(newScores, newSelectedSubjects);
         setShowAlert(true);
-        console.log("[NinthForm] ✓ OCR data loaded successfully into context");
       } catch (error) {
         console.error("[NinthForm] ✗ Error loading OCR data:", error);
       }
@@ -266,10 +228,6 @@ export const useNinthFormLogic = () => {
       navigationState.ocrResults &&
       !hasOcrData
     ) {
-      console.log("\n[NinthForm] OCR data detected in navigation state");
-      console.log(
-        `[NinthForm] Results count: ${String(navigationState.ocrResults.length)}`,
-      );
       processOcrData(navigationState.ocrResults);
     }
   }, [

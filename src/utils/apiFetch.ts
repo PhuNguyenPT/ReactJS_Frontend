@@ -3,59 +3,18 @@ import axios, {
   type AxiosRequestConfig,
   type AxiosResponse,
   type AxiosError,
-  type InternalAxiosRequestConfig,
 } from "axios";
 import APIError from "./apiError";
 import type { ErrorDetails } from "../type/interface/error.details";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// ✅ Preconfigured axios instance - REMOVED default Content-Type
+// Preconfigured axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
   timeout: 10000,
 });
-
-// Request interceptor for debugging
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    console.log("API Request:", {
-      url: config.url,
-      method: config.method,
-      data: config.data as unknown,
-      headers: config.headers,
-    });
-    return config;
-  },
-  (error: unknown) => {
-    console.error("Request Error:", error);
-    return Promise.reject(
-      error instanceof Error ? error : new Error(String(error)),
-    );
-  },
-);
-
-// Response interceptor for debugging
-apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    console.log("API Response:", {
-      url: response.config.url,
-      status: response.status,
-      data: response.data as unknown,
-    });
-    return response;
-  },
-  (error: AxiosError) => {
-    console.error("Response Error:", {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-    return Promise.reject(error);
-  },
-);
 
 type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -127,7 +86,6 @@ async function apiFetch<T = unknown, B = unknown>(
         );
       }
 
-      // ✅ Remove the ?? operator since message is required in ErrorDetails
       throw new APIError(
         axiosError.response.status,
         axiosError.response.data.message,

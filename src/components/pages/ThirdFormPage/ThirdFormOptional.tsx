@@ -14,7 +14,6 @@ import { useThirdOptionalForm } from "../../../hooks/formPages/useThirdOptionalF
 interface OptionalScore {
   id: string;
   subject: string;
-  subjectOther?: string;
   score: string;
 }
 

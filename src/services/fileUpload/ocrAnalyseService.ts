@@ -32,10 +32,6 @@ export async function triggerStudentOcr(
   const targetStudentId = studentId ?? getStudentIdFromStorage();
 
   try {
-    console.log(
-      `[OCR] Calling authenticated endpoint: /ocr/${targetStudentId}`,
-    );
-
     const response = await apiFetch<
       OcrResultItem[] | { data: OcrResultItem[] },
       null
@@ -43,12 +39,6 @@ export async function triggerStudentOcr(
       method: "GET",
       requiresAuth: true,
     });
-
-    // Log the raw response for debugging
-    console.log(
-      "[OCR] Raw response received:",
-      JSON.stringify(response, null, 2),
-    );
 
     // Handle different response structures
     let ocrResults: OcrResultItem[];
@@ -63,15 +53,9 @@ export async function triggerStudentOcr(
       console.warn("[OCR] Unexpected response structure:", response);
       ocrResults = [];
     }
-
-    console.log(`[OCR] Processed ${String(ocrResults.length)} OCR results`);
-
     // Count how many have actual scores
     const withScores = ocrResults.filter(
       (item) => item.scores !== null && item.scores.length > 0,
-    );
-    console.log(
-      `[OCR] ${String(withScores.length)} files have scores, ${String(ocrResults.length - withScores.length)} are still processing`,
     );
 
     return {
@@ -96,8 +80,6 @@ export async function triggerGuestStudentOcr(
   const targetStudentId = studentId ?? getStudentIdFromStorage();
 
   try {
-    console.log(`[OCR] Calling guest endpoint: /ocr/guest/${targetStudentId}`);
-
     const response = await apiFetch<
       OcrResultItem[] | { data: OcrResultItem[] },
       null
@@ -105,12 +87,6 @@ export async function triggerGuestStudentOcr(
       method: "GET",
       requiresAuth: false,
     });
-
-    // Log the raw response for debugging
-    console.log(
-      "[OCR] Raw response received:",
-      JSON.stringify(response, null, 2),
-    );
 
     // Handle different response structures
     let ocrResults: OcrResultItem[];
@@ -126,14 +102,9 @@ export async function triggerGuestStudentOcr(
       ocrResults = [];
     }
 
-    console.log(`[OCR] Processed ${String(ocrResults.length)} OCR results`);
-
     // Count how many have actual scores
     const withScores = ocrResults.filter(
       (item) => item.scores !== null && item.scores.length > 0,
-    );
-    console.log(
-      `[OCR] ${String(withScores.length)} files have scores, ${String(ocrResults.length - withScores.length)} are still processing`,
     );
 
     return {
@@ -158,10 +129,6 @@ export async function triggerOcrForStudent(
   studentId?: string,
 ): Promise<OcrResponse> {
   const targetStudentId = studentId ?? getStudentIdFromStorage();
-
-  console.log(
-    `[OCR] Triggering OCR for ${isAuthenticated ? "authenticated" : "guest"} student ${targetStudentId}`,
-  );
 
   if (isAuthenticated) {
     return triggerStudentOcr(targetStudentId);
