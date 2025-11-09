@@ -90,20 +90,12 @@ function extractStudentId(user: unknown): string | null {
   // Check sessionStorage first (matches what NinthFormPage uses)
   const sessionStorageId = sessionStorage.getItem("studentId");
   if (sessionStorageId) {
-    console.log(
-      "[AdmissionService] Found student ID in sessionStorage:",
-      sessionStorageId,
-    );
     return sessionStorageId;
   }
 
   // Fallback: check localStorage
   const localStorageId = localStorage.getItem("studentId");
   if (localStorageId) {
-    console.log(
-      "[AdmissionService] Found student ID in localStorage:",
-      localStorageId,
-    );
     return localStorageId;
   }
 
@@ -191,10 +183,6 @@ export async function getPaginatedAdmissionData(
   filterParams?: Partial<AdmissionParams>,
 ): Promise<AdmissionResponse> {
   try {
-    console.log(
-      `[AdmissionService] Fetching page ${String(page)} with size ${String(size)}`,
-    );
-
     const endpoint = isAuthenticated
       ? `/admission/${studentId}`
       : `/admission/guest/${studentId}`;
@@ -286,9 +274,6 @@ export function convertFilterCriteriaToParams(filters: {
       params.tuitionFeeMax = filters.tuitionFeeRange.max;
     }
   }
-
-  console.log("[AdmissionService] Converted filter params:", params);
-
   return params;
 }
 

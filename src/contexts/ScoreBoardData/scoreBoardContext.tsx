@@ -110,7 +110,6 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
           setScores(parsed.scores);
           setSelectedSubjects(parsed.selectedSubjects);
           setHasOcrData(parsed.hasOcrData);
-          console.log("[NinthFormContext] Loaded saved data from localStorage");
         } else {
           console.warn(
             "[NinthFormContext] Invalid data structure in localStorage, using defaults",
@@ -131,7 +130,6 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
         hasOcrData,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-      console.log("[NinthFormContext] Saved data to localStorage");
     } catch (error) {
       console.error("[NinthFormContext] Error saving data:", error);
     }

@@ -9,13 +9,11 @@ import { initializeSessionManager } from "./utils/sessionManager";
 function App() {
   // Initialize session manager on app mount
   useEffect(() => {
-    console.log("[App] Initializing application...");
-
     // Start session management (cleanup, activity tracking, etc.)
     initializeSessionManager();
 
     return () => {
-      console.log("[App] Cleanup on unmount");
+      // Cleanup if necessary on unmount
     };
   }, []);
 

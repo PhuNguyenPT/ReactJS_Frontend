@@ -37,8 +37,6 @@ export async function uploadStudentFilesAuto(
 ): Promise<FileUploadResponse> {
   const targetStudentId = studentId ?? getStudentIdFromStorage();
 
-  console.log("[Upload Helper] Using student ID:", targetStudentId);
-
   // Prepare files with metadata
   const filePayloads = files.map(({ grade, semester, file }) => ({
     grade,
@@ -49,10 +47,8 @@ export async function uploadStudentFilesAuto(
 
   // Choose endpoint based on authentication
   if (isUserAuthenticated()) {
-    console.log("[Upload Helper] Using authenticated endpoint");
     return uploadStudentFiles(filePayloads, targetStudentId);
   } else {
-    console.log("[Upload Helper] Using guest endpoint");
     return uploadGuestStudentFiles(filePayloads, targetStudentId);
   }
 }

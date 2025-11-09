@@ -34,11 +34,6 @@ export async function getAuthenticatedFilterFields(
   studentId: string,
 ): Promise<FilterResponse> {
   try {
-    console.log(
-      "[FilterService] Fetching authenticated filter fields for:",
-      studentId,
-    );
-
     const response = await apiFetch<FilterFieldsResponse>(
       `/admission/filter/${studentId}`,
       {
@@ -46,9 +41,6 @@ export async function getAuthenticatedFilterFields(
         requiresAuth: true,
       },
     );
-
-    console.log("[FilterService] Authenticated filter response:", response);
-
     return {
       success: true,
       message: "Filter fields retrieved successfully",
@@ -80,8 +72,6 @@ export async function getGuestFilterFields(
   studentId: string,
 ): Promise<FilterResponse> {
   try {
-    console.log("[FilterService] Fetching guest filter fields for:", studentId);
-
     const response = await apiFetch<FilterFieldsResponse>(
       `/admission/filter/guest/${studentId}`,
       {
@@ -89,9 +79,6 @@ export async function getGuestFilterFields(
         requiresAuth: false,
       },
     );
-
-    console.log("[FilterService] Guest filter response:", response);
-
     return {
       success: true,
       message: "Filter fields retrieved successfully",

@@ -84,8 +84,6 @@ export default function NinthFormPage() {
     setRetryProgress({ attempt: 0, maxAttempts: 0 });
 
     try {
-      console.log("[NinthFormPage] Submitting for user:", studentId);
-
       // Step 1: Process admission with new RetryProgress interface
       const admissionData = await processAdmission(studentId, isAuthenticated, {
         onRetry: (progress) => {
@@ -110,8 +108,6 @@ export default function NinthFormPage() {
         },
       });
 
-      console.log("[NinthFormPage] Admission data received:", admissionData);
-
       if (!admissionData || !isAdmissionSuccessful(admissionData)) {
         setErrorMessage(t("ninthForm.errors.predictionTimeout"));
         setIsSubmitting(false);
@@ -121,14 +117,10 @@ export default function NinthFormPage() {
 
       // Step 2: Fetch filter fields after successful admission
       setProcessingStatus(t("ninthForm.loadingFilters"));
-      console.log("[NinthFormPage] Fetching filter fields for:", studentId);
-
       const filterResponse = await getFilterFieldsForStudent(
         studentId,
         isAuthenticated,
       );
-
-      console.log("[NinthFormPage] Filter fields received:", filterResponse);
 
       // Step 3: Navigate with both admission data and filter fields
       setProcessingStatus(t("ninthForm.predictionCompleted"));

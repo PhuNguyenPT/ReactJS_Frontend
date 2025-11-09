@@ -12,11 +12,9 @@ const STORAGE_KEYS = {
 } as const;
 
 // Configuration
-const GUEST_INACTIVITY_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-// Adjust this value based on your needs:
-// - 30 minutes: 30 * 60 * 1000
-// - 1 hour: 60 * 60 * 1000
-// - 7 days: 7 * 24 * 60 * 60 * 1000
+const GUEST_INACTIVITY_DURATION = Number(
+  import.meta.env.VITE_GUEST_INACTIVITY_DURATION,
+); // 24 hours in milliseconds
 
 /**
  * Check if user is authenticated
@@ -78,7 +76,6 @@ function clearGuestData(): void {
   localStorage.removeItem(STORAGE_KEYS.STUDENT_ID);
   localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
   localStorage.removeItem(STORAGE_KEYS.IS_GUEST);
-  console.log("[SessionManager] Guest data cleared");
 }
 
 /**
@@ -89,7 +86,6 @@ export function clearAllSessionData(): void {
   localStorage.removeItem(STORAGE_KEYS.BEARER_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
   localStorage.removeItem(STORAGE_KEYS.IS_GUEST);
-  console.log("[SessionManager] All session data cleared");
 }
 
 /**
@@ -109,19 +105,14 @@ export function cleanupExpiredSessions(): void {
     // User is authenticated - clear guest flag if it exists
     localStorage.removeItem(STORAGE_KEYS.IS_GUEST);
     localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
-    console.log("[SessionManager] Authenticated user detected");
   } else if (isGuestSession()) {
     // Guest user - check for inactivity
     if (isGuestSessionExpired()) {
-      console.log("[SessionManager] Guest session expired due to inactivity");
       clearGuestData();
-    } else {
-      console.log("[SessionManager] Guest session still active");
     }
   } else {
     // StudentId exists but no bearer token and not marked as guest
     // This could be a logged-out user - clean up
-    console.log("[SessionManager] Orphaned studentId detected, cleaning up");
     clearGuestData();
   }
 }
@@ -135,15 +126,13 @@ export function initializeSessionManager(): void {
   cleanupExpiredSessions();
 
   // Set up periodic cleanup check (every 5 minutes)
-  const CLEANUP_INTERVAL = 5 * 60 * 1000;
+  const CLEANUP_INTERVAL = Number(import.meta.env.VITE_CLEANUP_INTERVAL);
   setInterval(() => {
     cleanupExpiredSessions();
   }, CLEANUP_INTERVAL);
 
   // Update activity on user interactions
   setupActivityTracking();
-
-  console.log("[SessionManager] Initialized");
 }
 
 /**
@@ -161,7 +150,7 @@ function setupActivityTracking(): void {
 
   // Throttle activity updates to once per minute
   let lastUpdate = 0;
-  const THROTTLE_DURATION = 60 * 1000; // 1 minute
+  const THROTTLE_DURATION = Number(import.meta.env.VITE_THROTTLE_DURATION); // 1 minute
 
   const throttledHandler = (): void => {
     const now = Date.now();
@@ -189,8 +178,4 @@ export function saveStudentId(studentId: string, isGuest: boolean): void {
     localStorage.removeItem(STORAGE_KEYS.IS_GUEST);
     localStorage.removeItem(STORAGE_KEYS.LAST_ACTIVITY);
   }
-
-  console.log(
-    `[SessionManager] StudentId saved (${isGuest ? "guest" : "authenticated"})`,
-  );
 }
