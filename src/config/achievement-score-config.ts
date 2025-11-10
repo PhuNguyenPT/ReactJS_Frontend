@@ -8,7 +8,6 @@ interface ScoreRange {
 }
 
 // Score ranges for CCNN (Language Certification) exams
-// Note: JLPT has been removed as it now uses level dropdown instead
 export const CCNN_SCORE_RANGES: Record<string, ScoreRange> = {
   [CCNNType.IELTS]: {
     min: 0,
@@ -39,7 +38,6 @@ export const CCNN_SCORE_RANGES: Record<string, ScoreRange> = {
 };
 
 // Score ranges for CCQT (International Certification) exams
-// Note: ALevel has been removed as it now uses grade dropdown instead
 export const CCQT_SCORE_RANGES: Record<string, ScoreRange> = {
   [CCQTType.ACT]: {
     min: 1,
@@ -96,6 +94,7 @@ export const usesGradeDropdown = (examType: string | null): boolean => {
 
 /**
  * Validate and sanitize score input based on exam type
+ * Only validates format during typing, boundary checks happen on blur
  */
 export const validateExamScore = (
   value: string,
@@ -106,11 +105,11 @@ export const validateExamScore = (
 
   const scoreRange = getScoreRange(examType);
   if (!scoreRange) {
-    // If no score range is defined, use default validation (0-100, 2 decimals)
-    return validateDefaultScore(value);
+    // If no score range is defined, use default validation (allow any numbers with up to 2 decimals)
+    return validateDefaultScoreFormat(value);
   }
 
-  const { min, max, step, decimalPlaces = 2 } = scoreRange;
+  const { decimalPlaces = 2 } = scoreRange;
 
   // Create regex based on decimal places
   const regex =
@@ -118,56 +117,28 @@ export const validateExamScore = (
       ? /^\d+$/ // Only whole numbers
       : new RegExp(`^\\d*\\.?\\d{0,${String(decimalPlaces)}}$`);
 
+  // Only validate format, NOT range - this allows users to type freely
   if (!regex.test(value)) {
     return value.slice(0, -1);
-  }
-
-  // Convert to number and validate range
-  const numValue = parseFloat(value);
-  if (isNaN(numValue)) return value;
-
-  // If greater than max, return max
-  if (numValue > max) return max.toString();
-
-  // If less than min, return min
-  if (numValue < min) return min.toString();
-
-  // For IELTS, validate step increment (must be in 0.5 increments)
-  if (step && decimalPlaces > 0) {
-    const decimalPart = value.split(".")[1];
-    if (decimalPart) {
-      const remainder = numValue % step;
-      // Allow typing but don't auto-correct while typing
-      if (remainder !== 0 && decimalPart.length >= decimalPlaces) {
-        // Round to nearest valid step
-        const rounded = Math.round(numValue / step) * step;
-        return Math.min(Math.max(rounded, min), max).toFixed(decimalPlaces);
-      }
-    }
   }
 
   return value;
 };
 
 /**
- * Default score validation (0-100, max 2 decimals)
+ * Default score format validation (any number with max 2 decimals)
  */
-const validateDefaultScore = (value: string): string => {
+const validateDefaultScoreFormat = (value: string): string => {
   // Allow only numbers and one decimal point with max 2 decimal places
   const regex = /^\d*\.?\d{0,2}$/;
   if (!regex.test(value)) return value.slice(0, -1);
-
-  const numValue = parseFloat(value);
-  if (isNaN(numValue)) return value;
-
-  if (numValue > 100) return "100";
-  if (numValue < 0) return "0";
 
   return value;
 };
 
 /**
  * Format score on blur (when user leaves the input field)
+ * This is where we apply min/max boundaries and formatting
  */
 export const formatScoreOnBlur = (
   value: string,
@@ -183,7 +154,7 @@ export const formatScoreOnBlur = (
 
   if (isNaN(numValue)) return "";
 
-  // Clamp value to range
+  // Clamp value to range (this is where min/max boundaries are applied)
   numValue = Math.min(Math.max(numValue, min), max);
 
   // For IELTS, round to nearest 0.5
