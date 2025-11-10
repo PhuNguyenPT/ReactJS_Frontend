@@ -5,7 +5,6 @@ import {
   Button,
   IconButton,
   Autocomplete,
-  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -21,6 +20,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
     handleAddEntry,
     handleRemoveEntry,
     handleEntryChange,
+    handleEntryScoreBlur,
     getFirstFieldOptions,
     getSecondFieldOptions,
     getSelectedValue,
@@ -29,9 +29,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
     canAddEntry,
     getAddButtonText,
     getEntryErrors,
-    getCategoryErrors,
     getScoreInputPlaceholder,
-    t,
   } = useFourthForm();
 
   return (
@@ -44,7 +42,6 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
     >
       {categories.map((category) => {
         const canAdd = canAddEntry(category.id);
-        const categoryErrors = getCategoryErrors(category);
 
         return (
           <Box
@@ -76,25 +73,6 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                 {category.name}
               </Typography>
             </Box>
-
-            {/* Category-level error messages - only show when showErrors is true */}
-            {showErrors &&
-              categoryErrors.length > 0 &&
-              categoryErrors
-                .filter(
-                  (error) =>
-                    !error.includes(t("fourthForm.awardRequiredError")) &&
-                    !error.includes(t("fourthForm.scoreRequiredError")),
-                )
-                .map((error) => (
-                  <Alert
-                    key={`${category.id}-${error}`}
-                    severity="error"
-                    sx={{ mb: 2, width: "100%" }}
-                  >
-                    {error}
-                  </Alert>
-                ))}
 
             {category.isExpanded &&
               category.entries.map((entry) => {
@@ -210,6 +188,9 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                               "secondField",
                               e.target.value,
                             );
+                          }}
+                          onBlur={() => {
+                            handleEntryScoreBlur(category.id, entry.id);
                           }}
                           placeholder={
                             entry.firstField
