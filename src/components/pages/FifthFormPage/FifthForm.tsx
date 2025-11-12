@@ -16,24 +16,42 @@ const FifthForm = ({ ref }: FifthFormProps) => {
     formatValue,
     formatRangeText,
     sliderConfig,
-    subTitle,
   } = useFifthForm({ ref });
 
   return (
-    <Box component="form" className="fifth-form" sx={{ position: "relative" }}>
-      <FormControl fullWidth sx={{ mb: 3, width: 550, marginRight: 50 }}>
-        <Typography
+    <Box
+      component="form"
+      className="fifth-form"
+      sx={{
+        position: "relative",
+        width: "100%",
+      }}
+    >
+      <FormControl
+        fullWidth
+        sx={{
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          width: "100%",
+          maxWidth: {
+            xs: "100%",
+            sm: "480px",
+            md: "550px",
+          },
+        }}
+      >
+        <Box
           sx={{
-            color: "#A657AE",
-            fontSize: "1.2rem",
-            mb: 3,
-            textAlign: "left",
+            px: {
+              xs: 1,
+              sm: 1.5,
+              md: 2,
+            },
           }}
         >
-          {subTitle}
-        </Typography>
-
-        <Box sx={{ px: 2 }}>
           <Slider
             value={costRange}
             onChange={handleSliderChange}
@@ -42,8 +60,17 @@ const FifthForm = ({ ref }: FifthFormProps) => {
             max={sliderConfig.max}
             sx={{
               color: "#A657AE",
-              maxWidth: "450px",
-              height: 8,
+              width: "100%",
+              maxWidth: {
+                xs: "100%",
+                sm: "420px",
+                md: "500px",
+              },
+              height: {
+                xs: 6,
+                sm: 7,
+                md: 8,
+              },
               "& .MuiSlider-track": {
                 border: "none",
                 backgroundColor: "#A657AE",
@@ -52,8 +79,16 @@ const FifthForm = ({ ref }: FifthFormProps) => {
                 backgroundColor: "#E0C4E2",
               },
               "& .MuiSlider-thumb": {
-                height: 24,
-                width: 24,
+                height: {
+                  xs: 20,
+                  sm: 22,
+                  md: 24,
+                },
+                width: {
+                  xs: 20,
+                  sm: 22,
+                  md: 24,
+                },
                 backgroundColor: "#A657AE",
                 border: "2px solid #fff",
                 boxShadow: "0 2px 6px rgba(166, 87, 174, 0.3)",
@@ -61,6 +96,18 @@ const FifthForm = ({ ref }: FifthFormProps) => {
                   boxShadow: "0 4px 12px rgba(166, 87, 174, 0.4)",
                 },
                 "&::before": { display: "none" },
+              },
+              "& .MuiSlider-valueLabel": {
+                fontSize: {
+                  xs: "0.7rem",
+                  sm: "0.75rem",
+                  md: "0.875rem",
+                },
+                padding: {
+                  xs: "4px 8px",
+                  sm: "5px 10px",
+                  md: "6px 12px",
+                },
               },
             }}
           />
@@ -70,23 +117,76 @@ const FifthForm = ({ ref }: FifthFormProps) => {
             sx={{
               display: "flex",
               justifyContent: "space-between",
-              mt: 1,
+              mt: {
+                xs: 0.75,
+                sm: 0.875,
+                md: 1,
+              },
               color: "#A657AE",
-              fontSize: "0.875rem",
-              maxWidth: "550px",
+              fontSize: {
+                xs: "0.75rem",
+                sm: "0.8125rem",
+                md: "0.875rem",
+              },
+              width: "100%",
+              maxWidth: {
+                xs: "100%",
+                sm: "480px",
+                md: "550px",
+              },
             }}
           >
-            <Typography variant="body2" sx={{ color: "#A657AE" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#A657AE",
+                fontSize: {
+                  xs: "0.75rem",
+                  sm: "0.8125rem",
+                  md: "0.875rem",
+                },
+              }}
+            >
               {formatValue(costRange[0])}
             </Typography>
-            <Typography variant="body2" sx={{ color: "#A657AE" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#A657AE",
+                fontSize: {
+                  xs: "0.75rem",
+                  sm: "0.8125rem",
+                  md: "0.875rem",
+                },
+              }}
+            >
               {formatValue(costRange[1])}
             </Typography>
           </Box>
 
           {/* Centered result text */}
-          <Box sx={{ mt: 2, textAlign: "center" }}>
-            <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
+          <Box
+            sx={{
+              mt: {
+                xs: 1.5,
+                sm: 1.75,
+                md: 2,
+              },
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#A657AE",
+                fontWeight: 500,
+                fontSize: {
+                  xs: "1rem",
+                  sm: "1.15rem",
+                  md: "1.25rem",
+                },
+              }}
+            >
               {formatRangeText(costRange)}
             </Typography>
           </Box>

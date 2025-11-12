@@ -144,67 +144,128 @@ export default function ThirdFormPage() {
     <>
       <div className="background" />
       <div className="form-container">
-        <div className="form-2-content">
-          <h1 className="form-title">3 → {t("thirdForm.title")}</h1>
-          <p className="form-subtitle">{t("thirdForm.subTitle")}</p>
-
-          <ThirdFormMain
-            mathScore={mathScore}
-            setMathScore={setMathScore}
-            literatureScore={literatureScore}
-            setLiteratureScore={setLiteratureScore}
-            chosenSubjects={chosenSubjects}
-            setChosenSubjects={setChosenSubjects}
-            chosenScores={chosenScores}
-            setChosenScores={setChosenScores}
-            hasError={hasError}
-            setHasError={setHasError}
-          />
-
-          <ThirdFormOptional
-            categories={optionalCategories}
-            setCategories={setOptionalCategories}
-            showErrors={showErrors}
-          />
-        </div>
-
         <Box
           sx={{
             position: "relative",
             display: "flex",
-            gap: 0.3,
-            top: 181.6,
-            right: 106,
+            flexDirection: "column",
           }}
         >
-          <IconButton
-            onClick={handlePrev}
+          <div className="form-content">
+            <Box
+              component="h1"
+              className="form-title"
+              sx={{
+                fontSize: {
+                  xs: "1.5rem",
+                  sm: "1.75rem",
+                  md: "2rem",
+                },
+              }}
+            >
+              3 → {t("thirdForm.title")}
+            </Box>
+            <Box
+              component="p"
+              className="form-subtitle"
+              sx={{
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.95rem",
+                  md: "1rem",
+                },
+              }}
+            >
+              {t("thirdForm.subTitle")}
+            </Box>
+
+            <ThirdFormMain
+              mathScore={mathScore}
+              setMathScore={setMathScore}
+              literatureScore={literatureScore}
+              setLiteratureScore={setLiteratureScore}
+              chosenSubjects={chosenSubjects}
+              setChosenSubjects={setChosenSubjects}
+              chosenScores={chosenScores}
+              setChosenScores={setChosenScores}
+              hasError={hasError}
+              setHasError={setHasError}
+            />
+
+            <ThirdFormOptional
+              categories={optionalCategories}
+              setCategories={setOptionalCategories}
+              showErrors={showErrors}
+            />
+          </div>
+
+          {/* Navigation buttons positioned at bottom-right of form card */}
+          <Box
             sx={{
-              height: 40,
-              width: 40,
-              backgroundColor: "#A657AE",
-              color: "white",
-              "&:hover": { backgroundColor: "#8B4A8F" },
-              borderRadius: 1,
+              position: "absolute",
+              bottom: {
+                xs: 15,
+                sm: 20,
+                md: 20,
+              },
+              right: {
+                xs: 15,
+                sm: 20,
+                md: 20,
+              },
+              display: "flex",
+              gap: {
+                xs: 0.5,
+                sm: 0.5,
+                md: 0.3,
+              },
+              zIndex: 10,
             }}
           >
-            <ArrowBackIosNewIcon fontSize="small" />
-          </IconButton>
-          <IconButton
-            onClick={handleNext}
-            sx={{
-              height: 40,
-              width: 40,
-              backgroundColor: "#A657AE",
-              color: "white",
-              "&:hover": { backgroundColor: "#8B4A8F" },
-              borderRadius: 1,
-            }}
-          >
-            <ArrowForwardIosIcon fontSize="small" />
-          </IconButton>
+            <IconButton onClick={handlePrev} sx={buttonStyle}>
+              <ArrowBackIosNewIcon
+                fontSize="small"
+                sx={{
+                  fontSize: {
+                    xs: "1rem",
+                    sm: "1.1rem",
+                    md: "1.25rem",
+                  },
+                }}
+              />
+            </IconButton>
+            <IconButton onClick={handleNext} sx={buttonStyle}>
+              <ArrowForwardIosIcon
+                fontSize="small"
+                sx={{
+                  fontSize: {
+                    xs: "1rem",
+                    sm: "1.1rem",
+                    md: "1.25rem",
+                  },
+                }}
+              />
+            </IconButton>
+          </Box>
         </Box>
       </div>
     </>
   );
 }
+
+const buttonStyle = {
+  height: {
+    xs: 35,
+    sm: 38,
+    md: 40,
+  },
+  width: {
+    xs: 35,
+    sm: 38,
+    md: 40,
+  },
+  backgroundColor: "#A657AE",
+  color: "white",
+  "&:hover": { backgroundColor: "#8B4A8F" },
+  borderRadius: 1,
+};

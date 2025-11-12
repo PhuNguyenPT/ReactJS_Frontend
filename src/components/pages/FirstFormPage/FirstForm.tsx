@@ -1,25 +1,25 @@
 import {
   Box,
   FormControl,
-  Button,
   FormHelperText,
   TextField,
   Autocomplete,
 } from "@mui/material";
 import { useFirstForm } from "../../../hooks/formPages/useFirstForm";
 
-const FirstForm = () => {
+interface FirstFormProps {
+  hasProvinceError: boolean;
+  hasUniTypeError: boolean;
+}
+
+const FirstForm = ({ hasProvinceError, hasUniTypeError }: FirstFormProps) => {
   const {
     selectedProvinces,
-    //selectedUniType,
-    hasProvinceError,
-    hasUniTypeError,
     provinces,
     translatedUniTypeOptions,
     selectedUniTypeValue,
     handleProvinceChange,
     handleUniTypeChange,
-    handleNext,
     t,
   } = useFirstForm();
 
@@ -213,69 +213,6 @@ const FirstForm = () => {
           {hasUniTypeError ? t("firstForm.errorWarning2") : " "}
         </FormHelperText>
       </FormControl>
-
-      {/* Button container for right alignment */}
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: {
-            xs: "center",
-            sm: "flex-end",
-            md: "flex-end",
-          },
-          mt: {
-            xs: 3,
-            sm: 4,
-            md: 6.5,
-          },
-        }}
-      >
-        <Button
-          variant="contained"
-          sx={{
-            px: {
-              xs: 2,
-              sm: 2.5,
-              md: 3,
-            },
-            py: {
-              xs: 0.8,
-              sm: 0.9,
-              md: 1,
-            },
-            borderRadius: {
-              xs: 1.5,
-              sm: 2,
-              md: 2,
-            },
-            fontSize: {
-              xs: "0.9rem",
-              sm: "1rem",
-              md: "1.1rem",
-            },
-            backgroundColor: "#A657AE",
-            textTransform: "none",
-            fontWeight: "bold",
-            width: {
-              xs: "100%",
-              sm: "auto",
-              md: "auto",
-            },
-            minWidth: {
-              xs: "100%",
-              sm: 120,
-              md: 120,
-            },
-            "&:hover": {
-              backgroundColor: "#8B4A8F",
-            },
-          }}
-          onClick={handleNext}
-        >
-          {t("firstForm.enterButton")}
-        </Button>
-      </Box>
     </Box>
   );
 };

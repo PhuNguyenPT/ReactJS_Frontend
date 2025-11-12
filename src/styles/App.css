@@ -379,8 +379,10 @@ body.scrolling::-webkit-scrollbar-thumb {
   width: 100%;
   height: 100vh;
   position: relative;
+  padding: 20px;
 }
 
+/* Consolidated form-content - combines both form-content and form-2-content */
 .form-content {
   display: flex;
   flex-direction: column;
@@ -391,46 +393,32 @@ body.scrolling::-webkit-scrollbar-thumb {
   padding: 30px;
   border-radius: 30px;
   width: 651px;
+  max-width: calc(100vw - 40px);
   height: 450px;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
-  position: relative;
-}
-
-.form-2-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-  color: #9c27b0;
-  background: #fff;
-  padding: 30px;
-  border-radius: 30px;
-  width: 650px;
-  height: 450px;
+  max-height: calc(100vh - 160px);
   box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-left: 83px;
 }
 
-.form-2-content::-webkit-scrollbar {
+.form-content::-webkit-scrollbar {
   width: 8px;
 }
 
-.form-2-content::-webkit-scrollbar-track {
+.form-content::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   margin-top: 90px;
   margin-bottom: 90px;
 }
 
-.form-2-content::-webkit-scrollbar-thumb {
+.form-content::-webkit-scrollbar-thumb {
   background: #a657ae;
   border-radius: 4px;
 }
 
-.form-2-content::-webkit-scrollbar-thumb:hover {
+.form-content::-webkit-scrollbar-thumb:hover {
   background: #8b4a8f;
 }
 
@@ -842,22 +830,14 @@ body.scrolling::-webkit-scrollbar-thumb {
     font-size: 13px;
   }
 
-  /* Form Container */
+  /* Form Container - Now applies to single consolidated class */
   .form-content {
     width: 100%;
-    max-width: 500px;
+    max-width: calc(100vw - 40px);
     height: auto;
-    min-height: 400px;
+    max-height: calc(100vh - 200px);
+    min-height: 300px;
     padding: 20px;
-  }
-
-  .form-2-content {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    min-height: 400px;
-    padding: 20px;
-    margin-left: 0;
   }
 
   .form-title {
@@ -984,16 +964,19 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   /* Form Container */
-  .form-content {
-    max-width: 100%;
-    padding: 15px;
-    border-radius: 20px;
+  .form-container {
+    padding: 15px 10px;
   }
 
-  .form-2-content {
-    max-width: 100%;
-    padding: 15px;
+  .form-content {
+    width: calc(100vw - 30px);
+    max-width: calc(90vw - 30px);
+    height: auto;
+    max-height: calc(80vh - 140px);
+    min-height: 350px;
+    padding: 18px 15px;
     border-radius: 20px;
+    gap: 0.7rem;
   }
 
   .form-title {
@@ -1062,6 +1045,11 @@ body.scrolling::-webkit-scrollbar-thumb {
     gap: 5px;
   }
 
+  /* Form Container */
+  .form-container {
+    padding: 10px 5px;
+  }
+
   .upload-box {
     width: 100px;
     height: 100px;
@@ -1073,8 +1061,23 @@ body.scrolling::-webkit-scrollbar-thumb {
     font-size: 10px;
   }
 
-  .form-content,
-  .form-2-content {
-    padding: 12px;
+  .form-content {
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    padding: 15px 12px;
+    max-height: calc(100vh - 80px);
+    min-height: 300px;
+    border-radius: 18px;
+    gap: 0.6rem;
+  }
+
+  .form-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
   }
 }

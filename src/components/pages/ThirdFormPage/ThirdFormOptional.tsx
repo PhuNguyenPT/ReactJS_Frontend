@@ -51,10 +51,15 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
   return (
     <Box
       sx={{
-        mt: 3,
+        mt: {
+          xs: 2,
+          sm: 2.5,
+          md: 3,
+        },
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
+        width: "100%",
       }}
     >
       {categories.map((category) => {
@@ -69,7 +74,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
           <Box
             key={category.id}
             sx={{
-              mb: 1,
+              mb: {
+                xs: 1,
+                sm: 1,
+                md: 1,
+              },
               width: "100%",
               display: "flex",
               flexDirection: "column",
@@ -82,7 +91,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
-                mb: 1,
+                mb: {
+                  xs: 0.75,
+                  sm: 0.875,
+                  md: 1,
+                },
               }}
             >
               <Typography
@@ -90,6 +103,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 sx={{
                   color: "#9c27b0",
                   textAlign: "left",
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.95rem",
+                    md: "1rem",
+                  },
                 }}
               >
                 {t("thirdForm.firstTypo")}{" "}
@@ -105,7 +123,22 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 // Minimum validation
                 if (filledScores.length > 0 && filledScores.length < 3) {
                   return (
-                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mb: {
+                          xs: 1.5,
+                          sm: 1.75,
+                          md: 2,
+                        },
+                        width: "100%",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.8rem",
+                          md: "0.875rem",
+                        },
+                      }}
+                    >
                       {t("thirdForm.vsatMinimumError")}
                     </Alert>
                   );
@@ -114,7 +147,22 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 // Maximum validation
                 if (filledScores.length > 8) {
                   return (
-                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mb: {
+                          xs: 1.5,
+                          sm: 1.75,
+                          md: 2,
+                        },
+                        width: "100%",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.8rem",
+                          md: "0.875rem",
+                        },
+                      }}
+                    >
                       {t("thirdForm.maxEntriesReached")}
                     </Alert>
                   );
@@ -129,7 +177,22 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
               (() => {
                 if (filledScores.length > 3) {
                   return (
-                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mb: {
+                          xs: 1.5,
+                          sm: 1.75,
+                          md: 2,
+                        },
+                        width: "100%",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.8rem",
+                          md: "0.875rem",
+                        },
+                      }}
+                    >
                       {t("thirdForm.maxEntriesReached")}
                     </Alert>
                   );
@@ -143,7 +206,22 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
               (() => {
                 if (filledScores.length > 3) {
                   return (
-                    <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mb: {
+                          xs: 1.5,
+                          sm: 1.75,
+                          md: 2,
+                        },
+                        width: "100%",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.8rem",
+                          md: "0.875rem",
+                        },
+                      }}
+                    >
                       {t("thirdForm.maxEntriesReached")}
                     </Alert>
                   );
@@ -166,8 +244,16 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                       display: "flex",
                       flexDirection: "column",
                       width: "100%",
-                      mb: 2,
-                      gap: 1,
+                      mb: {
+                        xs: 1.5,
+                        sm: 1.75,
+                        md: 2,
+                      },
+                      gap: {
+                        xs: 0.75,
+                        sm: 0.875,
+                        md: 1,
+                      },
                     }}
                   >
                     {/* Main row with dropdown, score field, and remove button */}
@@ -175,8 +261,16 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 1,
+                        gap: {
+                          xs: 0.5,
+                          sm: 0.75,
+                          md: 1,
+                        },
                         justifyContent: "flex-start",
+                        flexWrap: {
+                          xs: "wrap",
+                          sm: "nowrap",
+                        },
                       }}
                     >
                       {/* Subject Autocomplete */}
@@ -196,7 +290,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           option.key === value.key
                         }
                         sx={{
-                          width: 200,
+                          width: {
+                            xs: 140,
+                            sm: 170,
+                            md: 200,
+                          },
                         }}
                         filterSelectedOptions
                         renderInput={(params) => (
@@ -205,8 +303,21 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                             placeholder={t("thirdForm.chooseExam")}
                             sx={{
                               "& .MuiOutlinedInput-root": {
-                                borderRadius: "17px",
-                                height: "40px",
+                                borderRadius: {
+                                  xs: "12px",
+                                  sm: "15px",
+                                  md: "17px",
+                                },
+                                height: {
+                                  xs: "36px",
+                                  sm: "38px",
+                                  md: "40px",
+                                },
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.85rem",
+                                  md: "0.9rem",
+                                },
                                 "& fieldset": {
                                   borderColor: "#A657AE",
                                 },
@@ -219,6 +330,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               },
                               "& input": {
                                 color: "#A657AE",
+                                padding: {
+                                  xs: "8px 12px",
+                                  sm: "9px 14px",
+                                  md: "10px 16px",
+                                },
                               },
                             }}
                           />
@@ -247,10 +363,27 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         error={hasError}
                         disabled={!score.subject}
                         sx={{
-                          width: "150px",
+                          width: {
+                            xs: "110px",
+                            sm: "130px",
+                            md: "150px",
+                          },
                           "& .MuiOutlinedInput-root": {
-                            borderRadius: "17px",
-                            height: "40px",
+                            borderRadius: {
+                              xs: "12px",
+                              sm: "15px",
+                              md: "17px",
+                            },
+                            height: {
+                              xs: "36px",
+                              sm: "38px",
+                              md: "40px",
+                            },
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.85rem",
+                              md: "0.9rem",
+                            },
                           },
                           "&:hover .MuiOutlinedInput-notchedOutline": {
                             borderColor: hasError ? "#d32f2f" : "#8B4A8F",
@@ -264,6 +397,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           "& .MuiInputBase-input": {
                             textAlign: "left",
                             color: "#A657AE",
+                            padding: {
+                              xs: "8px 12px",
+                              sm: "9px 14px",
+                              md: "10px 16px",
+                            },
                           },
                           "& input[type=number]": {
                             MozAppearance: "textfield",
@@ -287,14 +425,30 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         sx={{
                           backgroundColor: "#f44336",
                           color: "white",
-                          width: "35px",
-                          height: "35px",
+                          width: {
+                            xs: "32px",
+                            sm: "34px",
+                            md: "35px",
+                          },
+                          height: {
+                            xs: "32px",
+                            sm: "34px",
+                            md: "35px",
+                          },
                           "&:hover": {
                             backgroundColor: "#d32f2f",
                           },
                         }}
                       >
-                        <CloseIcon fontSize="small" />
+                        <CloseIcon
+                          sx={{
+                            fontSize: {
+                              xs: "1rem",
+                              sm: "1.1rem",
+                              md: "1.25rem",
+                            },
+                          }}
+                        />
                       </IconButton>
                     </Box>
 
@@ -304,7 +458,16 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         <Typography
                           key={`${score.id}-${error.substring(0, 20)}`}
                           variant="caption"
-                          sx={{ color: "#d32f2f", ml: 1, textAlign: "left" }}
+                          sx={{
+                            color: "#d32f2f",
+                            ml: 1,
+                            textAlign: "left",
+                            fontSize: {
+                              xs: "0.7rem",
+                              sm: "0.75rem",
+                              md: "0.75rem",
+                            },
+                          }}
                         >
                           {error}
                         </Typography>
@@ -316,15 +479,48 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
             {/* Add Button */}
             <Button
               variant="contained"
-              startIcon={<AddIcon />}
+              startIcon={
+                <AddIcon
+                  sx={{
+                    fontSize: {
+                      xs: "1rem",
+                      sm: "1.1rem",
+                      md: "1.25rem",
+                    },
+                  }}
+                />
+              }
               onClick={() => {
                 handleAddScore(category.id);
               }}
               disabled={!canAdd}
               sx={{
-                mb: 2,
+                mb: {
+                  xs: 1.5,
+                  sm: 1.75,
+                  md: 2,
+                },
+                px: {
+                  xs: 1.5,
+                  sm: 2,
+                  md: 2,
+                },
+                py: {
+                  xs: 0.6,
+                  sm: 0.7,
+                  md: 0.8,
+                },
+                fontSize: {
+                  xs: "0.8rem",
+                  sm: "0.85rem",
+                  md: "0.9rem",
+                },
                 backgroundColor: canAdd ? "#9c27b0" : "#ccc",
-                borderRadius: "10px",
+                borderRadius: {
+                  xs: "8px",
+                  sm: "9px",
+                  md: "10px",
+                },
                 textTransform: "none",
                 alignSelf: "flex-start",
                 "&:hover": {
