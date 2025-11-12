@@ -38,27 +38,68 @@ export default function SecondFormPage() {
     <>
       <div className="background" />
       <div className="form-container">
-        <div className="form-2-content">
-          <h1 className="form-title">2 → {t("secondForm.title")}</h1>
-          <p className="form-subtitle">{t("secondForm.subTitle")}</p>
-          {/* Pass only error state to SecondForm */}
-          <SecondForm hasError={hasError} />
-        </div>
         <Box
           sx={{
-            position: "relative",
+            position: "relative", // Keep relative positioning for the container
             display: "flex",
-            gap: 0.3,
-            top: 181.6,
-            right: 106,
+            flexDirection: "column",
           }}
         >
-          <IconButton onClick={handlePrev} sx={buttonStyle}>
-            <ArrowBackIosNewIcon fontSize="small" />
-          </IconButton>
-          <IconButton onClick={handleNext} sx={buttonStyle}>
-            <ArrowForwardIosIcon fontSize="small" />
-          </IconButton>
+          <div className="form-content">
+            <h1 className="form-title">2 → {t("secondForm.title")}</h1>
+            <p className="form-subtitle">{t("secondForm.subTitle")}</p>
+            {/* Pass only error state to SecondForm */}
+            <SecondForm hasError={hasError} />
+          </div>
+
+          {/* Navigation buttons positioned at bottom-right of form card */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: {
+                xs: 15,
+                sm: 20,
+                md: 20,
+              },
+              right: {
+                xs: 15,
+                sm: 20,
+                md: 20,
+              },
+              display: "flex",
+              gap: {
+                xs: 0.5,
+                sm: 0.5,
+                md: 0.3,
+              },
+              zIndex: 10,
+            }}
+          >
+            <IconButton onClick={handlePrev} sx={buttonStyle}>
+              <ArrowBackIosNewIcon
+                fontSize="small"
+                sx={{
+                  fontSize: {
+                    xs: "1rem",
+                    sm: "1.1rem",
+                    md: "1.25rem",
+                  },
+                }}
+              />
+            </IconButton>
+            <IconButton onClick={handleNext} sx={buttonStyle}>
+              <ArrowForwardIosIcon
+                fontSize="small"
+                sx={{
+                  fontSize: {
+                    xs: "1rem",
+                    sm: "1.1rem",
+                    md: "1.25rem",
+                  },
+                }}
+              />
+            </IconButton>
+          </Box>
         </Box>
       </div>
     </>
@@ -66,8 +107,16 @@ export default function SecondFormPage() {
 }
 
 const buttonStyle = {
-  height: 40,
-  width: 40,
+  height: {
+    xs: 35,
+    sm: 38,
+    md: 40,
+  },
+  width: {
+    xs: 35,
+    sm: 38,
+    md: 40,
+  },
   backgroundColor: "#A657AE",
   color: "white",
   "&:hover": { backgroundColor: "#8B4A8F" },

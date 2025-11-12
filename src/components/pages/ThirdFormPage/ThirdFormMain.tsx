@@ -31,15 +31,39 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
   } = useThirdMainForm(props);
 
   const pillStyle = {
-    borderRadius: "17px",
-    height: "40px",
+    borderRadius: {
+      xs: "12px",
+      sm: "15px",
+      md: "17px",
+    },
+    height: {
+      xs: "36px",
+      sm: "38px",
+      md: "40px",
+    },
     "& .MuiOutlinedInput-root": {
-      height: "40px",
-      fontSize: "0.9rem",
-      borderRadius: "17px",
+      height: {
+        xs: "36px",
+        sm: "38px",
+        md: "40px",
+      },
+      fontSize: {
+        xs: "0.8rem",
+        sm: "0.85rem",
+        md: "0.9rem",
+      },
+      borderRadius: {
+        xs: "12px",
+        sm: "15px",
+        md: "17px",
+      },
       "& fieldset": {
         borderColor: "#A657AE",
-        borderRadius: "17px",
+        borderRadius: {
+          xs: "12px",
+          sm: "15px",
+          md: "17px",
+        },
       },
       "&:hover fieldset": {
         borderColor: "#8B4A8F",
@@ -49,7 +73,11 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
       },
     },
     "& input": {
-      padding: "10px 16px",
+      padding: {
+        xs: "8px 12px",
+        sm: "9px 14px",
+        md: "10px 16px",
+      },
       color: "#A657AE",
     },
     "& .MuiInputBase-input.Mui-disabled": {
@@ -64,12 +92,20 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
 
   const subjectFieldStyle = {
     ...pillStyle,
-    width: "200px",
+    width: {
+      xs: "140px",
+      sm: "170px",
+      md: "200px",
+    },
   };
 
   const scoreFieldStyle = {
     ...pillStyle,
-    width: "150px",
+    width: {
+      xs: "110px",
+      sm: "130px",
+      md: "150px",
+    },
     "& input[type=number]": {
       MozAppearance: "textfield",
     },
@@ -89,13 +125,35 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
         position: "relative",
         display: "flex",
         flexDirection: "column",
-        gap: 2,
+        gap: {
+          xs: 1.5,
+          sm: 1.75,
+          md: 2,
+        },
         width: "100%",
-        maxWidth: "400px",
+        maxWidth: {
+          xs: "100%",
+          sm: "380px",
+          md: "400px",
+        },
       }}
     >
       {/* Math row - Fixed as TOAN */}
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: {
+            xs: 0.5,
+            sm: 0.75,
+            md: 1,
+          },
+          alignItems: "center",
+          flexWrap: {
+            xs: "wrap",
+            sm: "nowrap",
+          },
+        }}
+      >
         <TextField
           value={mandatorySubjects.math}
           disabled
@@ -116,13 +174,38 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
         />
       </Box>
       {shouldShowMathError() && (
-        <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
+        <FormHelperText
+          error
+          sx={{
+            ml: 1,
+            mt: -1.5,
+            fontSize: {
+              xs: "0.7rem",
+              sm: "0.75rem",
+              md: "0.75rem",
+            },
+          }}
+        >
           {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
 
       {/* Literature row - Fixed as NGU_VAN */}
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: {
+            xs: 0.5,
+            sm: 0.75,
+            md: 1,
+          },
+          alignItems: "center",
+          flexWrap: {
+            xs: "wrap",
+            sm: "nowrap",
+          },
+        }}
+      >
         <TextField
           value={mandatorySubjects.literature}
           disabled
@@ -143,7 +226,18 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
         />
       </Box>
       {shouldShowLiteratureError() && (
-        <FormHelperText error sx={{ ml: 1, mt: -1.5 }}>
+        <FormHelperText
+          error
+          sx={{
+            ml: 1,
+            mt: -1.5,
+            fontSize: {
+              xs: "0.7rem",
+              sm: "0.75rem",
+              md: "0.75rem",
+            },
+          }}
+        >
           {t("thirdForm.errorWarning")}
         </FormHelperText>
       )}
@@ -160,7 +254,21 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
 
         return (
           <Box key={index}>
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: {
+                  xs: 0.5,
+                  sm: 0.75,
+                  md: 1,
+                },
+                alignItems: "center",
+                flexWrap: {
+                  xs: "wrap",
+                  sm: "nowrap",
+                },
+              }}
+            >
               <Autocomplete
                 options={translatedSubjectOptions}
                 value={selectedSubjectValue}
@@ -171,7 +279,13 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
                 isOptionEqualToValue={(option, value) =>
                   option.key === value.key
                 }
-                sx={subjectFieldStyle}
+                sx={{
+                  width: {
+                    xs: "140px",
+                    sm: "170px",
+                    md: "200px",
+                  },
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -179,13 +293,33 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
                     error={showSubjectError}
                     sx={{
                       "& .MuiOutlinedInput-root": {
-                        height: "40px",
-                        width: "200px",
-                        borderRadius: "17px",
-                        fontSize: "0.9rem",
+                        height: {
+                          xs: "36px",
+                          sm: "38px",
+                          md: "40px",
+                        },
+                        width: {
+                          xs: "140px",
+                          sm: "170px",
+                          md: "200px",
+                        },
+                        borderRadius: {
+                          xs: "12px",
+                          sm: "15px",
+                          md: "17px",
+                        },
+                        fontSize: {
+                          xs: "0.8rem",
+                          sm: "0.85rem",
+                          md: "0.9rem",
+                        },
                         "& fieldset": {
                           borderColor: showSubjectError ? "#d32f2f" : "#A657AE",
-                          borderRadius: "17px",
+                          borderRadius: {
+                            xs: "12px",
+                            sm: "15px",
+                            md: "17px",
+                          },
                         },
                         "&:hover fieldset": {
                           borderColor: showSubjectError ? "#d32f2f" : "#8B4A8F",
@@ -195,7 +329,11 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
                         },
                       },
                       "& input": {
-                        padding: "10px 16px",
+                        padding: {
+                          xs: "8px 12px",
+                          sm: "9px 14px",
+                          md: "10px 16px",
+                        },
                         color: "#A657AE",
                       },
                     }}
@@ -217,7 +355,17 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
               />
             </Box>
             {showRowError && (
-              <FormHelperText error sx={{ ml: 1 }}>
+              <FormHelperText
+                error
+                sx={{
+                  ml: 1,
+                  fontSize: {
+                    xs: "0.7rem",
+                    sm: "0.75rem",
+                    md: "0.75rem",
+                  },
+                }}
+              >
                 {t("thirdForm.errorWarning")}
               </FormHelperText>
             )}

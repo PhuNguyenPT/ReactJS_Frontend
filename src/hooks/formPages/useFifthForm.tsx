@@ -72,8 +72,5 @@ export const useFifthForm = ({ ref }: UseFifthFormProps = {}) => {
 
     // Configuration
     sliderConfig,
-
-    // Translations
-    subTitle: t("fifthForm.subTitle1"),
   };
 };

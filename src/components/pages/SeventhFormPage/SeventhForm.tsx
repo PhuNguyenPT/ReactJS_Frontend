@@ -34,7 +34,11 @@ export default function SeventhForm({
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 3,
+        gap: {
+          xs: 2,
+          sm: 2.5,
+          md: 3,
+        },
         alignItems: "flex-start",
         width: "100%",
       }}
@@ -50,22 +54,66 @@ export default function SeventhForm({
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
-              gap: 1,
+              gap: {
+                xs: 0.75,
+                sm: 0.875,
+                md: 1,
+              },
               width: "100%",
             }}
           >
             {/* Subtitle */}
             <Typography
               variant="body1"
-              sx={{ mb: 1, color: "#A657AE", textAlign: "left" }}
+              sx={{
+                mb: {
+                  xs: 0.75,
+                  sm: 0.875,
+                  md: 1,
+                },
+                color: "#A657AE",
+                textAlign: "left",
+                fontSize: {
+                  xs: "0.95rem",
+                  sm: "1rem",
+                  md: "1rem",
+                },
+              }}
             >
               {grade.label}
             </Typography>
 
             {/* Dropdowns */}
-            <Box sx={{ display: "flex", gap: 3 }}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: {
+                  xs: 1,
+                  sm: 2,
+                  md: 3,
+                },
+                flexWrap: {
+                  xs: "wrap",
+                  sm: "nowrap",
+                },
+                width: "100%",
+              }}
+            >
               {/* Conduct (Kết quả rèn luyện) */}
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  flex: {
+                    xs: "1 1 100%",
+                    sm: "1 1 auto",
+                  },
+                  minWidth: {
+                    xs: "100%",
+                    sm: "200px",
+                  },
+                }}
+              >
                 <Autocomplete
                   options={translatedConductOptions}
                   value={gradeValues.conduct}
@@ -82,10 +130,28 @@ export default function SeventhForm({
                       placeholder={placeholders.practiceResults}
                       error={validation.conduct}
                       sx={{
-                        width: 230,
+                        width: "100%",
+                        maxWidth: {
+                          xs: "100%",
+                          sm: 210,
+                          md: 230,
+                        },
                         "& .MuiOutlinedInput-root": {
-                          borderRadius: "17px",
-                          height: "40px",
+                          borderRadius: {
+                            xs: "12px",
+                            sm: "15px",
+                            md: "17px",
+                          },
+                          height: {
+                            xs: "36px",
+                            sm: "38px",
+                            md: "40px",
+                          },
+                          fontSize: {
+                            xs: "0.8rem",
+                            sm: "0.85rem",
+                            md: "0.9rem",
+                          },
                           "& fieldset": {
                             borderColor: validation.conduct
                               ? "#d32f2f"
@@ -102,7 +168,14 @@ export default function SeventhForm({
                               : "#A657AE",
                           },
                         },
-                        "& input": { color: "#A657AE" },
+                        "& input": {
+                          color: "#A657AE",
+                          padding: {
+                            xs: "8px 12px",
+                            sm: "9px 14px",
+                            md: "10px 16px",
+                          },
+                        },
                       }}
                     />
                   )}
@@ -110,7 +183,17 @@ export default function SeventhForm({
                 {validation.conduct && (
                   <FormHelperText
                     error
-                    sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
+                    sx={{
+                      ml: 0,
+                      mr: 0,
+                      mt: 0.5,
+                      textAlign: "left",
+                      fontSize: {
+                        xs: "0.7rem",
+                        sm: "0.75rem",
+                        md: "0.75rem",
+                      },
+                    }}
                   >
                     {errors.conductError}
                   </FormHelperText>
@@ -118,7 +201,20 @@ export default function SeventhForm({
               </Box>
 
               {/* Academic Performance (Học lực) */}
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  flex: {
+                    xs: "1 1 100%",
+                    sm: "1 1 auto",
+                  },
+                  minWidth: {
+                    xs: "100%",
+                    sm: "200px",
+                  },
+                }}
+              >
                 <Autocomplete
                   options={translatedAcademicPerformanceOptions}
                   value={gradeValues.academicPerformance}
@@ -135,10 +231,28 @@ export default function SeventhForm({
                       placeholder={placeholders.academicScore}
                       error={validation.academicPerformance}
                       sx={{
-                        width: 240,
+                        width: "100%",
+                        maxWidth: {
+                          xs: "100%",
+                          sm: 220,
+                          md: 240,
+                        },
                         "& .MuiOutlinedInput-root": {
-                          borderRadius: "17px",
-                          height: "40px",
+                          borderRadius: {
+                            xs: "12px",
+                            sm: "15px",
+                            md: "17px",
+                          },
+                          height: {
+                            xs: "36px",
+                            sm: "38px",
+                            md: "40px",
+                          },
+                          fontSize: {
+                            xs: "0.8rem",
+                            sm: "0.85rem",
+                            md: "0.9rem",
+                          },
                           "& fieldset": {
                             borderColor: validation.academicPerformance
                               ? "#d32f2f"
@@ -155,7 +269,14 @@ export default function SeventhForm({
                               : "#A657AE",
                           },
                         },
-                        "& input": { color: "#A657AE" },
+                        "& input": {
+                          color: "#A657AE",
+                          padding: {
+                            xs: "8px 12px",
+                            sm: "9px 14px",
+                            md: "10px 16px",
+                          },
+                        },
                       }}
                     />
                   )}
@@ -163,7 +284,17 @@ export default function SeventhForm({
                 {validation.academicPerformance && (
                   <FormHelperText
                     error
-                    sx={{ ml: 0, mr: 0, mt: 0.5, textAlign: "left" }}
+                    sx={{
+                      ml: 0,
+                      mr: 0,
+                      mt: 0.5,
+                      textAlign: "left",
+                      fontSize: {
+                        xs: "0.7rem",
+                        sm: "0.75rem",
+                        md: "0.75rem",
+                      },
+                    }}
                   >
                     {errors.performanceError}
                   </FormHelperText>
