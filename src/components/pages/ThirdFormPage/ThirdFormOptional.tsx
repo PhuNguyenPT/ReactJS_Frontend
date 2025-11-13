@@ -15,6 +15,9 @@ interface OptionalScore {
   id: string;
   subject: string;
   score: string;
+  languageScore?: string;
+  mathScore?: string;
+  scienceLogic?: string;
 }
 
 interface CategoryData {
@@ -39,12 +42,15 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
     handleSubjectChange,
     handleScoreValueChange,
     handleScoreValueBlur,
+    handleVNUHCMSubScoreChange,
+    handleVNUHCMSubScoreBlur,
     getTranslatedCategoryName,
     getScoreRowData,
     getScoreRowErrors,
     canAddScore,
     getAddButtonText,
     getScorePlaceholder,
+    getVNUHCMSubScoreLimits,
     t,
   } = useThirdOptionalForm(props);
 
@@ -232,8 +238,11 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
             {/* Score Inputs */}
             {category.isExpanded &&
               category.scores.map((score) => {
-                const { translatedSubjectOptions, selectedSubjectValue } =
-                  getScoreRowData(category.name, score);
+                const {
+                  translatedSubjectOptions,
+                  selectedSubjectValue,
+                  isVNUHCM,
+                } = getScoreRowData(category.name, score);
                 const scoreRowErrors = getScoreRowErrors(category.name, score);
                 const hasError = showErrors && scoreRowErrors.length > 0;
 
@@ -451,6 +460,325 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         />
                       </IconButton>
                     </Box>
+
+                    {/* VNUHCM Sub-scores Section */}
+                    {isVNUHCM && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: {
+                            xs: 1,
+                            sm: 1.25,
+                            md: 1.5,
+                          },
+                          ml: 0, // Align to left
+                          p: {
+                            xs: 1.5,
+                            sm: 2,
+                            md: 2.5,
+                          },
+                          backgroundColor: "#f5f5f5",
+                          borderRadius: {
+                            xs: "8px",
+                            sm: "10px",
+                            md: "12px",
+                          },
+                          border: "1px solid #e0e0e0",
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#666",
+                            fontWeight: 600,
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.85rem",
+                              md: "0.9rem",
+                            },
+                            mb: {
+                              xs: 0.5,
+                              sm: 0.75,
+                              md: 1,
+                            },
+                          }}
+                        >
+                          {t("thirdForm.vnuhcmComponentScores") ||
+                            "VNUHCM Component Scores (Required)"}
+                        </Typography>
+
+                        {/* Language Score */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: {
+                              xs: 1,
+                              sm: 1.5,
+                              md: 2,
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              width: {
+                                xs: "110px",
+                                sm: "130px",
+                                md: "150px",
+                              },
+                              fontSize: {
+                                xs: "0.8rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                              },
+                              color: "#A657AE",
+                              fontWeight: 500,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {t("thirdForm.languageScore") || "Language"}:
+                          </Typography>
+                          <TextField
+                            type="text"
+                            value={score.languageScore ?? ""}
+                            onChange={(e) => {
+                              handleVNUHCMSubScoreChange(
+                                category.id,
+                                score.id,
+                                "languageScore",
+                                e.target.value,
+                              );
+                            }}
+                            onBlur={() => {
+                              handleVNUHCMSubScoreBlur(
+                                category.id,
+                                score.id,
+                                "languageScore",
+                              );
+                            }}
+                            placeholder={`0-${String(getVNUHCMSubScoreLimits("languageScore").max)}`}
+                            error={hasError && !score.languageScore}
+                            sx={{
+                              flex: 1,
+                              maxWidth: {
+                                xs: "140px",
+                                sm: "160px",
+                                md: "180px",
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: {
+                                  xs: "8px",
+                                  sm: "10px",
+                                  md: "12px",
+                                },
+                                height: {
+                                  xs: "36px",
+                                  sm: "38px",
+                                  md: "40px",
+                                },
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.85rem",
+                                  md: "0.9rem",
+                                },
+                                backgroundColor: "white",
+                              },
+                              "& .MuiInputBase-input": {
+                                textAlign: "left",
+                                color: "#A657AE",
+                                padding: {
+                                  xs: "8px 12px",
+                                  sm: "9px 14px",
+                                  md: "10px 16px",
+                                },
+                              },
+                            }}
+                          />
+                        </Box>
+
+                        {/* Math Score */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: {
+                              xs: 1,
+                              sm: 1.5,
+                              md: 2,
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              width: {
+                                xs: "110px",
+                                sm: "130px",
+                                md: "150px",
+                              },
+                              fontSize: {
+                                xs: "0.8rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                              },
+                              color: "#A657AE",
+                              fontWeight: 500,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {t("thirdForm.mathScore") || "Math"}:
+                          </Typography>
+                          <TextField
+                            type="text"
+                            value={score.mathScore ?? ""}
+                            onChange={(e) => {
+                              handleVNUHCMSubScoreChange(
+                                category.id,
+                                score.id,
+                                "mathScore",
+                                e.target.value,
+                              );
+                            }}
+                            onBlur={() => {
+                              handleVNUHCMSubScoreBlur(
+                                category.id,
+                                score.id,
+                                "mathScore",
+                              );
+                            }}
+                            placeholder={`0-${String(getVNUHCMSubScoreLimits("mathScore").max)}`}
+                            error={hasError && !score.mathScore}
+                            sx={{
+                              flex: 1,
+                              maxWidth: {
+                                xs: "140px",
+                                sm: "160px",
+                                md: "180px",
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: {
+                                  xs: "8px",
+                                  sm: "10px",
+                                  md: "12px",
+                                },
+                                height: {
+                                  xs: "36px",
+                                  sm: "38px",
+                                  md: "40px",
+                                },
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.85rem",
+                                  md: "0.9rem",
+                                },
+                                backgroundColor: "white",
+                              },
+                              "& .MuiInputBase-input": {
+                                textAlign: "left",
+                                color: "#A657AE",
+                                padding: {
+                                  xs: "8px 12px",
+                                  sm: "9px 14px",
+                                  md: "10px 16px",
+                                },
+                              },
+                            }}
+                          />
+                        </Box>
+
+                        {/* Science/Logic Score */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: {
+                              xs: 1,
+                              sm: 1.5,
+                              md: 2,
+                            },
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              width: {
+                                xs: "110px",
+                                sm: "130px",
+                                md: "150px",
+                              },
+                              fontSize: {
+                                xs: "0.8rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                              },
+                              color: "#A657AE",
+                              fontWeight: 500,
+                              flexShrink: 0,
+                            }}
+                          >
+                            {t("thirdForm.scienceLogic") || "Science/Logic"}:
+                          </Typography>
+                          <TextField
+                            type="text"
+                            value={score.scienceLogic ?? ""}
+                            onChange={(e) => {
+                              handleVNUHCMSubScoreChange(
+                                category.id,
+                                score.id,
+                                "scienceLogic",
+                                e.target.value,
+                              );
+                            }}
+                            onBlur={() => {
+                              handleVNUHCMSubScoreBlur(
+                                category.id,
+                                score.id,
+                                "scienceLogic",
+                              );
+                            }}
+                            placeholder={`0-${String(getVNUHCMSubScoreLimits("scienceLogic").max)}`}
+                            error={hasError && !score.scienceLogic}
+                            sx={{
+                              flex: 1,
+                              maxWidth: {
+                                xs: "140px",
+                                sm: "160px",
+                                md: "180px",
+                              },
+                              "& .MuiOutlinedInput-root": {
+                                borderRadius: {
+                                  xs: "8px",
+                                  sm: "10px",
+                                  md: "12px",
+                                },
+                                height: {
+                                  xs: "36px",
+                                  sm: "38px",
+                                  md: "40px",
+                                },
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.85rem",
+                                  md: "0.9rem",
+                                },
+                                backgroundColor: "white",
+                              },
+                              "& .MuiInputBase-input": {
+                                textAlign: "left",
+                                color: "#A657AE",
+                                padding: {
+                                  xs: "8px 12px",
+                                  sm: "9px 14px",
+                                  md: "10px 16px",
+                                },
+                              },
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    )}
 
                     {/* Row-level error messages */}
                     {showErrors &&

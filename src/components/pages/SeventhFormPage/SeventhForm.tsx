@@ -96,7 +96,7 @@ export default function SeventhForm({
                   xs: "wrap",
                   sm: "nowrap",
                 },
-                width: "100%",
+                width: "72%",
               }}
             >
               {/* Conduct (Kết quả rèn luyện) */}

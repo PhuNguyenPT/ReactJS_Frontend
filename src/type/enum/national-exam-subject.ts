@@ -5,6 +5,7 @@ type NationalExamSubjectTranslationKey =
   | "subjects.tieng_anh"
   | "subjects.tieng_duc"
   | "subjects.tieng_nga"
+  | "subjects.tieng_han"
   | "subjects.tieng_nhat"
   | "subjects.tieng_phap"
   | "subjects.tieng_trung"
@@ -15,7 +16,8 @@ type NationalExamSubjectTranslationKey =
   | "subjects.dia_ly"
   | "subjects.gdktpl"
   | "subjects.tin_hoc"
-  | "subjects.cong_nghe";
+  | "subjects.cong_nghe_cong_nghiep"
+  | "subjects.cong_nghe_nong_nghiep";
 
 // NationalExamSubjects enum with translation keys
 export const NationalExamSubjects = {
@@ -24,6 +26,7 @@ export const NationalExamSubjects = {
   TIENG_ANH: "subjects.tieng_anh",
   TIENG_DUC: "subjects.tieng_duc",
   TIENG_NGA: "subjects.tieng_nga",
+  TIENG_HAN: "subjects.tieng_han",
   TIENG_NHAT: "subjects.tieng_nhat",
   TIENG_PHAP: "subjects.tieng_phap",
   TIENG_TRUNG: "subjects.tieng_trung",
@@ -34,7 +37,8 @@ export const NationalExamSubjects = {
   DIA_LY: "subjects.dia_ly",
   GDKT_PL: "subjects.gdktpl",
   TIN_HOC: "subjects.tin_hoc",
-  CONG_NGHE: "subjects.cong_nghe",
+  CONG_NGHE_CONG_NGHIEP: "subjects.cong_nghe_cong_nghiep",
+  CONG_NGHE_NONG_NGHIEP: "subjects.cong_nghe_nong_nghiep",
 } as const;
 
 // Export the type
@@ -50,6 +54,7 @@ export const NationalExamSubjectsVietnamese: Record<
   "subjects.tieng_anh": "Tiếng Anh",
   "subjects.tieng_duc": "Tiếng Đức",
   "subjects.tieng_nga": "Tiếng Nga",
+  "subjects.tieng_han": "Tiếng Hàn",
   "subjects.tieng_nhat": "Tiếng Nhật",
   "subjects.tieng_phap": "Tiếng Pháp",
   "subjects.tieng_trung": "Tiếng Trung",
@@ -60,7 +65,8 @@ export const NationalExamSubjectsVietnamese: Record<
   "subjects.dia_ly": "Địa Lý",
   "subjects.gdktpl": "GDKTPL",
   "subjects.tin_hoc": "Tin Học",
-  "subjects.cong_nghe": "Công Nghệ",
+  "subjects.cong_nghe_cong_nghiep": "Công Nghệ Công Nghiệp",
+  "subjects.cong_nghe_nong_nghiep": "Công Nghệ Nông Nghiệp",
 } as const;
 
 // Reverse mapping from Vietnamese values to translation keys
