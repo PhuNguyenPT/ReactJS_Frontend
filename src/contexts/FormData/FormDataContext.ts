@@ -4,6 +4,10 @@ export interface OptionalScore {
   id: string;
   subject: string;
   score: string;
+  // VNUHCM specific fields (only used when subject is VNUHCM)
+  languageScore?: string;
+  mathScore?: string;
+  scienceLogic?: string;
 }
 
 export interface CategoryData {

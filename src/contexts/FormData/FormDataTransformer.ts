@@ -100,15 +100,32 @@ export function transformFormDataToApiSchema(formData: FormData) {
     payload.nationalExams = nationalExams;
   }
 
-  // Add aptitude test score if available
   // Add aptitude test scores if available (max 3 entries)
+  // Handle VNUHCM special case with sub-scores
   if (aptitudeCategory?.scores.length) {
     const aptitudeScores = aptitudeCategory.scores
       .filter((s) => !isEmpty(s.subject) && !isEmpty(s.score))
-      .map((s) => ({
-        examType: s.subject, // HSA, TSA, or VNUHCM
-        score: parseFloat(s.score) || 0,
-      }))
+      .map((s) => {
+        const baseScore = {
+          examType: s.subject, // HSA, TSA, or VNUHCM
+          score: parseFloat(s.score) || 0,
+        };
+
+        // Check if this is VNUHCM and has sub-scores
+        const isVNUHCM =
+          s.subject === "thirdForm.VNUHCM" || s.subject.includes("VNUHCM");
+
+        if (isVNUHCM && s.languageScore && s.mathScore && s.scienceLogic) {
+          return {
+            ...baseScore,
+            languageScore: parseFloat(s.languageScore) || 0,
+            mathScore: parseFloat(s.mathScore) || 0,
+            scienceLogic: parseFloat(s.scienceLogic) || 0,
+          };
+        }
+
+        return baseScore;
+      })
       .filter((s) => !isNaN(s.score))
       .slice(0, 3); // Ensure maximum 3 entries
 

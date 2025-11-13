@@ -65,6 +65,18 @@ export default function ThirdFormPage() {
     );
   };
 
+  // Helper function to check if a subject is VNUHCM
+  const isVNUHCM = (subject: string): boolean => {
+    if (!subject) return false;
+    const normalized = subject.toUpperCase();
+    return (
+      subject === "thirdForm.VNUHCM" ||
+      subject === "VNUHCM" ||
+      normalized.includes("VNUHCM") ||
+      subject.includes("vnuhcm")
+    );
+  };
+
   // Validate optional categories manually
   const validateOptionalCategories = (): boolean => {
     // Check each category for validation errors
@@ -97,14 +109,41 @@ export default function ThirdFormPage() {
         }
       }
 
-      // Check for incomplete entries (subject without score or vice versa)
+      // Check for incomplete entries
       for (const score of category.scores) {
+        // Check if subject is selected but main score is missing
         if (
           (score.subject && !score.score) ||
           (!score.subject && score.score)
         ) {
-          console.log("Incomplete entry found in", category.name);
           return false; // Invalid - incomplete entry
+        }
+
+        // VNUHCM specific validation - check if sub-scores are complete
+        if (score.subject && isVNUHCM(score.subject)) {
+          // If VNUHCM is selected, all three sub-scores must be filled
+          if (!score.languageScore || !score.mathScore || !score.scienceLogic) {
+            return false; // Invalid - VNUHCM sub-scores incomplete
+          }
+
+          // Validate that sub-scores are valid numbers within range (0-600)
+          const langScore = parseFloat(score.languageScore);
+          const mathScoreVal = parseFloat(score.mathScore);
+          const scienceScore = parseFloat(score.scienceLogic);
+
+          if (
+            isNaN(langScore) ||
+            langScore < 0 ||
+            langScore > 600 ||
+            isNaN(mathScoreVal) ||
+            mathScoreVal < 0 ||
+            mathScoreVal > 600 ||
+            isNaN(scienceScore) ||
+            scienceScore < 0 ||
+            scienceScore > 600
+          ) {
+            return false; // Invalid - sub-scores out of valid range
+          }
         }
       }
     }

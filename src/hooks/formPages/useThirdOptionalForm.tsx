@@ -15,12 +15,21 @@ import {
   validateOptionalExamScoreValue,
   getOptionalExamScorePlaceholder,
   getOptionalExamScoreRangeInfo,
+  // VNUHCM sub-score functions
+  getVNUHCMSubScoreLimits,
+  validateVNUHCMSubScore,
+  formatVNUHCMSubScoreOnBlur,
+  validateVNUHCMSubScoreValue,
 } from "../../config/optional-exam-score-config";
 
 interface OptionalScore {
   id: string;
   subject: string;
   score: string;
+  // VNUHCM specific fields
+  languageScore?: string;
+  mathScore?: string;
+  scienceLogic?: string;
 }
 
 interface CategoryData {
@@ -49,6 +58,44 @@ export const useThirdOptionalForm = ({
   // Generate unique ID for new scores
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
+
+  // Check if a subject is VNUHCM
+  const isVNUHCM = (subject: string): boolean => {
+    if (!subject) return false;
+    // Check for various possible VNUHCM identifiers
+    const normalizedSubject = subject.toUpperCase();
+    return (
+      subject === "thirdForm.VNUHCM" ||
+      subject === "VNUHCM" ||
+      normalizedSubject.includes("VNUHCM") ||
+      subject.includes("vnuhcm")
+    );
+  };
+
+  // Validate VNUHCM sub-score using config
+  const validateVNUHCMSubScoreLocal = (
+    field: "languageScore" | "mathScore" | "scienceLogic",
+    value: string,
+  ): string | null => {
+    if (!value) return null;
+
+    // Use config function to validate
+    const error = validateVNUHCMSubScoreValue("ĐGNL", field, value);
+
+    if (error) {
+      // Translate error messages
+      const limits = getVNUHCMSubScoreLimits("ĐGNL", field);
+      if (error.includes("at least")) {
+        return t("thirdForm.scoreTooLow", { min: limits.min });
+      }
+      if (error.includes("exceed")) {
+        return t("thirdForm.scoreTooHigh", { max: limits.max });
+      }
+      return t("thirdForm.invalidNumber");
+    }
+
+    return null;
+  };
 
   // Validate score value against limits
   const validateScoreValue = (
@@ -105,6 +152,38 @@ export const useThirdOptionalForm = ({
       );
       if (scoreError) {
         errors.push(scoreError);
+      }
+    }
+
+    // VNUHCM specific validation
+    if (score.subject && isVNUHCM(score.subject)) {
+      // Check if all VNUHCM sub-scores are provided
+      if (!score.languageScore || !score.mathScore || !score.scienceLogic) {
+        errors.push(
+          t("thirdForm.vnuhcmSubScoresRequired") ||
+            "All VNUHCM component scores are required",
+        );
+      } else {
+        // Validate each sub-score
+        const langError = validateVNUHCMSubScoreLocal(
+          "languageScore",
+          score.languageScore,
+        );
+        if (langError)
+          errors.push(`${t("thirdForm.languageScore")}: ${langError}`);
+
+        const mathError = validateVNUHCMSubScoreLocal(
+          "mathScore",
+          score.mathScore,
+        );
+        if (mathError) errors.push(`${t("thirdForm.mathScore")}: ${mathError}`);
+
+        const logicError = validateVNUHCMSubScoreLocal(
+          "scienceLogic",
+          score.scienceLogic,
+        );
+        if (logicError)
+          errors.push(`${t("thirdForm.scienceLogic")}: ${logicError}`);
       }
     }
 
@@ -188,6 +267,14 @@ export const useThirdOptionalForm = ({
     return validateOptionalExamScore(value, categoryName, subject);
   };
 
+  // Validate VNUHCM sub-score input using config
+  const handleVNUHCMSubScoreValidation = (
+    value: string,
+    field: "languageScore" | "mathScore" | "scienceLogic",
+  ): string => {
+    return validateVNUHCMSubScore(value, "ĐGNL", field);
+  };
+
   // Format score on blur
   const handleScoreBlur = (
     value: string,
@@ -195,6 +282,14 @@ export const useThirdOptionalForm = ({
     subject: string,
   ): string => {
     return formatOptionalExamScoreOnBlur(value, categoryName, subject);
+  };
+
+  // Format VNUHCM sub-score value using config
+  const formatVNUHCMSubScoreLocal = (
+    value: string,
+    field: "languageScore" | "mathScore" | "scienceLogic",
+  ): string => {
+    return formatVNUHCMSubScoreOnBlur(value, "ĐGNL", field);
   };
 
   // Check if can add more scores to a category
@@ -277,7 +372,7 @@ export const useThirdOptionalForm = ({
   const handleScoreChange = (
     categoryId: string,
     scoreId: string,
-    field: "subject" | "score",
+    field: "subject" | "score" | "languageScore" | "mathScore" | "scienceLogic",
     value: string,
   ) => {
     const updated = categories.map((category) => {
@@ -309,15 +404,84 @@ export const useThirdOptionalForm = ({
     const score = category.scores.find((s) => s.id === scoreId);
     if (!score) return;
 
-    // CASE: If clearing the subject (selecting empty), also clear the score
-    if (!translationKey && score.score) {
+    // CASE: If clearing the subject (selecting empty), also clear all scores
+    if (
+      !translationKey &&
+      (score.score ||
+        score.languageScore ||
+        score.mathScore ||
+        score.scienceLogic)
+    ) {
       const updated = categories.map((cat) => {
         if (cat.id === categoryId) {
           return {
             ...cat,
             scores: cat.scores.map((s) => {
               if (s.id === scoreId) {
-                return { ...s, subject: "", score: "" };
+                return {
+                  id: s.id,
+                  subject: "",
+                  score: "",
+                  languageScore: undefined,
+                  mathScore: undefined,
+                  scienceLogic: undefined,
+                };
+              }
+              return s;
+            }),
+          };
+        }
+        return cat;
+      });
+      setCategories(updated);
+      return;
+    }
+
+    // CASE: Switching FROM VNUHCM to another subject - clear VNUHCM sub-scores
+    if (score.subject && isVNUHCM(score.subject) && !isVNUHCM(translationKey)) {
+      const updated = categories.map((cat) => {
+        if (cat.id === categoryId) {
+          return {
+            ...cat,
+            scores: cat.scores.map((s) => {
+              if (s.id === scoreId) {
+                return {
+                  ...s,
+                  subject: translationKey,
+                  languageScore: undefined,
+                  mathScore: undefined,
+                  scienceLogic: undefined,
+                };
+              }
+              return s;
+            }),
+          };
+        }
+        return cat;
+      });
+      setCategories(updated);
+      return;
+    }
+
+    // CASE: Switching TO VNUHCM from another subject - initialize VNUHCM sub-scores
+    if (
+      translationKey &&
+      isVNUHCM(translationKey) &&
+      !isVNUHCM(score.subject)
+    ) {
+      const updated = categories.map((cat) => {
+        if (cat.id === categoryId) {
+          return {
+            ...cat,
+            scores: cat.scores.map((s) => {
+              if (s.id === scoreId) {
+                return {
+                  ...s,
+                  subject: translationKey,
+                  languageScore: "",
+                  mathScore: "",
+                  scienceLogic: "",
+                };
               }
               return s;
             }),
@@ -353,6 +517,17 @@ export const useThirdOptionalForm = ({
     handleScoreChange(categoryId, scoreId, "score", validatedValue);
   };
 
+  // Handle VNUHCM sub-score change with validation
+  const handleVNUHCMSubScoreChange = (
+    categoryId: string,
+    scoreId: string,
+    field: "languageScore" | "mathScore" | "scienceLogic",
+    value: string,
+  ) => {
+    const validatedValue = handleVNUHCMSubScoreValidation(value, field);
+    handleScoreChange(categoryId, scoreId, field, validatedValue);
+  };
+
   // Handle score blur event
   const handleScoreValueBlur = (categoryId: string, scoreId: string) => {
     const category = categories.find((cat) => cat.id === categoryId);
@@ -369,6 +544,28 @@ export const useThirdOptionalForm = ({
 
     if (formattedValue !== score.score) {
       handleScoreChange(categoryId, scoreId, "score", formattedValue);
+    }
+  };
+
+  // Handle VNUHCM sub-score blur event
+  const handleVNUHCMSubScoreBlur = (
+    categoryId: string,
+    scoreId: string,
+    field: "languageScore" | "mathScore" | "scienceLogic",
+  ) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (!category) return;
+
+    const score = category.scores.find((s) => s.id === scoreId);
+    if (!score) return;
+
+    const currentValue = score[field];
+    if (!currentValue) return;
+
+    const formattedValue = formatVNUHCMSubScoreLocal(currentValue, field);
+
+    if (formattedValue !== currentValue) {
+      handleScoreChange(categoryId, scoreId, field, formattedValue);
     }
   };
 
@@ -424,9 +621,12 @@ export const useThirdOptionalForm = ({
       getTranslatedSubjectOptions(availableSubjects);
     const selectedSubjectValue = getSelectedSubjectValue(score.subject || null);
 
+    const isVNUHCMResult = score.subject ? isVNUHCM(score.subject) : false;
+
     return {
       translatedSubjectOptions,
       selectedSubjectValue,
+      isVNUHCM: isVNUHCMResult,
     };
   };
 
@@ -452,6 +652,13 @@ export const useThirdOptionalForm = ({
     return getOptionalExamScoreRangeInfo(categoryName, subject);
   };
 
+  // Get VNUHCM sub-score limits using config
+  const getVNUHCMSubScoreLimitsLocal = (
+    field: "languageScore" | "mathScore" | "scienceLogic",
+  ) => {
+    return getVNUHCMSubScoreLimits("ĐGNL", field);
+  };
+
   return {
     // Data
     categories,
@@ -462,6 +669,8 @@ export const useThirdOptionalForm = ({
     handleSubjectChange,
     handleScoreValueChange,
     handleScoreValueBlur,
+    handleVNUHCMSubScoreChange,
+    handleVNUHCMSubScoreBlur,
 
     // Helper functions
     getTranslatedCategoryName,
@@ -471,12 +680,15 @@ export const useThirdOptionalForm = ({
     getAddButtonText,
     getScorePlaceholder,
     getScoreRangeInfo,
+    isVNUHCM,
+    getVNUHCMSubScoreLimits: getVNUHCMSubScoreLimitsLocal,
 
     // Validation functions
     validateForm,
     getCategoryErrors,
     getScoreRowErrors,
     validateScoreValue,
+    validateVNUHCMSubScore: validateVNUHCMSubScoreLocal,
 
     // Score limits (exposed for advanced use cases)
     getScoreLimits,

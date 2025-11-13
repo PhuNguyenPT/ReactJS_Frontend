@@ -8,12 +8,20 @@ interface ScoreRange {
   max: number;
 }
 
+interface VNUHCMSubScoreConfig {
+  languageScore: ScoreRange;
+  mathScore: ScoreRange;
+  scienceLogic: ScoreRange;
+  decimalPlaces: number;
+}
+
 interface CategoryScoreConfig {
   maxEntries: number;
   minRequiredEntries: number;
   decimalPlaces: number;
   defaultRange: ScoreRange;
   subjectSpecificRanges?: Record<string, ScoreRange>;
+  vnuhcmSubScores?: VNUHCMSubScoreConfig;
 }
 
 // Configuration for all optional exam categories
@@ -27,6 +35,15 @@ export const OPTIONAL_EXAM_CONFIGS: Record<string, CategoryScoreConfig> = {
       "examTypes.hsa": { min: 0, max: 150 },
       "examTypes.tsa": { min: 0, max: 100 },
       "examTypes.vnuhcm": { min: 0, max: 1200 },
+      "thirdForm.VNUHCM": { min: 0, max: 1200 },
+      VNUHCM: { min: 0, max: 1200 },
+    },
+    // VNUHCM Component Scores Configuration
+    vnuhcmSubScores: {
+      languageScore: { min: 0, max: 600 },
+      mathScore: { min: 0, max: 600 },
+      scienceLogic: { min: 0, max: 600 },
+      decimalPlaces: 2, // Allow 2 decimal places for sub-scores
     },
   },
   "V-SAT": {
@@ -58,6 +75,133 @@ export const getCategoryConfig = (
 ): CategoryScoreConfig | null => {
   const normalizedName = CATEGORY_NAME_MAP[categoryName] ?? categoryName;
   return OPTIONAL_EXAM_CONFIGS[normalizedName] ?? null;
+};
+
+/**
+ * Get VNUHCM sub-score configuration
+ */
+export const getVNUHCMSubScoreConfig = (
+  categoryName: string,
+): VNUHCMSubScoreConfig | null => {
+  const config = getCategoryConfig(categoryName);
+  return config?.vnuhcmSubScores ?? null;
+};
+
+/**
+ * Get VNUHCM sub-score limits for a specific field
+ */
+export const getVNUHCMSubScoreLimits = (
+  categoryName: string,
+  field: "languageScore" | "mathScore" | "scienceLogic",
+): ScoreRange => {
+  const config = getVNUHCMSubScoreConfig(categoryName);
+  if (config?.[field]) {
+    return config[field];
+  }
+  // Default fallback
+  return { min: 0, max: 600 };
+};
+
+/**
+ * Get decimal places for VNUHCM sub-scores
+ */
+export const getVNUHCMSubScoreDecimalPlaces = (
+  categoryName: string,
+): number => {
+  const config = getVNUHCMSubScoreConfig(categoryName);
+  return config?.decimalPlaces ?? 2;
+};
+
+/**
+ * Validate and sanitize VNUHCM sub-score input
+ */
+export const validateVNUHCMSubScore = (
+  value: string,
+  categoryName: string,
+  field: "languageScore" | "mathScore" | "scienceLogic",
+): string => {
+  // Allow empty string
+  if (value === "") return "";
+
+  const decimalPlaces = getVNUHCMSubScoreDecimalPlaces(categoryName);
+  const limits = getVNUHCMSubScoreLimits(categoryName, field);
+
+  // Create regex based on decimal places allowed
+  const regex = new RegExp(`^\\d*\\.?\\d{0,${decimalPlaces.toString()}}$`);
+
+  if (!regex.test(value)) {
+    return value.slice(0, -1);
+  }
+
+  // Check if the value exceeds the maximum allowed
+  const numericValue = parseFloat(value);
+  if (!isNaN(numericValue)) {
+    // Prevent typing values that exceed the maximum
+    if (numericValue > limits.max) {
+      return limits.max.toString();
+    }
+
+    // Prevent typing values below the minimum
+    if (numericValue < limits.min) {
+      return limits.min.toString();
+    }
+  }
+
+  return value;
+};
+
+/**
+ * Format VNUHCM sub-score on blur
+ */
+export const formatVNUHCMSubScoreOnBlur = (
+  value: string,
+  categoryName: string,
+  field: "languageScore" | "mathScore" | "scienceLogic",
+): string => {
+  if (value === "") return "";
+
+  const limits = getVNUHCMSubScoreLimits(categoryName, field);
+  const decimalPlaces = getVNUHCMSubScoreDecimalPlaces(categoryName);
+  let numValue = parseFloat(value);
+
+  if (isNaN(numValue)) return "";
+
+  // Clamp value to range
+  numValue = Math.min(Math.max(numValue, limits.min), limits.max);
+
+  // Format with appropriate decimal places
+  const formatted = numValue.toFixed(decimalPlaces);
+
+  // Remove trailing zeros
+  return formatted.replace(/\.?0+$/, "");
+};
+
+/**
+ * Validate VNUHCM sub-score value and return error message if invalid
+ */
+export const validateVNUHCMSubScoreValue = (
+  categoryName: string,
+  field: "languageScore" | "mathScore" | "scienceLogic",
+  scoreValue: string,
+): string | null => {
+  if (!scoreValue) return null; // Empty is valid
+
+  const numericScore = parseFloat(scoreValue);
+  if (isNaN(numericScore)) {
+    return "Invalid number";
+  }
+
+  const limits = getVNUHCMSubScoreLimits(categoryName, field);
+
+  if (numericScore < limits.min) {
+    return `Score must be at least ${limits.min.toString()}`;
+  }
+
+  if (numericScore > limits.max) {
+    return `Score cannot exceed ${limits.max.toString()}`;
+  }
+
+  return null; // Valid
 };
 
 /**
