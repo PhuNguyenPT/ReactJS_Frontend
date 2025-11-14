@@ -20,6 +20,7 @@ import {
   validateVNUHCMSubScore,
   formatVNUHCMSubScoreOnBlur,
   validateVNUHCMSubScoreValue,
+  calculateVNUHCMTotalScore,
 } from "../../config/optional-exam-score-config";
 
 interface OptionalScore {
@@ -97,7 +98,7 @@ export const useThirdOptionalForm = ({
     return null;
   };
 
-  // Validate score value against limits
+  // Validate score value against limits (NOT USED FOR VNUHCM)
   const validateScoreValue = (
     categoryName: string,
     subject: string,
@@ -133,28 +134,6 @@ export const useThirdOptionalForm = ({
   ): string[] => {
     const errors: string[] = [];
 
-    // CASE 1: Subject is selected but score is empty
-    if (score.subject && !score.score) {
-      errors.push(t("thirdForm.errorWarning"));
-    }
-
-    // CASE 2: Score is filled but subject is empty (shouldn't happen with UI controls, but adding for safety)
-    if (!score.subject && score.score) {
-      errors.push(t("thirdForm.subjectRequiredError") || "Subject is required");
-    }
-
-    // Validate score value against limits
-    if (score.subject && score.score) {
-      const scoreError = validateScoreValue(
-        categoryName,
-        score.subject,
-        score.score,
-      );
-      if (scoreError) {
-        errors.push(scoreError);
-      }
-    }
-
     // VNUHCM specific validation
     if (score.subject && isVNUHCM(score.subject)) {
       // Check if all VNUHCM sub-scores are provided
@@ -185,6 +164,31 @@ export const useThirdOptionalForm = ({
         if (logicError)
           errors.push(`${t("thirdForm.scienceLogic")}: ${logicError}`);
       }
+    } else {
+      // Non-VNUHCM validation
+      // CASE 1: Subject is selected but score is empty
+      if (score.subject && !score.score) {
+        errors.push(t("thirdForm.errorWarning"));
+      }
+
+      // CASE 2: Score is filled but subject is empty (shouldn't happen with UI controls, but adding for safety)
+      if (!score.subject && score.score) {
+        errors.push(
+          t("thirdForm.subjectRequiredError") || "Subject is required",
+        );
+      }
+
+      // Validate score value against limits
+      if (score.subject && score.score) {
+        const scoreError = validateScoreValue(
+          categoryName,
+          score.subject,
+          score.score,
+        );
+        if (scoreError) {
+          errors.push(scoreError);
+        }
+      }
     }
 
     return errors;
@@ -194,9 +198,20 @@ export const useThirdOptionalForm = ({
   const getCategoryErrors = (category: CategoryData): string[] => {
     const errors: string[] = [];
 
-    const filledScores = category.scores.filter(
-      (score) => score.subject && score.score,
-    );
+    const filledScores = category.scores.filter((score) => {
+      if (isVNUHCM(score.subject)) {
+        // For VNUHCM, check if all sub-scores are filled
+        return (
+          score.subject &&
+          score.languageScore &&
+          score.mathScore &&
+          score.scienceLogic
+        );
+      } else {
+        // For non-VNUHCM, check if subject and score are filled
+        return score.subject && score.score;
+      }
+    });
 
     // Validate entry count using config
     const validation = validateCategoryEntryCount(
@@ -275,7 +290,7 @@ export const useThirdOptionalForm = ({
     return validateVNUHCMSubScore(value, "ĐGNL", field);
   };
 
-  // Format score on blur
+  // Format score on blur (NOT USED FOR VNUHCM)
   const handleScoreBlur = (
     value: string,
     categoryName: string,
@@ -381,7 +396,26 @@ export const useThirdOptionalForm = ({
           ...category,
           scores: category.scores.map((score) => {
             if (score.id === scoreId) {
-              return { ...score, [field]: value };
+              const updatedScore = { ...score, [field]: value };
+
+              // Auto-calculate VNUHCM total score when sub-scores change
+              if (
+                isVNUHCM(score.subject) &&
+                (field === "languageScore" ||
+                  field === "mathScore" ||
+                  field === "scienceLogic")
+              ) {
+                const totalScore = calculateVNUHCMTotalScore(
+                  field === "languageScore"
+                    ? value
+                    : (score.languageScore ?? ""),
+                  field === "mathScore" ? value : (score.mathScore ?? ""),
+                  field === "scienceLogic" ? value : (score.scienceLogic ?? ""),
+                );
+                updatedScore.score = totalScore;
+              }
+
+              return updatedScore;
             }
             return score;
           }),
@@ -448,6 +482,7 @@ export const useThirdOptionalForm = ({
                 return {
                   ...s,
                   subject: translationKey,
+                  score: "",
                   languageScore: undefined,
                   mathScore: undefined,
                   scienceLogic: undefined,
@@ -478,6 +513,7 @@ export const useThirdOptionalForm = ({
                 return {
                   ...s,
                   subject: translationKey,
+                  score: "", // Will be auto-calculated from sub-scores
                   languageScore: "",
                   mathScore: "",
                   scienceLogic: "",
@@ -497,7 +533,7 @@ export const useThirdOptionalForm = ({
     handleScoreChange(categoryId, scoreId, "subject", translationKey);
   };
 
-  // Handle score value change with validation
+  // Handle score value change with validation (NOT USED FOR VNUHCM)
   const handleScoreValueChange = (
     categoryId: string,
     scoreId: string,
@@ -517,7 +553,7 @@ export const useThirdOptionalForm = ({
     handleScoreChange(categoryId, scoreId, "score", validatedValue);
   };
 
-  // Handle VNUHCM sub-score change with validation
+  // Handle VNUHCM sub-score change with validation and auto-calculation
   const handleVNUHCMSubScoreChange = (
     categoryId: string,
     scoreId: string,
@@ -528,7 +564,7 @@ export const useThirdOptionalForm = ({
     handleScoreChange(categoryId, scoreId, field, validatedValue);
   };
 
-  // Handle score blur event
+  // Handle score blur event (NOT USED FOR VNUHCM)
   const handleScoreValueBlur = (categoryId: string, scoreId: string) => {
     const category = categories.find((cat) => cat.id === categoryId);
     if (!category) return;

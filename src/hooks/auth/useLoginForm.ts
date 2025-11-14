@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import useAuth from "./useAuth";
 import { loginUser } from "../../services/user/authService";
 import axios, { AxiosError } from "axios";
@@ -7,34 +8,61 @@ import type { ErrorDetails } from "../../type/interface/error.details";
 import { LoginDto } from "../../dto/loginDto";
 import { validateDTO } from "../../utils/validation";
 import { plainToInstance } from "class-transformer";
-import APIError from "../../utils/apiError"; // ✅ Import APIError
+import APIError from "../../utils/apiError";
+
+// Translation utility function
+const translateErrorMessage = (
+  message: string,
+  t: (key: string) => string,
+): string => {
+  if (message.startsWith("validation.") || message.startsWith("errors.")) {
+    return t(message);
+  }
+  return message;
+};
 
 export default function useLoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+
+  // Store error KEYS instead of translated messages
+  const [errorKeys, setErrorKeys] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
+
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Translate error keys to messages on-the-fly
+  // This makes errors reactive to language changes
+  const errors = {
+    email: errorKeys.email
+      ? translateErrorMessage(errorKeys.email, t)
+      : undefined,
+    password: errorKeys.password
+      ? translateErrorMessage(errorKeys.password, t)
+      : undefined,
+  };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setApiError("");
 
-    // Use class-validator instead of manual checks
+    // Validate using class-validator
     const dto = plainToInstance(LoginDto, { email, password });
     const validationErrors = await validateDTO(dto);
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+      setErrorKeys(validationErrors); // Store keys, not translations
       return;
     }
-    setErrors({}); // clear previous errors
+    setErrorKeys({}); // Clear previous error keys
 
     try {
       setLoading(true);
@@ -51,33 +79,35 @@ export default function useLoginForm() {
           window.location.replace("/");
         }
       } else {
-        setApiError(authResponse.message || "Login failed");
+        const errorMsg = authResponse.message || t("errors.loginFailed");
+        setApiError(translateErrorMessage(errorMsg, t));
       }
     } catch (error: unknown) {
-      let message = "An unexpected error occurred. Please try again.";
+      let message = t("errors.unexpected");
 
-      // ✅ Handle APIError (thrown by apiFetch)
+      // Handle APIError (thrown by apiFetch)
       if (error instanceof APIError) {
         const errorData = error.data as ErrorDetails;
 
-        // Check if there are validation errors in the data
         if (errorData.validationErrors) {
           const validationErrors = errorData.validationErrors;
 
-          // Extract all validation error messages
+          // Translate all validation error messages
           const fieldErrors = Object.values(validationErrors)
             .filter((errorMsg) => typeof errorMsg === "string")
+            .map((errorMsg) => translateErrorMessage(errorMsg, t))
             .join(". ");
 
-          // Use field errors if they exist
-          message = fieldErrors || errorData.message || error.message;
+          message =
+            fieldErrors ||
+            translateErrorMessage(errorData.message || error.message, t);
         } else if (errorData.message) {
-          message = errorData.message;
+          message = translateErrorMessage(errorData.message, t);
         } else {
-          message = error.message;
+          message = translateErrorMessage(error.message, t);
         }
       }
-      // ✅ Fallback: Handle raw Axios errors (if apiFetch is bypassed)
+      // Fallback: Handle raw Axios errors
       else if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorDetails>;
 
@@ -85,21 +115,24 @@ export default function useLoginForm() {
           const validationErrors = axiosError.response.data.validationErrors;
           const fieldErrors = Object.values(validationErrors)
             .filter((errorMsg) => typeof errorMsg === "string")
+            .map((errorMsg) => translateErrorMessage(errorMsg, t))
             .join(". ");
 
           message =
             fieldErrors ||
-            axiosError.response.data.message ||
-            axiosError.message;
+            translateErrorMessage(
+              axiosError.response.data.message || axiosError.message,
+              t,
+            );
         } else if (axiosError.response?.data.message) {
-          message = axiosError.response.data.message;
+          message = translateErrorMessage(axiosError.response.data.message, t);
         } else if (axiosError.message) {
-          message = axiosError.message;
+          message = translateErrorMessage(axiosError.message, t);
         }
       }
-      // ✅ Handle generic errors
+      // Handle generic errors
       else if (error instanceof Error) {
-        message = error.message;
+        message = translateErrorMessage(error.message, t);
       }
 
       setApiError(message);
@@ -114,7 +147,7 @@ export default function useLoginForm() {
     password,
     setEmail,
     setPassword,
-    errors,
+    errors, // Return translated errors that are reactive to language changes
     handleLogin,
     loading,
     apiError,

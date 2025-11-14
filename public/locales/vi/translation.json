@@ -62,7 +62,11 @@
     "login": "ĐĂNG NHẬP",
     "logging_in": "ĐANG ĐĂNG NHẬP...",
     "enterEmail": "Nhập email của bạn",
-    "enterPassword": "Nhập mật khẩu của bạn"
+    "enterPassword": "Nhập mật khẩu của bạn",
+    "errors": {
+      "loginFailed": "Đăng nhập thất bại",
+      "unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
+    }
   },
   "signupForm": {
     "title": "Bắt đầu với UniGuide",
@@ -76,7 +80,28 @@
     "alreadyHaveAccount": "Bạn đã có tài khoản?",
     "loginHere": "Đăng nhập ở đây",
     "signingUp": "ĐANG ĐĂNG KÝ...",
-    "signUp": "ĐĂNG KÝ"
+    "signUp": "ĐĂNG KÝ",
+    "errors": {
+      "signupFailed": "Đăng ký thất bại",
+      "unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "Email là bắt buộc",
+      "invalid": "Định dạng email không hợp lệ",
+      "string": "Email phải là chuỗi ký tự"
+    },
+    "password": {
+      "required": "Mật khẩu là bắt buộc",
+      "string": "Mật khẩu phải là chuỗi ký tự",
+      "pattern": "Mật khẩu phải từ 8-128 ký tự và bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
+    },
+    "confirmPassword": {
+      "required": "Vui lòng xác nhận mật khẩu",
+      "string": "Xác nhận mật khẩu phải là chuỗi ký tự",
+      "match": "Mật khẩu không khớp"
+    }
   },
   "header": {
     "viewHistory": "Xem Lịch Sử"
@@ -158,7 +183,8 @@
     "dia_ly": "Địa Lý",
     "doc_dien_cam": "Đọc diễn cảm",
     "doc_hieu": "Đọc hiểu",
-    "gdktpl": "Giáo dục Kinh tế và Pháp luật",
+    "giao_duc_kinh_te_va_phap_luat": "Giáo dục Kinh tế và Pháp luật",
+    "gdktpl": "GDKTPL",
     "ghi_am_xuong_am": "Ghi âm - xướng âm",
     "hat": "Hát",
     "hat_bieu_dien_nhac_cu": "Hát hoặc biểu diễn nhạc cụ",

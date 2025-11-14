@@ -12,7 +12,7 @@ export type VietnameseSubjectTranslationKey =
   | "subjects.dia_ly"
   | "subjects.doc_dien_cam"
   | "subjects.doc_hieu"
-  | "subjects.gdktpl"
+  | "subjects.giao_duc_kinh_te_va_phap_luat"
   | "subjects.ghi_am_xuong_am"
   | "subjects.hat"
   | "subjects.hat_bieu_dien_nhac_cu"
@@ -82,7 +82,7 @@ export const VietnameseSubject = {
   DIA_LY: "subjects.dia_ly",
   DOC_DIEN_CAM: "subjects.doc_dien_cam",
   DOC_HIEU: "subjects.doc_hieu",
-  GDKTPL: "subjects.gdktpl",
+  giao_duc_kinh_te_va_phap_luat: "subjects.giao_duc_kinh_te_va_phap_luat",
   GHI_AM_XUONG_AM: "subjects.ghi_am_xuong_am",
   HAT: "subjects.hat",
   HAT_BIEU_DIEN_NHAC_CU: "subjects.hat_bieu_dien_nhac_cu",
@@ -159,7 +159,7 @@ export const VietnameseSubjectValues: Record<
   "subjects.dia_ly": "Địa Lý",
   "subjects.doc_dien_cam": "Đọc diễn cảm",
   "subjects.doc_hieu": "Đọc hiểu",
-  "subjects.gdktpl": "Giáo dục Kinh tế và Pháp luật",
+  "subjects.giao_duc_kinh_te_va_phap_luat": "Giáo dục Kinh tế và Pháp luật",
   "subjects.ghi_am_xuong_am": "Ghi âm - xướng âm",
   "subjects.hat": "Hát",
   "subjects.hat_bieu_dien_nhac_cu": "Hát hoặc biểu diễn nhạc cụ",

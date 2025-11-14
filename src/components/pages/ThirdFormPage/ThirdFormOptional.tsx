@@ -72,9 +72,21 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
         const canAdd = canAddScore(category.name);
 
         // Count filled scores for validation
-        const filledScores = category.scores.filter(
-          (score) => score.subject && score.score,
-        );
+        const filledScores = category.scores.filter((score) => {
+          if (score.subject) {
+            const { isVNUHCM } = getScoreRowData(category.name, score);
+            if (isVNUHCM) {
+              // For VNUHCM, check if all sub-scores are filled
+              return (
+                score.languageScore && score.mathScore && score.scienceLogic
+              );
+            } else {
+              // For non-VNUHCM, check if score is filled
+              return score.score;
+            }
+          }
+          return false;
+        });
 
         return (
           <Box
@@ -265,7 +277,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                       },
                     }}
                   >
-                    {/* Main row with dropdown, score field, and remove button */}
+                    {/* Main row with dropdown, score field (or total for VNUHCM), and remove button */}
                     <Box
                       sx={{
                         display: "flex",
@@ -350,81 +362,127 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         )}
                       />
 
-                      {/* Score Input with validation */}
-                      <TextField
-                        type="text"
-                        value={score.score}
-                        onChange={(e) => {
-                          handleScoreValueChange(
-                            category.id,
-                            score.id,
-                            e.target.value,
-                          );
-                        }}
-                        onBlur={() => {
-                          handleScoreValueBlur(category.id, score.id);
-                        }}
-                        placeholder={
-                          score.subject
-                            ? getScorePlaceholder(category.name, score.subject)
-                            : t("thirdForm.score")
-                        }
-                        error={hasError}
-                        disabled={!score.subject}
-                        sx={{
-                          width: {
-                            xs: "110px",
-                            sm: "130px",
-                            md: "150px",
-                          },
-                          "& .MuiOutlinedInput-root": {
-                            borderRadius: {
-                              xs: "12px",
-                              sm: "15px",
-                              md: "17px",
+                      {/* Score Input/Display - For VNUHCM shows total (read-only), for others editable */}
+                      {isVNUHCM ? (
+                        // VNUHCM Total Score Display (Read-only)
+                        <Box
+                          sx={{
+                            width: {
+                              xs: "110px",
+                              sm: "130px",
+                              md: "150px",
                             },
                             height: {
                               xs: "36px",
                               sm: "38px",
                               md: "40px",
                             },
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "flex-start",
+                            paddingLeft: {
+                              xs: "12px",
+                              sm: "14px",
+                              md: "16px",
+                            },
+                            backgroundColor: "#ffffffff",
+                            border: "1px solid #A657AE",
+                            borderRadius: {
+                              xs: "12px",
+                              sm: "15px",
+                              md: "17px",
+                            },
                             fontSize: {
                               xs: "0.8rem",
                               sm: "0.85rem",
                               md: "0.9rem",
                             },
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: hasError ? "#d32f2f" : "#8B4A8F",
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: hasError ? "#d32f2f" : "#A657AE",
-                          },
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: hasError ? "#d32f2f" : "#A657AE",
-                          },
-                          "& .MuiInputBase-input": {
-                            textAlign: "left",
                             color: "#A657AE",
-                            padding: {
-                              xs: "8px 12px",
-                              sm: "9px 14px",
-                              md: "10px 16px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {score.score || "0"}
+                        </Box>
+                      ) : (
+                        // Regular Score Input (for non-VNUHCM)
+                        <TextField
+                          type="text"
+                          value={score.score}
+                          onChange={(e) => {
+                            handleScoreValueChange(
+                              category.id,
+                              score.id,
+                              e.target.value,
+                            );
+                          }}
+                          onBlur={() => {
+                            handleScoreValueBlur(category.id, score.id);
+                          }}
+                          placeholder={
+                            score.subject
+                              ? getScorePlaceholder(
+                                  category.name,
+                                  score.subject,
+                                )
+                              : t("thirdForm.score")
+                          }
+                          error={hasError}
+                          disabled={!score.subject}
+                          sx={{
+                            width: {
+                              xs: "110px",
+                              sm: "130px",
+                              md: "150px",
                             },
-                          },
-                          "& input[type=number]": {
-                            MozAppearance: "textfield",
-                          },
-                          "& input[type=number]::-webkit-outer-spin-button": {
-                            WebkitAppearance: "none",
-                            margin: 0,
-                          },
-                          "& input[type=number]::-webkit-inner-spin-button": {
-                            WebkitAppearance: "none",
-                            margin: 0,
-                          },
-                        }}
-                      />
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: {
+                                xs: "12px",
+                                sm: "15px",
+                                md: "17px",
+                              },
+                              height: {
+                                xs: "36px",
+                                sm: "38px",
+                                md: "40px",
+                              },
+                              fontSize: {
+                                xs: "0.8rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                              },
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                              borderColor: hasError ? "#d32f2f" : "#8B4A8F",
+                            },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: hasError ? "#d32f2f" : "#A657AE",
+                            },
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: hasError ? "#d32f2f" : "#A657AE",
+                            },
+                            "& .MuiInputBase-input": {
+                              textAlign: "left",
+                              color: "#A657AE",
+                              padding: {
+                                xs: "8px 12px",
+                                sm: "9px 14px",
+                                md: "10px 16px",
+                              },
+                            },
+                            "& input[type=number]": {
+                              MozAppearance: "textfield",
+                            },
+                            "& input[type=number]::-webkit-outer-spin-button": {
+                              WebkitAppearance: "none",
+                              margin: 0,
+                            },
+                            "& input[type=number]::-webkit-inner-spin-button": {
+                              WebkitAppearance: "none",
+                              margin: 0,
+                            },
+                          }}
+                        />
+                      )}
 
                       {/* Remove Button */}
                       <IconButton
@@ -472,7 +530,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                             sm: 1.25,
                             md: 1.5,
                           },
-                          ml: 0, // Align to left
+                          ml: 0,
                           p: {
                             xs: 1.5,
                             sm: 2,
@@ -490,7 +548,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: "#666",
+                            color: "#9c27b0",
                             fontWeight: 600,
                             fontSize: {
                               xs: "0.8rem",
@@ -504,8 +562,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                             },
                           }}
                         >
-                          {t("thirdForm.vnuhcmComponentScores") ||
-                            "VNUHCM Component Scores (Required)"}
+                          {t("thirdForm.vnuhcmComponentScores")}
                         </Typography>
 
                         {/* Language Score */}
@@ -569,9 +626,9 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               },
                               "& .MuiOutlinedInput-root": {
                                 borderRadius: {
-                                  xs: "8px",
-                                  sm: "10px",
-                                  md: "12px",
+                                  xs: "12px",
+                                  sm: "15px",
+                                  md: "17px",
                                 },
                                 height: {
                                   xs: "36px",
@@ -582,6 +639,15 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                                   xs: "0.8rem",
                                   sm: "0.85rem",
                                   md: "0.9rem",
+                                },
+                                "& fieldset": {
+                                  borderColor: "#A657AE",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor: "#8B4A8F",
+                                },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: "#A657AE",
                                 },
                                 backgroundColor: "white",
                               },
@@ -659,9 +725,9 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               },
                               "& .MuiOutlinedInput-root": {
                                 borderRadius: {
-                                  xs: "8px",
-                                  sm: "10px",
-                                  md: "12px",
+                                  xs: "12px",
+                                  sm: "15px",
+                                  md: "17px",
                                 },
                                 height: {
                                   xs: "36px",
@@ -672,6 +738,15 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                                   xs: "0.8rem",
                                   sm: "0.85rem",
                                   md: "0.9rem",
+                                },
+                                "& fieldset": {
+                                  borderColor: "#A657AE",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor: "#8B4A8F",
+                                },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: "#A657AE",
                                 },
                                 backgroundColor: "white",
                               },
@@ -749,9 +824,9 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               },
                               "& .MuiOutlinedInput-root": {
                                 borderRadius: {
-                                  xs: "8px",
-                                  sm: "10px",
-                                  md: "12px",
+                                  xs: "12px",
+                                  sm: "15px",
+                                  md: "17px",
                                 },
                                 height: {
                                   xs: "36px",
@@ -762,6 +837,15 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                                   xs: "0.8rem",
                                   sm: "0.85rem",
                                   md: "0.9rem",
+                                },
+                                "& fieldset": {
+                                  borderColor: "#A657AE",
+                                },
+                                "&:hover fieldset": {
+                                  borderColor: "#8B4A8F",
+                                },
+                                "&.Mui-focused fieldset": {
+                                  borderColor: "#A657AE",
                                 },
                                 backgroundColor: "white",
                               },

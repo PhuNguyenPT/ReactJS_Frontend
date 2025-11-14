@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import useAuth from "./useAuth";
 import { signupUser } from "../../services/user/authService";
 import axios, { AxiosError } from "axios";
@@ -7,30 +8,57 @@ import type { ErrorDetails } from "../../type/interface/error.details";
 import { SignupDto } from "../../dto/signUpDto";
 import { validateDTO } from "../../utils/validation";
 import { plainToInstance } from "class-transformer";
+import APIError from "../../utils/apiError";
+
+const translateErrorMessage = (
+  message: string,
+  t: (key: string) => string,
+): string => {
+  if (message.startsWith("validation.") || message.startsWith("errors.")) {
+    return t(message);
+  }
+  return message;
+};
 
 export function useSignupForm() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<{
+
+  // Store error KEYS, not translated messages
+  const [errorKeys, setErrorKeys] = useState<{
     email?: string;
     password?: string;
     confirmPassword?: string;
   }>({});
+
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
+  // Translate error keys to messages on-the-fly
+  const errors = {
+    email: errorKeys.email
+      ? translateErrorMessage(errorKeys.email, t)
+      : undefined,
+    password: errorKeys.password
+      ? translateErrorMessage(errorKeys.password, t)
+      : undefined,
+    confirmPassword: errorKeys.confirmPassword
+      ? translateErrorMessage(errorKeys.confirmPassword, t)
+      : undefined,
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setApiError("");
 
-    // class-validator for basic validations
     const dto = plainToInstance(SignupDto, {
       email,
       password,
@@ -38,58 +66,80 @@ export function useSignupForm() {
     });
     const validationErrors = await validateDTO(dto);
 
-    // password match validation
+    // Store the KEY, not the translated message
     if (password && confirmPassword && password !== confirmPassword) {
-      validationErrors.confirmPassword = "Passwords do not match";
+      validationErrors.confirmPassword = "validation.confirmPassword.match";
     }
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+      setErrorKeys(validationErrors); // Store keys
       return;
     }
-    setErrors({}); // clear previous errors
+    setErrorKeys({}); // Clear previous errors
 
     try {
       setLoading(true);
       const authResponse = await signupUser({ email, password });
 
-      // Check if Register was successful
       if (authResponse.success && authResponse.accessToken) {
         register(authResponse);
 
-        // Check if there's a redirect path stored
         const redirectPath = sessionStorage.getItem("redirectAfterAuth");
         if (redirectPath) {
-          // Clear the stored redirect path
           sessionStorage.removeItem("redirectAfterAuth");
-          // Navigate to the stored path
           await navigate(redirectPath);
         } else {
-          // Default redirect to home
           window.location.replace("/");
         }
       } else {
-        setApiError(authResponse.message || "Register failed");
+        const errorMsg = authResponse.message || t("errors.signupFailed");
+        setApiError(translateErrorMessage(errorMsg, t));
       }
     } catch (error: unknown) {
-      let message = "An unexpected error occurred. Please try again.";
+      let message = t("errors.unexpected");
 
-      if (axios.isAxiosError(error)) {
-        const apiError = error as AxiosError<ErrorDetails>;
+      if (error instanceof APIError) {
+        const errorData = error.data as ErrorDetails;
 
-        if (apiError.response?.data.validationErrors) {
-          const validationErrors = apiError.response.data.validationErrors;
+        if (errorData.validationErrors) {
+          const validationErrors = errorData.validationErrors;
+
           const fieldErrors = Object.values(validationErrors)
-            .map((errorMsg) => String(errorMsg))
-            .join(", ");
-          message = fieldErrors;
-        } else if (apiError.response?.data.message) {
-          message = apiError.response.data.message;
-        } else if (apiError.message) {
-          message = apiError.message;
+            .filter((errorMsg) => typeof errorMsg === "string")
+            .map((errorMsg) => translateErrorMessage(errorMsg, t))
+            .join(". ");
+
+          message =
+            fieldErrors ||
+            translateErrorMessage(errorData.message || error.message, t);
+        } else if (errorData.message) {
+          message = translateErrorMessage(errorData.message, t);
+        } else {
+          message = translateErrorMessage(error.message, t);
+        }
+      } else if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorDetails>;
+
+        if (axiosError.response?.data.validationErrors) {
+          const validationErrors = axiosError.response.data.validationErrors;
+          const fieldErrors = Object.values(validationErrors)
+            .filter((errorMsg) => typeof errorMsg === "string")
+            .map((errorMsg) => translateErrorMessage(errorMsg, t))
+            .join(". ");
+
+          message =
+            fieldErrors ||
+            translateErrorMessage(
+              axiosError.response.data.message || axiosError.message,
+              t,
+            );
+        } else if (axiosError.response?.data.message) {
+          message = translateErrorMessage(axiosError.response.data.message, t);
+        } else if (axiosError.message) {
+          message = translateErrorMessage(axiosError.message, t);
         }
       } else if (error instanceof Error) {
-        message = error.message;
+        message = translateErrorMessage(error.message, t);
       }
 
       setApiError(message);
@@ -110,7 +160,7 @@ export function useSignupForm() {
     setPassword,
     confirmPassword,
     setConfirmPassword,
-    errors,
+    errors, // Return translated errors
     loading,
     apiError,
     showPassword,
