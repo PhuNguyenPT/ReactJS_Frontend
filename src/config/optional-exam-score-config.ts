@@ -40,9 +40,9 @@ export const OPTIONAL_EXAM_CONFIGS: Record<string, CategoryScoreConfig> = {
     },
     // VNUHCM Component Scores Configuration
     vnuhcmSubScores: {
-      languageScore: { min: 0, max: 600 },
-      mathScore: { min: 0, max: 600 },
-      scienceLogic: { min: 0, max: 600 },
+      languageScore: { min: 0, max: 400 },
+      mathScore: { min: 0, max: 300 },
+      scienceLogic: { min: 0, max: 500 },
       decimalPlaces: 2, // Allow 2 decimal places for sub-scores
     },
   },
@@ -110,6 +110,29 @@ export const getVNUHCMSubScoreDecimalPlaces = (
 ): number => {
   const config = getVNUHCMSubScoreConfig(categoryName);
   return config?.decimalPlaces ?? 2;
+};
+
+/**
+ * Calculate VNUHCM total score from sub-scores
+ */
+export const calculateVNUHCMTotalScore = (
+  languageScore: string,
+  mathScore: string,
+  scienceLogic: string,
+): string => {
+  const lang = parseFloat(languageScore || "0");
+  const math = parseFloat(mathScore || "0");
+  const science = parseFloat(scienceLogic || "0");
+
+  if (isNaN(lang) || isNaN(math) || isNaN(science)) {
+    return "";
+  }
+
+  const total = lang + math + science;
+
+  // Format to remove trailing zeros
+  const formatted = total.toFixed(2);
+  return formatted.replace(/\.?0+$/, "");
 };
 
 /**

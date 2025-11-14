@@ -1,3 +1,4 @@
+// src/utils/validation.ts
 import { validate, ValidationError } from "class-validator";
 
 const formatValidationErrors = (
@@ -12,7 +13,7 @@ const formatValidationErrors = (
         formattedErrors[`${error.property}.${key}`] = nestedErrors[key];
       }
     } else if (error.constraints) {
-      // Take only the first error message instead of joining all
+      // Return the key WITHOUT translation
       const firstError = Object.values(error.constraints)[0];
       formattedErrors[error.property] = firstError;
     }

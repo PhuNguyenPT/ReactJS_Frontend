@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import type { NinthFormNavigationState } from "../../type/interface/navigationTypes";
 import type { OcrResultItem } from "../../type/interface/ocrTypes";
 import {
-  NationalExamSubjects,
+  ScoreBoardSubjects,
   getNationalExamSubjectTranslationKey,
   isValidSubjectKey,
-  type NationalExamSubjectTranslationKey,
-} from "../../type/enum/national-exam-subject";
+  type ScordBoardSubjectTranslationKey,
+} from "../../type/enum/score-board-subject";
 import { useNinthForm } from "../../contexts/ScoreBoardData/useScoreBoardContext";
 
 export type SubjectScores = Record<string, string>;
@@ -68,11 +68,11 @@ export const useNinthFormLogic = () => {
   const fixedSubjects = useMemo(
     () =>
       [
-        NationalExamSubjects.TOAN,
-        NationalExamSubjects.NGU_VAN,
-        NationalExamSubjects.TIENG_ANH,
-        NationalExamSubjects.LICH_SU,
-      ] as NationalExamSubjectTranslationKey[],
+        ScoreBoardSubjects.TOAN,
+        ScoreBoardSubjects.NGU_VAN,
+        ScoreBoardSubjects.TIENG_ANH,
+        ScoreBoardSubjects.LICH_SU,
+      ] as ScordBoardSubjectTranslationKey[],
     [],
   );
 
@@ -80,15 +80,15 @@ export const useNinthFormLogic = () => {
   const optionalSubjects = useMemo(
     () =>
       [
-        NationalExamSubjects.DIA_LY,
-        NationalExamSubjects.GDKT_PL,
-        NationalExamSubjects.VAT_LY,
-        NationalExamSubjects.HOA_HOC,
-        NationalExamSubjects.SINH_HOC,
-        NationalExamSubjects.CONG_NGHE_CONG_NGHIEP,
-        NationalExamSubjects.CONG_NGHE_NONG_NGHIEP,
-        NationalExamSubjects.TIN_HOC,
-      ] as NationalExamSubjectTranslationKey[],
+        ScoreBoardSubjects.DIA_LY,
+        ScoreBoardSubjects.GDKTPL,
+        ScoreBoardSubjects.VAT_LY,
+        ScoreBoardSubjects.HOA_HOC,
+        ScoreBoardSubjects.SINH_HOC,
+        ScoreBoardSubjects.CONG_NGHE_CONG_NGHIEP,
+        ScoreBoardSubjects.CONG_NGHE_NONG_NGHIEP,
+        ScoreBoardSubjects.TIN_HOC,
+      ] as ScordBoardSubjectTranslationKey[],
     [],
   );
 

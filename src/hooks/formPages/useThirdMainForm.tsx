@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import {
   NationalExamSubjects,
   getSelectableSubjects,
+  isTechnologySubject,
+  getOtherTechnologySubject,
 } from "../../type/enum/national-exam-subject";
 import {
   validateNationalExamScore,
@@ -138,11 +140,28 @@ export const useThirdMainForm = ({
   };
 
   // Filter available subjects to exclude already selected ones
+  // AND exclude the other technology subject if one is already selected
   const getAvailableSubjects = (currentIndex: number): string[] => {
+    // Get the other slot's selected subject
+    const otherIndex = currentIndex === 0 ? 1 : 0;
+    const otherSelectedSubject = chosenSubjects[otherIndex];
+
     return selectableSubjects.filter((subject) => {
-      return !chosenSubjects.some(
-        (selected, index) => index !== currentIndex && selected === subject,
-      );
+      // Exclude if already selected in the other slot
+      const isSelectedInOtherSlot = otherSelectedSubject === subject;
+      if (isSelectedInOtherSlot) return false;
+
+      // If the other slot has a technology subject selected,
+      // exclude the other technology subject from this slot's options
+      if (otherSelectedSubject && isTechnologySubject(otherSelectedSubject)) {
+        const otherTechSubject =
+          getOtherTechnologySubject(otherSelectedSubject);
+        if (subject === otherTechSubject) {
+          return false;
+        }
+      }
+
+      return true;
     });
   };
 

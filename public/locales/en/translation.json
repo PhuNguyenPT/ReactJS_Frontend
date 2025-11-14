@@ -62,7 +62,11 @@
     "login": "LOGIN",
     "logging_in": "LOGGING IN...",
     "enterEmail": "Enter your email",
-    "enterPassword": "Enter your password"
+    "enterPassword": "Enter your password",
+    "errors": {
+      "loginFailed": "Login failed",
+      "unexpected": "An unexpected error occurred. Please try again."
+    }
   },
   "signupForm": {
     "title": "Get started with UniGuide",
@@ -76,7 +80,28 @@
     "alreadyHaveAccount": "Already have an account?",
     "loginHere": "Login here",
     "signingUp": "SIGNING UP...",
-    "signUp": "SIGN UP"
+    "signUp": "SIGN UP",
+    "errors": {
+      "signupFailed": "Signup failed",
+      "unexpected": "An unexpected error occurred. Please try again."
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "Email is required",
+      "invalid": "Invalid email format",
+      "string": "Email must be a string"
+    },
+    "password": {
+      "required": "Password is required",
+      "string": "Password must be a string",
+      "pattern": "Password must be 8-128 characters and include uppercase, lowercase, number, and special character."
+    },
+    "confirmPassword": {
+      "required": "Please confirm your password",
+      "string": "Confirm password must be a string",
+      "match": "Passwords do not match"
+    }
   },
   "header": {
     "viewHistory": "View History"
@@ -158,7 +183,8 @@
     "dia_ly": "Geography",
     "doc_dien_cam": "Expressive Reading",
     "doc_hieu": "Reading Comprehension",
-    "gdktpl": "Economics and Law Education",
+    "giao_duc_kinh_te_va_phap_luat": "Economics and Law Education",
+    "gdktpl": "GDKTPL",
     "ghi_am_xuong_am": "Audio Recording - Vocalization",
     "hat": "Singing",
     "hat_bieu_dien_nhac_cu": "Singing or Instrumental Performance",
