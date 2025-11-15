@@ -43,6 +43,24 @@ function extractPrograms(data: unknown): AdmissionProgram[] {
   return [];
 }
 
+/**
+ * Helper function to get unique programs based on all relevant fields
+ */
+function getUniquePrograms(programs: AdmissionProgram[]): AdmissionProgram[] {
+  const uniqueMap = new Map<string, AdmissionProgram>();
+
+  programs.forEach((program) => {
+    // Create a unique key based on all relevant fields
+    const key = `${program.majorCode}-${program.subjectCombination}-${program.studyProgram}-${program.admissionType}-${program.tuitionFee}`;
+
+    if (!uniqueMap.has(key)) {
+      uniqueMap.set(key, program);
+    }
+  });
+
+  return Array.from(uniqueMap.values());
+}
+
 export function useResultPage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -188,7 +206,10 @@ export function useResultPage() {
   // Get programs for a specific university from raw data
   const getUniversityPrograms = useCallback(
     (uniCode: string): AdmissionProgram[] => {
-      return rawProgramData.filter((program) => program.uniCode === uniCode);
+      const programs = rawProgramData.filter(
+        (program) => program.uniCode === uniCode,
+      );
+      return getUniquePrograms(programs);
     },
     [rawProgramData],
   );
@@ -196,10 +217,11 @@ export function useResultPage() {
   // Get programs for a specific major
   const getMajorPrograms = useCallback(
     (uniCode: string, majorCode: string): AdmissionProgram[] => {
-      return rawProgramData.filter(
+      const programs = rawProgramData.filter(
         (program) =>
           program.uniCode === uniCode && program.majorCode === majorCode,
       );
+      return getUniquePrograms(programs);
     },
     [rawProgramData],
   );
@@ -207,11 +229,12 @@ export function useResultPage() {
   // Get programs for a specific admission type
   const getAdmissionTypePrograms = useCallback(
     (uniCode: string, admissionType: string): AdmissionProgram[] => {
-      return rawProgramData.filter(
+      const programs = rawProgramData.filter(
         (program) =>
           program.uniCode === uniCode &&
           program.admissionType === admissionType,
       );
+      return getUniquePrograms(programs);
     },
     [rawProgramData],
   );
@@ -219,10 +242,11 @@ export function useResultPage() {
   // Get programs for a specific tuition fee
   const getTuitionFeePrograms = useCallback(
     (uniCode: string, tuitionFee: string): AdmissionProgram[] => {
-      return rawProgramData.filter(
+      const programs = rawProgramData.filter(
         (program) =>
           program.uniCode === uniCode && program.tuitionFee === tuitionFee,
       );
+      return getUniquePrograms(programs);
     },
     [rawProgramData],
   );

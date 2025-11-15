@@ -42,26 +42,27 @@ export function transformAdmissionData(
         ? formatCurrency(minFee)
         : `${formatCurrency(minFee)} - ${formatCurrency(maxFee)}`;
 
-    // Group courses by major
-    const courseMap = new Map<string, AdmissionProgram[]>();
+    // Group courses by major - ONLY get unique major codes
+    const courseMap = new Map<string, AdmissionProgram>();
     programs.forEach((p) => {
-      const existing = courseMap.get(p.majorCode) ?? [];
-      courseMap.set(p.majorCode, [...existing, p]);
+      // Only keep the first occurrence of each major
+      if (!courseMap.has(p.majorCode)) {
+        courseMap.set(p.majorCode, p);
+      }
     });
 
-    // Create course objects
+    // Create course objects - one per unique major
     const courses: Course[] = [];
-    courseMap.forEach((progs) => {
-      const mainProg = progs[0];
+    courseMap.forEach((prog) => {
       courses.push({
-        name: mainProg.majorName,
-        code: mainProg.majorCode,
-        majorCode: mainProg.majorCode,
-        admissionType: mainProg.admissionType,
-        admissionTypeName: mainProg.admissionTypeName,
-        subjectCombination: progs.map((p) => p.subjectCombination).join(", "),
-        tuitionFee: formatCurrency(parseInt(mainProg.tuitionFee)),
-        studyProgram: mainProg.studyProgram,
+        name: prog.majorName,
+        code: prog.majorCode,
+        majorCode: prog.majorCode,
+        admissionType: prog.admissionType,
+        admissionTypeName: prog.admissionTypeName,
+        subjectCombination: prog.subjectCombination,
+        tuitionFee: formatCurrency(parseInt(prog.tuitionFee)),
+        studyProgram: prog.studyProgram,
       });
     });
 
