@@ -10,12 +10,13 @@ export default function LandingPage() {
     <>
       <div className="background" />
       <main className="content">
-        <h1>
-          <span className="highlight">{t("contents.highlight")}</span>{" "}
-          {t("contents.title1")}
-          <br />
-          {t("contents.title2")}
-        </h1>
+        <div className="landing-title-container">
+          <img
+            src="/assets/images/landing-title.png"
+            alt="Hướng bạn tới trường đại học mơ ước"
+            className="landing-title-img"
+          />
+        </div>
         <button
           className="start-button"
           type="button"

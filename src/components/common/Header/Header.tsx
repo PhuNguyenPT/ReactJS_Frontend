@@ -15,7 +15,11 @@ function Header() {
       <Toolbar className="landing-header-toolbar">
         <div className="logo">
           <Link to="/">
-            <img src="/unizylogo.png" alt="Logo" className="logo-img" />
+            <img
+              src="/assets/images/unizylogo.png"
+              alt="Logo"
+              className="logo-img"
+            />
             <span className="logo-text">nizy</span>
           </Link>
         </div>
