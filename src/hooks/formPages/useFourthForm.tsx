@@ -35,15 +35,12 @@ interface Category {
   isExpanded: boolean;
 }
 
-// Maximum entries configuration
-const MAX_ENTRIES_PER_CATEGORY = Number(
-  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY,
+// Maximum entries configuration - now separate for each category
+const MAX_NATIONAL_AWARD_ENTRIES = Number(
+  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY || 3,
 );
-
-// Combined maximum for CCNN and CCQT categories
-const MAX_COMBINED_CERT_ENTRIES = Number(
-  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY,
-);
+const MAX_INTERNATIONAL_CERT_ENTRIES = 3;
+const MAX_LANGUAGE_CERT_ENTRIES = 3;
 
 export const useFourthForm = () => {
   const { t } = useTranslation();
@@ -167,19 +164,18 @@ export const useFourthForm = () => {
   const generateId = () =>
     `${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
-  // Get combined count of CCNN and CCQT entries
-  const getCombinedCertCount = (): number => {
-    const ccqtCategory = formData.fourthForm.categories.find(
-      (cat) => cat.categoryType === "international_cert",
-    );
-    const ccnnCategory = formData.fourthForm.categories.find(
-      (cat) => cat.categoryType === "language_cert",
-    );
-
-    const ccqtCount = ccqtCategory?.entries.length ?? 0;
-    const ccnnCount = ccnnCategory?.entries.length ?? 0;
-
-    return ccqtCount + ccnnCount;
+  // Get max entries for a specific category type
+  const getMaxEntriesForCategory = (categoryType: string): number => {
+    switch (categoryType) {
+      case "national_award":
+        return MAX_NATIONAL_AWARD_ENTRIES;
+      case "international_cert":
+        return MAX_INTERNATIONAL_CERT_ENTRIES;
+      case "language_cert":
+        return MAX_LANGUAGE_CERT_ENTRIES;
+      default:
+        return 0;
+    }
   };
 
   // Check if can add more entries to a category
@@ -189,20 +185,8 @@ export const useFourthForm = () => {
     );
     if (!category) return false;
 
-    // For national_award, use the individual category limit
-    if (category.categoryType === "national_award") {
-      return category.entries.length < MAX_ENTRIES_PER_CATEGORY;
-    }
-
-    // For international_cert and language_cert, check combined limit
-    if (
-      category.categoryType === "international_cert" ||
-      category.categoryType === "language_cert"
-    ) {
-      return getCombinedCertCount() < MAX_COMBINED_CERT_ENTRIES;
-    }
-
-    return false;
+    const maxEntries = getMaxEntriesForCategory(category.categoryType);
+    return category.entries.length < maxEntries;
   };
 
   // Get remaining slots for a category
@@ -212,20 +196,8 @@ export const useFourthForm = () => {
     );
     if (!category) return 0;
 
-    // For national_award, show remaining slots for that category
-    if (category.categoryType === "national_award") {
-      return Math.max(0, MAX_ENTRIES_PER_CATEGORY - category.entries.length);
-    }
-
-    // For international_cert and language_cert, show combined remaining slots
-    if (
-      category.categoryType === "international_cert" ||
-      category.categoryType === "language_cert"
-    ) {
-      return Math.max(0, MAX_COMBINED_CERT_ENTRIES - getCombinedCertCount());
-    }
-
-    return 0;
+    const maxEntries = getMaxEntriesForCategory(category.categoryType);
+    return Math.max(0, maxEntries - category.entries.length);
   };
 
   // Get button text with remaining slots information
@@ -236,33 +208,16 @@ export const useFourthForm = () => {
     if (!category) return t("buttons.add");
 
     const remainingSlots = getRemainingSlots(categoryId);
+    const maxEntries = getMaxEntriesForCategory(category.categoryType);
 
     if (remainingSlots === 0) {
-      // Different messages based on category type
-      if (category.categoryType === "national_award") {
-        return t("fourthForm.maxEntriesReached", {
-          max: MAX_ENTRIES_PER_CATEGORY,
-        });
-      } else {
-        // For cert categories, show combined limit message
-        return t("fourthForm.maxCombinedCertReached", {
-          max: MAX_COMBINED_CERT_ENTRIES,
-        });
-      }
+      return t("fourthForm.maxEntriesReached", {
+        max: maxEntries,
+      });
     }
 
-    // For national_award, show individual limit
-    if (category.categoryType === "national_award") {
-      return (
-        t("buttons.add") +
-        ` (${String(remainingSlots)}/${String(MAX_ENTRIES_PER_CATEGORY)})`
-      );
-    }
-
-    // For cert categories, show combined limit
     return (
-      t("buttons.add") +
-      ` (${String(remainingSlots)}/${String(MAX_COMBINED_CERT_ENTRIES)})`
+      t("buttons.add") + ` (${String(remainingSlots)}/${String(maxEntries)})`
     );
   };
 
@@ -273,19 +228,11 @@ export const useFourthForm = () => {
       const category = formData.fourthForm.categories.find(
         (cat) => cat.id === categoryId,
       );
+      const maxEntries = getMaxEntriesForCategory(category?.categoryType ?? "");
 
-      if (
-        category?.categoryType === "international_cert" ||
-        category?.categoryType === "language_cert"
-      ) {
-        console.warn(
-          `Maximum combined certificate entries reached: ${String(MAX_COMBINED_CERT_ENTRIES)}`,
-        );
-      } else {
-        console.warn(
-          `Maximum entries reached for category ${categoryId}: ${String(MAX_ENTRIES_PER_CATEGORY)}`,
-        );
-      }
+      console.warn(
+        `Maximum entries reached for category ${categoryId}: ${String(maxEntries)}`,
+      );
       return;
     }
 
@@ -500,18 +447,44 @@ export const useFourthForm = () => {
     return `${String(min)}-${String(max)}`;
   };
 
-  // Get first field options based on category type
+  // Get already selected options for a category (to filter them out)
+  const getSelectedOptionsInCategory = (categoryId: string): string[] => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.id === categoryId,
+    );
+    if (!category) return [];
+
+    return category.entries
+      .map((entry) => entry.firstField)
+      .filter((field) => field !== "");
+  };
+
+  // Get first field options based on category type, filtering out already selected options
   const getFirstFieldOptions = (categoryType: string): FieldOption[] => {
+    const category = formData.fourthForm.categories.find(
+      (cat) => cat.categoryType === categoryType,
+    );
+    if (!category) return [];
+
+    const selectedOptions = getSelectedOptionsInCategory(category.id);
+    let allOptions: FieldOption[] = [];
+
     switch (categoryType) {
       case "national_award":
-        return categoryOptions.national_award.subjects;
+        allOptions = categoryOptions.national_award.subjects;
+        break;
       case "international_cert":
-        return categoryOptions.international_cert.certificates;
+        allOptions = categoryOptions.international_cert.certificates;
+        break;
       case "language_cert":
-        return categoryOptions.language_cert.certificates;
+        allOptions = categoryOptions.language_cert.certificates;
+        break;
       default:
         return [];
     }
+
+    // Filter out already selected options
+    return allOptions.filter((option) => !selectedOptions.includes(option.key));
   };
 
   // Get second field options based on category type and exam type
@@ -633,25 +606,9 @@ export const useFourthForm = () => {
     const errors: string[] = [];
 
     // Check if category has exceeded maximum entries
-    if (category.categoryType === "national_award") {
-      if (category.entries.length > MAX_ENTRIES_PER_CATEGORY) {
-        errors.push(
-          t("fourthForm.maxEntriesError", { max: MAX_ENTRIES_PER_CATEGORY }),
-        );
-      }
-    } else if (
-      category.categoryType === "international_cert" ||
-      category.categoryType === "language_cert"
-    ) {
-      // Check combined limit for cert categories
-      const combinedCount = getCombinedCertCount();
-      if (combinedCount > MAX_COMBINED_CERT_ENTRIES) {
-        errors.push(
-          t("fourthForm.maxCombinedCertError", {
-            max: MAX_COMBINED_CERT_ENTRIES,
-          }),
-        );
-      }
+    const maxEntries = getMaxEntriesForCategory(category.categoryType);
+    if (category.entries.length > maxEntries) {
+      errors.push(t("fourthForm.maxEntriesError", { max: maxEntries }));
     }
 
     // Add individual entry errors
@@ -696,7 +653,7 @@ export const useFourthForm = () => {
     getAddButtonText,
     getScoreInputPlaceholder,
     getScoreRangeInfo,
-    getCombinedCertCount,
+    getSelectedOptionsInCategory,
 
     // Validation functions
     validateForm,
@@ -707,7 +664,8 @@ export const useFourthForm = () => {
     t,
 
     // Constants
-    maxEntries: MAX_ENTRIES_PER_CATEGORY,
-    maxCombinedCertEntries: MAX_COMBINED_CERT_ENTRIES,
+    maxNationalAwardEntries: MAX_NATIONAL_AWARD_ENTRIES,
+    maxInternationalCertEntries: MAX_INTERNATIONAL_CERT_ENTRIES,
+    maxLanguageCertEntries: MAX_LANGUAGE_CERT_ENTRIES,
   };
 };
