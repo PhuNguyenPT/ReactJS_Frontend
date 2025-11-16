@@ -586,8 +586,6 @@ body.scrolling::-webkit-scrollbar-thumb {
   position: relative;
   font-size: 1.5rem;
   text-align: center;
-  /* Add padding to center above upload boxes */
-  padding-left: 51px;
 }
 
 .upload-column {
@@ -914,7 +912,6 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1.3rem;
-    padding-left: 46px;
   }
 
   .upload-column {
@@ -1052,7 +1049,6 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1.1rem;
-    padding-left: 46px;
   }
 
   .upload-box {
@@ -1104,7 +1100,7 @@ body.scrolling::-webkit-scrollbar-thumb {
     max-width: calc(100vw - 20px);
     padding: 15px 12px;
     max-height: calc(100vh - 80px);
-    min-height: 300px;
+    min-height: 400px;
     border-radius: 18px;
     gap: 0.6rem;
   }
@@ -1134,7 +1130,6 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1rem;
-    padding-left: 16px;
   }
 
   .upload-box {

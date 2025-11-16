@@ -20,9 +20,7 @@ export const ALL_ACCEPTED_TYPES = `${ACCEPTED_FILE_TYPES.images},${ACCEPTED_FILE
 
 // File size limits (in bytes)
 export const FILE_SIZE_LIMITS = {
-  maxSize: Number(import.meta.env.VITE_MAXSIZE_UPLOAD_MB),
-  maxImageSize: Number(import.meta.env.VITE_MAXSIZE_UPLOAD_IMAGE),
-  maxDocumentSize: Number(import.meta.env.VITE_MAXSIZE_UPLOAD_DOCUMENT),
+  maxSize: Number(import.meta.env.VITE_MAXSIZE_UPLOAD_MB), // You can add minSize or other limits if needed
 } as const;
 
 export interface FileUploadData {

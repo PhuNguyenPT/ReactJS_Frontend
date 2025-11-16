@@ -324,8 +324,8 @@
   },
   "eighthForm": {
     "title": "Vui lòng đăng tải bảng điểm của bạn với đầy đủ 6 học kỳ (3 năm ở THPT) vào các ô bên dưới",
-    "helper1": "(Bạn có thể click vào ",
-    "helper2": " để nhập điểm của bạn một cách thủ công nếu bạn không có bảng điểm hoặc để kiểm tra lại.)",
+    "helper1": "Bạn có thể click vào ",
+    "helper2": " để nhập điểm của bạn một cách thủ công nếu bạn không có bảng điểm hoặc để kiểm tra lại.",
     "grade": "Lớp",
     "semester1": "Học kỳ 1",
     "semester2": "Học kỳ 2",

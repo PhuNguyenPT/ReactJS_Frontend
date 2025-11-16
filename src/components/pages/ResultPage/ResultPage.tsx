@@ -57,7 +57,7 @@ export default function FinalResultPage() {
             fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
           }}
           component="h3"
-          id="page-top" // Add ID for easier targeting
+          id="page-top"
         >
           {t("finalResult.title")}
         </Box>

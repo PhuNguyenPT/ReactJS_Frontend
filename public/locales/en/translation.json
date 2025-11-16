@@ -324,8 +324,8 @@
   },
   "eighthForm": {
     "title": "Please upload your score board with full 6 semester (3 years in HighSchool) into these fields",
-    "helper1": "(You can click on ",
-    "helper2": " to input your score manually if you don’t have the score board or to check it again.)",
+    "helper1": "You can click on ",
+    "helper2": " to input your score manually if you don’t have the score board or to check it again.",
     "grade": "Grade",
     "semester1": "Semester 1",
     "semester2": "Semester 2",
