@@ -99,12 +99,6 @@ const LanguageSwitcher: React.FC = () => {
               sm: 44,
               md: 48,
             },
-            // Visual feedback
-            transition: "all 0.2s ease-in-out",
-            "&:hover": {
-              backgroundColor: "rgba(0, 0, 0, 0.04)",
-              transform: "scale(1.05)",
-            },
             "&:active": {
               transform: "scale(0.95)",
             },
@@ -164,8 +158,8 @@ const LanguageSwitcher: React.FC = () => {
             elevation: isMobile ? 2 : 3,
             sx: {
               minWidth: {
-                xs: 120, // Reduced for more compact mobile menu
-                sm: 140, // Reduced for more compact tablet menu
+                xs: 120,
+                sm: 140,
                 md: 180,
               },
               mt: {
@@ -174,7 +168,7 @@ const LanguageSwitcher: React.FC = () => {
                 md: 1.5,
               },
               maxWidth: {
-                xs: 200, // Fixed width instead of calc-based for better control
+                xs: 200,
                 sm: 220,
                 md: "auto",
               },
@@ -194,11 +188,11 @@ const LanguageSwitcher: React.FC = () => {
         }}
         // Adjust anchor position for better mobile display
         anchorOrigin={{
-          horizontal: isMobile ? "right" : "left", // Changed to "right" for better alignment
+          horizontal: isMobile ? "right" : "left",
           vertical: "bottom",
         }}
         transformOrigin={{
-          horizontal: "right", // Keep consistent
+          horizontal: "right",
           vertical: "top",
         }}
       >
@@ -216,22 +210,22 @@ const LanguageSwitcher: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: {
-                  xs: 0.75, // Reduced from 1 - tighter spacing
-                  sm: 1, // Reduced from 1.2
+                  xs: 0.75,
+                  sm: 1,
                   md: 1.5,
                 },
                 py: {
-                  xs: 1, // Reduced from 1.2 - less vertical padding
-                  sm: 1.25, // Reduced from 1.5
+                  xs: 1,
+                  sm: 1.25,
                   md: 1.5,
                 },
                 px: {
-                  xs: 1.25, // Reduced from 1.5 - less horizontal padding
-                  sm: 1.75, // Reduced from 2
+                  xs: 1.25,
+                  sm: 1.75,
                   md: 2,
                 },
                 minHeight: {
-                  xs: 44, // Reduced from 48 - shorter menu items
+                  xs: 44,
                   sm: 44,
                   md: "auto",
                 },
@@ -265,8 +259,8 @@ const LanguageSwitcher: React.FC = () => {
                 <Box
                   sx={{
                     fontSize: {
-                      xs: "1.125rem", // Reduced from 1.25rem - smaller flags
-                      sm: "1.25rem", // Reduced from 1.375rem
+                      xs: "1.125rem",
+                      sm: "1.25rem",
                       md: "1.5rem",
                     },
                     lineHeight: 1,
@@ -285,8 +279,8 @@ const LanguageSwitcher: React.FC = () => {
                   primary: {
                     sx: {
                       fontSize: {
-                        xs: "0.875rem", // Reduced from 0.9375rem - smaller text
-                        sm: "0.9375rem", // Reduced from 1rem
+                        xs: "0.875rem",
+                        sm: "0.9375rem",
                         md: "1rem",
                       },
                       fontWeight: isSelected ? 600 : 400,
@@ -305,7 +299,7 @@ const LanguageSwitcher: React.FC = () => {
                   sx={{
                     ml: "auto",
                     color: "primary.main",
-                    fontSize: "0.875rem", // Reduced from 1rem - smaller checkmark
+                    fontSize: "0.875rem",
                     display: "flex",
                     alignItems: "center",
                   }}

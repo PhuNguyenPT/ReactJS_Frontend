@@ -22,16 +22,49 @@ export default function EighthForm() {
   return (
     <Box
       className="eighth-form"
-      sx={{ display: "flex", flexDirection: "column", gap: 5 }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: { xs: 3, sm: 4, md: 5 },
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <Box sx={{ display: "flex", gap: 20, marginRight: "30px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: { xs: 4, sm: 5, md: 10, lg: 20 },
+          width: "100%",
+          maxWidth: "1400px",
+          justifyContent: "center",
+          alignItems: { xs: "center", md: "flex-start" },
+        }}
+      >
         {grades.map((grade) => (
-          <Box key={grade} className="grade-section">
-            {/* Grade Title */}
+          <Box
+            key={grade}
+            className="grade-section"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              width: { xs: "100%", sm: "auto" },
+              maxWidth: { xs: "400px", sm: "none" },
+            }}
+          >
+            {/* Grade Title - Centered above the upload boxes */}
             <Typography
               variant="h5"
               className="grade-title"
-              sx={{ mb: 1, marginLeft: "110px" }}
+              sx={{
+                textAlign: "right",
+                fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                width: "100%",
+                // Add padding to align with the upload box center
+                paddingRight: { xs: "75px" },
+              }}
             >
               {translations.grade} {grade}
             </Typography>
@@ -39,7 +72,13 @@ export default function EighthForm() {
             {/* Two upload rows with semester labels */}
             <Box
               className="upload-column"
-              sx={{ display: "flex", flexDirection: "column", gap: 5 }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: { xs: 3, sm: 4, md: 5 },
+                width: "100%",
+                alignItems: "center",
+              }}
             >
               {([0, 1] as SemesterKey[]).map((semesterIndex) => {
                 const currentFile = getEighthFormFile(grade, semesterIndex);
@@ -57,18 +96,26 @@ export default function EighthForm() {
                       flexDirection: "column",
                       alignItems: "center",
                       gap: 1,
+                      width: "100%",
                     }}
                   >
                     {/* Semester label + Upload */}
                     <Box
-                      sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: { xs: 2, sm: 2 },
+                        width: "100%",
+                        justifyContent: "center",
+                      }}
                     >
                       <Typography
                         variant="body1"
                         sx={{
-                          minWidth: "100px",
+                          minWidth: { xs: "90px", sm: "100px" },
                           textAlign: "right",
-                          paddingTop: "75px",
+                          fontSize: { xs: "0.95rem", sm: "1rem" },
                         }}
                       >
                         {semesters[semesterIndex]}
@@ -89,8 +136,8 @@ export default function EighthForm() {
                           className="upload-box"
                           sx={{
                             position: "relative",
-                            width: "150px",
-                            height: "150px",
+                            width: { xs: "140px", sm: "150px", md: "150px" },
+                            height: { xs: "140px", sm: "150px", md: "150px" },
                             border: "2px dashed #ccc",
                             borderRadius: "8px",
                             display: "flex",
@@ -109,6 +156,9 @@ export default function EighthForm() {
                             },
                             "&:hover .replace-overlay": {
                               opacity: 1,
+                            },
+                            "&:active": {
+                              borderColor: "#666",
                             },
                           }}
                         >
@@ -129,9 +179,15 @@ export default function EighthForm() {
                                   "&:hover": {
                                     backgroundColor: "rgba(255, 255, 255, 1)",
                                   },
+                                  minWidth: { xs: 36, sm: 32 },
+                                  minHeight: { xs: 36, sm: 32 },
                                 }}
                               >
-                                <ClearIcon fontSize="small" />
+                                <ClearIcon
+                                  sx={{
+                                    fontSize: { xs: "1.1rem", sm: "1rem" },
+                                  }}
+                                />
                               </IconButton>
                             </Tooltip>
                           )}
@@ -146,7 +202,6 @@ export default function EighthForm() {
                             ) => {
                               const file = e.target.files?.[0] ?? null;
                               handleFileChange(grade, semesterIndex, file);
-                              // Reset input value to allow re-uploading same file
                               e.target.value = "";
                             }}
                             className="upload-input"
@@ -198,6 +253,10 @@ export default function EighthForm() {
                                       color: "white",
                                       textAlign: "center",
                                       fontWeight: 500,
+                                      fontSize: {
+                                        xs: "0.8rem",
+                                        sm: "0.875rem",
+                                      },
                                     }}
                                   >
                                     {translations.replace}
@@ -229,7 +288,10 @@ export default function EighthForm() {
                                       display: "-webkit-box",
                                       WebkitLineClamp: 2,
                                       WebkitBoxOrient: "vertical",
-                                      fontSize: "0.7rem",
+                                      fontSize: {
+                                        xs: "0.65rem",
+                                        sm: "0.7rem",
+                                      },
                                     }}
                                   >
                                     {currentFile.name}
@@ -260,6 +322,10 @@ export default function EighthForm() {
                                       color: "white",
                                       textAlign: "center",
                                       fontWeight: 500,
+                                      fontSize: {
+                                        xs: "0.8rem",
+                                        sm: "0.875rem",
+                                      },
                                     }}
                                   >
                                     {translations.replace}
@@ -274,15 +340,24 @@ export default function EighthForm() {
                                 flexDirection: "column",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                px: 1,
                               }}
                             >
                               <FileUploadOutlinedIcon
                                 className="upload-icon"
-                                sx={{ fontSize: 48, color: "#999", mb: 1 }}
+                                sx={{
+                                  fontSize: { xs: 40, sm: 48 },
+                                  color: "#999",
+                                  mb: 1,
+                                }}
                               />
                               <Typography
                                 variant="caption"
-                                sx={{ color: "#666", textAlign: "center" }}
+                                sx={{
+                                  color: "#666",
+                                  textAlign: "center",
+                                  fontSize: { xs: "0.75rem", sm: "0.8rem" },
+                                }}
                               >
                                 {translations.upload}
                               </Typography>
@@ -291,7 +366,7 @@ export default function EighthForm() {
                                 sx={{
                                   color: "#999",
                                   textAlign: "center",
-                                  fontSize: "0.65rem",
+                                  fontSize: { xs: "0.6rem", sm: "0.65rem" },
                                   mt: 0.5,
                                 }}
                               >
@@ -306,7 +381,7 @@ export default function EighthForm() {
                           <Box
                             sx={{
                               mt: 1,
-                              maxWidth: "150px",
+                              maxWidth: { xs: "140px", sm: "150px" },
                               width: "100%",
                               textAlign: "center",
                             }}
@@ -314,13 +389,14 @@ export default function EighthForm() {
                             <Typography
                               variant="caption"
                               sx={{
-                                color: "#ffffffff",
-                                display: "block -webkit-box",
+                                color: "#666",
+                                display: "-webkit-box",
                                 wordBreak: "break-word",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 WebkitLineClamp: 1,
                                 WebkitBoxOrient: "vertical",
+                                fontSize: { xs: "0.7rem", sm: "0.75rem" },
                               }}
                             >
                               {currentFile.name}

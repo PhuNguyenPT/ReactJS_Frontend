@@ -147,10 +147,6 @@ body.scrolling::-webkit-scrollbar-thumb {
   font-style: normal;
 }
 
-.highlight {
-  color: #ff69b4;
-}
-
 /* Start Button */
 .start-button {
   margin-top: 20px;
@@ -532,18 +528,19 @@ body.scrolling::-webkit-scrollbar-thumb {
    10. FILE UPLOAD SECTION
    ============================================ */
 .eighth-form-page {
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: #fff;
-  position: fixed;
+  position: relative;
   z-index: 1;
-  overflow: hidden;
-  padding: 100px 20px 160px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 120px 20px 180px;
 }
 
 .eighth-title {
@@ -552,6 +549,9 @@ body.scrolling::-webkit-scrollbar-thumb {
   margin-bottom: 30px;
   z-index: 10;
   position: relative;
+  font-size: 2rem;
+  width: 100%;
+  text-align: center;
 }
 
 .eighth-form {
@@ -564,6 +564,8 @@ body.scrolling::-webkit-scrollbar-thumb {
   margin-top: 20px;
   z-index: 10;
   position: relative;
+  width: 100%;
+  max-width: 1400px;
 }
 
 .grade-section {
@@ -573,6 +575,8 @@ body.scrolling::-webkit-scrollbar-thumb {
   gap: 15px;
   z-index: 10;
   position: relative;
+  flex: 1;
+  min-width: 280px;
 }
 
 .grade-title {
@@ -580,6 +584,10 @@ body.scrolling::-webkit-scrollbar-thumb {
   margin-bottom: 10px;
   z-index: 10;
   position: relative;
+  font-size: 1.5rem;
+  text-align: center;
+  /* Add padding to center above upload boxes */
+  padding-left: 51px;
 }
 
 .upload-column {
@@ -588,14 +596,16 @@ body.scrolling::-webkit-scrollbar-thumb {
   gap: 20px;
   z-index: 10;
   position: relative;
+  width: 100%;
+  align-items: center;
 }
 
 .upload-box {
   position: relative;
   border: 2px dashed #aaa;
   border-radius: 12px;
-  width: 180px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -638,7 +648,6 @@ body.scrolling::-webkit-scrollbar-thumb {
   text-align: center;
   max-width: 140px;
   word-break: break-word;
-  font-size: 14px;
 }
 
 .instruction {
@@ -646,6 +655,8 @@ body.scrolling::-webkit-scrollbar-thumb {
   margin-top: 20px;
   z-index: 10;
   position: relative;
+  font-size: 1rem;
+  text-align: center;
 }
 
 /* ============================================
@@ -881,7 +892,8 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   /* File Upload Section */
   .eighth-form-page {
-    padding: 80px 15px 120px;
+    padding: 100px 15px 140px;
+    min-height: 100vh;
   }
 
   .eighth-title {
@@ -890,19 +902,23 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   .eighth-form {
-    gap: 40px;
+    gap: 50px;
+    flex-direction: column;
   }
 
   .grade-section {
-    gap: 10px;
+    gap: 15px;
+    width: 100%;
+    min-width: auto;
   }
 
   .grade-title {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
+    padding-left: 46px;
   }
 
   .upload-column {
-    gap: 15px;
+    gap: 20px;
   }
 
   .upload-box {
@@ -911,9 +927,8 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   .upload-icon {
-    font-size: 30px;
-    max-width: 100px;
-    font-size: 12px;
+    font-size: 35px;
+    max-width: 120px;
   }
 
   .instruction {
@@ -935,10 +950,6 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   /* Header */
-  .landing-header {
-    padding: 8px 10px;
-  }
-
   .logo-img {
     height: 2rem;
   }
@@ -1021,7 +1032,8 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   /* File Upload Section */
   .eighth-form-page {
-    padding: 70px 10px 100px;
+    padding: 90px 10px 120px;
+    min-height: 100vh;
   }
 
   .eighth-title {
@@ -1030,26 +1042,31 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   .eighth-form {
-    gap: 30px;
+    gap: 40px;
+    flex-direction: column;
+  }
+
+  .grade-section {
+    width: 100%;
   }
 
   .grade-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    padding-left: 46px;
   }
 
   .upload-box {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
   }
 
   .upload-icon {
-    font-size: 25px;
-    max-width: 80px;
-    font-size: 11px;
+    font-size: 30px;
+    max-width: 100px;
   }
 
   .instruction {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -1082,17 +1099,6 @@ body.scrolling::-webkit-scrollbar-thumb {
     padding: 10px 5px;
   }
 
-  .upload-box {
-    width: 100px;
-    height: 100px;
-  }
-
-  .upload-icon {
-    font-size: 20px;
-    max-width: 70px;
-    font-size: 10px;
-  }
-
   .form-content {
     width: calc(100vw - 20px);
     max-width: calc(100vw - 20px);
@@ -1112,7 +1118,36 @@ body.scrolling::-webkit-scrollbar-thumb {
     font-size: 0.75rem;
     margin-bottom: 0.3rem;
   }
+
+  /* File Upload Section */
+  .eighth-form-page {
+    padding: 80px 8px 110px;
+  }
+
+  .eighth-title {
+    font-size: 1.1rem;
+  }
+
+  .eighth-form {
+    gap: 35px;
+  }
+
+  .grade-title {
+    font-size: 1rem;
+    padding-left: 16px;
+  }
+
+  .upload-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .upload-icon {
+    font-size: 26px;
+    max-width: 90px;
+  }
 }
+
 /* Landing Title Responsive Adjustments */
 @media screen and (max-width: 1200px) {
   .landing-title-container {
