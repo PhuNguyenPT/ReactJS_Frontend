@@ -398,7 +398,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               md: "0.9rem",
                             },
                             color: "#A657AE",
-                            fontWeight: 600,
+                            fontWeight: 500,
                           }}
                         >
                           {score.score || "0"}

@@ -96,7 +96,7 @@ export function useSignupForm() {
         setApiError(translateErrorMessage(errorMsg, t));
       }
     } catch (error: unknown) {
-      let message = t("errors.unexpected");
+      let message = t("signupForm.errors.unexpected");
 
       if (error instanceof APIError) {
         const errorData = error.data as ErrorDetails;

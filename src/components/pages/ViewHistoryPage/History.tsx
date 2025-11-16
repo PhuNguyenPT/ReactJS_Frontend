@@ -44,12 +44,25 @@ export default function History() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "400px",
+          minHeight: { xs: "300px", sm: "400px" },
           gap: 2,
+          px: 2,
         }}
       >
-        <CircularProgress sx={{ color: "#A657AE" }} size={60} />
-        <Typography sx={{ color: "white", fontSize: "1.1rem" }}>
+        <CircularProgress
+          sx={{
+            color: "#A657AE",
+            width: { xs: 50, sm: 60 },
+            height: { xs: 50, sm: 60 },
+          }}
+        />
+        <Typography
+          sx={{
+            color: "white",
+            fontSize: { xs: "1rem", sm: "1.1rem" },
+            textAlign: "center",
+          }}
+        >
           {t("history.loading")}
         </Typography>
       </Box>
@@ -59,12 +72,20 @@ export default function History() {
   // Error state
   if (error) {
     return (
-      <Box sx={{ maxWidth: "800px", margin: "0 auto", px: 2 }}>
+      <Box sx={{ maxWidth: "800px", margin: "0 auto", px: { xs: 2, sm: 3 } }}>
         <Alert severity="error" sx={{ borderRadius: "12px" }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 1,
+              fontSize: { xs: "1.1rem", sm: "1.25rem" },
+            }}
+          >
             {t("history.errorOccurred")}
           </Typography>
-          <Typography>{error}</Typography>
+          <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            {error}
+          </Typography>
         </Alert>
       </Box>
     );
@@ -77,8 +98,8 @@ export default function History() {
         width: "100%",
         maxWidth: "1200px",
         margin: "0 auto",
-        px: 2,
-        py: 3,
+        px: { xs: 2, sm: 3, md: 4 },
+        py: { xs: 2, sm: 3 },
       }}
     >
       {/* Loading overlay for viewing result */}
@@ -95,21 +116,25 @@ export default function History() {
             alignItems: "center",
             justifyContent: "center",
             zIndex: 9999,
+            px: 2,
           }}
         >
           <Box
             sx={{
               backgroundColor: "white",
               borderRadius: "12px",
-              padding: 3,
+              padding: { xs: 2, sm: 3 },
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               gap: 2,
+              minWidth: { xs: "200px", sm: "250px" },
             }}
           >
             <CircularProgress sx={{ color: "#A657AE" }} />
-            <Typography>{t("history.loadingResults")}</Typography>
+            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+              {t("history.loadingResults")}
+            </Typography>
           </Box>
         </Box>
       )}
@@ -118,17 +143,17 @@ export default function History() {
       {students.length > 0 && (
         <Box
           sx={{
-            mb: 4,
+            mb: { xs: 3, sm: 4 },
             textAlign: "center",
             backgroundColor: "rgba(255, 255, 255, 0.1)",
-            borderRadius: "16px",
-            padding: "20px",
+            borderRadius: { xs: "12px", sm: "16px" },
+            padding: { xs: "16px", sm: "20px" },
           }}
         >
           <Typography
             sx={{
               color: "white",
-              fontSize: "1.2rem",
+              fontSize: { xs: "1rem", sm: "1.1rem", md: "1.2rem" },
               fontWeight: 500,
             }}
           >
@@ -143,18 +168,30 @@ export default function History() {
           <Box
             sx={{
               textAlign: "center",
-              py: 8,
+              py: { xs: 4, sm: 6, md: 8 },
+              px: { xs: 2, sm: 3 },
               backgroundColor: "rgba(255, 255, 255, 0.95)",
-              borderRadius: "16px",
+              borderRadius: { xs: "12px", sm: "16px" },
             }}
           >
             <Typography
               variant="h6"
-              sx={{ color: "#A657AE", fontWeight: 500, mb: 2 }}
+              sx={{
+                color: "#A657AE",
+                fontWeight: 500,
+                mb: 2,
+                fontSize: { xs: "1.1rem", sm: "1.25rem" },
+              }}
             >
               {t("history.noHistory")}
             </Typography>
-            <Typography sx={{ color: "#666", mb: 3 }}>
+            <Typography
+              sx={{
+                color: "#666",
+                mb: 3,
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              }}
+            >
               {t("history.noHistoryDescription")}
             </Typography>
             <Button
@@ -163,10 +200,10 @@ export default function History() {
               sx={{
                 backgroundColor: "#A657AE",
                 color: "white",
-                px: 4,
-                py: 1.5,
+                px: { xs: 3, sm: 4 },
+                py: { xs: 1.2, sm: 1.5 },
                 borderRadius: "25px",
-                fontSize: "1rem",
+                fontSize: { xs: "0.9rem", sm: "1rem" },
                 fontWeight: 600,
                 "&:hover": {
                   backgroundColor: "#8e4a96",
@@ -186,7 +223,7 @@ export default function History() {
                   sm: "repeat(2, 1fr)",
                   lg: "repeat(3, 1fr)",
                 },
-                gap: 3,
+                gap: { xs: 2, sm: 2.5, md: 3 },
               }}
             >
               {paginatedStudents.map((student) => (
@@ -194,26 +231,32 @@ export default function History() {
                   key={student.id}
                   sx={{
                     backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    borderRadius: "16px",
+                    borderRadius: { xs: "12px", sm: "16px" },
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                     transition: "all 0.3s ease",
                     "&:hover": {
-                      transform: "translateY(-4px)",
-                      boxShadow: "0 8px 20px rgba(166, 87, 174, 0.3)",
+                      transform: { xs: "none", sm: "translateY(-4px)" },
+                      boxShadow: {
+                        xs: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                        sm: "0 8px 20px rgba(166, 87, 174, 0.3)",
+                      },
                     },
                   }}
                 >
                   <CardContent
                     sx={{
-                      p: 3,
+                      p: { xs: 2, sm: 2.5, md: 3 },
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
                       textAlign: "center",
+                      "&:last-child": {
+                        pb: { xs: 2, sm: 2.5, md: 3 },
+                      },
                     }}
                   >
                     {/* Relative Time Badge */}
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={{ mb: { xs: 1.5, sm: 2 } }}>
                       <Chip
                         label={getRelativeTime(student.createdAt)}
                         size="small"
@@ -221,7 +264,8 @@ export default function History() {
                           backgroundColor: "rgba(166, 87, 174, 0.15)",
                           color: "#A657AE",
                           fontWeight: 600,
-                          fontSize: "1rem",
+                          fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
+                          height: { xs: "28px", sm: "32px" },
                         }}
                       />
                     </Box>
@@ -232,16 +276,21 @@ export default function History() {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        mb: 3,
+                        mb: { xs: 2, sm: 2.5, md: 3 },
+                        gap: 0.5,
                       }}
                     >
                       <CalendarTodayIcon
-                        sx={{ color: "#A657AE", fontSize: "2rem" }}
+                        sx={{
+                          color: "#A657AE",
+                          fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
+                          mb: 0.5,
+                        }}
                       />
                       <Typography
                         sx={{
                           color: "#000000ff",
-                          fontSize: "1.25rem",
+                          fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
                           fontWeight: 600,
                         }}
                       >
@@ -251,7 +300,7 @@ export default function History() {
                       <Typography
                         sx={{
                           color: "#000000ff",
-                          fontSize: "1.25rem",
+                          fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
                         }}
                       >
                         {formatTime(student.createdAt)}
@@ -259,7 +308,7 @@ export default function History() {
                       <Typography
                         sx={{
                           color: "#000000ff",
-                          fontSize: "1.25rem",
+                          fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
                           fontWeight: 500,
                         }}
                       >
@@ -271,9 +320,10 @@ export default function History() {
                     <Typography
                       sx={{
                         color: "#888",
-                        fontSize: "1rem",
-                        mb: 2,
+                        fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
+                        mb: { xs: 1.5, sm: 2 },
                         fontFamily: "monospace",
+                        wordBreak: "break-all",
                       }}
                     >
                       ID: {student.id.substring(0, 10)}...
@@ -283,7 +333,11 @@ export default function History() {
                     <Button
                       fullWidth
                       variant="contained"
-                      startIcon={<VisibilityIcon />}
+                      startIcon={
+                        <VisibilityIcon
+                          sx={{ fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+                        />
+                      }
                       onClick={() => {
                         void handleViewResult(student.id);
                       }}
@@ -291,9 +345,13 @@ export default function History() {
                       sx={{
                         backgroundColor: "#A657AE",
                         color: "white",
-                        py: 1.5,
-                        borderRadius: "12px",
-                        fontSize: "0.95rem",
+                        py: { xs: 1.2, sm: 1.5 },
+                        borderRadius: { xs: "10px", sm: "12px" },
+                        fontSize: {
+                          xs: "0.85rem",
+                          sm: "0.9rem",
+                          md: "0.95rem",
+                        },
                         fontWeight: 600,
                         textTransform: "none",
                         "&:hover": {
@@ -313,18 +371,29 @@ export default function History() {
 
             {/* Pagination */}
             {displayTotalPages > 1 && (
-              <Stack spacing={2} alignItems="center" sx={{ mt: 5, mb: 2 }}>
+              <Stack
+                spacing={2}
+                alignItems="center"
+                sx={{
+                  mt: { xs: 3, sm: 4, md: 5 },
+                  mb: 2,
+                }}
+              >
                 <Pagination
                   count={displayTotalPages}
                   page={currentPage}
                   onChange={handlePageChange}
                   color="primary"
-                  size="large"
+                  size={{ xs: "medium", sm: "large" } as never}
+                  siblingCount={{ xs: 0, sm: 1 } as never}
+                  boundaryCount={{ xs: 1, sm: 1 } as never}
                   sx={{
                     "& .MuiPaginationItem-root": {
                       color: "white",
-                      fontSize: "1rem",
+                      fontSize: { xs: "0.9rem", sm: "1rem" },
                       fontWeight: 500,
+                      minWidth: { xs: "32px", sm: "36px" },
+                      height: { xs: "32px", sm: "36px" },
                       "&.Mui-selected": {
                         backgroundColor: "#A657AE",
                         color: "white",
