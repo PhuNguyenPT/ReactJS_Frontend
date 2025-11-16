@@ -1,5 +1,4 @@
 import usePageTitle from "../../../hooks/pageTilte/usePageTitle";
-import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -10,167 +9,23 @@ import {
 } from "@mui/material";
 import NinthForm from "./NinthForm";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
-import useAuth from "../../../hooks/auth/useAuth";
-import { useAdmissionHandler } from "../../../hooks/studentAdmission/useAdmissionHandler";
-import { getFilterFieldsForStudent } from "../../../services/studentAdmission/admissionFilterService";
-import type { StudentResponse } from "../../../type/interface/profileTypes";
-import type { NinthFormNavigationState } from "../../../type/interface/navigationTypes";
+import { useNinthFormSubmission } from "../../../hooks/formPages/useNinthFormSubmission";
 
 export default function NinthFormPage() {
   usePageTitle("Unizy | Ninth Form");
-  const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useTranslation();
 
-  const { isAuthenticated, isLoading, user } = useAuth();
-  const { processAdmission, isAdmissionSuccessful } = useAdmissionHandler();
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [studentId, setStudentId] = useState<string | null>(null);
-  const [processingStatus, setProcessingStatus] = useState<string>("");
-  const [retryProgress, setRetryProgress] = useState<{
-    attempt: number;
-    maxAttempts: number;
-    progress?: number;
-  }>({ attempt: 0, maxAttempts: 0 });
-
-  useEffect(() => {
-    const navigationState = location.state as
-      | NinthFormNavigationState
-      | undefined;
-
-    const navStudentId =
-      navigationState?.responseData &&
-      typeof navigationState.responseData === "object" &&
-      "id" in navigationState.responseData
-        ? (navigationState.responseData as { id?: string }).id
-        : null;
-
-    if (navStudentId) {
-      setStudentId(navStudentId);
-      sessionStorage.setItem("studentId", navStudentId);
-      return;
-    }
-
-    const storedStudentId = sessionStorage.getItem("studentId");
-    if (storedStudentId) {
-      setStudentId(storedStudentId);
-      return;
-    }
-
-    if (user && typeof user === "object" && "id" in user) {
-      const userId = (user as StudentResponse).id;
-      if (userId) {
-        setStudentId(userId);
-        sessionStorage.setItem("studentId", userId);
-        return;
-      }
-    }
-
-    console.warn("[NinthFormPage] No student ID found");
-  }, [location.state, user]);
-
-  const handleSubmit = async () => {
-    if (!studentId) {
-      setErrorMessage(t("errors.studentIdNotFound"));
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setProcessingStatus(t("ninthForm.processingPrediction"));
-    setRetryProgress({ attempt: 0, maxAttempts: 0 });
-
-    try {
-      // Step 1: Process admission with new RetryProgress interface
-      const admissionData = await processAdmission(studentId, isAuthenticated, {
-        onRetry: (progress) => {
-          // Update retry progress with new interface
-          setRetryProgress({
-            attempt: progress.attempt,
-            maxAttempts: progress.maxAttempts,
-            progress: progress.progress,
-          });
-
-          // Update status message based on progress
-          if (progress.statusMessage) {
-            setProcessingStatus(progress.statusMessage);
-          } else {
-            setProcessingStatus(
-              t("ninthForm.gettingResults", {
-                attempt: progress.attempt,
-                maxAttempts: progress.maxAttempts,
-              }),
-            );
-          }
-        },
-      });
-
-      if (!admissionData || !isAdmissionSuccessful(admissionData)) {
-        setErrorMessage(t("ninthForm.errors.predictionTimeout"));
-        setIsSubmitting(false);
-        setProcessingStatus("");
-        return;
-      }
-
-      // Step 2: Fetch filter fields after successful admission
-      setProcessingStatus(t("ninthForm.loadingFilters"));
-      const filterResponse = await getFilterFieldsForStudent(
-        studentId,
-        isAuthenticated,
-      );
-
-      // Step 3: Navigate with both admission data and filter fields
-      setProcessingStatus(t("ninthForm.predictionCompleted"));
-
-      const userData =
-        user && typeof user === "object" && "data" in user
-          ? (user as StudentResponse).data
-          : null;
-
-      const userId =
-        isAuthenticated && user && typeof user === "object" && "userId" in user
-          ? (user as StudentResponse).userId
-          : undefined;
-
-      const userName = isAuthenticated ? userData?.name : undefined;
-
-      void navigate("/result", {
-        state: {
-          userId,
-          userName,
-          studentId,
-          savedToAccount: isAuthenticated,
-          isGuest: !isAuthenticated,
-          admissionData: admissionData.data,
-          filterFields: filterResponse.success ? filterResponse.data : null,
-        },
-      });
-    } catch (error) {
-      console.error("[NinthFormPage] Error submitting form:", error);
-      setErrorMessage(t("errors.submissionFailed"));
-      setProcessingStatus("");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleNext = () => {
-    if (isLoading || isSubmitting) {
-      return;
-    }
-    void handleSubmit();
-  };
-
-  const handlePrev = () => {
-    void navigate("/eighthForm");
-  };
-
-  const handleCloseError = () => {
-    setErrorMessage(null);
-  };
+  const {
+    isSubmitting,
+    isLoading,
+    errorMessage,
+    studentId,
+    processingStatus,
+    retryProgress,
+    handleNext,
+    handlePrev,
+    handleCloseError,
+  } = useNinthFormSubmission();
 
   return (
     <>
@@ -178,14 +33,14 @@ export default function NinthFormPage() {
       <Box
         className="ninth-form-page"
         sx={{
-          pb: 10,
+          pb: { xs: 12, sm: 10 },
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          paddingTop: "4rem",
-          paddingX: "1rem",
+          paddingTop: { xs: "3rem", sm: "4rem" },
+          paddingX: { xs: "0.5rem", sm: "1rem", md: "2rem" },
         }}
       >
         <Typography
@@ -195,8 +50,10 @@ export default function NinthFormPage() {
             textAlign: "center",
             fontWeight: "bold",
             color: "white",
-            mb: 5,
-            marginTop: "2rem",
+            mb: { xs: 3, sm: 4, md: 5 },
+            marginTop: { xs: "1rem", sm: "1.5rem", md: "2rem" },
+            fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3rem" },
+            px: { xs: 1, sm: 2 },
           }}
         >
           {t("ninthForm.title")}
@@ -213,20 +70,34 @@ export default function NinthFormPage() {
               left: "50%",
               transform: "translate(-50%, -50%)",
               backgroundColor: "rgba(255, 255, 255, 0.95)",
-              padding: 4,
+              padding: { xs: 3, sm: 4 },
               borderRadius: 2,
               boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
               zIndex: 2000,
-              minWidth: "300px",
+              minWidth: { xs: "250px", sm: "300px" },
+              maxWidth: { xs: "90%", sm: "400px" },
               textAlign: "center",
             }}
           >
             <CircularProgress size={40} sx={{ mb: 2, color: "#A657AE" }} />
-            <Typography variant="h6" sx={{ mb: 1, color: "#333" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 1,
+                color: "#333",
+                fontSize: { xs: "1rem", sm: "1.25rem" },
+              }}
+            >
               {processingStatus}
             </Typography>
             {retryProgress.attempt > 0 && (
-              <Typography variant="body2" sx={{ color: "#666" }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#666",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                }}
+              >
                 {t("ninthForm.retryProgress", {
                   attempt: retryProgress.attempt,
                   maxAttempts: retryProgress.maxAttempts,
@@ -236,21 +107,23 @@ export default function NinthFormPage() {
           </Box>
         )}
 
+        {/* Back Button */}
         <Button
           variant="contained"
           onClick={handlePrev}
           disabled={isSubmitting}
           sx={{
             position: "fixed",
-            bottom: 30,
-            left: 30,
+            bottom: { xs: 20, sm: 30 },
+            left: { xs: 15, sm: 30 },
             backgroundColor: "white",
             color: "#A657AE",
             borderRadius: "20px",
-            px: 4,
-            fontSize: "1.5rem",
+            px: { xs: 2.5, sm: 3, md: 4 },
+            fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
             zIndex: 1000,
-            height: "56px",
+            height: { xs: "48px", sm: "52px", md: "56px" },
+            minWidth: { xs: "80px", sm: "100px", md: "120px" },
             "&:hover": { backgroundColor: "#f0f0f0" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
             "&:disabled": {
@@ -262,22 +135,23 @@ export default function NinthFormPage() {
           {t("buttons.back", "BACK")}
         </Button>
 
+        {/* Submit Button */}
         <Button
           variant="contained"
           onClick={handleNext}
           disabled={isLoading || isSubmitting || !studentId}
           sx={{
             position: "fixed",
-            bottom: 30,
-            right: 30,
+            bottom: { xs: 20, sm: 30 },
+            right: { xs: 15, sm: 30 },
             backgroundColor: "#A657AE",
             color: "white",
             borderRadius: "20px",
-            px: 4,
-            fontSize: "1.5rem",
+            px: { xs: 2.5, sm: 3, md: 4 },
+            fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
             zIndex: 1000,
-            height: "56px",
-            minWidth: "140px",
+            height: { xs: "48px", sm: "52px", md: "56px" },
+            minWidth: { xs: "100px", sm: "120px", md: "140px" },
             "&:hover": { backgroundColor: "#8B4A8F" },
             boxShadow: "0px 2px 6px rgba(0,0,0,0.2)",
             "&:disabled": {
@@ -287,7 +161,7 @@ export default function NinthFormPage() {
           }}
         >
           {isLoading || isSubmitting ? (
-            <CircularProgress size={28} sx={{ color: "white" }} />
+            <CircularProgress size={24} sx={{ color: "white" }} />
           ) : (
             t("common.submit")
           )}

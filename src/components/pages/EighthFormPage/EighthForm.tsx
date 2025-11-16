@@ -59,11 +59,9 @@ export default function EighthForm() {
               variant="h5"
               className="grade-title"
               sx={{
-                textAlign: "right",
+                textAlign: "center",
                 fontSize: { xs: "1.25rem", sm: "1.5rem" },
                 width: "100%",
-                // Add padding to align with the upload box center
-                paddingRight: { xs: "75px" },
               }}
             >
               {translations.grade} {grade}
@@ -389,7 +387,7 @@ export default function EighthForm() {
                             <Typography
                               variant="caption"
                               sx={{
-                                color: "#666",
+                                color: "#ffffffff",
                                 display: "-webkit-box",
                                 wordBreak: "break-word",
                                 overflow: "hidden",
