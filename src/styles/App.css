@@ -859,7 +859,6 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .signup-card {
     padding: 20px;
-    max-width: 100%;
   }
 
   .title {
@@ -993,6 +992,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .signup-card {
     padding: 15px;
+    max-width: 90%;
   }
 
   .title {

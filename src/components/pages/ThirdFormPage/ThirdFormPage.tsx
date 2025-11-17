@@ -254,9 +254,9 @@ export default function ThirdFormPage() {
               },
               display: "flex",
               gap: {
-                xs: 0.5,
-                sm: 0.5,
-                md: 0.3,
+                xs: 1,
+                sm: 1,
+                md: 1,
               },
               zIndex: 10,
             }}

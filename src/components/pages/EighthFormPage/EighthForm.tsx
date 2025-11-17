@@ -74,7 +74,7 @@ export default function EighthForm() {
                 display: "flex",
                 flexDirection: "column",
                 gap: { xs: 3, sm: 4, md: 5 },
-                width: "100%",
+                width: "110%",
                 alignItems: "center",
               }}
             >
@@ -105,13 +105,13 @@ export default function EighthForm() {
                         alignItems: "center",
                         gap: { xs: 2, sm: 2 },
                         width: "100%",
-                        justifyContent: "center",
+                        justifyContent: "left",
                       }}
                     >
                       <Typography
                         variant="body1"
                         sx={{
-                          minWidth: { xs: "90px", sm: "100px" },
+                          minWidth: { xs: "120px", sm: "65px" },
                           textAlign: "right",
                           fontSize: { xs: "0.95rem", sm: "1rem" },
                         }}
