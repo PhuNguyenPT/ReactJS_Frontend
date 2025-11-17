@@ -98,6 +98,7 @@ export default function EighthFormPage() {
             },
             fontWeight: 500,
             mb: { xs: 2, sm: 3, md: 4 },
+            mt: { xs: 1, sm: 0, md: 0 },
             textAlign: "center",
             px: { xs: 1, sm: 2 },
           }}
