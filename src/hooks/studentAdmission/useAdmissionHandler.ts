@@ -127,18 +127,6 @@ export function useAdmissionHandler() {
     isAuthenticated: boolean,
     options?: Partial<RetryOptions>,
   ): Promise<AdmissionResponse | null> => {
-    // Admission-specific defaults (can be overridden)
-    const admissionDefaults: RetryOptions = {
-      initialDelay: 3000, // ML needs less initialization time
-      maxPollingTime: 60000, // 1 minute for admission (faster than OCR)
-      maxAttempts: 12, // Fewer attempts needed
-      retryDelay: 3000,
-      useExponentialBackoff: true,
-      maxBackoffDelay: 10000,
-      logPrefix: "[Admission Handler]",
-      ...options,
-    };
-
     return processWithRetry<AdmissionResponse>(
       // Fetch function
       () => getAdmissionForStudent(studentId, isAuthenticated),
@@ -146,8 +134,10 @@ export function useAdmissionHandler() {
       isAdmissionSuccessful,
       // Progress function
       getAdmissionProgress,
-      // Options
-      admissionDefaults,
+      {
+        logPrefix: "[Admission Handler]",
+        ...options,
+      },
     );
   };
 

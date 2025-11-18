@@ -15,7 +15,12 @@ import { type NinthFormNavigationState } from "../../type/interface/navigationTy
 import { hasUserId } from "../../type/interface/profileTypes";
 import type { ErrorDetails } from "../../type/interface/error.details";
 import APIError from "../../utils/apiError";
-import { saveStudentId } from "../../utils/sessionManager"; // ✅ Import session manager
+import { saveStudentId } from "../../utils/sessionManager";
+
+interface RetryProgress {
+  attempt: number;
+  maxAttempts: number;
+}
 
 interface UseStudentProfileReturn {
   isSubmitting: boolean;
@@ -23,6 +28,8 @@ interface UseStudentProfileReturn {
   handleSubmit: () => Promise<void>;
   clearError: () => void;
   uploadProgress: number;
+  processingStatus: string | null;
+  retryProgress: RetryProgress;
 }
 
 export function useStudentProfile(): UseStudentProfileReturn {
@@ -34,6 +41,14 @@ export function useStudentProfile(): UseStudentProfileReturn {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [processingStatus, setProcessingStatus] = useState<string | null>(null);
+  const [retryProgress, setRetryProgress] = useState<RetryProgress>({
+    attempt: 0,
+    maxAttempts: 3,
+  });
+
+  const delay = (ms: number): Promise<void> =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
   const handleFileUploads = async (
     isAuthenticated: boolean,
@@ -45,6 +60,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
     }
 
     try {
+      setProcessingStatus("Uploading files...");
       const filePayloads = files.map(({ grade, semester, file }) => ({
         grade,
         semester: semester + 1,
@@ -55,7 +71,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
       const statusMessage = getUploadStatusMessage(response, isAuthenticated);
       if (isUploadSuccessful(response)) {
-        // console.log("File upload successful:", statusMessage);
+        setProcessingStatus("Files uploaded successfully");
       } else {
         console.warn(statusMessage);
       }
@@ -67,21 +83,60 @@ export function useStudentProfile(): UseStudentProfileReturn {
     }
   };
 
+  const submitWithRetry = async (
+    formData: ReturnType<typeof getFormDataForApi>,
+    maxAttempts = 3,
+  ): Promise<Awaited<ReturnType<typeof submitStudentProfile>>> => {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        setRetryProgress({ attempt, maxAttempts });
+        setProcessingStatus(
+          attempt === 1
+            ? "Submitting student profile..."
+            : `Retrying submission (${String(attempt)}/${String(maxAttempts)})...`,
+        );
+
+        const response = await submitStudentProfile(formData);
+
+        // Reset retry progress on success
+        setRetryProgress({ attempt: 0, maxAttempts });
+        return response;
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err));
+
+        if (attempt < maxAttempts) {
+          const delayTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+          setProcessingStatus(
+            `Retrying in ${String(delayTime / 1000)} seconds...`,
+          );
+          await delay(delayTime);
+        }
+      }
+    }
+
+    throw lastError ?? new Error("Submission failed after all retries");
+  };
+
   const handleSubmit = async (): Promise<void> => {
     setError(null);
     setIsSubmitting(true);
     setUploadProgress(0);
+    setProcessingStatus("Preparing submission...");
+    setRetryProgress({ attempt: 0, maxAttempts: 3 });
 
     try {
       const formData = getFormDataForApi();
       const isAuthenticated = isUserAuthenticated();
 
-      // Step 1: Submit student profile
-      setUploadProgress(25);
-      const response = await submitStudentProfile(formData);
+      // Step 1: Submit student profile with retry logic
+      setUploadProgress(10);
+      const response = await submitWithRetry(formData, 3);
 
       if (response.success ?? true) {
         setUploadProgress(50);
+        setProcessingStatus("Profile submitted successfully");
 
         const studentId = hasUserId(response);
 
@@ -89,24 +144,31 @@ export function useStudentProfile(): UseStudentProfileReturn {
           throw new Error("No student ID received from server");
         }
 
-        // ✅ Use session manager to save studentId with proper tracking
+        // Save studentId with proper tracking
         saveStudentId(studentId, !isAuthenticated);
 
         // Step 2: Upload files
+        setUploadProgress(55);
         const fileUploadResponse = await handleFileUploads(isAuthenticated);
-        setUploadProgress(65);
+        setUploadProgress(70);
 
         // Step 3: Trigger OCR processing
+        if (isUploadSuccessful(fileUploadResponse)) {
+          setProcessingStatus("Processing OCR...");
+        }
+
         const ocrResponse = isUploadSuccessful(fileUploadResponse)
           ? await processOcr(isAuthenticated)
           : null;
-        setUploadProgress(85);
+        setUploadProgress(90);
 
         if (isUploadSuccessful(fileUploadResponse)) {
           clearEighthFormFiles();
+          setProcessingStatus("Cleaning up...");
         }
 
         setUploadProgress(100);
+        setProcessingStatus("Submission complete!");
 
         const navigationState: NinthFormNavigationState = {
           submissionSuccess: true,
@@ -117,6 +179,9 @@ export function useStudentProfile(): UseStudentProfileReturn {
           ocrProcessed: isOcrSuccessful(ocrResponse),
           ocrResults: ocrResponse?.data,
         };
+
+        // Small delay to show completion message
+        await delay(500);
 
         void navigate("/ninthForm", { state: navigationState });
       } else {
@@ -178,6 +243,8 @@ export function useStudentProfile(): UseStudentProfileReturn {
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
+      setProcessingStatus(null);
+      setRetryProgress({ attempt: 0, maxAttempts: 3 });
     }
   };
 
@@ -191,5 +258,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
     handleSubmit,
     clearError,
     uploadProgress,
+    processingStatus,
+    retryProgress,
   };
 }

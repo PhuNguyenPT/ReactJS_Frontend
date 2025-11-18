@@ -27,7 +27,14 @@ export default function EighthFormPage() {
   const { isAuthenticated, isLoading } = useAuth();
 
   // Use the custom hook for profile submission
-  const { isSubmitting, error, handleSubmit, clearError } = useStudentProfile();
+  const {
+    isSubmitting,
+    error,
+    handleSubmit,
+    clearError,
+    processingStatus,
+    retryProgress,
+  } = useStudentProfile();
 
   // State for authentication popup
   const [openPopup, setOpenPopup] = useState(false);
@@ -116,6 +123,52 @@ export default function EighthFormPage() {
         >
           <EighthForm />
         </Box>
+
+        {/* Show processing status when submitting */}
+        {isSubmitting && processingStatus && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              padding: { xs: 3, sm: 4 },
+              borderRadius: 2,
+              boxShadow: "0px 4px 20px rgba(0,0,0,0.2)",
+              zIndex: 2000,
+              minWidth: { xs: "250px", sm: "300px" },
+              maxWidth: { xs: "90%", sm: "400px" },
+              textAlign: "center",
+            }}
+          >
+            <CircularProgress size={40} sx={{ mb: 2, color: "#A657AE" }} />
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 1,
+                color: "#333",
+                fontSize: { xs: "1rem", sm: "1.25rem" },
+              }}
+            >
+              {processingStatus}
+            </Typography>
+            {retryProgress.attempt > 0 && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#666",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                }}
+              >
+                {t("eighthForm.retryProgress", {
+                  attempt: retryProgress.attempt,
+                  maxAttempts: retryProgress.maxAttempts,
+                })}
+              </Typography>
+            )}
+          </Box>
+        )}
 
         {/* Error Alert */}
         {error && (
@@ -329,7 +382,7 @@ export default function EighthFormPage() {
               },
             }}
           >
-            {t("common.login", "Đăng nhập")}
+            {t("common.login")}
           </Button>
           <Button
             variant="outlined"
@@ -357,7 +410,7 @@ export default function EighthFormPage() {
             {isSubmitting ? (
               <CircularProgress size={24} sx={{ color: "#A657AE" }} />
             ) : (
-              t("common.skip", "Bỏ qua")
+              t("common.skip")
             )}
           </Button>
         </DialogActions>

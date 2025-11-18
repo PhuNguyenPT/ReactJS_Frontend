@@ -18,6 +18,13 @@ interface ImportMetaEnv {
   readonly VITE_GUEST_INACTIVITY_DURATION: string;
   readonly VITE_CLEANUP_INTERVAL: string;
   readonly VITE_THROTTLE_DURATION: string;
+  readonly VITE_INITIAL_DELAY: string;
+  readonly VITE_MAX_POLLING_TIME: string;
+  readonly VITE_MAX_ATTEMPS: string;
+  readonly VITE_RETRY_DELAY: string;
+  readonly VITE_USE_EXPONENTIAL_BACKOFF: string;
+  readonly VITE_MAX_BACKOFF_DELAYS: string;
+
   // Add any other VITE_ variables you use
 }
 

@@ -14,6 +14,7 @@ import { useNinthFormLogic } from "../../../hooks/formPages/useNinthForm";
 export default function NinthForm() {
   const {
     showAlert,
+    retryAlert,
     scores,
     selectedSubjects,
     fixedSubjects,
@@ -22,6 +23,7 @@ export default function NinthForm() {
     handleScoreChange,
     handleSubjectSelect,
     handleCloseAlert,
+    handleCloseRetryAlert,
     getSubjectLabel,
     isScoreHighlighted,
     isSubjectHighlighted,
@@ -35,38 +37,62 @@ export default function NinthForm() {
         <Box
           key={subjectKey}
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            alignItems: { xs: "stretch", sm: "center" },
-            gap: { xs: 1.5, sm: 3, md: 5 },
-            mb: { xs: 2, sm: 1.5 },
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: { xs: 1.5, sm: 2, md: 3 },
+            mb: { xs: 1.5, sm: 1.5 },
+            alignItems: "center",
           }}
         >
-          {/* Subject pill (same look as Autocomplete) */}
-          <TextField
-            value={getSubjectLabel(subjectKey)}
+          {/* Subject pill - using Autocomplete for consistency */}
+          <Autocomplete
+            options={[subjectKey]}
+            value={subjectKey}
             disabled
-            sx={{
-              width: { xs: "100%", sm: "200px", md: "250px" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "17px",
-                height: { xs: "48px", sm: "45px" },
-                backgroundColor: "white",
-                "& fieldset": { borderColor: "#A657AE" },
-                "&.Mui-disabled fieldset": { borderColor: "#A657AE" },
-              },
-              "& .MuiInputBase-input.Mui-disabled": {
-                WebkitTextFillColor: "#A657AE",
-              },
-              "& input": {
-                textAlign: "left",
-                fontWeight: 500,
-                fontSize: { xs: "0.875rem", sm: "1rem" },
-              },
-            }}
-            slotProps={{
-              htmlInput: { readOnly: true },
-            }}
+            disableClearable
+            getOptionLabel={(option) => getSubjectLabel(option)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                sx={{
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "17px",
+                    height: { xs: "44px", sm: "45px" },
+                    backgroundColor: "white",
+                    paddingRight: {
+                      xs: "12px !important",
+                      sm: "14px !important",
+                    },
+                    "& fieldset": { borderColor: "#A657AE" },
+                    "&.Mui-disabled fieldset": { borderColor: "#A657AE" },
+                    "&:hover fieldset": { borderColor: "#A657AE" },
+                  },
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    WebkitTextFillColor: "#A657AE",
+                  },
+                  "& input": {
+                    textAlign: "left",
+                    fontWeight: 500,
+                    fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+                    padding: {
+                      xs: "0 8px !important",
+                      sm: "0 14px !important",
+                    },
+                  },
+                  "& .MuiAutocomplete-endAdornment": {
+                    display: "none",
+                  },
+                }}
+                slotProps={{
+                  htmlInput: {
+                    ...params.inputProps,
+                    style: { padding: 0 },
+                  },
+                }}
+              />
+            )}
+            sx={{ width: "100%" }}
           />
 
           {/* Score input */}
@@ -79,11 +105,10 @@ export default function NinthForm() {
               handleScoreChange(gradeKey, subjectKey, e.target.value);
             }}
             sx={{
-              width: { xs: "100%", sm: "auto" },
-              minWidth: { xs: "100%", sm: "200px", md: "250px" },
+              width: "100%",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "17px",
-                height: { xs: "48px", sm: "45px" },
+                height: { xs: "44px", sm: "45px" },
                 backgroundColor: isScoreHighlighted(gradeKey, subjectKey)
                   ? "rgba(166, 87, 174, 0.05)"
                   : "white",
@@ -93,7 +118,9 @@ export default function NinthForm() {
               },
               "& input": {
                 color: "#A657AE",
-                fontSize: { xs: "0.875rem", sm: "1rem" },
+                fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+                padding: { xs: "0 8px", sm: "0 14px" },
+                textAlign: "left",
               },
             }}
             slotProps={{
@@ -110,11 +137,11 @@ export default function NinthForm() {
         <Box
           key={`dropdown-${String(idx)}`}
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            alignItems: { xs: "stretch", sm: "center" },
-            gap: { xs: 1.5, sm: 3, md: 5 },
-            mb: { xs: 2, sm: 1.5 },
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: { xs: 1.5, sm: 2, md: 3 },
+            mb: { xs: 1.5, sm: 1.5 },
+            alignItems: "center",
           }}
         >
           <Autocomplete
@@ -129,13 +156,17 @@ export default function NinthForm() {
                 {...params}
                 placeholder={translations.chooseSubject}
                 sx={{
-                  width: { xs: "100%", sm: "200px", md: "250px" },
+                  width: "100%",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "17px",
-                    height: { xs: "48px", sm: "45px" },
+                    height: { xs: "44px", sm: "45px" },
                     backgroundColor: isSubjectHighlighted(gradeKey, subjectKey)
                       ? "rgba(166, 87, 174, 0.05)"
                       : "white",
+                    paddingRight: {
+                      xs: "8px !important",
+                      sm: "14px !important",
+                    },
                     "& fieldset": { borderColor: "#A657AE" },
                     "&:hover fieldset": { borderColor: "#8B4A8F" },
                     "&.Mui-focused fieldset": { borderColor: "#A657AE" },
@@ -143,11 +174,25 @@ export default function NinthForm() {
                   "& input": {
                     color: "#A657AE",
                     textAlign: "left",
-                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+                    padding: {
+                      xs: "0 8px !important",
+                      sm: "0 14px !important",
+                    },
+                  },
+                  "& .MuiAutocomplete-endAdornment": {
+                    right: { xs: "4px !important", sm: "7px !important" },
+                  },
+                }}
+                slotProps={{
+                  htmlInput: {
+                    ...params.inputProps,
+                    style: { padding: 0 },
                   },
                 }}
               />
             )}
+            sx={{ width: "100%" }}
           />
 
           <TextField
@@ -162,11 +207,10 @@ export default function NinthForm() {
             }}
             disabled={!subjectKey}
             sx={{
-              width: { xs: "100%", sm: "auto" },
-              minWidth: { xs: "100%", sm: "200px", md: "250px" },
+              width: "100%",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "17px",
-                height: { xs: "48px", sm: "45px" },
+                height: { xs: "44px", sm: "45px" },
                 backgroundColor:
                   subjectKey && isScoreHighlighted(gradeKey, subjectKey)
                     ? "rgba(166, 87, 174, 0.05)"
@@ -177,7 +221,9 @@ export default function NinthForm() {
               },
               "& input": {
                 color: "#A657AE",
-                fontSize: { xs: "0.875rem", sm: "1rem" },
+                fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
+                padding: { xs: "0 8px", sm: "0 14px" },
+                textAlign: "left",
               },
             }}
             slotProps={{
@@ -216,6 +262,20 @@ export default function NinthForm() {
           }}
         >
           {translations.scoreBoardDataLoaded}
+        </Alert>
+      )}
+
+      {/* Retry Handler Alerts (warnings, errors, partial results) */}
+      {retryAlert.show && (
+        <Alert
+          severity={retryAlert.type}
+          onClose={handleCloseRetryAlert}
+          sx={{
+            mb: 2,
+            fontSize: { xs: "0.875rem", sm: "1rem" },
+          }}
+        >
+          {retryAlert.message}
         </Alert>
       )}
 

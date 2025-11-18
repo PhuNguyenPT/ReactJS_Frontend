@@ -19,6 +19,13 @@ export interface GradeInfo {
   grade: string;
   semester: string;
 }
+
+export interface RetryAlertState {
+  show: boolean;
+  type: "warning" | "info" | "error";
+  message: string;
+}
+
 const mapOcrResultsToGradeSemesters = (
   ocrResults: OcrResultItem[],
 ): Record<string, OcrResultItem | null> => {
@@ -52,6 +59,11 @@ export const useNinthFormLogic = () => {
     | undefined;
 
   const [showAlert, setShowAlert] = useState(false);
+  const [retryAlert, setRetryAlert] = useState<RetryAlertState>({
+    show: false,
+    type: "info",
+    message: "",
+  });
 
   // Use the context hook
   const {
@@ -144,6 +156,7 @@ export const useNinthFormLogic = () => {
         };
 
         const gradeKeys = ["10-1", "10-2", "11-1", "11-2", "12-1", "12-2"];
+        let processedCount = 0;
 
         // STEP 3: Process each grade/semester from the mapped positions
         gradeKeys.forEach((gradeKey) => {
@@ -161,6 +174,7 @@ export const useNinthFormLogic = () => {
             return;
           }
 
+          processedCount++;
           newScores[gradeKey] = {};
           const optionalSubjectsForGrade: (string | null)[] = [];
 
@@ -210,11 +224,28 @@ export const useNinthFormLogic = () => {
         // STEP 4: Load into context
         loadOcrData(newScores, newSelectedSubjects);
         setShowAlert(true);
+
+        // Show warning if partial results
+        if (processedCount < 6 && processedCount > 0) {
+          setRetryAlert({
+            show: true,
+            type: "warning",
+            message: t("ninthForm.partialResults", {
+              processed: processedCount,
+              total: 6,
+            }),
+          });
+        }
       } catch (error) {
         console.error("[NinthForm] ✗ Error loading OCR data:", error);
+        setRetryAlert({
+          show: true,
+          type: "error",
+          message: t("ninthForm.ocrLoadError"),
+        });
       }
     },
-    [fixedSubjects, optionalSubjects, loadOcrData],
+    [fixedSubjects, optionalSubjects, loadOcrData, t],
   );
 
   // Load OCR data on component mount if available
@@ -273,6 +304,10 @@ export const useNinthFormLogic = () => {
 
   const handleCloseAlert = useCallback(() => {
     setShowAlert(false);
+  }, []);
+
+  const handleCloseRetryAlert = useCallback(() => {
+    setRetryAlert((prev) => ({ ...prev, show: false }));
   }, []);
 
   // Utility functions
@@ -339,6 +374,7 @@ export const useNinthFormLogic = () => {
   return {
     // State
     showAlert,
+    retryAlert,
     scores,
     selectedSubjects,
     hasOcrData,
@@ -354,6 +390,7 @@ export const useNinthFormLogic = () => {
     handleScoreChange,
     handleSubjectSelect,
     handleCloseAlert,
+    handleCloseRetryAlert,
 
     // Utilities
     getSubjectLabel,

@@ -332,7 +332,8 @@
     "replace": "Click to replace",
     "upload": "Click to upload",
     "imageDocument": "Images or Documents",
-    "clearFile": "Clear file"
+    "clearFile": "Clear file",
+    "retryProgress": "Attempt {{attempt}} of {{maxAttempts}}"
   },
   "ninthForm": {
     "title": "CHECK AND SUPPLEMENT YOUR SCORE BOARD",
@@ -347,6 +348,10 @@
     "predictionCompleted": "Prediction completed! Redirecting...",
     "loadingFilters": "Loading filter options...",
     "retryProgress": "Attempt {{attempt}} of {{maxAttempts}}",
+    "partialResults": "OCR completed with partial results: {{processed}}/{{total}} semesters processed. Please verify and fill in missing data.",
+    "ocrLoadError": "Error loading OCR data. Please try uploading again or enter data manually.",
+    "maxRetriesReached": "OCR processing completed after {{attempts}} attempts ({{time}}s). Please verify all data.",
+    "ocrProcessing": "Processing transcripts... {{progress}}%",
     "errors": {
       "studentIdNotFound": "Student ID not found. Please complete previous steps.",
       "predictionTimeout": "Prediction is taking longer than expected. Please try again in a few moments.",
