@@ -97,27 +97,14 @@ export function useOcrHandler() {
   ): Promise<OcrResponse | null> => {
     const targetStudentId = studentId ?? getStudentIdFromStorage();
 
-    // OCR-specific defaults (can be overridden)
-    const ocrDefaults: RetryOptions = {
-      initialDelay: 7000, // OCR needs more time to initialize
-      maxPollingTime: 120000, // 2 minutes for OCR processing
-      maxAttempts: 20, // More attempts for OCR
-      retryDelay: 3000,
-      useExponentialBackoff: true,
-      maxBackoffDelay: 10000,
-      logPrefix: "[OCR Handler]",
-      ...options,
-    };
-
     return processWithRetry<OcrResponse>(
-      // Fetch function
       () => triggerOcrForStudent(isAuthenticated, targetStudentId),
-      // Validate function
       hasAllValidScores,
-      // Progress function
       getOcrProgress,
-      // Options
-      ocrDefaults,
+      {
+        logPrefix: "[OCR Handler]",
+        ...options,
+      },
     );
   };
 

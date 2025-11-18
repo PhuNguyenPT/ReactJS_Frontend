@@ -53,7 +53,7 @@ export const OPTIONAL_EXAM_CONFIGS: Record<string, CategoryScoreConfig> = {
     defaultRange: { min: 0, max: 150 },
   },
   "Năng khiếu": {
-    maxEntries: 3, // Maximum 3 subjects
+    maxEntries: 12, // Maximum 3 subjects
     minRequiredEntries: 0, // No minimum requirement
     decimalPlaces: 2, // Allow up to 2 decimal places
     defaultRange: { min: 0, max: 10 },

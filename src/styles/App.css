@@ -586,6 +586,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   position: relative;
   font-size: 1.5rem;
   text-align: center;
+  padding-left: 40px;
 }
 
 .upload-column {
@@ -911,6 +912,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1.3rem;
+    padding-left: 70px;
   }
 
   .upload-column {
@@ -930,6 +932,12 @@ body.scrolling::-webkit-scrollbar-thumb {
   .instruction {
     font-size: 0.9rem;
     margin-top: 15px;
+  }
+}
+@media (max-width: 600px) {
+  .grade-title {
+    font-size: 1.1rem;
+    padding-right: 100px;
   }
 }
 
@@ -1049,6 +1057,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1.1rem;
+    padding-right: 100px;
   }
 
   .upload-box {
@@ -1065,7 +1074,12 @@ body.scrolling::-webkit-scrollbar-thumb {
     font-size: 0.85rem;
   }
 }
-
+@media (max-width: 435px) {
+  .grade-title {
+    font-size: 1rem;
+    padding-right: 95px;
+  }
+}
 /* Small Mobile (360px and below) */
 @media (max-width: 360px) {
   .content h1 {
@@ -1130,6 +1144,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1rem;
+    padding-right: 10px;
   }
 
   .upload-box {

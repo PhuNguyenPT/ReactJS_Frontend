@@ -332,7 +332,8 @@
     "replace": "Click vào đây để thay thế",
     "upload": "Click vào đây để tải lên",
     "imageDocument": "Hình ảnh hoặc Tài liệu",
-    "clearFile": "Xóa tệp"
+    "clearFile": "Xóa tệp",
+    "retryProgress": "Thử lại lần {{attempt}} trong tổng số {{maxAttempts}}"
   },
   "ninthForm": {
     "title": "KIỂM TRA VÀ BỔ SUNG BẢNG ĐIỂM",
@@ -347,6 +348,10 @@
     "predictionCompleted": "Dự đoán hoàn tất! Đang chuyển hướng...",
     "loadingFilters": "Đang tải tùy chọn bộ lọc...",
     "retryProgress": "Thử lại lần {{attempt}} trong tổng số {{maxAttempts}}",
+    "partialResults": "OCR hoàn thành với kết quả một phần: {{processed}}/{{total}} học kỳ được xử lý. Vui lòng kiểm tra và điền dữ liệu còn thiếu.",
+    "ocrLoadError": "Lỗi khi tải dữ liệu OCR. Vui lòng thử tải lên lại hoặc nhập dữ liệu thủ công.",
+    "maxRetriesReached": "Quá trình OCR hoàn thành sau {{attempts}} lần thử ({{time}}s). Vui lòng kiểm tra tất cả dữ liệu.",
+    "ocrProcessing": "Đang xử lý bảng điểm... {{progress}}%",
     "errors": {
       "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
       "predictionTimeout": "Dự đoán mất nhiều thời gian hơn dự kiến. Vui lòng thử lại sau vài phút.",

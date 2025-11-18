@@ -71,12 +71,14 @@ export function useRetryHandler() {
     options: RetryOptions = {},
   ): Promise<T | null> => {
     const {
-      initialDelay = 3000,
-      maxPollingTime = 120000,
-      maxAttempts = 20,
-      retryDelay = 3000,
-      useExponentialBackoff = true,
-      maxBackoffDelay = 10000,
+      initialDelay = Number(import.meta.env.VITE_INITIAL_DELAY),
+      maxPollingTime = Number(import.meta.env.VITE_MAX_POLLING_TIME),
+      maxAttempts = Number(import.meta.env.VITE_MAX_ATTEMPS),
+      retryDelay = Number(import.meta.env.VITE_RETRY_DELAY),
+      useExponentialBackoff = Boolean(
+        import.meta.env.VITE_USE_EXPONENTIAL_BACKOFF,
+      ),
+      maxBackoffDelay = Number(import.meta.env.VITE_MAX_BACKOFF_DELAYS),
       onRetry,
       logPrefix = "[Retry Handler]",
     } = options;
