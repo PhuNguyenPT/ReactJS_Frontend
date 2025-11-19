@@ -51,7 +51,7 @@ export default function SeventhFormPage() {
             flexDirection: "column",
           }}
         >
-          <div className="form-content">
+          <div className="form-content-7">
             <Box
               component="h1"
               className="form-title"

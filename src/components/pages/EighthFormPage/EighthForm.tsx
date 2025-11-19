@@ -60,6 +60,7 @@ export default function EighthForm() {
               className="grade-title"
               sx={{
                 textAlign: "center",
+                paddingRight: "40px",
                 fontSize: { xs: "1.25rem", sm: "1.5rem" },
                 width: "100%",
               }}

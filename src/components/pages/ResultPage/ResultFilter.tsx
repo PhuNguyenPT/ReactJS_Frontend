@@ -63,11 +63,13 @@ export default function ResultFilter({
         onClick={openDrawer}
         sx={{
           position: "fixed",
-          bottom: 150,
-          right: 30,
+          bottom: { xs: 20, sm: 100, md: 50 },
+          right: { xs: 16, sm: 24, md: 50 },
           backgroundColor: "#A657AE",
           color: "white",
           zIndex: 1000,
+          width: { xs: 56, sm: 56, md: 64 },
+          height: { xs: 56, sm: 56, md: 64 },
           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
           transition: "all 0.3s ease-in-out",
           "&:hover": {
@@ -79,22 +81,22 @@ export default function ResultFilter({
           },
         }}
       >
-        <FilterListIcon />
+        <FilterListIcon sx={{ fontSize: { xs: "1.5rem", sm: "1.75rem" } }} />
         {activeFilterCount > 0 && (
           <Box
             sx={{
               position: "absolute",
-              top: -5,
-              right: -5,
+              top: { xs: -4, sm: -5 },
+              right: { xs: -4, sm: -5 },
               backgroundColor: "#f44336",
               color: "white",
               borderRadius: "50%",
-              width: 24,
-              height: 24,
+              width: { xs: 20, sm: 24 },
+              height: { xs: 20, sm: 24 },
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "0.75rem",
+              fontSize: { xs: "0.7rem", sm: "0.75rem" },
               fontWeight: "bold",
             }}
           >
@@ -127,18 +129,34 @@ export default function ResultFilter({
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              p: 2,
+              p: { xs: 1.5, sm: 2 },
               backgroundColor: "rgba(166, 87, 174, 0.1)",
               borderBottom: "1px solid rgba(166, 87, 174, 0.2)",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <FilterListIcon sx={{ color: "#A657AE", fontSize: "1.8rem" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: { xs: 1, sm: 2 },
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              <FilterListIcon
+                sx={{
+                  color: "#A657AE",
+                  fontSize: { xs: "1.5rem", sm: "1.6rem", md: "1.8rem" },
+                  flexShrink: 0,
+                }}
+              />
               <Typography
                 variant="h6"
                 sx={{
                   color: "#A657AE",
                   fontWeight: 600,
+                  fontSize: { xs: "1.1rem", sm: "1.2rem", md: "1.25rem" },
+                  flexShrink: 0,
                 }}
               >
                 {t("finalResult.filter.title")}
@@ -151,6 +169,11 @@ export default function ResultFilter({
                     backgroundColor: "#A657AE",
                     color: "white",
                     fontWeight: 500,
+                    fontSize: { xs: "0.7rem", sm: "0.8125rem" },
+                    height: { xs: "24px", sm: "28px" },
+                    "& .MuiChip-label": {
+                      px: { xs: 1, sm: 1.5 },
+                    },
                   }}
                 />
               )}
@@ -159,12 +182,14 @@ export default function ResultFilter({
               onClick={closeDrawer}
               sx={{
                 color: "#A657AE",
+                padding: { xs: "6px", sm: "8px" },
+                flexShrink: 0,
                 "&:hover": {
                   backgroundColor: "rgba(166, 87, 174, 0.1)",
                 },
               }}
             >
-              <CloseIcon />
+              <CloseIcon sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" } }} />
             </IconButton>
           </Box>
 
@@ -173,23 +198,23 @@ export default function ResultFilter({
             sx={{
               flex: 1,
               overflowY: "auto",
-              p: 3,
+              p: { xs: 2, sm: 2.5, md: 3 },
               display: "flex",
               flexDirection: "column",
-              gap: 3,
+              gap: { xs: 2.5, sm: 3 },
               // Custom scrollbar styling
               "&::-webkit-scrollbar": {
-                width: "8px",
+                width: { xs: "6px", sm: "8px" },
               },
               "&::-webkit-scrollbar-track": {
-                backgroundColor: "#A657AE",
+                backgroundColor: "rgba(253, 232, 255, 0.05)",
                 borderRadius: "10px",
               },
               "&::-webkit-scrollbar-thumb": {
                 backgroundColor: "#A657AE",
                 borderRadius: "10px",
                 "&:hover": {
-                  backgroundColor: "rgba(166, 87, 174, 0.5)",
+                  backgroundColor: "rgba(166, 87, 174, 0.7)",
                 },
               },
               // Firefox scrollbar styling
@@ -202,10 +227,11 @@ export default function ResultFilter({
               <Typography
                 variant="body1"
                 sx={{
-                  mb: 1,
+                  mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
                   textAlign: "left",
                   fontWeight: 500,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
                 }}
               >
                 {t("finalResult.filter.university")}
@@ -224,6 +250,8 @@ export default function ResultFilter({
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        minHeight: { xs: "44px", sm: "48px" },
                         "& fieldset": {
                           borderColor: "rgba(166, 87, 174, 0.3)",
                         },
@@ -234,7 +262,10 @@ export default function ResultFilter({
                           borderColor: "#A657AE",
                         },
                       },
-                      "& input": { color: "#A657AE" },
+                      "& input": {
+                        color: "#A657AE",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
                     }}
                   />
                 )}
@@ -244,6 +275,8 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                      height: { xs: "24px", sm: "28px" },
                     },
                   },
                 }}
@@ -257,10 +290,11 @@ export default function ResultFilter({
               <Typography
                 variant="body1"
                 sx={{
-                  mb: 1,
+                  mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
                   textAlign: "left",
                   fontWeight: 500,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
                 }}
               >
                 {t("finalResult.filter.major")}
@@ -279,6 +313,8 @@ export default function ResultFilter({
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        minHeight: { xs: "44px", sm: "48px" },
                         "& fieldset": {
                           borderColor: "rgba(166, 87, 174, 0.3)",
                         },
@@ -289,7 +325,10 @@ export default function ResultFilter({
                           borderColor: "#A657AE",
                         },
                       },
-                      "& input": { color: "#A657AE" },
+                      "& input": {
+                        color: "#A657AE",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
                     }}
                   />
                 )}
@@ -299,6 +338,8 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                      height: { xs: "24px", sm: "28px" },
                     },
                   },
                 }}
@@ -312,10 +353,11 @@ export default function ResultFilter({
               <Typography
                 variant="body1"
                 sx={{
-                  mb: 1,
+                  mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
                   textAlign: "left",
                   fontWeight: 500,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
                 }}
               >
                 {t("finalResult.filter.admissionType")}
@@ -334,6 +376,8 @@ export default function ResultFilter({
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        minHeight: { xs: "44px", sm: "48px" },
                         "& fieldset": {
                           borderColor: "rgba(166, 87, 174, 0.3)",
                         },
@@ -344,7 +388,10 @@ export default function ResultFilter({
                           borderColor: "#A657AE",
                         },
                       },
-                      "& input": { color: "#A657AE" },
+                      "& input": {
+                        color: "#A657AE",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
                     }}
                   />
                 )}
@@ -354,6 +401,8 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                      height: { xs: "24px", sm: "28px" },
                     },
                   },
                 }}
@@ -367,10 +416,11 @@ export default function ResultFilter({
               <Typography
                 variant="body1"
                 sx={{
-                  mb: 1,
+                  mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
                   textAlign: "left",
                   fontWeight: 500,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
                 }}
               >
                 {t("finalResult.filter.studyProgram")}
@@ -389,6 +439,8 @@ export default function ResultFilter({
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        minHeight: { xs: "44px", sm: "48px" },
                         "& fieldset": {
                           borderColor: "rgba(166, 87, 174, 0.3)",
                         },
@@ -399,7 +451,10 @@ export default function ResultFilter({
                           borderColor: "#A657AE",
                         },
                       },
-                      "& input": { color: "#A657AE" },
+                      "& input": {
+                        color: "#A657AE",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
                     }}
                   />
                 )}
@@ -409,6 +464,8 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                      height: { xs: "24px", sm: "28px" },
                     },
                   },
                 }}
@@ -422,10 +479,11 @@ export default function ResultFilter({
               <Typography
                 variant="body1"
                 sx={{
-                  mb: 1,
+                  mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
                   textAlign: "left",
                   fontWeight: 500,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
                 }}
               >
                 {t("finalResult.filter.subjectCombination")}
@@ -449,6 +507,8 @@ export default function ResultFilter({
                     sx={{
                       "& .MuiOutlinedInput-root": {
                         borderRadius: "17px",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                        minHeight: { xs: "44px", sm: "48px" },
                         "& fieldset": {
                           borderColor: "rgba(166, 87, 174, 0.3)",
                         },
@@ -459,7 +519,10 @@ export default function ResultFilter({
                           borderColor: "#A657AE",
                         },
                       },
-                      "& input": { color: "#A657AE" },
+                      "& input": {
+                        color: "#A657AE",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
                     }}
                   />
                 )}
@@ -469,6 +532,8 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                      height: { xs: "24px", sm: "28px" },
                     },
                   },
                 }}
@@ -477,22 +542,29 @@ export default function ResultFilter({
               />
             </Box>
 
-            <Divider sx={{ my: 1 }} />
+            <Divider sx={{ my: { xs: 0.5, sm: 1 } }} />
 
             {/* Tuition Fee Range */}
             <Box>
               <Typography
                 variant="body1"
                 sx={{
-                  mb: 2,
+                  mb: { xs: 1.5, sm: 2 },
                   color: "#A657AE",
                   textAlign: "left",
                   fontWeight: 500,
+                  fontSize: { xs: "0.9rem", sm: "1rem" },
                 }}
               >
                 {t("finalResult.filter.tuitionFeeRange")}
               </Typography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: { xs: 1.5, sm: 2 },
+                }}
+              >
                 <Box>
                   <Typography
                     variant="caption"
@@ -500,6 +572,7 @@ export default function ResultFilter({
                       mb: 0.5,
                       color: "#A657AE",
                       display: "block",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                     }}
                   >
                     {t("finalResult.filter.minFee")}
@@ -524,7 +597,8 @@ export default function ResultFilter({
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "17px",
-                            height: "40px",
+                            height: { xs: "44px", sm: "48px" },
+                            fontSize: { xs: "0.875rem", sm: "1rem" },
                             "& fieldset": {
                               borderColor: "rgba(166, 87, 174, 0.3)",
                             },
@@ -535,7 +609,10 @@ export default function ResultFilter({
                               borderColor: "#A657AE",
                             },
                           },
-                          "& input": { color: "#A657AE" },
+                          "& input": {
+                            color: "#A657AE",
+                            fontSize: { xs: "0.875rem", sm: "1rem" },
+                          },
                         }}
                       />
                     )}
@@ -550,6 +627,7 @@ export default function ResultFilter({
                       mb: 0.5,
                       color: "#A657AE",
                       display: "block",
+                      fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                     }}
                   >
                     {t("finalResult.filter.maxFee")}
@@ -574,7 +652,8 @@ export default function ResultFilter({
                         sx={{
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "17px",
-                            height: "40px",
+                            height: { xs: "44px", sm: "48px" },
+                            fontSize: { xs: "0.875rem", sm: "1rem" },
                             "& fieldset": {
                               borderColor: "rgba(166, 87, 174, 0.3)",
                             },
@@ -585,7 +664,10 @@ export default function ResultFilter({
                               borderColor: "#A657AE",
                             },
                           },
-                          "& input": { color: "#A657AE" },
+                          "& input": {
+                            color: "#A657AE",
+                            fontSize: { xs: "0.875rem", sm: "1rem" },
+                          },
                         }}
                       />
                     )}
@@ -599,23 +681,29 @@ export default function ResultFilter({
           {/* Footer - Action Buttons */}
           <Box
             sx={{
-              p: 2,
+              p: { xs: 1.5, sm: 2 },
               borderTop: "1px solid rgba(166, 87, 174, 0.2)",
               backgroundColor: "rgba(255, 255, 255, 0.95)",
               display: "flex",
-              gap: 2,
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: 1.5, sm: 2 },
             }}
           >
             <Button
               fullWidth
               variant="outlined"
-              startIcon={<ClearIcon />}
+              startIcon={
+                <ClearIcon sx={{ fontSize: { xs: "1.1rem", sm: "1.25rem" } }} />
+              }
               onClick={handleClearFilters}
               disabled={!hasActiveFilters}
               sx={{
                 borderColor: "#A657AE",
                 color: "#A657AE",
                 borderRadius: "20px",
+                height: { xs: "44px", sm: "48px" },
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+                fontWeight: 500,
                 "&:hover": {
                   borderColor: "#8e4a96",
                   backgroundColor: "rgba(166, 87, 174, 0.05)",
@@ -636,6 +724,9 @@ export default function ResultFilter({
                 backgroundColor: "#A657AE",
                 color: "white",
                 borderRadius: "20px",
+                height: { xs: "44px", sm: "48px" },
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+                fontWeight: 500,
                 "&:hover": {
                   backgroundColor: "#8e4a96",
                 },
