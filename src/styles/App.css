@@ -408,7 +408,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   padding: 20px;
 }
 
-/* Consolidated form-content - combines both form-content and form-2-content */
+/* Consolidated form-content */
 .form-content {
   display: flex;
   flex-direction: column;
@@ -418,7 +418,26 @@ body.scrolling::-webkit-scrollbar-thumb {
   background: #fff;
   padding: 30px;
   border-radius: 30px;
-  width: 651px;
+  width: 650px;
+  max-width: calc(100vw - 40px);
+  height: 450px;
+  max-height: calc(100vh - 160px);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.form-content-7 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  color: #9c27b0;
+  background: #fff;
+  padding: 30px;
+  border-radius: 30px;
+  width: 650px;
   max-width: calc(100vw - 40px);
   height: 450px;
   max-height: calc(100vh - 160px);
@@ -431,8 +450,17 @@ body.scrolling::-webkit-scrollbar-thumb {
 .form-content::-webkit-scrollbar {
   width: 8px;
 }
+.form-content-7::-webkit-scrollbar {
+  width: 8px;
+}
 
 .form-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin-top: 90px;
+  margin-bottom: 90px;
+}
+.form-content-7::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   margin-top: 90px;
@@ -443,8 +471,15 @@ body.scrolling::-webkit-scrollbar-thumb {
   background: #a657ae;
   border-radius: 4px;
 }
+.form-content-7::-webkit-scrollbar-thumb {
+  background: #a657ae;
+  border-radius: 4px;
+}
 
 .form-content::-webkit-scrollbar-thumb:hover {
+  background: #8b4a8f;
+}
+.form-content-7::-webkit-scrollbar-thumb:hover {
   background: #8b4a8f;
 }
 
@@ -872,11 +907,20 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   /* Form Container - Now applies to single consolidated class */
   .form-content {
-    width: 100%;
+    width: calc(70vw - 30px);
     max-width: calc(100vw - 40px);
     height: auto;
     max-height: calc(100vh - 200px);
-    min-height: 300px;
+    min-height: 420px;
+    padding: 20px;
+  }
+
+  .form-content-7 {
+    width: calc(70vw - 30px);
+    max-width: calc(100vw - 40px);
+    height: auto;
+    max-height: calc(100vh - 200px);
+    min-height: 420px;
     padding: 20px;
   }
 
@@ -912,7 +956,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1.3rem;
-    padding-left: 70px;
+    padding-left: 100px;
   }
 
   .upload-column {
@@ -937,7 +981,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 @media (max-width: 600px) {
   .grade-title {
     font-size: 1.1rem;
-    padding-right: 100px;
+    padding-left: 15px;
   }
 }
 
@@ -1021,7 +1065,18 @@ body.scrolling::-webkit-scrollbar-thumb {
     max-width: calc(90vw - 30px);
     height: auto;
     max-height: calc(80vh - 140px);
-    min-height: 350px;
+    min-height: 400px;
+    padding: 18px 15px;
+    border-radius: 20px;
+    gap: 0.7rem;
+  }
+
+  .form-content-7 {
+    width: calc(100vw - 30px);
+    max-width: calc(90vw - 30px);
+    height: auto;
+    max-height: calc(80vh - 140px);
+    min-height: 450px;
     padding: 18px 15px;
     border-radius: 20px;
     gap: 0.7rem;
@@ -1057,7 +1112,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1.1rem;
-    padding-right: 100px;
+    padding-left: 15px;
   }
 
   .upload-box {
@@ -1074,10 +1129,10 @@ body.scrolling::-webkit-scrollbar-thumb {
     font-size: 0.85rem;
   }
 }
-@media (max-width: 435px) {
+@media (max-width: 430px) {
   .grade-title {
     font-size: 1rem;
-    padding-right: 95px;
+    padding-left: 65px;
   }
 }
 /* Small Mobile (360px and below) */
@@ -1114,7 +1169,18 @@ body.scrolling::-webkit-scrollbar-thumb {
     max-width: calc(100vw - 20px);
     padding: 15px 12px;
     max-height: calc(100vh - 80px);
-    min-height: 400px;
+    min-height: 420px;
+    border-radius: 18px;
+    gap: 0.6rem;
+  }
+
+  .form-content-7 {
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    padding: 15px 12px;
+    height: auto;
+    max-height: calc(100vh - 80px);
+    min-height: 570px;
     border-radius: 18px;
     gap: 0.6rem;
   }
@@ -1144,7 +1210,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
   .grade-title {
     font-size: 1rem;
-    padding-right: 10px;
+    padding-left: 105px;
   }
 
   .upload-box {

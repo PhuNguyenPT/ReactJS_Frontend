@@ -88,10 +88,23 @@ export default function FinalResult() {
           justifyContent: "center",
           minHeight: "400px",
           gap: 2,
+          px: { xs: 2, sm: 3 },
         }}
       >
-        <CircularProgress sx={{ color: "#A657AE" }} size={60} />
-        <Typography sx={{ color: "white", fontSize: "1.1rem" }}>
+        <CircularProgress
+          sx={{
+            color: "#A657AE",
+            width: { xs: "50px !important", sm: "60px !important" },
+            height: { xs: "50px !important", sm: "60px !important" },
+          }}
+        />
+        <Typography
+          sx={{
+            color: "white",
+            fontSize: { xs: "1rem", sm: "1.1rem" },
+            textAlign: "center",
+          }}
+        >
           {t("finalResult.loading")}
         </Typography>
       </Box>
@@ -100,12 +113,26 @@ export default function FinalResult() {
 
   if (error && !pageLoading) {
     return (
-      <Box sx={{ maxWidth: "800px", margin: "0 auto", px: 2 }}>
+      <Box
+        sx={{
+          maxWidth: "800px",
+          margin: "0 auto",
+          px: { xs: 2, sm: 3 },
+        }}
+      >
         <Alert severity="error" sx={{ borderRadius: "12px" }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              mb: 1,
+              fontSize: { xs: "1rem", sm: "1.25rem" },
+            }}
+          >
             {t("finalResult.errorOccurred")}
           </Typography>
-          <Typography>{error}</Typography>
+          <Typography sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+            {error}
+          </Typography>
         </Alert>
       </Box>
     );
@@ -116,10 +143,10 @@ export default function FinalResult() {
       className="final-result"
       sx={{
         width: "100%",
-        maxWidth: "1100px",
+        maxWidth: "1000px",
         margin: "0 auto",
-        px: 2,
-        py: 3,
+        px: { xs: 1.5, sm: 2, md: 3 },
+        py: { xs: 2, sm: 3 },
       }}
     >
       {filterFields && (
@@ -143,21 +170,28 @@ export default function FinalResult() {
             alignItems: "center",
             justifyContent: "center",
             zIndex: 9999,
+            px: 2,
           }}
         >
           <Box
             sx={{
               backgroundColor: "white",
               borderRadius: "12px",
-              padding: 3,
+              padding: { xs: 2, sm: 3 },
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               gap: 2,
+              maxWidth: "90%",
             }}
           >
             <CircularProgress sx={{ color: "#A657AE" }} />
-            <Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                textAlign: "center",
+              }}
+            >
               {isFiltered
                 ? t("finalResult.applyingFilters")
                 : t("finalResult.loadingPage", { page: currentPage })}
@@ -167,14 +201,15 @@ export default function FinalResult() {
       )}
 
       {!pageLoading && totalElements > 0 && (
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: { xs: 2, sm: 3 } }}>
           {isFiltered && (
             <Typography
               sx={{
                 color: "white",
-                fontSize: "1.5rem",
+                fontSize: { xs: "1.25rem", sm: "1.5rem" },
                 textAlign: "center",
                 mt: 1,
+                px: 2,
               }}
             >
               {t("finalResult.filteredResults")}
@@ -188,12 +223,20 @@ export default function FinalResult() {
           <Box
             sx={{
               textAlign: "center",
-              py: 6,
+              py: { xs: 4, sm: 6 },
+              px: { xs: 2, sm: 3 },
               backgroundColor: "rgba(255, 255, 255, 0.9)",
               borderRadius: "16px",
             }}
           >
-            <Typography variant="h6" sx={{ color: "#A657AE", fontWeight: 500 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#A657AE",
+                fontWeight: 500,
+                fontSize: { xs: "1rem", sm: "1.25rem" },
+              }}
+            >
               {isFiltered
                 ? t("finalResult.noResultsForFilters")
                 : t("finalResult.noAdmissionData")}
@@ -203,7 +246,7 @@ export default function FinalResult() {
                 sx={{
                   color: "#666",
                   mt: 2,
-                  fontSize: "0.95rem",
+                  fontSize: { xs: "0.875rem", sm: "0.95rem" },
                 }}
               >
                 {t("finalResult.tryDifferentFilters")}
@@ -231,8 +274,8 @@ export default function FinalResult() {
                   key={university.id}
                   sx={{
                     backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    borderRadius: "12px !important",
-                    mb: 3,
+                    borderRadius: "15px !important",
+                    mb: { xs: 2, sm: 3 },
                     "&:before": { display: "none" },
                     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                   }}
@@ -242,11 +285,13 @@ export default function FinalResult() {
                     sx={{
                       backgroundColor: "rgba(166, 87, 174, 0.1)",
                       borderRadius: "12px",
-                      minHeight: "70px",
+                      minHeight: { xs: "auto", sm: "70px" },
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 1.5, sm: 2 },
                       "& .MuiAccordionSummary-content": {
                         alignItems: "center",
                         justifyContent: "space-between",
-                        my: 1.5,
+                        my: { xs: 1, sm: 1.5 },
                       },
                     }}
                   >
@@ -256,6 +301,7 @@ export default function FinalResult() {
                         flexDirection: "column",
                         gap: 0.5,
                         flex: 1,
+                        pr: 1,
                       }}
                     >
                       <Typography
@@ -263,7 +309,8 @@ export default function FinalResult() {
                         sx={{
                           color: "#A657AE",
                           fontWeight: 600,
-                          fontSize: "1.2rem",
+                          fontSize: { xs: "1rem", sm: "1.1rem", md: "1.2rem" },
+                          lineHeight: 1,
                         }}
                       >
                         {university.name} ({university.shortName})
@@ -271,7 +318,11 @@ export default function FinalResult() {
                       <Typography
                         sx={{
                           color: "#666",
-                          fontSize: "0.9rem",
+                          fontSize: {
+                            xs: "0.8rem",
+                            sm: "0.85rem",
+                            md: "0.9rem",
+                          },
                         }}
                       >
                         {university.location} • {university.uniType}
@@ -279,16 +330,21 @@ export default function FinalResult() {
                     </Box>
                   </AccordionSummary>
 
-                  <AccordionDetails sx={{ px: 4, py: 3 }}>
+                  <AccordionDetails
+                    sx={{
+                      px: { xs: 2, sm: 3, md: 4 },
+                      py: { xs: 2, sm: 2.5, md: 3 },
+                    }}
+                  >
                     {/* Majors Section */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{ mb: { xs: 2, sm: 3 } }}>
                       <Typography
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
                           fontWeight: 600,
-                          mb: 2,
-                          fontSize: "1.1rem",
+                          mb: { xs: 1.5, sm: 2 },
+                          fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
                         }}
                       >
                         {t("finalResult.majors", {
@@ -300,21 +356,40 @@ export default function FinalResult() {
                       <Box
                         sx={{
                           mb: 2,
-                          p: 2,
+                          p: { xs: 1.5, sm: 2 },
                           backgroundColor: "rgba(166, 87, 174, 0.05)",
                           borderRadius: "8px",
                           textAlign: "left",
                         }}
                       >
                         <Typography
-                          sx={{ fontSize: "0.9rem", color: "#666", mb: 1 }}
+                          sx={{
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.85rem",
+                              md: "0.9rem",
+                            },
+                            color: "#666",
+                            mb: 1,
+                            wordBreak: "break-word",
+                          }}
                         >
                           <strong>
                             {t("finalResult.subjectCombination")}:
                           </strong>{" "}
                           {uniqueSubjectCombinations.join(", ")}
                         </Typography>
-                        <Typography sx={{ fontSize: "0.9rem", color: "#666" }}>
+                        <Typography
+                          sx={{
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.85rem",
+                              md: "0.9rem",
+                            },
+                            color: "#666",
+                            wordBreak: "break-word",
+                          }}
+                        >
                           <strong>{t("finalResult.studyProgram")}:</strong>{" "}
                           {uniqueStudyPrograms.join(", ")}
                         </Typography>
@@ -324,7 +399,7 @@ export default function FinalResult() {
                         sx={{
                           display: "flex",
                           flexDirection: "column",
-                          gap: 2,
+                          gap: { xs: 1.5, sm: 2 },
                         }}
                       >
                         {university.courses.map((course) => {
@@ -356,7 +431,11 @@ export default function FinalResult() {
                                   justifyContent: "space-between",
                                   alignItems: "center",
                                   backgroundColor: "rgba(166, 87, 174, 0.05)",
-                                  padding: "12px 20px",
+                                  padding: {
+                                    xs: "10px 12px",
+                                    sm: "12px 16px",
+                                    md: "12px 20px",
+                                  },
                                   borderRadius: "8px",
                                   border: "1px solid rgba(166, 87, 174, 0.2)",
                                   cursor: "pointer",
@@ -371,12 +450,19 @@ export default function FinalResult() {
                                   );
                                 }}
                               >
-                                <Box sx={{ flex: 1, textAlign: "center" }}>
+                                <Box
+                                  sx={{ flex: 1, textAlign: "center", pr: 1 }}
+                                >
                                   <Typography
                                     sx={{
                                       color: "#333",
                                       fontWeight: 500,
-                                      fontSize: "1rem",
+                                      fontSize: {
+                                        xs: "0.9rem",
+                                        sm: "0.95rem",
+                                        md: "1rem",
+                                      },
+                                      lineHeight: 1.3,
                                     }}
                                   >
                                     {course.name}
@@ -384,7 +470,11 @@ export default function FinalResult() {
                                   <Typography
                                     sx={{
                                       color: "#666",
-                                      fontSize: "0.85rem",
+                                      fontSize: {
+                                        xs: "0.75rem",
+                                        sm: "0.8rem",
+                                        md: "0.85rem",
+                                      },
                                       mt: 0.5,
                                     }}
                                   >
@@ -398,11 +488,30 @@ export default function FinalResult() {
                                     gap: 1,
                                   }}
                                 >
-                                  <IconButton size="small">
+                                  <IconButton
+                                    size="small"
+                                    sx={{
+                                      padding: { xs: "4px", sm: "8px" },
+                                    }}
+                                  >
                                     {isExpanded ? (
-                                      <KeyboardArrowUpIcon />
+                                      <KeyboardArrowUpIcon
+                                        sx={{
+                                          fontSize: {
+                                            xs: "1.2rem",
+                                            sm: "1.5rem",
+                                          },
+                                        }}
+                                      />
                                     ) : (
-                                      <KeyboardArrowDownIcon />
+                                      <KeyboardArrowDownIcon
+                                        sx={{
+                                          fontSize: {
+                                            xs: "1.2rem",
+                                            sm: "1.5rem",
+                                          },
+                                        }}
+                                      />
                                     )}
                                   </IconButton>
                                 </Box>
@@ -412,7 +521,7 @@ export default function FinalResult() {
                                 <Box
                                   sx={{
                                     mt: 1,
-                                    p: 2,
+                                    p: { xs: 1.5, sm: 2 },
                                     backgroundColor: "rgba(0, 0, 0, 0.02)",
                                     borderRadius: "8px",
                                   }}
@@ -434,9 +543,14 @@ export default function FinalResult() {
                                     >
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
                                           mb: 0.5,
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -450,9 +564,14 @@ export default function FinalResult() {
                                       </Typography>
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
                                           mb: 0.5,
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -471,8 +590,12 @@ export default function FinalResult() {
                                     <Box
                                       sx={{
                                         display: "flex",
+                                        flexDirection: {
+                                          xs: "column",
+                                          sm: "row",
+                                        },
                                         justifyContent: "center",
-                                        gap: 2,
+                                        gap: { xs: 1, sm: 2 },
                                         mt: 2,
                                       }}
                                     >
@@ -489,6 +612,11 @@ export default function FinalResult() {
                                             color: "#A657AE",
                                             textTransform: "none",
                                             fontWeight: 500,
+                                            fontSize: {
+                                              xs: "0.85rem",
+                                              sm: "0.9rem",
+                                            },
+                                            minHeight: "40px",
                                             "&:hover": {
                                               backgroundColor:
                                                 "rgba(166, 87, 174, 0.1)",
@@ -513,6 +641,11 @@ export default function FinalResult() {
                                             color: "#666",
                                             textTransform: "none",
                                             fontWeight: 500,
+                                            fontSize: {
+                                              xs: "0.85rem",
+                                              sm: "0.9rem",
+                                            },
+                                            minHeight: "40px",
                                             "&:hover": {
                                               backgroundColor:
                                                 "rgba(0, 0, 0, 0.05)",
@@ -532,17 +665,17 @@ export default function FinalResult() {
                       </Box>
                     </Box>
 
-                    <Divider sx={{ my: 3 }} />
+                    <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
                     {/* Application Method Section */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{ mb: { xs: 2, sm: 3 } }}>
                       <Typography
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
                           fontWeight: 600,
-                          mb: 2,
-                          fontSize: "1.1rem",
+                          mb: { xs: 1.5, sm: 2 },
+                          fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
                           textAlign: "center",
                         }}
                       >
@@ -587,7 +720,11 @@ export default function FinalResult() {
                                   justifyContent: "space-between",
                                   alignItems: "center",
                                   backgroundColor: "rgba(166, 87, 174, 0.05)",
-                                  padding: "12px 20px",
+                                  padding: {
+                                    xs: "10px 12px",
+                                    sm: "12px 16px",
+                                    md: "12px 20px",
+                                  },
                                   borderRadius: "8px",
                                   border: "1px solid rgba(166, 87, 174, 0.2)",
                                   cursor: "pointer",
@@ -606,18 +743,39 @@ export default function FinalResult() {
                                   sx={{
                                     color: "#A657AE",
                                     fontWeight: 500,
-                                    fontSize: "0.9rem",
+                                    fontSize: { xs: "0.85rem", sm: "0.9rem" },
                                     flex: 1,
+                                    pr: 1,
+                                    wordBreak: "break-word",
                                   }}
                                 >
                                   {admissionPrograms[0]?.admissionTypeName ||
                                     admissionType}
                                 </Typography>
-                                <IconButton size="small">
+                                <IconButton
+                                  size="small"
+                                  sx={{
+                                    padding: { xs: "4px", sm: "8px" },
+                                  }}
+                                >
                                   {isExpanded ? (
-                                    <KeyboardArrowUpIcon />
+                                    <KeyboardArrowUpIcon
+                                      sx={{
+                                        fontSize: {
+                                          xs: "1.2rem",
+                                          sm: "1.5rem",
+                                        },
+                                      }}
+                                    />
                                   ) : (
-                                    <KeyboardArrowDownIcon />
+                                    <KeyboardArrowDownIcon
+                                      sx={{
+                                        fontSize: {
+                                          xs: "1.2rem",
+                                          sm: "1.5rem",
+                                        },
+                                      }}
+                                    />
                                   )}
                                 </IconButton>
                               </Box>
@@ -626,7 +784,7 @@ export default function FinalResult() {
                                 <Box
                                   sx={{
                                     mt: 1,
-                                    p: 2,
+                                    p: { xs: 1.5, sm: 2 },
                                     backgroundColor: "rgba(0, 0, 0, 0.02)",
                                     borderRadius: "8px",
                                   }}
@@ -648,9 +806,14 @@ export default function FinalResult() {
                                     >
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
                                           mb: 0.5,
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -665,9 +828,14 @@ export default function FinalResult() {
                                       </Typography>
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
                                           mb: 0.5,
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -686,8 +854,12 @@ export default function FinalResult() {
                                     <Box
                                       sx={{
                                         display: "flex",
+                                        flexDirection: {
+                                          xs: "column",
+                                          sm: "row",
+                                        },
                                         justifyContent: "center",
-                                        gap: 2,
+                                        gap: { xs: 1, sm: 2 },
                                         mt: 2,
                                       }}
                                     >
@@ -704,6 +876,11 @@ export default function FinalResult() {
                                             color: "#A657AE",
                                             textTransform: "none",
                                             fontWeight: 500,
+                                            fontSize: {
+                                              xs: "0.85rem",
+                                              sm: "0.9rem",
+                                            },
+                                            minHeight: "40px",
                                             "&:hover": {
                                               backgroundColor:
                                                 "rgba(166, 87, 174, 0.1)",
@@ -728,6 +905,11 @@ export default function FinalResult() {
                                             color: "#666",
                                             textTransform: "none",
                                             fontWeight: 500,
+                                            fontSize: {
+                                              xs: "0.85rem",
+                                              sm: "0.9rem",
+                                            },
+                                            minHeight: "40px",
                                             "&:hover": {
                                               backgroundColor:
                                                 "rgba(0, 0, 0, 0.05)",
@@ -747,17 +929,17 @@ export default function FinalResult() {
                       </Box>
                     </Box>
 
-                    <Divider sx={{ my: 3 }} />
+                    <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
                     {/* Tuition Fee Range Section */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{ mb: { xs: 2, sm: 3 } }}>
                       <Typography
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
                           fontWeight: 600,
                           mb: 1,
-                          fontSize: "1.1rem",
+                          fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
                         }}
                       >
                         {t("finalResult.tuitionFeeRange")}
@@ -765,8 +947,9 @@ export default function FinalResult() {
                       <Typography
                         sx={{
                           color: "#333",
-                          fontSize: "1rem",
+                          fontSize: { xs: "0.9rem", sm: "0.95rem", md: "1rem" },
                           mb: 2,
+                          wordBreak: "break-word",
                         }}
                       >
                         {university.tuitionFeeRange}
@@ -813,7 +996,11 @@ export default function FinalResult() {
                                   position: "relative",
                                   alignItems: "center",
                                   backgroundColor: "rgba(166, 87, 174, 0.05)",
-                                  padding: "12px 20px",
+                                  padding: {
+                                    xs: "10px 12px",
+                                    sm: "12px 16px",
+                                    md: "12px 20px",
+                                  },
                                   borderRadius: "8px",
                                   border: "1px solid rgba(166, 87, 174, 0.2)",
                                   cursor: "pointer",
@@ -831,16 +1018,40 @@ export default function FinalResult() {
                                     backgroundColor: "#A657AE",
                                     color: "white",
                                     fontWeight: 600,
+                                    fontSize: { xs: "0.8rem", sm: "0.85rem" },
+                                    height: { xs: "28px", sm: "32px" },
                                   }}
                                 />
                                 <IconButton
                                   size="small"
-                                  sx={{ position: "absolute", right: "20px" }}
+                                  sx={{
+                                    position: "absolute",
+                                    right: {
+                                      xs: "12px",
+                                      sm: "16px",
+                                      md: "20px",
+                                    },
+                                    padding: { xs: "4px", sm: "8px" },
+                                  }}
                                 >
                                   {isExpanded ? (
-                                    <KeyboardArrowUpIcon />
+                                    <KeyboardArrowUpIcon
+                                      sx={{
+                                        fontSize: {
+                                          xs: "1.2rem",
+                                          sm: "1.5rem",
+                                        },
+                                      }}
+                                    />
                                   ) : (
-                                    <KeyboardArrowDownIcon />
+                                    <KeyboardArrowDownIcon
+                                      sx={{
+                                        fontSize: {
+                                          xs: "1.2rem",
+                                          sm: "1.5rem",
+                                        },
+                                      }}
+                                    />
                                   )}
                                 </IconButton>
                               </Box>
@@ -849,7 +1060,7 @@ export default function FinalResult() {
                                 <Box
                                   sx={{
                                     mt: 1,
-                                    p: 2,
+                                    p: { xs: 1.5, sm: 2 },
                                     backgroundColor: "rgba(0, 0, 0, 0.02)",
                                     borderRadius: "8px",
                                   }}
@@ -871,9 +1082,14 @@ export default function FinalResult() {
                                     >
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
                                           mb: 0.5,
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -884,9 +1100,14 @@ export default function FinalResult() {
                                       </Typography>
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
                                           mb: 0.5,
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -900,8 +1121,13 @@ export default function FinalResult() {
                                       </Typography>
                                       <Typography
                                         sx={{
-                                          fontSize: "0.9rem",
+                                          fontSize: {
+                                            xs: "0.8rem",
+                                            sm: "0.85rem",
+                                            md: "0.9rem",
+                                          },
                                           color: "#333",
+                                          wordBreak: "break-word",
                                         }}
                                       >
                                         <strong>
@@ -916,8 +1142,12 @@ export default function FinalResult() {
                                     <Box
                                       sx={{
                                         display: "flex",
+                                        flexDirection: {
+                                          xs: "column",
+                                          sm: "row",
+                                        },
                                         justifyContent: "center",
-                                        gap: 2,
+                                        gap: { xs: 1, sm: 2 },
                                         mt: 2,
                                       }}
                                     >
@@ -934,6 +1164,11 @@ export default function FinalResult() {
                                             color: "#A657AE",
                                             textTransform: "none",
                                             fontWeight: 500,
+                                            fontSize: {
+                                              xs: "0.85rem",
+                                              sm: "0.9rem",
+                                            },
+                                            minHeight: "40px",
                                             "&:hover": {
                                               backgroundColor:
                                                 "rgba(166, 87, 174, 0.1)",
@@ -958,6 +1193,11 @@ export default function FinalResult() {
                                             color: "#666",
                                             textTransform: "none",
                                             fontWeight: 500,
+                                            fontSize: {
+                                              xs: "0.85rem",
+                                              sm: "0.9rem",
+                                            },
+                                            minHeight: "40px",
                                             "&:hover": {
                                               backgroundColor:
                                                 "rgba(0, 0, 0, 0.05)",
@@ -977,7 +1217,7 @@ export default function FinalResult() {
                       </Box>
                     </Box>
 
-                    <Divider sx={{ my: 3 }} />
+                    <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
                     {/* Website Link */}
                     <Box>
@@ -987,7 +1227,7 @@ export default function FinalResult() {
                           color: "#A657AE",
                           fontWeight: 600,
                           mb: 1,
-                          fontSize: "1.1rem",
+                          fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
                         }}
                       >
                         {t("finalResult.website")}
@@ -999,8 +1239,10 @@ export default function FinalResult() {
                         rel="noopener noreferrer"
                         sx={{
                           color: "#A657AE",
-                          fontSize: "1rem",
+                          fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
                           textDecoration: "none",
+                          wordBreak: "break-all",
+                          display: "block",
                           "&:hover": {
                             textDecoration: "underline",
                           },
@@ -1016,7 +1258,15 @@ export default function FinalResult() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <Stack spacing={2} alignItems="center" sx={{ mt: 4, mb: 2 }}>
+              <Stack
+                spacing={2}
+                alignItems="center"
+                sx={{
+                  mt: { xs: 3, sm: 4 },
+                  mb: 2,
+                  px: { xs: 1, sm: 0 },
+                }}
+              >
                 <Pagination
                   count={totalPages}
                   page={currentPage}
@@ -1024,11 +1274,15 @@ export default function FinalResult() {
                   color="primary"
                   size="large"
                   disabled={pageLoading}
+                  siblingCount={0}
+                  boundaryCount={1}
                   sx={{
                     "& .MuiPaginationItem-root": {
                       color: "white",
-                      fontSize: "1rem",
+                      fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" },
                       fontWeight: 500,
+                      minWidth: { xs: "32px", sm: "36px" },
+                      height: { xs: "32px", sm: "36px" },
                       "&.Mui-selected": {
                         backgroundColor: "#A657AE",
                         color: "white",
@@ -1045,7 +1299,13 @@ export default function FinalResult() {
                     },
                   }}
                 />
-                <Typography sx={{ color: "white", fontSize: "0.9rem" }}>
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: { xs: "0.8rem", sm: "0.85rem", md: "0.9rem" },
+                    textAlign: "center",
+                  }}
+                >
                   {t("finalResult.pageInfo", {
                     totalItems: totalElements,
                   })}
