@@ -13,6 +13,12 @@ export default function ThirdFormPage() {
   usePageTitle("Unizy | Third Form");
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const dgnlLimit = Number(import.meta.env.VITE_DGNL_LIMIT);
+  const vsatminLimit = Number(import.meta.env.VITE_VSAT_MIN_LIMIT);
+  const vsatmaxLimit = Number(import.meta.env.VITE_VSAT_MAX_LIMIT);
+  const talentLimit = Number(import.meta.env.VITE_NANG_KHIEU_LIMMIT);
+
   const { formData, updateThirdForm } = useFormData();
 
   // Add explicit error state
@@ -87,25 +93,25 @@ export default function ThirdFormPage() {
 
       // V-SAT specific validation
       if (category.name === "V-SAT") {
-        if (filledScores.length > 0 && filledScores.length < 3) {
+        if (filledScores.length > 0 && filledScores.length < vsatminLimit) {
           return false; // Invalid - needs at least 3
         }
-        if (filledScores.length > 8) {
+        if (filledScores.length > vsatmaxLimit) {
           return false; // Invalid - max 8
         }
       }
 
       // ĐGNL specific validation
       if (category.name === "ĐGNL") {
-        if (filledScores.length > 3) {
+        if (filledScores.length > dgnlLimit) {
           return false; // Invalid - max 3
         }
       }
 
       // Năng khiếu specific validation
       if (category.name === "Năng khiếu") {
-        if (filledScores.length > 3) {
-          return false; // Invalid - max 3
+        if (filledScores.length > talentLimit) {
+          return false; // Invalid - max 12
         }
       }
 

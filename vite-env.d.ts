@@ -12,7 +12,9 @@ interface ImportMetaEnv {
   readonly VITE_MAXSIZE_UPLOAD_MB: string;
   readonly VITE_SLIDER_MIN: string;
   readonly VITE_SLIDER_MAX: string;
-  readonly VITE_MAX_ENTRIES_PER_CATEGORY: string;
+  readonly VITE_MAX_NATIONAL_AWARD_ENTRIES: string;
+  readonly VITE_MAX_LANGUAGE_CERT_ENTRIES: string;
+  readonly VITE_MAX_INTERNATIONAL_CERT_ENTRIES: string;
   readonly VITE_ITEMS_PER_PAGE: string;
   readonly VITE_DATA_EXPIRATION_TIME: string;
   readonly VITE_GUEST_INACTIVITY_DURATION: string;
@@ -24,6 +26,10 @@ interface ImportMetaEnv {
   readonly VITE_RETRY_DELAY: string;
   readonly VITE_USE_EXPONENTIAL_BACKOFF: string;
   readonly VITE_MAX_BACKOFF_DELAYS: string;
+  readonly VITE_DGNL_LIMIT: string;
+  readonly VITE_VSAT_MIN_LIMIT: string;
+  readonly VITE_VSAT_MAX_LIMIT: string;
+  readonly VITE_NANG_KHIEU_LIMMIT: string;
 
   // Add any other VITE_ variables you use
 }
