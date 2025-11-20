@@ -34,6 +34,11 @@ interface ThirdFormOptionalProps {
 }
 
 export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
+  const dgnlLimit = Number(import.meta.env.VITE_DGNL_LIMIT);
+  const vsatminLimit = Number(import.meta.env.VITE_VSAT_MIN_LIMIT);
+  const vsatmaxLimit = Number(import.meta.env.VITE_VSAT_MAX_LIMIT);
+  const talentLimit = Number(import.meta.env.VITE_NANG_KHIEU_LIMMIT);
+
   const { showErrors = false } = props;
   const {
     categories,
@@ -139,7 +144,10 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
               category.name === "V-SAT" &&
               (() => {
                 // Minimum validation
-                if (filledScores.length > 0 && filledScores.length < 3) {
+                if (
+                  filledScores.length > 0 &&
+                  filledScores.length < vsatminLimit
+                ) {
                   return (
                     <Alert
                       severity="error"
@@ -163,7 +171,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 }
 
                 // Maximum validation
-                if (filledScores.length > 8) {
+                if (filledScores.length > vsatmaxLimit) {
                   return (
                     <Alert
                       severity="error"
@@ -193,7 +201,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
             {showErrors &&
               category.name === "ĐGNL" &&
               (() => {
-                if (filledScores.length > 3) {
+                if (filledScores.length > dgnlLimit) {
                   return (
                     <Alert
                       severity="error"
@@ -222,7 +230,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
             {showErrors &&
               category.name === "Năng khiếu" &&
               (() => {
-                if (filledScores.length > 3) {
+                if (filledScores.length > talentLimit) {
                   return (
                     <Alert
                       severity="error"

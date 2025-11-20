@@ -27,9 +27,9 @@ interface CategoryScoreConfig {
 // Configuration for all optional exam categories
 export const OPTIONAL_EXAM_CONFIGS: Record<string, CategoryScoreConfig> = {
   DGNL: {
-    maxEntries: 3,
-    minRequiredEntries: 0, // No minimum requirement
-    decimalPlaces: 0, // No decimal places allowed (whole numbers only)
+    maxEntries: Number(import.meta.env.VITE_DGNL_LIMIT),
+    minRequiredEntries: 0,
+    decimalPlaces: 0,
     defaultRange: { min: 0, max: 100 },
     subjectSpecificRanges: {
       "examTypes.hsa": { min: 0, max: 150 },
@@ -43,19 +43,19 @@ export const OPTIONAL_EXAM_CONFIGS: Record<string, CategoryScoreConfig> = {
       languageScore: { min: 0, max: 400 },
       mathScore: { min: 0, max: 300 },
       scienceLogic: { min: 0, max: 500 },
-      decimalPlaces: 2, // Allow 2 decimal places for sub-scores
+      decimalPlaces: 0,
     },
   },
   "V-SAT": {
-    maxEntries: 8, // Maximum 8 subjects
-    minRequiredEntries: 3, // Must have at least 3 subjects if started
-    decimalPlaces: 0, // No decimal places allowed (whole numbers only)
+    maxEntries: Number(import.meta.env.VITE_VSAT_MAX_LIMIT),
+    minRequiredEntries: Number(import.meta.env.VITE_VSAT_MIN_LIMIT),
+    decimalPlaces: 0,
     defaultRange: { min: 0, max: 150 },
   },
   "Năng khiếu": {
-    maxEntries: 12, // Maximum 3 subjects
-    minRequiredEntries: 0, // No minimum requirement
-    decimalPlaces: 2, // Allow up to 2 decimal places
+    maxEntries: Number(import.meta.env.VITE_NANG_KHIEU_LIMMIT),
+    minRequiredEntries: 0,
+    decimalPlaces: 2,
     defaultRange: { min: 0, max: 10 },
   },
 };

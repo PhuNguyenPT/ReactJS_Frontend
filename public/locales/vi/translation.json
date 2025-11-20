@@ -85,18 +85,20 @@
   },
   "validation": {
     "email": {
-      "required": "Email là bắt buộc",
-      "invalid": "Định dạng email không hợp lệ",
-      "string": "Email phải là chuỗi ký tự"
+      "string": "Email phải là giá trị văn bản",
+      "invalid": "Vui lòng nhập địa chỉ email hợp lệ",
+      "englishOnly": "Email chỉ được chứa ký tự tiếng Anh",
+      "required": "Email là bắt buộc"
     },
     "password": {
       "required": "Mật khẩu là bắt buộc",
       "string": "Mật khẩu phải là chuỗi ký tự",
+      "englishOnly": "Mật khẩu chỉ được chứa ký tự tiếng Anh và ký tự",
       "pattern": "Mật khẩu phải từ 8-128 ký tự và bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt."
     },
     "confirmPassword": {
+      "string": "Xác nhận mật khẩu phải là giá trị văn bản",
       "required": "Vui lòng xác nhận mật khẩu",
-      "string": "Xác nhận mật khẩu phải là chuỗi ký tự",
       "match": "Mật khẩu không khớp"
     }
   },
@@ -437,6 +439,26 @@
       "forbidden": "Bạn không có quyền truy cập vào tài nguyên này",
       "failedToFetch": "Không thể tải lịch sử dự đoán",
       "unknownError": "Đã xảy ra lỗi không xác định"
+    }
+  },
+  "studentProfile": {
+    "status": {
+      "uploadingFiles": "Đang tải tệp lên...",
+      "filesUploaded": "Tải tệp lên thành công",
+      "submittingProfile": "Đang gửi hồ sơ học sinh...",
+      "retryingSubmission": "Đang thử lại lần {{attempt}}/{{maxAttempts}}...",
+      "retryingIn": "Thử lại sau {{seconds}} giây...",
+      "preparing": "Đang chuẩn bị gửi...",
+      "profileSubmitted": "Gửi hồ sơ thành công",
+      "processingOcr": "Đang xử lý OCR...",
+      "cleaningUp": "Đang dọn dẹp...",
+      "complete": "Hoàn thành gửi hồ sơ!"
+    },
+    "errors": {
+      "submissionFailed": "Gửi thất bại sau tất cả các lần thử lại",
+      "noStudentId": "Không nhận được mã học sinh từ máy chủ",
+      "submissionGeneric": "Gửi thất bại. Vui lòng thử lại.",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
     }
   }
 }

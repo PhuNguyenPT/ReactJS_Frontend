@@ -3,6 +3,9 @@ import { IsEmail, IsNotEmpty, IsString, Matches } from "class-validator";
 export class SignupDto {
   @IsString({ message: "validation.email.string" })
   @IsEmail({}, { message: "validation.email.invalid" })
+  @Matches(/^[a-zA-Z0-9@._+-]+$/, {
+    message: "validation.email.englishOnly",
+  })
   @IsNotEmpty({ message: "validation.email.required" })
   email!: string;
 

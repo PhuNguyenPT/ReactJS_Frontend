@@ -37,10 +37,14 @@ interface Category {
 
 // Maximum entries configuration - now separate for each category
 const MAX_NATIONAL_AWARD_ENTRIES = Number(
-  import.meta.env.VITE_MAX_ENTRIES_PER_CATEGORY || 3,
+  import.meta.env.VITE_MAX_NATIONAL_AWARD_ENTRIES,
 );
-const MAX_INTERNATIONAL_CERT_ENTRIES = 3;
-const MAX_LANGUAGE_CERT_ENTRIES = 3;
+const MAX_INTERNATIONAL_CERT_ENTRIES = Number(
+  import.meta.env.VITE_MAX_INTERNATIONAL_CERT_ENTRIES,
+);
+const MAX_LANGUAGE_CERT_ENTRIES = Number(
+  import.meta.env.VITE_MAX_LANGUAGE_CERT_ENTRIES,
+);
 
 export const useFourthForm = () => {
   const { t } = useTranslation();

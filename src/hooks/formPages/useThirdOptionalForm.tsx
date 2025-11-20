@@ -15,7 +15,6 @@ import {
   validateOptionalExamScoreValue,
   getOptionalExamScorePlaceholder,
   getOptionalExamScoreRangeInfo,
-  // VNUHCM sub-score functions
   getVNUHCMSubScoreLimits,
   validateVNUHCMSubScore,
   formatVNUHCMSubScoreOnBlur,
@@ -138,10 +137,7 @@ export const useThirdOptionalForm = ({
     if (score.subject && isVNUHCM(score.subject)) {
       // Check if all VNUHCM sub-scores are provided
       if (!score.languageScore || !score.mathScore || !score.scienceLogic) {
-        errors.push(
-          t("thirdForm.vnuhcmSubScoresRequired") ||
-            "All VNUHCM component scores are required",
-        );
+        errors.push(t("thirdForm.vnuhcmSubScoresRequired"));
       } else {
         // Validate each sub-score
         const langError = validateVNUHCMSubScoreLocal(
@@ -173,9 +169,7 @@ export const useThirdOptionalForm = ({
 
       // CASE 2: Score is filled but subject is empty (shouldn't happen with UI controls, but adding for safety)
       if (!score.subject && score.score) {
-        errors.push(
-          t("thirdForm.subjectRequiredError") || "Subject is required",
-        );
+        errors.push(t("thirdForm.subjectRequiredError"));
       }
 
       // Validate score value against limits

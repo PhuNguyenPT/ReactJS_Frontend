@@ -85,18 +85,20 @@
   },
   "validation": {
     "email": {
-      "required": "Email is required",
-      "invalid": "Invalid email format",
-      "string": "Email must be a string"
+      "string": "Email must be a text value",
+      "invalid": "Please enter a valid email address",
+      "englishOnly": "Email must contain only English characters",
+      "required": "Email is required"
     },
     "password": {
       "required": "Password is required",
-      "string": "Password must be a string",
+      "string": "Password must be a text value",
+      "englishOnly": "Password must contain only English characters and symbols",
       "pattern": "Password must be 8-128 characters and include uppercase, lowercase, number, and special character."
     },
     "confirmPassword": {
+      "string": "Confirm password must be a text value",
       "required": "Please confirm your password",
-      "string": "Confirm password must be a string",
       "match": "Passwords do not match"
     }
   },
@@ -437,6 +439,26 @@
       "forbidden": "You don't have permission to access this resource",
       "failedToFetch": "Failed to fetch prediction history",
       "unknownError": "An unknown error occurred"
+    }
+  },
+  "studentProfile": {
+    "status": {
+      "uploadingFiles": "Uploading files...",
+      "filesUploaded": "Files uploaded successfully",
+      "submittingProfile": "Submitting student profile...",
+      "retryingSubmission": "Retrying submission ({{attempt}}/{{maxAttempts}})...",
+      "retryingIn": "Retrying in {{seconds}} seconds...",
+      "preparing": "Preparing submission...",
+      "profileSubmitted": "Profile submitted successfully",
+      "processingOcr": "Processing OCR...",
+      "cleaningUp": "Cleaning up...",
+      "complete": "Submission complete!"
+    },
+    "errors": {
+      "submissionFailed": "Submission failed after all retries",
+      "noStudentId": "No student ID received from server",
+      "submissionGeneric": "Submission failed. Please try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again."
     }
   }
 }

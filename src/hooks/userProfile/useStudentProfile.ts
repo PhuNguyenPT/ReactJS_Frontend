@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import axios, { AxiosError } from "axios";
 import { useFormData } from "../../contexts/FormData/useFormData";
 import { useFileData } from "../../contexts/FileData/useFileData";
@@ -34,6 +35,7 @@ interface UseStudentProfileReturn {
 
 export function useStudentProfile(): UseStudentProfileReturn {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { getFormDataForApi } = useFormData();
   const { getAllEighthFormFiles, clearEighthFormFiles } = useFileData();
   const { processOcr, isOcrSuccessful } = useOcrHandler();
@@ -60,7 +62,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
     }
 
     try {
-      setProcessingStatus("Uploading files...");
+      setProcessingStatus(t("studentProfile.status.uploadingFiles"));
       const filePayloads = files.map(({ grade, semester, file }) => ({
         grade,
         semester: semester + 1,
@@ -71,7 +73,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
       const statusMessage = getUploadStatusMessage(response, isAuthenticated);
       if (isUploadSuccessful(response)) {
-        setProcessingStatus("Files uploaded successfully");
+        setProcessingStatus(t("studentProfile.status.filesUploaded"));
       } else {
         console.warn(statusMessage);
       }
@@ -94,8 +96,11 @@ export function useStudentProfile(): UseStudentProfileReturn {
         setRetryProgress({ attempt, maxAttempts });
         setProcessingStatus(
           attempt === 1
-            ? "Submitting student profile..."
-            : `Retrying submission (${String(attempt)}/${String(maxAttempts)})...`,
+            ? t("studentProfile.status.submittingProfile")
+            : t("studentProfile.status.retryingSubmission", {
+                attempt: String(attempt),
+                maxAttempts: String(maxAttempts),
+              }),
         );
 
         const response = await submitStudentProfile(formData);
@@ -109,21 +114,23 @@ export function useStudentProfile(): UseStudentProfileReturn {
         if (attempt < maxAttempts) {
           const delayTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
           setProcessingStatus(
-            `Retrying in ${String(delayTime / 1000)} seconds...`,
+            t("studentProfile.status.retryingIn", {
+              seconds: String(delayTime / 1000),
+            }),
           );
           await delay(delayTime);
         }
       }
     }
 
-    throw lastError ?? new Error("Submission failed after all retries");
+    throw lastError ?? new Error(t("studentProfile.errors.submissionFailed"));
   };
 
   const handleSubmit = async (): Promise<void> => {
     setError(null);
     setIsSubmitting(true);
     setUploadProgress(0);
-    setProcessingStatus("Preparing submission...");
+    setProcessingStatus(t("studentProfile.status.preparing"));
     setRetryProgress({ attempt: 0, maxAttempts: 3 });
 
     try {
@@ -136,12 +143,12 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
       if (response.success ?? true) {
         setUploadProgress(50);
-        setProcessingStatus("Profile submitted successfully");
+        setProcessingStatus(t("studentProfile.status.profileSubmitted"));
 
         const studentId = hasUserId(response);
 
         if (!studentId) {
-          throw new Error("No student ID received from server");
+          throw new Error(t("studentProfile.errors.noStudentId"));
         }
 
         // Save studentId with proper tracking
@@ -154,7 +161,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
         // Step 3: Trigger OCR processing
         if (isUploadSuccessful(fileUploadResponse)) {
-          setProcessingStatus("Processing OCR...");
+          setProcessingStatus(t("studentProfile.status.processingOcr"));
         }
 
         const ocrResponse = isUploadSuccessful(fileUploadResponse)
@@ -164,11 +171,11 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
         if (isUploadSuccessful(fileUploadResponse)) {
           clearEighthFormFiles();
-          setProcessingStatus("Cleaning up...");
+          setProcessingStatus(t("studentProfile.status.cleaningUp"));
         }
 
         setUploadProgress(100);
-        setProcessingStatus("Submission complete!");
+        setProcessingStatus(t("studentProfile.status.complete"));
 
         const navigationState: NinthFormNavigationState = {
           submissionSuccess: true,
@@ -185,12 +192,14 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
         void navigate("/ninthForm", { state: navigationState });
       } else {
-        setError(response.message ?? "Submission failed. Please try again.");
+        setError(
+          response.message ?? t("studentProfile.errors.submissionGeneric"),
+        );
       }
     } catch (err: unknown) {
       console.error("Error submitting form:", err);
 
-      let message = "An unexpected error occurred. Please try again.";
+      let message = t("studentProfile.errors.unexpectedError");
 
       if (err instanceof APIError) {
         const errorData = err.data as ErrorDetails;
