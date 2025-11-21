@@ -1,6 +1,8 @@
 import { CircularProgress, Box } from "@mui/material";
+import { useTranslation } from "../../../hooks/locales/useTranslation";
 
 const LoadingComponent = () => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="background" />
@@ -40,7 +42,7 @@ const LoadingComponent = () => {
               fontFamily: "Poppins, sans-serif",
             }}
           >
-            Loading...
+            {t("common.loading")}
           </Box>
         </Box>
       </Box>

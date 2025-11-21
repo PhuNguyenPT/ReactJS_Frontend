@@ -13,22 +13,23 @@ import {
 import LanguageIcon from "@mui/icons-material/Language";
 import { useTranslation } from "../../../hooks/locales/useTranslation";
 
-// Language options
+// Language options with proper typing
 const languages = [
   {
-    code: "en",
-    name: "English",
+    code: "en" as const,
     flag: "🇺🇸",
   },
   {
-    code: "vi",
-    name: "Tiếng Việt",
+    code: "vi" as const,
     flag: "🇻🇳",
   },
 ] as const;
 
+// Extract language codes as a union type
+type LanguageCode = (typeof languages)[number]["code"];
+
 const LanguageSwitcher: React.FC = () => {
-  const { currentLanguage, changeLanguage } = useTranslation();
+  const { currentLanguage, changeLanguage, t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -57,10 +58,15 @@ const LanguageSwitcher: React.FC = () => {
   // Get current language details for display
   const currentLang = languages.find((lang) => lang.code === currentLanguage);
 
+  // Get language name based on current language - properly typed
+  const getLanguageName = (code: LanguageCode) => {
+    return t(`language.${code}` as const);
+  };
+
   return (
     <>
       <Tooltip
-        title="Change Language"
+        title={t("language.changeLanguage")}
         // Disable tooltip on mobile for better UX
         disableHoverListener={isMobile}
         disableTouchListener={isMobile}
@@ -88,16 +94,16 @@ const LanguageSwitcher: React.FC = () => {
               sm: "8px",
               md: "10px",
             },
-            // Minimum touch target size for mobile (48x48px recommended)
+            // Minimum touch target size for mobile
             minWidth: {
-              xs: 40,
-              sm: 44,
-              md: 48,
+              xs: 30,
+              sm: 34,
+              md: 38,
             },
             minHeight: {
-              xs: 40,
-              sm: 44,
-              md: 48,
+              xs: 30,
+              sm: 34,
+              md: 38,
             },
             "&:active": {
               transform: "scale(0.95)",
@@ -106,7 +112,7 @@ const LanguageSwitcher: React.FC = () => {
           aria-controls={open ? "language-menu" : undefined}
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
-          aria-label={`Current language: ${currentLang?.name ?? "Unknown"}. Click to change language.`}
+          aria-label={`${t("language.currentLanguage")}: ${currentLang ? getLanguageName(currentLang.code) : t("language.unknown")}. ${t("language.clickToChange")}`}
           color="inherit"
         >
           {/* Show current language code instead of flag */}
@@ -127,7 +133,7 @@ const LanguageSwitcher: React.FC = () => {
                   sm: "0.75px",
                   md: "1px",
                 },
-                lineHeight: 1,
+                lineHeight: 0,
                 color: "inherit",
                 userSelect: "none",
               }}
@@ -163,9 +169,9 @@ const LanguageSwitcher: React.FC = () => {
                 md: 180,
               },
               mt: {
-                xs: 0.5,
-                sm: 1,
-                md: 1.5,
+                xs: 0.25,
+                sm: 0.5,
+                md: 1,
               },
               maxWidth: {
                 xs: 200,
@@ -173,9 +179,9 @@ const LanguageSwitcher: React.FC = () => {
                 md: "auto",
               },
               borderRadius: {
-                xs: 2,
-                sm: 2,
-                md: 2,
+                xs: 3,
+                sm: 3,
+                md: 3,
               },
               boxShadow: isMobile
                 ? "0px 4px 12px rgba(0, 0, 0, 0.15)"
@@ -274,7 +280,7 @@ const LanguageSwitcher: React.FC = () => {
               </ListItemIcon>
 
               <ListItemText
-                primary={language.name}
+                primary={getLanguageName(language.code)}
                 slotProps={{
                   primary: {
                     sx: {

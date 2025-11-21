@@ -26,7 +26,7 @@ export default function HistoryPage() {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          paddingTop: { xs: "3rem", sm: "3.5rem", md: "4rem" },
+          paddingTop: { xs: "5rem", sm: "5rem", md: "4rem" },
           paddingX: { xs: "1rem", sm: "1.5rem", md: "2rem" },
         }}
       >

@@ -16,7 +16,21 @@
     "loading": "Đang tải...",
     "error": "Đã xảy ra lỗi",
     "success": "Thành công!",
-    "skip": "Bỏ qua"
+    "skip": "Bỏ qua",
+    "months": {
+      "0": "Tháng 1",
+      "1": "Tháng 2",
+      "2": "Tháng 3",
+      "3": "Tháng 4",
+      "4": "Tháng 5",
+      "5": "Tháng 6",
+      "6": "Tháng 7",
+      "7": "Tháng 8",
+      "8": "Tháng 9",
+      "9": "Tháng 10",
+      "10": "Tháng 11",
+      "11": "Tháng 12"
+    }
   },
   "navigation": {
     "dashboard": "Bảng điều khiển",
@@ -50,6 +64,14 @@
   },
   "contents": {
     "start": "BẮT ĐẦU"
+  },
+  "language": {
+    "en": "Tiếng Anh",
+    "vi": "Tiếng Việt",
+    "changeLanguage": "Đổi ngôn ngữ",
+    "currentLanguage": "Ngôn ngữ hiện tại",
+    "unknown": "Không xác định",
+    "clickToChange": "Nhấn để đổi ngôn ngữ"
   },
   "loginForm": {
     "title": "Chào mừng bạn tới Unizy",
@@ -460,5 +482,15 @@
       "submissionGeneric": "Gửi thất bại. Vui lòng thử lại.",
       "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại."
     }
+  },
+  "admission": {
+    "noResponse": "Không nhận được phản hồi kết quả xét tuyển",
+    "successAuthenticated": "Đã lấy dữ liệu xét tuyển thành công cho người dùng đã đăng nhập",
+    "successGuest": "Đã lấy dữ liệu xét tuyển thành công cho khách",
+    "processing": "Quá trình xét tuyển vẫn đang được xử lý. Vui lòng thử lại sau giây lát.",
+    "unableToRetrieve": "Không thể lấy dữ liệu xét tuyển vào lúc này",
+    "retrievedPrograms": "Đã lấy thành công {{count}} chương trình xét tuyển",
+    "mlProcessing": "Đang xử lý ML...",
+    "waitingMl": "Đang chờ ML bắt đầu xử lý..."
   }
 }

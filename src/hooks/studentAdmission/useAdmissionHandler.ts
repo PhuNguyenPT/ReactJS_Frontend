@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   getAdmissionForStudent,
   type AdmissionResponse,
@@ -38,82 +39,89 @@ const isAdmissionSuccessful = (response: AdmissionResponse | null): boolean => {
 };
 
 /**
- * Get a status message based on the admission response
- * @param response - The admission response
- * @param isAuthenticated - Whether the user is authenticated
- * @returns Status message string
- */
-const getAdmissionStatusMessage = (
-  response: AdmissionResponse | null,
-  isAuthenticated: boolean,
-): string => {
-  if (!response) {
-    return "No admission response received";
-  }
-
-  if (isAdmissionSuccessful(response)) {
-    return `Successfully retrieved admission data for ${isAuthenticated ? "authenticated" : "guest"} user`;
-  }
-
-  if (response.data) {
-    return "Admission processing is still in progress. Please try again in a moment.";
-  }
-
-  return "Unable to retrieve admission data at this time";
-};
-
-/**
- * Extract progress information from admission response
- * Note: Admission doesn't have granular progress, so we estimate based on data presence
- */
-const getAdmissionProgress = (
-  response: AdmissionResponse,
-): { processed: number; total: number; statusMessage?: string } => {
-  // Admission is binary: either we have results or we don't
-  // We use a simple 0/1 or 1/1 approach for progress tracking
-
-  if (isAdmissionSuccessful(response)) {
-    // Count number of programs for more detailed feedback
-    let programCount = 0;
-    if (Array.isArray(response.data)) {
-      programCount = response.data.length;
-    } else if (
-      response.data &&
-      typeof response.data === "object" &&
-      "content" in response.data &&
-      Array.isArray(response.data.content)
-    ) {
-      programCount = response.data.content.length;
-    }
-
-    return {
-      processed: 1,
-      total: 1,
-      statusMessage: `Successfully retrieved ${String(programCount)} admission programs`,
-    };
-  }
-
-  // Check if we have partial data (response exists but not successful yet)
-  if (response.data) {
-    return {
-      processed: 0,
-      total: 1,
-      statusMessage: "ML processing in progress...",
-    };
-  }
-
-  return {
-    processed: 0,
-    total: 1,
-    statusMessage: "Waiting for ML to start processing...",
-  };
-};
-
-/**
  * Custom hook for handling admission processing with advanced retry logic
  */
 export function useAdmissionHandler() {
+  const { t } = useTranslation();
   const { processWithRetry } = useRetryHandler();
+
+  /**
+   * Get a status message based on the admission response
+   * @param response - The admission response
+   * @param isAuthenticated - Whether the user is authenticated
+   * @returns Status message string
+   */
+  const getAdmissionStatusMessage = (
+    response: AdmissionResponse | null,
+    isAuthenticated: boolean,
+  ): string => {
+    if (!response) {
+      return t("admission.noResponse");
+    }
+
+    if (isAdmissionSuccessful(response)) {
+      return t(
+        isAuthenticated
+          ? "admission.successAuthenticated"
+          : "admission.successGuest",
+      );
+    }
+
+    if (response.data) {
+      return t("admission.processing");
+    }
+
+    return t("admission.unableToRetrieve");
+  };
+
+  /**
+   * Extract progress information from admission response
+   * Note: Admission doesn't have granular progress, so we estimate based on data presence
+   */
+  const getAdmissionProgress = (
+    response: AdmissionResponse,
+  ): { processed: number; total: number; statusMessage?: string } => {
+    // Admission is binary: either we have results or we don't
+    // We use a simple 0/1 or 1/1 approach for progress tracking
+
+    if (isAdmissionSuccessful(response)) {
+      // Count number of programs for more detailed feedback
+      let programCount = 0;
+      if (Array.isArray(response.data)) {
+        programCount = response.data.length;
+      } else if (
+        response.data &&
+        typeof response.data === "object" &&
+        "content" in response.data &&
+        Array.isArray(response.data.content)
+      ) {
+        programCount = response.data.content.length;
+      }
+
+      return {
+        processed: 1,
+        total: 1,
+        statusMessage: t("admission.retrievedPrograms", {
+          count: programCount,
+        }),
+      };
+    }
+
+    // Check if we have partial data (response exists but not successful yet)
+    if (response.data) {
+      return {
+        processed: 0,
+        total: 1,
+        statusMessage: t("admission.mlProcessing"),
+      };
+    }
+
+    return {
+      processed: 0,
+      total: 1,
+      statusMessage: t("admission.waitingMl"),
+    };
+  };
 
   /**
    * Handle admission processing with exponential backoff retry logic
