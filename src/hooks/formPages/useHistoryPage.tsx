@@ -123,23 +123,45 @@ export function useHistoryPage() {
     void navigate("/");
   }, [navigate]);
 
-  // Format date string to readable format
-  const formatDate = useCallback((dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }, []);
+  // Format date string with translated short month name in format: dd Month yy
+  const formatDate = useCallback(
+    (dateString: string) => {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const monthIndex = date.getMonth(); // 0-11
+      const year = String(date.getFullYear());
 
-  // Format time string to readable format
+      // Get translated short month name
+      const monthName = t(`common.months.${String(monthIndex)}`);
+
+      return `${day} ${monthName} ${year}`;
+    },
+    [t],
+  );
+
+  // Format date with full translated month name (e.g., "15 January 2024" or "15 Tháng 1 2024")
+  const formatDateWithMonth = useCallback(
+    (dateString: string) => {
+      const date = new Date(dateString);
+      const day = date.getDate();
+      const monthIndex = date.getMonth(); // 0-11
+      const year = date.getFullYear();
+
+      // Get translated month name
+      const monthName = t(`common.months.${String(monthIndex)}`);
+
+      return `${String(day)} ${monthName} ${String(year)}`;
+    },
+    [t],
+  );
+
+  // Format time string to 24-hour format
   const formatTime = useCallback((dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${hours}:${minutes}`;
   }, []);
 
   // Get relative time string (e.g., "Today", "Yesterday", "3 days ago")
@@ -203,6 +225,7 @@ export function useHistoryPage() {
 
     // Formatters
     formatDate,
+    formatDateWithMonth,
     formatTime,
     getRelativeTime,
   };

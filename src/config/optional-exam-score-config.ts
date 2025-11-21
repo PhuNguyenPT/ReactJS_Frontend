@@ -109,7 +109,7 @@ export const getVNUHCMSubScoreDecimalPlaces = (
   categoryName: string,
 ): number => {
   const config = getVNUHCMSubScoreConfig(categoryName);
-  return config?.decimalPlaces ?? 2;
+  return config?.decimalPlaces ?? 0;
 };
 
 /**
@@ -129,10 +129,7 @@ export const calculateVNUHCMTotalScore = (
   }
 
   const total = lang + math + science;
-
-  // Format to remove trailing zeros
-  const formatted = total.toFixed(2);
-  return formatted.replace(/\.?0+$/, "");
+  return total.toString();
 };
 
 /**
@@ -143,14 +140,25 @@ export const validateVNUHCMSubScore = (
   categoryName: string,
   field: "languageScore" | "mathScore" | "scienceLogic",
 ): string => {
-  // Allow empty string
   if (value === "") return "";
 
   const decimalPlaces = getVNUHCMSubScoreDecimalPlaces(categoryName);
   const limits = getVNUHCMSubScoreLimits(categoryName, field);
 
+  // If no decimal places allowed, block any input containing a dot
+  if (decimalPlaces === 0 && value.includes(".")) {
+    return value.replace(".", "");
+  }
+
   // Create regex based on decimal places allowed
-  const regex = new RegExp(`^\\d*\\.?\\d{0,${decimalPlaces.toString()}}$`);
+  let regex: RegExp;
+  if (decimalPlaces === 0) {
+    // Only integers allowed (no decimal point)
+    regex = /^\d*$/;
+  } else {
+    // Allow decimal point with specified number of decimal places
+    regex = new RegExp(`^\\d*\\.?\\d{0,${decimalPlaces.toString()}}$`);
+  }
 
   if (!regex.test(value)) {
     return value.slice(0, -1);
@@ -193,9 +201,12 @@ export const formatVNUHCMSubScoreOnBlur = (
   numValue = Math.min(Math.max(numValue, limits.min), limits.max);
 
   // Format with appropriate decimal places
-  const formatted = numValue.toFixed(decimalPlaces);
+  if (decimalPlaces === 0) {
+    return Math.round(numValue).toString();
+  }
 
-  // Remove trailing zeros
+  // Format with decimal places and remove trailing zeros
+  const formatted = numValue.toFixed(decimalPlaces);
   return formatted.replace(/\.?0+$/, "");
 };
 
@@ -207,7 +218,7 @@ export const validateVNUHCMSubScoreValue = (
   field: "languageScore" | "mathScore" | "scienceLogic",
   scoreValue: string,
 ): string | null => {
-  if (!scoreValue) return null; // Empty is valid
+  if (!scoreValue) return null;
 
   const numericScore = parseFloat(scoreValue);
   if (isNaN(numericScore)) {
@@ -223,8 +234,7 @@ export const validateVNUHCMSubScoreValue = (
   if (numericScore > limits.max) {
     return `Score cannot exceed ${limits.max.toString()}`;
   }
-
-  return null; // Valid
+  return null;
 };
 
 /**
