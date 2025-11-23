@@ -35,7 +35,7 @@ function Header() {
                 <Link to="/History">{t("header.viewHistory")}</Link>
               </li>
               <li className="username-section">
-                {displayName}
+                <span className="username-desktop">{displayName}</span>
                 <AccountMenu displayName={displayName} />
               </li>
             </>
