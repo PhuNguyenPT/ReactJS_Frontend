@@ -4,13 +4,12 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-  Divider,
   IconButton,
   Tooltip,
   useMediaQuery,
   useTheme,
+  Divider,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import useLogout from "../../../hooks/auth/useLogout";
 
@@ -19,7 +18,6 @@ interface AccountMenuProps {
 }
 
 export default function AccountMenu({ displayName }: AccountMenuProps) {
-  const navigate = useNavigate();
   const logout = useLogout();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -33,16 +31,6 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleMenuItemClick = (action: string) => {
-    handleClose();
-
-    switch (action) {
-      case "profile":
-        void navigate("/profile");
-        break;
-    }
   };
 
   // Get the first letter of displayName for avatar
@@ -104,13 +92,6 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
               filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
               mt: 1.5,
               minWidth: { xs: 180, sm: 200 },
-              "& .MuiAvatar-root": {
-                width: { xs: 28, sm: 32 },
-                height: { xs: 28, sm: 32 },
-                ml: -0.5,
-                mr: 1,
-                fontSize: { xs: "0.9rem", sm: "1rem" },
-              },
               "&::before": {
                 content: '""',
                 display: "block",
@@ -129,29 +110,37 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem
-          onClick={() => {
-            handleMenuItemClick("profile");
-          }}
-          sx={{
-            py: { xs: 1.2, sm: 1 },
-            px: { xs: 1.5, sm: 2 },
-            fontSize: { xs: "0.9rem", sm: "1rem" },
-            minHeight: { xs: 44, sm: 48 },
-          }}
-        >
-          <Avatar
-            sx={{
-              width: { xs: 28, sm: 32 },
-              height: { xs: 28, sm: 32 },
-              fontSize: { xs: "0.9rem", sm: "1rem" },
-            }}
-          >
-            {getAvatarLetter()}
-          </Avatar>
-          My Profile
-        </MenuItem>
-        <Divider />
+        {/* Show display name on mobile */}
+        {isMobile && displayName && (
+          <>
+            <MenuItem
+              disabled
+              sx={{
+                py: 1.2,
+                px: 1.5,
+                fontSize: "0.9rem",
+                opacity: 1,
+                "&.Mui-disabled": {
+                  opacity: 1,
+                },
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 28,
+                  height: 28,
+                  fontSize: "0.9rem",
+                  mr: 1.5,
+                }}
+              >
+                {getAvatarLetter()}
+              </Avatar>
+              {displayName}
+            </MenuItem>
+            <Divider />
+          </>
+        )}
+
         <MenuItem
           onClick={() => void logout()}
           sx={{

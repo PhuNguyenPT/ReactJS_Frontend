@@ -311,6 +311,16 @@ body.scrolling::-webkit-scrollbar-thumb {
   border-radius: 100%;
 }
 
+.username-desktop {
+  display: inline;
+  margin-right: 8px;
+}
+
+.username-section {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
 /* ============================================
    7. FOOTER
    ============================================ */
@@ -982,6 +992,10 @@ body.scrolling::-webkit-scrollbar-thumb {
   .grade-title {
     font-size: 1.1rem;
     padding-left: 15px;
+  }
+
+  .username-desktop {
+    display: none;
   }
 }
 
