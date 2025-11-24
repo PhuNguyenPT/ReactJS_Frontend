@@ -39,7 +39,7 @@ export default function NinthFormPage() {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          paddingTop: { xs: "3rem", sm: "4rem" },
+          paddingTop: { xs: "5rem", sm: "4rem" },
           paddingX: { xs: "0.5rem", sm: "1rem", md: "2rem" },
         }}
       >

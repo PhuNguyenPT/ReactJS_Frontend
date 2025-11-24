@@ -4,16 +4,29 @@ import { useTranslation } from "react-i18next";
 
 export default function LandingPage() {
   usePageTitle("Unizy | Home");
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+
+  // Determine which image to use based on current language
+  const landingTitleImage =
+    i18n.language === "en"
+      ? "/assets/images/landing-title-en.png"
+      : "/assets/images/landing-title.png";
+
+  // Alternative for alt text translation
+  const altText =
+    i18n.language === "en"
+      ? "Guide you to your dream university"
+      : "Hướng bạn tới trường đại học mơ ước";
+
   return (
     <>
       <div className="background" />
       <main className="content">
         <div className="landing-title-container">
           <img
-            src="/assets/images/landing-title.png"
-            alt="Hướng bạn tới trường đại học mơ ước"
+            src={landingTitleImage}
+            alt={altText}
             className="landing-title-img"
           />
         </div>

@@ -88,7 +88,7 @@ export default function EighthFormPage() {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          paddingTop: { xs: "4rem", sm: "5rem", md: "6rem" },
+          paddingTop: { xs: "5rem", sm: "5rem", md: "6rem" },
           paddingX: { xs: "1rem", sm: "1.5rem", md: "2rem" },
         }}
       >
