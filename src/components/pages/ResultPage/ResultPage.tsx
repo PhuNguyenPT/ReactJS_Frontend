@@ -42,7 +42,7 @@ export default function FinalResultPage() {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "100vh",
-          paddingTop: { xs: "3rem", sm: "3.5rem", md: "4rem" },
+          paddingTop: { xs: "5rem", sm: "3.5rem", md: "4rem" },
           paddingX: { xs: "0.5rem", sm: "1rem" },
         }}
       >
