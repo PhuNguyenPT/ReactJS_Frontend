@@ -21,10 +21,8 @@ export default function ThirdFormPage() {
 
   const { formData, updateThirdForm } = useFormData();
 
-  // Add explicit error state
   const [showErrors, setShowErrors] = useState(false);
 
-  // Get current third form data from context
   const {
     mathScore,
     literatureScore,
@@ -33,7 +31,6 @@ export default function ThirdFormPage() {
     optionalCategories,
   } = formData.thirdForm;
 
-  // Update functions that sync with context
   const setMathScore = (value: string) => {
     updateThirdForm({ mathScore: value });
     // Clear errors when user starts typing
@@ -57,7 +54,6 @@ export default function ThirdFormPage() {
 
   const setOptionalCategories = (value: typeof optionalCategories) => {
     updateThirdForm({ optionalCategories: value });
-    // Clear errors when user updates optional categories
     if (showErrors) setShowErrors(false);
   };
 
@@ -71,7 +67,6 @@ export default function ThirdFormPage() {
     );
   };
 
-  // Helper function to check if a subject is VNUHCM
   const isVNUHCM = (subject: string): boolean => {
     if (!subject) return false;
     const normalized = subject.toUpperCase();
@@ -122,14 +117,14 @@ export default function ThirdFormPage() {
           (score.subject && !score.score) ||
           (!score.subject && score.score)
         ) {
-          return false; // Invalid - incomplete entry
+          return false;
         }
 
         // VNUHCM specific validation - check if sub-scores are complete
         if (score.subject && isVNUHCM(score.subject)) {
           // If VNUHCM is selected, all three sub-scores must be filled
           if (!score.languageScore || !score.mathScore || !score.scienceLogic) {
-            return false; // Invalid - VNUHCM sub-scores incomplete
+            return false;
           }
 
           // Validate that sub-scores are valid numbers within range (0-600)
@@ -148,16 +143,15 @@ export default function ThirdFormPage() {
             scienceScore < 0 ||
             scienceScore > 600
           ) {
-            return false; // Invalid - sub-scores out of valid range
+            return false;
           }
         }
       }
     }
 
-    return true; // All valid
+    return true;
   };
 
-  // Pass showErrors directly as hasError
   const hasError = showErrors;
 
   const setHasError = (value: boolean) => {
@@ -176,7 +170,6 @@ export default function ThirdFormPage() {
       // Show errors when user tries to proceed with incomplete form
       setShowErrors(true);
 
-      // Optional: Scroll to first error
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -197,30 +190,10 @@ export default function ThirdFormPage() {
           }}
         >
           <div className="form-content">
-            <Box
-              component="h1"
-              className="form-title"
-              sx={{
-                fontSize: {
-                  xs: "1.5rem",
-                  sm: "1.75rem",
-                  md: "2rem",
-                },
-              }}
-            >
+            <Box component="h1" className="form-title">
               3 → {t("thirdForm.title")}
             </Box>
-            <Box
-              component="p"
-              className="form-subtitle"
-              sx={{
-                fontSize: {
-                  xs: "0.875rem",
-                  sm: "0.95rem",
-                  md: "1rem",
-                },
-              }}
-            >
+            <Box component="p" className="form-subtitle">
               {t("thirdForm.subTitle")}
             </Box>
 

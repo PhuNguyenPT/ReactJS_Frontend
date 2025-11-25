@@ -52,17 +52,7 @@ export default function SeventhFormPage() {
           }}
         >
           <div className="form-content-7">
-            <Box
-              component="h1"
-              className="form-title"
-              sx={{
-                fontSize: {
-                  xs: "1.5rem",
-                  sm: "1.75rem",
-                  md: "2rem",
-                },
-              }}
-            >
+            <Box component="h1" className="form-title">
               7 → {t("seventhForm.title")}
             </Box>
             <SeventhForm shouldValidate={shouldValidate} />

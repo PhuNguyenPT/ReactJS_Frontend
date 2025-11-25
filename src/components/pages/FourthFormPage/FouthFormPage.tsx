@@ -45,17 +45,7 @@ export default function FourthFormPage() {
           }}
         >
           <div className="form-content">
-            <Box
-              component="h1"
-              className="form-title"
-              sx={{
-                fontSize: {
-                  xs: "1.5rem",
-                  sm: "1.75rem",
-                  md: "2rem",
-                },
-              }}
-            >
+            <Box component="h1" className="form-title">
               4 → {t("fourthForm.title")}
             </Box>
             <FourthForm showErrors={showErrors} />

@@ -56,6 +56,15 @@ const FirstForm = ({ hasProvinceError, hasUniTypeError }: FirstFormProps) => {
             width: "100%",
           }}
           filterSelectedOptions
+          slotProps={{
+            paper: {
+              sx: {
+                "& .MuiAutocomplete-option": {
+                  fontFamily: "Montserrat",
+                },
+              },
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -85,6 +94,7 @@ const FirstForm = ({ hasProvinceError, hasUniTypeError }: FirstFormProps) => {
                 },
                 "& input": {
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   fontSize: {
                     xs: "0.875rem",
                     sm: "0.95rem",
@@ -114,17 +124,7 @@ const FirstForm = ({ hasProvinceError, hasUniTypeError }: FirstFormProps) => {
         </FormHelperText>
       </FormControl>
 
-      <Box
-        component="p"
-        className="form-subtitle"
-        sx={{
-          fontSize: {
-            xs: "0.875rem",
-            sm: "0.95rem",
-            md: "1rem",
-          },
-        }}
-      >
+      <Box component="p" className="form-subtitle">
         {t("firstForm.subTitle2")}
       </Box>
 
@@ -156,6 +156,15 @@ const FirstForm = ({ hasProvinceError, hasUniTypeError }: FirstFormProps) => {
             width: "100%",
           }}
           filterSelectedOptions
+          slotProps={{
+            paper: {
+              sx: {
+                "& .MuiAutocomplete-option": {
+                  fontFamily: "Montserrat",
+                },
+              },
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -185,6 +194,7 @@ const FirstForm = ({ hasProvinceError, hasUniTypeError }: FirstFormProps) => {
                 },
                 "& input": {
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   fontSize: {
                     xs: "0.875rem",
                     sm: "0.95rem",

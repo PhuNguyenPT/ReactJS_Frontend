@@ -76,11 +76,13 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                 variant="body1"
                 sx={{
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
+                  fontStyle: "italic",
                   fontSize: {
-                    xs: "0.875rem",
-                    sm: "0.95rem",
-                    md: "1rem",
+                    xs: "0.75rem",
+                    sm: "0.9rem",
+                    md: "1.1rem",
                   },
                 }}
               >
@@ -192,6 +194,15 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                             md: 200,
                           },
                         }}
+                        slotProps={{
+                          paper: {
+                            sx: {
+                              "& .MuiAutocomplete-option": {
+                                fontFamily: "Montserrat",
+                              },
+                            },
+                          },
+                        }}
                         filterSelectedOptions
                         renderInput={(params) => (
                           <TextField
@@ -222,6 +233,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                               },
                               "& input": {
                                 color: "#A657AE",
+                                fontFamily: "Montserrat",
                                 padding: {
                                   xs: "8px 12px",
                                   sm: "9px 14px",
@@ -292,6 +304,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                             },
                             "& input": {
                               color: "#A657AE",
+                              fontFamily: "Montserrat",
                               padding: {
                                 xs: "8px 12px",
                                 sm: "9px 14px",
@@ -322,6 +335,15 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                               xs: 110,
                               sm: 140,
                               md: 170,
+                            },
+                          }}
+                          slotProps={{
+                            paper: {
+                              sx: {
+                                "& .MuiAutocomplete-option": {
+                                  fontFamily: "Montserrat",
+                                },
+                              },
                             },
                           }}
                           filterSelectedOptions
@@ -370,6 +392,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                                 },
                                 "& input": {
                                   color: "#A657AE",
+                                  fontFamily: "Montserrat",
                                   padding: {
                                     xs: "8px 12px",
                                     sm: "9px 14px",
@@ -425,6 +448,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                           variant="caption"
                           sx={{
                             color: "#d32f2f",
+                            fontFamily: "Montserrat",
                             ml: 1,
                             textAlign: "left",
                             fontSize: {
@@ -475,6 +499,7 @@ export default function FourthForm({ showErrors = false }: FourthFormProps) {
                   sm: 0.7,
                   md: 0.8,
                 },
+                fontFamily: "Montserrat",
                 fontSize: {
                   xs: "0.8rem",
                   sm: "0.85rem",

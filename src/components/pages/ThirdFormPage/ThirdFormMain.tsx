@@ -79,11 +79,13 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
         md: "10px 16px",
       },
       color: "#A657AE",
+      fontFamily: "Montserrat",
     },
     "& .MuiInputBase-input.Mui-disabled": {
       WebkitTextFillColor: "#A657AE",
       color: "#A657AE",
       fontWeight: "500",
+      fontFamily: "Montserrat",
     },
     "& .MuiOutlinedInput-root.Mui-disabled fieldset": {
       borderColor: "#A657AE",
@@ -286,6 +288,15 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
                     md: "200px",
                   },
                 }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      "& .MuiAutocomplete-option": {
+                        fontFamily: "Montserrat",
+                      },
+                    },
+                  },
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -335,6 +346,7 @@ export default function ThirdFormMain(props: ThirdFormMainProps) {
                           md: "10px 16px",
                         },
                         color: "#A657AE",
+                        fontFamily: "Montserrat",
                       },
                     }}
                   />
