@@ -82,6 +82,7 @@ const SixthForm: React.FC = () => {
                 marginLeft: 0,
                 marginRight: 0,
                 "& .MuiFormControlLabel-label": {
+                  fontFamily: "Montserrat",
                   fontSize: {
                     xs: "0.95rem",
                     sm: "1.05rem",

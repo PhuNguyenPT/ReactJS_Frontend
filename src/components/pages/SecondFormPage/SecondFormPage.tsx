@@ -40,7 +40,7 @@ export default function SecondFormPage() {
       <div className="form-container">
         <Box
           sx={{
-            position: "relative", // Keep relative positioning for the container
+            position: "relative",
             display: "flex",
             flexDirection: "column",
           }}

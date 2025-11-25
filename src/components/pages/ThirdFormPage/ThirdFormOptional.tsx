@@ -126,10 +126,12 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                 sx={{
                   color: "#9c27b0",
                   textAlign: "left",
+                  fontStyle: "italic",
+                  fontFamily: "Montserrat",
                   fontSize: {
-                    xs: "0.875rem",
-                    sm: "0.95rem",
-                    md: "1rem",
+                    xs: "0.75rem",
+                    sm: "0.9rem",
+                    md: "1.1rem",
                   },
                 }}
               >
@@ -158,6 +160,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           md: 2,
                         },
                         width: "100%",
+                        fontFamily: "Montserrat",
                         fontSize: {
                           xs: "0.75rem",
                           sm: "0.8rem",
@@ -182,6 +185,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           md: 2,
                         },
                         width: "100%",
+                        fontFamily: "Montserrat",
                         fontSize: {
                           xs: "0.75rem",
                           sm: "0.8rem",
@@ -212,6 +216,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           md: 2,
                         },
                         width: "100%",
+                        fontFamily: "Montserrat",
                         fontSize: {
                           xs: "0.75rem",
                           sm: "0.8rem",
@@ -241,6 +246,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           md: 2,
                         },
                         width: "100%",
+                        fontFamily: "Montserrat",
                         fontSize: {
                           xs: "0.75rem",
                           sm: "0.8rem",
@@ -325,6 +331,15 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                             md: 200,
                           },
                         }}
+                        slotProps={{
+                          paper: {
+                            sx: {
+                              "& .MuiAutocomplete-option": {
+                                fontFamily: "Montserrat",
+                              },
+                            },
+                          },
+                        }}
                         filterSelectedOptions
                         renderInput={(params) => (
                           <TextField
@@ -359,6 +374,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               },
                               "& input": {
                                 color: "#A657AE",
+                                fontFamily: "Montserrat",
                                 padding: {
                                   xs: "8px 12px",
                                   sm: "9px 14px",
@@ -370,9 +386,9 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                         )}
                       />
 
-                      {/* Score Input/Display - For VNUHCM shows total (read-only), for others editable */}
+                      {/* Score Input/Display - For VNUHCM shows total*/}
                       {isVNUHCM ? (
-                        // VNUHCM Total Score Display (Read-only)
+                        // VNUHCM Total Score Display
                         <Box
                           sx={{
                             width: {
@@ -406,6 +422,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               md: "0.9rem",
                             },
                             color: "#A657AE",
+                            fontFamily: "Montserrat",
                             fontWeight: 500,
                           }}
                         >
@@ -471,6 +488,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                             "& .MuiInputBase-input": {
                               textAlign: "left",
                               color: "#A657AE",
+                              fontFamily: "Montserrat",
                               padding: {
                                 xs: "8px 12px",
                                 sm: "9px 14px",
@@ -557,6 +575,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           variant="caption"
                           sx={{
                             color: "#9c27b0",
+                            fontFamily: "Montserrat",
                             fontWeight: 600,
                             fontSize: {
                               xs: "0.8rem",
@@ -599,11 +618,13 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                                 md: "0.9rem",
                               },
                               color: "#A657AE",
+                              fontFamily: "Montserrat",
                               fontWeight: 500,
                               flexShrink: 0,
+                              textAlign: "left",
                             }}
                           >
-                            {t("thirdForm.languageScore") || "Language"}:
+                            {t("thirdForm.languageScore")}:
                           </Typography>
                           <TextField
                             type="text"
@@ -662,6 +683,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               "& .MuiInputBase-input": {
                                 textAlign: "left",
                                 color: "#A657AE",
+                                fontFamily: "Montserrat",
                                 padding: {
                                   xs: "8px 12px",
                                   sm: "9px 14px",
@@ -698,11 +720,13 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                                 md: "0.9rem",
                               },
                               color: "#A657AE",
+                              fontFamily: "Montserrat",
                               fontWeight: 500,
                               flexShrink: 0,
+                              textAlign: "left",
                             }}
                           >
-                            {t("thirdForm.mathScore") || "Math"}:
+                            {t("thirdForm.mathScore")}:
                           </Typography>
                           <TextField
                             type="text"
@@ -761,6 +785,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               "& .MuiInputBase-input": {
                                 textAlign: "left",
                                 color: "#A657AE",
+                                fontFamily: "Montserrat",
                                 padding: {
                                   xs: "8px 12px",
                                   sm: "9px 14px",
@@ -797,11 +822,13 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                                 md: "0.9rem",
                               },
                               color: "#A657AE",
+                              fontFamily: "Montserrat",
                               fontWeight: 500,
                               flexShrink: 0,
+                              textAlign: "left",
                             }}
                           >
-                            {t("thirdForm.scienceLogic") || "Science/Logic"}:
+                            {t("thirdForm.scienceLogic")}:
                           </Typography>
                           <TextField
                             type="text"
@@ -860,6 +887,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                               "& .MuiInputBase-input": {
                                 textAlign: "left",
                                 color: "#A657AE",
+                                fontFamily: "Montserrat",
                                 padding: {
                                   xs: "8px 12px",
                                   sm: "9px 14px",
@@ -880,6 +908,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                           variant="caption"
                           sx={{
                             color: "#d32f2f",
+                            fontFamily: "Montserrat",
                             ml: 1,
                             textAlign: "left",
                             fontSize: {
@@ -930,6 +959,7 @@ export default function ThirdFormOptional(props: ThirdFormOptionalProps) {
                   sm: 0.7,
                   md: 0.8,
                 },
+                fontFamily: "Montserrat",
                 fontSize: {
                   xs: "0.8rem",
                   sm: "0.85rem",

@@ -49,6 +49,15 @@ const SecondForm = ({ hasError }: { hasError: boolean }) => {
                 width: "100%",
               }}
               filterSelectedOptions
+              slotProps={{
+                paper: {
+                  sx: {
+                    "& .MuiAutocomplete-option": {
+                      fontFamily: "Montserrat",
+                    },
+                  },
+                },
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -78,6 +87,7 @@ const SecondForm = ({ hasError }: { hasError: boolean }) => {
                     },
                     "& input": {
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       fontSize: {
                         xs: "0.875rem",
                         sm: "0.95rem",

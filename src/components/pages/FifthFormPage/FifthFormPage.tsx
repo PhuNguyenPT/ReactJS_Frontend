@@ -37,30 +37,10 @@ export default function FifthFormPage() {
           }}
         >
           <div className="form-content">
-            <Box
-              component="h1"
-              className="form-title"
-              sx={{
-                fontSize: {
-                  xs: "1.5rem",
-                  sm: "1.75rem",
-                  md: "2rem",
-                },
-              }}
-            >
+            <Box component="h1" className="form-title">
               5 → {t("fifthForm.title")}
             </Box>
-            <Box
-              component="p"
-              className="form-subtitle"
-              sx={{
-                fontSize: {
-                  xs: "0.875rem",
-                  sm: "0.95rem",
-                  md: "1rem",
-                },
-              }}
-            >
+            <Box component="p" className="form-subtitle">
               {t("fifthForm.subTitle1")}
             </Box>
             <FifthForm ref={formRef} />

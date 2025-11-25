@@ -98,6 +98,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
                 "&::before": { display: "none" },
               },
               "& .MuiSlider-valueLabel": {
+                fontFamily: "Montserrat",
                 fontSize: {
                   xs: "0.7rem",
                   sm: "0.75rem",
@@ -140,6 +141,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
               variant="body2"
               sx={{
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontSize: {
                   xs: "0.75rem",
                   sm: "0.8125rem",
@@ -153,6 +155,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
               variant="body2"
               sx={{
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontSize: {
                   xs: "0.75rem",
                   sm: "0.8125rem",
@@ -179,6 +182,7 @@ const FifthForm = ({ ref }: FifthFormProps) => {
               variant="h6"
               sx={{
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontWeight: 500,
                 fontSize: {
                   xs: "1rem",

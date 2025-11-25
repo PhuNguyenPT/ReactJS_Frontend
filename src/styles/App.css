@@ -494,14 +494,17 @@ body.scrolling::-webkit-scrollbar-thumb {
 }
 
 .form-title {
+  font-family: "Montserrat", sans-serif;
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 600;
   text-align: left;
 }
 
 .form-subtitle {
-  font-size: 1rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.1rem;
   text-align: left;
+  font-style: italic;
 }
 
 .first-form {
@@ -935,7 +938,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   .form-title {
-    font-size: 1.5rem;
+    font-size: 1.7rem;
   }
 
   .form-subtitle {
@@ -1097,7 +1100,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   .form-title {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
 
   .form-subtitle {
@@ -1183,7 +1186,7 @@ body.scrolling::-webkit-scrollbar-thumb {
     max-width: calc(90vw - 20px);
     padding: 15px 12px;
     max-height: calc(85vh - 80px);
-    min-height: 350px;
+    min-height: 450px;
     border-radius: 18px;
     gap: 0.6rem;
   }
@@ -1200,7 +1203,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   }
 
   .form-title {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     margin-bottom: 0.3rem;
   }
 

@@ -72,11 +72,13 @@ export default function SeventhForm({
                   md: 1,
                 },
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 textAlign: "left",
+                fontStyle: "italic",
                 fontSize: {
-                  xs: "0.95rem",
-                  sm: "1rem",
-                  md: "1rem",
+                  xs: "0.75rem",
+                  sm: "0.9rem",
+                  md: "1.1rem",
                 },
               }}
             >
@@ -124,6 +126,15 @@ export default function SeventhForm({
                   isOptionEqualToValue={(option, value) =>
                     option.key === value.key
                   }
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        "& .MuiAutocomplete-option": {
+                          fontFamily: "Montserrat",
+                        },
+                      },
+                    },
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -170,6 +181,7 @@ export default function SeventhForm({
                         },
                         "& input": {
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           padding: {
                             xs: "8px 12px",
                             sm: "9px 14px",
@@ -187,6 +199,7 @@ export default function SeventhForm({
                       ml: 0,
                       mr: 0,
                       mt: 0.5,
+                      fontFamily: "Montserrat",
                       textAlign: "left",
                       fontSize: {
                         xs: "0.7rem",
@@ -225,6 +238,15 @@ export default function SeventhForm({
                   isOptionEqualToValue={(option, value) =>
                     option.key === value.key
                   }
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        "& .MuiAutocomplete-option": {
+                          fontFamily: "Montserrat",
+                        },
+                      },
+                    },
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -271,6 +293,7 @@ export default function SeventhForm({
                         },
                         "& input": {
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           padding: {
                             xs: "8px 12px",
                             sm: "9px 14px",
@@ -288,6 +311,7 @@ export default function SeventhForm({
                       ml: 0,
                       mr: 0,
                       mt: 0.5,
+                      fontFamily: "Montserrat",
                       textAlign: "left",
                       fontSize: {
                         xs: "0.7rem",
