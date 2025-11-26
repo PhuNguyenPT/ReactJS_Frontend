@@ -250,7 +250,6 @@
     "tieng_trung": "Tiếng Trung",
     "tin_hoc": "Tin Học",
     "toan": "Toán",
-    "trang_tri": "Trang trí",
     "tu_duy_giai_quyet_ngu_van_de": "Tư duy Khoa học Giải quyết vấn đề",
     "vat_ly": "Vật Lý",
     "ve_hinh_hoa": "Vẽ Hình họa",
@@ -259,8 +258,7 @@
     "ve_nang_khieu": "Vẽ Năng Khiếu",
     "ve_trang_tri": "Vẽ trang trí",
     "ve_trang_tri_mau": "Vẽ trang trí màu",
-    "xay_dung_kich_ban_su_kien": "Xây dựng kịch bản sự kiện",
-    "xuong_am": "Xướng âm"
+    "xay_dung_kich_ban_su_kien": "Xây dựng kịch bản sự kiện"
   },
   "examTypes": {
     "ielts": "IELTS",
@@ -306,7 +304,8 @@
   "ranks": {
     "first": "Hạng Nhất",
     "second": "Hạng Nhì",
-    "third": "Hạng Ba"
+    "third": "Hạng Ba",
+    "consolation": "Khuyến Khích"
   },
   "fifthForm": {
     "title": "Dự trù kinh phí",

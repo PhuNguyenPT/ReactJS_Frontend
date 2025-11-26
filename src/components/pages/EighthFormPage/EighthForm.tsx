@@ -60,6 +60,7 @@ export default function EighthForm() {
               className="grade-title"
               sx={{
                 textAlign: "center",
+                fontFamily: "Montserrat",
                 paddingRight: "40px",
                 fontSize: { xs: "1.25rem", sm: "1.5rem" },
                 width: "100%",
@@ -113,6 +114,7 @@ export default function EighthForm() {
                         variant="body1"
                         sx={{
                           minWidth: { xs: "120px", sm: "65px" },
+                          fontFamily: "Montserrat",
                           textAlign: "right",
                           fontSize: { xs: "0.95rem", sm: "1rem" },
                         }}
@@ -250,6 +252,7 @@ export default function EighthForm() {
                                     variant="body2"
                                     sx={{
                                       color: "white",
+                                      fontFamily: "Montserrat",
                                       textAlign: "center",
                                       fontWeight: 500,
                                       fontSize: {
@@ -279,6 +282,7 @@ export default function EighthForm() {
                                     variant="caption"
                                     sx={{
                                       color: "#333",
+                                      fontFamily: "Montserrat",
                                       textAlign: "center",
                                       maxWidth: "130px",
                                       wordBreak: "break-word",
@@ -319,6 +323,7 @@ export default function EighthForm() {
                                     variant="body2"
                                     sx={{
                                       color: "white",
+                                      fontFamily: "Montserrat",
                                       textAlign: "center",
                                       fontWeight: 500,
                                       fontSize: {
@@ -354,6 +359,7 @@ export default function EighthForm() {
                                 variant="caption"
                                 sx={{
                                   color: "#666",
+                                  fontFamily: "Montserrat",
                                   textAlign: "center",
                                   fontSize: { xs: "0.75rem", sm: "0.8rem" },
                                 }}
@@ -364,6 +370,7 @@ export default function EighthForm() {
                                 variant="caption"
                                 sx={{
                                   color: "#999",
+                                  fontFamily: "Montserrat",
                                   textAlign: "center",
                                   fontSize: { xs: "0.6rem", sm: "0.65rem" },
                                   mt: 0.5,
@@ -389,6 +396,7 @@ export default function EighthForm() {
                               variant="caption"
                               sx={{
                                 color: "#ffffffff",
+                                fontFamily: "Montserrat",
                                 display: "-webkit-box",
                                 wordBreak: "break-word",
                                 overflow: "hidden",
