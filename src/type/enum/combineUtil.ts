@@ -29,16 +29,16 @@ export const CategoryNames = {
 export function getOptionalCategorySubjects(category: string): string[] {
   switch (category) {
     case "categories.dgnl":
-    case "ĐGNL": // Support both translation key and Vietnamese value
+    case "ĐGNL":
       return Object.values(DGNLType);
 
     case "categories.vsat":
-    case "V-SAT": // Support both translation key and Vietnamese value
+    case "V-SAT":
       return Object.values(VSATSubjects);
 
     case "categories.talent":
-    case "Năng khiếu": // Support both translation key and Vietnamese value
-      return getTalentExamSubjects(); // Use the curated talent subjects array
+    case "Năng khiếu":
+      return getTalentExamSubjects();
 
     default:
       return [];

@@ -250,7 +250,6 @@
     "tieng_trung": "Chinese",
     "tin_hoc": "Computer Science",
     "toan": "Mathematics",
-    "trang_tri": "Decoration",
     "tu_duy_giai_quyet_ngu_van_de": "Scientific Thinking and Problem Solving",
     "vat_ly": "Physics",
     "ve_hinh_hoa": "Figure Drawing",
@@ -259,8 +258,7 @@
     "ve_nang_khieu": "Aptitude Drawing",
     "ve_trang_tri": "Decorative Drawing",
     "ve_trang_tri_mau": "Color Decorative Drawing",
-    "xay_dung_kich_ban_su_kien": "Event Scriptwriting",
-    "xuong_am": "Vocalization"
+    "xay_dung_kich_ban_su_kien": "Event Scriptwriting"
   },
   "examTypes": {
     "ielts": "IELTS",
@@ -306,7 +304,8 @@
   "ranks": {
     "first": "First Place",
     "second": "Second Place",
-    "third": "Third Place"
+    "third": "Third Place",
+    "consolation": "Consolation"
   },
   "fifthForm": {
     "title": "About your budget",

@@ -1,11 +1,16 @@
 // Translation keys for ranks/awards
-export type RankTranslationKey = "ranks.first" | "ranks.second" | "ranks.third";
+export type RankTranslationKey =
+  | "ranks.first"
+  | "ranks.second"
+  | "ranks.third"
+  | "ranks.consolation";
 
 // Rank enum with translation keys
 export const Rank = {
   FIRST: "ranks.first",
   SECOND: "ranks.second",
   THIRD: "ranks.third",
+  CONSOLATION: "ranks.consolation",
 } as const;
 
 // Vietnamese mappings for ranks
@@ -13,6 +18,7 @@ export const RankValues: Record<RankTranslationKey, string> = {
   "ranks.first": "Hạng Nhất",
   "ranks.second": "Hạng Nhì",
   "ranks.third": "Hạng Ba",
+  "ranks.consolation": "Khuyến Khích",
 } as const;
 
 // Reverse mapping from Vietnamese values to translation keys

@@ -97,6 +97,7 @@ export default function EighthFormPage() {
           variant="h4"
           className="eighth-title"
           sx={{
+            fontFamily: "Montserrat",
             fontSize: {
               xs: "1.5rem",
               sm: "1.75rem",
@@ -148,6 +149,7 @@ export default function EighthFormPage() {
               sx={{
                 mb: 1,
                 color: "#333",
+                fontFamily: "Montserrat",
                 fontSize: { xs: "1rem", sm: "1.25rem" },
               }}
             >
@@ -158,6 +160,7 @@ export default function EighthFormPage() {
                 variant="body2"
                 sx={{
                   color: "#666",
+                  fontFamily: "Montserrat",
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
                 }}
               >
@@ -184,6 +187,7 @@ export default function EighthFormPage() {
               "& .MuiAlert-message": {
                 width: "100%",
                 whiteSpace: "pre-line",
+                fontFamily: "Montserrat",
               },
               "& .MuiAlert-icon": {
                 fontSize: { xs: "1.25rem", sm: "1.5rem" },
@@ -204,6 +208,7 @@ export default function EighthFormPage() {
                   variant="body2"
                   sx={{
                     wordBreak: "break-word",
+                    fontFamily: "Montserrat",
                     fontSize: { xs: "0.8rem", sm: "0.875rem", md: "0.9rem" },
                   }}
                 >
@@ -219,6 +224,8 @@ export default function EighthFormPage() {
           variant="body1"
           sx={{
             color: "white",
+            fontFamily: "Montserrat",
+            fontStyle: "italic",
             textAlign: { xs: "center", sm: "center", md: "center" },
             paddingTop: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
             fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" },
@@ -242,6 +249,7 @@ export default function EighthFormPage() {
             left: { xs: 20, sm: 25, md: 30 },
             backgroundColor: "white",
             color: "#A657AE",
+            fontFamily: "Montserrat",
             borderRadius: { xs: "16px", sm: "18px", md: "20px" },
             px: { xs: 2, sm: 3, md: 4 },
             py: { xs: 1, sm: 1.25, md: 1.5 },
@@ -282,6 +290,7 @@ export default function EighthFormPage() {
             right: { xs: 20, sm: 25, md: 30 },
             backgroundColor: "#A657AE",
             color: "white",
+            fontFamily: "Montserrat",
             borderRadius: { xs: "16px", sm: "18px", md: "20px" },
             px: { xs: 2, sm: 3, md: 4 },
             py: { xs: 1, sm: 1.25, md: 1.5 },
@@ -328,9 +337,9 @@ export default function EighthFormPage() {
               borderRadius: { xs: "12px", sm: "14px", md: "16px" },
               padding: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
               textAlign: "center",
-              maxWidth: { xs: "80%", sm: "400px" },
+              maxWidth: { xs: "80%", sm: "450px" },
               margin: { xs: "1rem", sm: "auto" },
-              width: { xs: "calc(100% - 2rem)", sm: "auto" },
+              width: { xs: "calc(100% - 2rem)", sm: "auto", md: "auto" },
             },
           },
         }}
@@ -343,10 +352,12 @@ export default function EighthFormPage() {
         >
           <DialogContentText
             sx={{
-              fontSize: { xs: "0.95rem", sm: "1rem", md: "1.1rem" },
+              fontSize: { xs: "0.95rem", sm: "1rem", md: "1.2rem" },
               fontWeight: 500,
+              fontFamily: "Montserrat",
+              fontStyle: "italic",
               color: "#A657AE",
-              mb: { xs: 2, sm: 2.5, md: 3 },
+              mb: { xs: 1, sm: 1, md: 1 },
               lineHeight: 1.5,
             }}
           >
@@ -370,11 +381,12 @@ export default function EighthFormPage() {
             sx={{
               backgroundColor: "#A657AE",
               color: "white",
+              fontFamily: "Montserrat",
               px: { xs: 3, sm: 4 },
               height: { xs: "40px", sm: "42px" },
               fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" },
               borderRadius: { xs: "10px", sm: "12px" },
-              width: { xs: "100%", sm: "auto" },
+              width: { xs: "100%", sm: "100%" },
               minWidth: { sm: "120px" },
               "&:hover": { backgroundColor: "#8B4A8F" },
               "&:disabled": {
@@ -391,12 +403,13 @@ export default function EighthFormPage() {
             sx={{
               borderColor: "#A657AE",
               color: "#A657AE",
+              fontFamily: "Montserrat",
               px: { xs: 3, sm: 4 },
               height: { xs: "40px", sm: "42px" },
               fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" },
-              minWidth: { xs: "100%", sm: "100px" },
+              minWidth: { xs: "100%", sm: "100px", md: "140px" },
               borderRadius: { xs: "10px", sm: "12px" },
-              width: { xs: "100%", sm: "auto" },
+              width: { xs: "100%", sm: "100%" },
               "&:hover": {
                 backgroundColor: "#f5f5f5",
                 borderColor: "#A657AE",
