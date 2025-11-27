@@ -48,6 +48,7 @@ export default function NinthFormPage() {
           className="ninth-title"
           sx={{
             textAlign: "center",
+            fontFamily: "Montserrat",
             fontWeight: "bold",
             color: "white",
             mb: { xs: 3, sm: 4, md: 5 },
@@ -85,6 +86,7 @@ export default function NinthFormPage() {
               sx={{
                 mb: 1,
                 color: "#333",
+                fontFamily: "Montserrat",
                 fontSize: { xs: "1rem", sm: "1.25rem" },
               }}
             >
@@ -95,6 +97,7 @@ export default function NinthFormPage() {
                 variant="body2"
                 sx={{
                   color: "#666",
+                  fontFamily: "Montserrat",
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
                 }}
               >
@@ -118,6 +121,7 @@ export default function NinthFormPage() {
             left: { xs: 15, sm: 30 },
             backgroundColor: "white",
             color: "#A657AE",
+            fontFamily: "Montserrat",
             borderRadius: "20px",
             px: { xs: 2.5, sm: 3, md: 4 },
             fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
@@ -146,6 +150,7 @@ export default function NinthFormPage() {
             right: { xs: 15, sm: 30 },
             backgroundColor: "#A657AE",
             color: "white",
+            fontFamily: "Montserrat",
             borderRadius: "20px",
             px: { xs: 2.5, sm: 3, md: 4 },
             fontSize: { xs: "1rem", sm: "1.25rem", md: "1.5rem" },
@@ -177,7 +182,10 @@ export default function NinthFormPage() {
         <Alert
           onClose={handleCloseError}
           severity="error"
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            fontFamily: "Montserrat",
+          }}
         >
           {errorMessage}
         </Alert>

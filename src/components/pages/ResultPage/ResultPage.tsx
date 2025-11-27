@@ -49,6 +49,7 @@ export default function FinalResultPage() {
         <Box
           sx={{
             textAlign: "center",
+            fontFamily: "Montserrat",
             fontWeight: "bold",
             color: "white",
             mb: { xs: 3, sm: 4, md: 5 },
@@ -80,6 +81,7 @@ export default function FinalResultPage() {
             left: { xs: 16, sm: 24, md: 30 },
             backgroundColor: "white",
             color: "#A657AE",
+            fontFamily: "Montserrat",
             borderRadius: { xs: "16px", sm: "18px", md: "20px" },
             px: { xs: 2.5, sm: 3.5, md: 4 },
             py: { xs: 1, sm: 1.25 },

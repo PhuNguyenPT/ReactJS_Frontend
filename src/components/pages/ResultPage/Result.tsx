@@ -101,6 +101,7 @@ export default function FinalResult() {
         <Typography
           sx={{
             color: "white",
+            fontFamily: "Montserrat",
             fontSize: { xs: "1rem", sm: "1.1rem" },
             textAlign: "center",
           }}
@@ -125,12 +126,18 @@ export default function FinalResult() {
             variant="h6"
             sx={{
               mb: 1,
+              fontFamily: "Montserrat",
               fontSize: { xs: "1rem", sm: "1.25rem" },
             }}
           >
             {t("finalResult.errorOccurred")}
           </Typography>
-          <Typography sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+          <Typography
+            sx={{
+              fontFamily: "Montserrat",
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            }}
+          >
             {error}
           </Typography>
         </Alert>
@@ -188,6 +195,7 @@ export default function FinalResult() {
             <CircularProgress sx={{ color: "#A657AE" }} />
             <Typography
               sx={{
+                fontFamily: "Montserrat",
                 fontSize: { xs: "0.875rem", sm: "1rem" },
                 textAlign: "center",
               }}
@@ -206,6 +214,7 @@ export default function FinalResult() {
             <Typography
               sx={{
                 color: "white",
+                fontFamily: "Montserrat",
                 fontSize: { xs: "1.25rem", sm: "1.5rem" },
                 textAlign: "center",
                 mt: 1,
@@ -233,6 +242,7 @@ export default function FinalResult() {
               variant="h6"
               sx={{
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontWeight: 500,
                 fontSize: { xs: "1rem", sm: "1.25rem" },
               }}
@@ -245,6 +255,7 @@ export default function FinalResult() {
               <Typography
                 sx={{
                   color: "#666",
+                  fontFamily: "Montserrat",
                   mt: 2,
                   fontSize: { xs: "0.875rem", sm: "0.95rem" },
                 }}
@@ -308,6 +319,7 @@ export default function FinalResult() {
                         variant="h6"
                         sx={{
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontWeight: 600,
                           fontSize: { xs: "1rem", sm: "1.1rem", md: "1.2rem" },
                           lineHeight: 1,
@@ -318,6 +330,7 @@ export default function FinalResult() {
                       <Typography
                         sx={{
                           color: "#666",
+                          fontFamily: "Montserrat",
                           fontSize: {
                             xs: "0.8rem",
                             sm: "0.85rem",
@@ -342,6 +355,7 @@ export default function FinalResult() {
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontWeight: 600,
                           mb: { xs: 1.5, sm: 2 },
                           fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
@@ -369,6 +383,7 @@ export default function FinalResult() {
                               sm: "0.85rem",
                               md: "0.9rem",
                             },
+                            fontFamily: "Montserrat",
                             color: "#666",
                             mb: 1,
                             wordBreak: "break-word",
@@ -386,6 +401,7 @@ export default function FinalResult() {
                               sm: "0.85rem",
                               md: "0.9rem",
                             },
+                            fontFamily: "Montserrat",
                             color: "#666",
                             wordBreak: "break-word",
                           }}
@@ -456,6 +472,7 @@ export default function FinalResult() {
                                   <Typography
                                     sx={{
                                       color: "#333",
+                                      fontFamily: "Montserrat",
                                       fontWeight: 500,
                                       fontSize: {
                                         xs: "0.9rem",
@@ -470,6 +487,7 @@ export default function FinalResult() {
                                   <Typography
                                     sx={{
                                       color: "#666",
+                                      fontFamily: "Montserrat",
                                       fontSize: {
                                         xs: "0.75rem",
                                         sm: "0.8rem",
@@ -548,6 +566,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           mb: 0.5,
                                           wordBreak: "break-word",
@@ -569,6 +588,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           mb: 0.5,
                                           wordBreak: "break-word",
@@ -610,6 +630,7 @@ export default function FinalResult() {
                                           }}
                                           sx={{
                                             color: "#A657AE",
+                                            fontFamily: "Montserrat",
                                             textTransform: "none",
                                             fontWeight: 500,
                                             fontSize: {
@@ -639,6 +660,7 @@ export default function FinalResult() {
                                           }}
                                           sx={{
                                             color: "#666",
+                                            fontFamily: "Montserrat",
                                             textTransform: "none",
                                             fontWeight: 500,
                                             fontSize: {
@@ -673,6 +695,7 @@ export default function FinalResult() {
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontWeight: 600,
                           mb: { xs: 1.5, sm: 2 },
                           fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
@@ -743,6 +766,7 @@ export default function FinalResult() {
                                   sx={{
                                     color: "#A657AE",
                                     fontWeight: 500,
+                                    fontFamily: "Montserrat",
                                     fontSize: { xs: "0.85rem", sm: "0.9rem" },
                                     flex: 1,
                                     pr: 1,
@@ -811,6 +835,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           mb: 0.5,
                                           wordBreak: "break-word",
@@ -833,6 +858,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           mb: 0.5,
                                           wordBreak: "break-word",
@@ -874,6 +900,7 @@ export default function FinalResult() {
                                           }}
                                           sx={{
                                             color: "#A657AE",
+                                            fontFamily: "Montserrat",
                                             textTransform: "none",
                                             fontWeight: 500,
                                             fontSize: {
@@ -903,6 +930,7 @@ export default function FinalResult() {
                                           }}
                                           sx={{
                                             color: "#666",
+                                            fontFamily: "Montserrat",
                                             textTransform: "none",
                                             fontWeight: 500,
                                             fontSize: {
@@ -937,6 +965,7 @@ export default function FinalResult() {
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontWeight: 600,
                           mb: 1,
                           fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
@@ -947,6 +976,7 @@ export default function FinalResult() {
                       <Typography
                         sx={{
                           color: "#333",
+                          fontFamily: "Montserrat",
                           fontSize: { xs: "0.9rem", sm: "0.95rem", md: "1rem" },
                           mb: 2,
                           wordBreak: "break-word",
@@ -1018,6 +1048,7 @@ export default function FinalResult() {
                                     backgroundColor: "#A657AE",
                                     color: "white",
                                     fontWeight: 600,
+                                    fontFamily: "Montserrat",
                                     fontSize: { xs: "0.8rem", sm: "0.85rem" },
                                     height: { xs: "28px", sm: "32px" },
                                   }}
@@ -1087,6 +1118,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           mb: 0.5,
                                           wordBreak: "break-word",
@@ -1105,6 +1137,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           mb: 0.5,
                                           wordBreak: "break-word",
@@ -1126,6 +1159,7 @@ export default function FinalResult() {
                                             sm: "0.85rem",
                                             md: "0.9rem",
                                           },
+                                          fontFamily: "Montserrat",
                                           color: "#333",
                                           wordBreak: "break-word",
                                         }}
@@ -1162,6 +1196,7 @@ export default function FinalResult() {
                                           }}
                                           sx={{
                                             color: "#A657AE",
+                                            fontFamily: "Montserrat",
                                             textTransform: "none",
                                             fontWeight: 500,
                                             fontSize: {
@@ -1191,6 +1226,7 @@ export default function FinalResult() {
                                           }}
                                           sx={{
                                             color: "#666",
+                                            fontFamily: "Montserrat",
                                             textTransform: "none",
                                             fontWeight: 500,
                                             fontSize: {
@@ -1225,6 +1261,7 @@ export default function FinalResult() {
                         variant="subtitle1"
                         sx={{
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontWeight: 600,
                           mb: 1,
                           fontSize: { xs: "1rem", sm: "1.05rem", md: "1.1rem" },
@@ -1239,6 +1276,7 @@ export default function FinalResult() {
                         rel="noopener noreferrer"
                         sx={{
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
                           textDecoration: "none",
                           wordBreak: "break-all",
@@ -1274,13 +1312,14 @@ export default function FinalResult() {
                   color="primary"
                   size="large"
                   disabled={pageLoading}
-                  siblingCount={0}
+                  siblingCount={1}
                   boundaryCount={1}
                   sx={{
                     "& .MuiPaginationItem-root": {
                       color: "white",
                       fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" },
                       fontWeight: 500,
+                      fontFamily: "Montserrat",
                       minWidth: { xs: "32px", sm: "36px" },
                       height: { xs: "32px", sm: "36px" },
                       "&.Mui-selected": {
@@ -1302,6 +1341,7 @@ export default function FinalResult() {
                 <Typography
                   sx={{
                     color: "white",
+                    fontFamily: "Montserrat",
                     fontSize: { xs: "0.8rem", sm: "0.85rem", md: "0.9rem" },
                     textAlign: "center",
                   }}
