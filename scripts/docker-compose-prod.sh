@@ -1,3 +1,3 @@
 #!/bin/bash
 chmod +x ./scripts/docker-compose-prod.sh
-docker compose -f docker-compose.prod.yml up -d --build    
+docker compose -f docker-compose.prod.yml -p frontend-prod up -d --build    
