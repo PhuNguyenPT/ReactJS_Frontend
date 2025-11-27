@@ -56,6 +56,7 @@ export default function HistoryPage() {
               sx={{
                 fontWeight: "bold",
                 color: "white",
+                fontFamily: "Montserrat",
                 fontSize: {
                   xs: "1.5rem",
                   sm: "2rem",
@@ -71,6 +72,7 @@ export default function HistoryPage() {
           <Typography
             sx={{
               color: "rgba(255, 255, 255, 0.9)",
+              fontFamily: "Montserrat",
               fontSize: {
                 xs: "0.875rem",
                 sm: "1rem",
@@ -117,6 +119,7 @@ export default function HistoryPage() {
             left: { xs: 20, sm: 25, md: 30 },
             backgroundColor: "white",
             color: "#A657AE",
+            fontFamily: "Montserrat",
             borderRadius: { xs: "16px", sm: "18px", md: "20px" },
             px: { xs: 2, sm: 3, md: 4 },
             py: { xs: 1, sm: 1.25, md: 1.5 },

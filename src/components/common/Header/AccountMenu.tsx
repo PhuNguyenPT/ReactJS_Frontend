@@ -57,8 +57,8 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
               backgroundColor: "rgba(255, 255, 255, 0.1)",
             },
             // Increase touch target on mobile
-            minWidth: { xs: 40, sm: "auto" },
-            minHeight: { xs: 40, sm: "auto" },
+            minWidth: { xs: 35, sm: "auto" },
+            minHeight: { xs: 35, sm: "auto" },
           }}
           aria-controls={open ? "account-menu" : undefined}
           aria-haspopup="true"
@@ -112,34 +112,32 @@ export default function AccountMenu({ displayName }: AccountMenuProps) {
       >
         {/* Show display name on mobile */}
         {isMobile && displayName && (
-          <>
-            <MenuItem
-              disabled
-              sx={{
-                py: 1.2,
-                px: 1.5,
-                fontSize: "0.9rem",
+          <MenuItem
+            disabled
+            sx={{
+              py: 1.2,
+              px: 1.5,
+              fontSize: "0.9rem",
+              opacity: 1,
+              "&.Mui-disabled": {
                 opacity: 1,
-                "&.Mui-disabled": {
-                  opacity: 1,
-                },
+              },
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 28,
+                height: 28,
+                fontSize: "0.9rem",
+                mr: 1.5,
               }}
             >
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28,
-                  fontSize: "0.9rem",
-                  mr: 1.5,
-                }}
-              >
-                {getAvatarLetter()}
-              </Avatar>
-              {displayName}
-            </MenuItem>
-            <Divider />
-          </>
+              {getAvatarLetter()}
+            </Avatar>
+            {displayName}
+          </MenuItem>
         )}
+        {isMobile && displayName && <Divider />}
 
         <MenuItem
           onClick={() => void logout()}

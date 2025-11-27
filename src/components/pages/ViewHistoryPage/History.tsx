@@ -59,6 +59,7 @@ export default function History() {
         <Typography
           sx={{
             color: "white",
+            fontFamily: "Montserrat",
             fontSize: { xs: "1rem", sm: "1.1rem" },
             textAlign: "center",
           }}
@@ -73,17 +74,29 @@ export default function History() {
   if (error) {
     return (
       <Box sx={{ maxWidth: "800px", margin: "0 auto", px: { xs: 2, sm: 3 } }}>
-        <Alert severity="error" sx={{ borderRadius: "12px" }}>
+        <Alert
+          severity="error"
+          sx={{
+            borderRadius: "12px",
+            fontFamily: "Montserrat",
+          }}
+        >
           <Typography
             variant="h6"
             sx={{
               mb: 1,
+              fontFamily: "Montserrat",
               fontSize: { xs: "1.1rem", sm: "1.25rem" },
             }}
           >
             {t("history.errorOccurred")}
           </Typography>
-          <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+          <Typography
+            sx={{
+              fontFamily: "Montserrat",
+              fontSize: { xs: "0.9rem", sm: "1rem" },
+            }}
+          >
             {error}
           </Typography>
         </Alert>
@@ -132,7 +145,12 @@ export default function History() {
             }}
           >
             <CircularProgress sx={{ color: "#A657AE" }} />
-            <Typography sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}>
+            <Typography
+              sx={{
+                fontFamily: "Montserrat",
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              }}
+            >
               {t("history.loadingResults")}
             </Typography>
           </Box>
@@ -153,6 +171,7 @@ export default function History() {
           <Typography
             sx={{
               color: "white",
+              fontFamily: "Montserrat",
               fontSize: { xs: "1rem", sm: "1.1rem", md: "1.2rem" },
               fontWeight: 500,
             }}
@@ -178,6 +197,7 @@ export default function History() {
               variant="h6"
               sx={{
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontWeight: 500,
                 mb: 2,
                 fontSize: { xs: "1.1rem", sm: "1.25rem" },
@@ -188,6 +208,7 @@ export default function History() {
             <Typography
               sx={{
                 color: "#666",
+                fontFamily: "Montserrat",
                 mb: 3,
                 fontSize: { xs: "0.9rem", sm: "1rem" },
               }}
@@ -200,6 +221,7 @@ export default function History() {
               sx={{
                 backgroundColor: "#A657AE",
                 color: "white",
+                fontFamily: "Montserrat",
                 px: { xs: 3, sm: 4 },
                 py: { xs: 1.2, sm: 1.5 },
                 borderRadius: "25px",
@@ -263,6 +285,7 @@ export default function History() {
                         sx={{
                           backgroundColor: "rgba(166, 87, 174, 0.15)",
                           color: "#A657AE",
+                          fontFamily: "Montserrat",
                           fontWeight: 600,
                           fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
                           height: { xs: "28px", sm: "32px" },
@@ -290,6 +313,7 @@ export default function History() {
                       <Typography
                         sx={{
                           color: "#000000ff",
+                          fontFamily: "Montserrat",
                           fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
                           fontWeight: 600,
                         }}
@@ -300,6 +324,7 @@ export default function History() {
                       <Typography
                         sx={{
                           color: "#000000ff",
+                          fontFamily: "Montserrat",
                           fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
                         }}
                       >
@@ -308,6 +333,7 @@ export default function History() {
                       <Typography
                         sx={{
                           color: "#000000ff",
+                          fontFamily: "Montserrat",
                           fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
                           fontWeight: 500,
                         }}
@@ -320,9 +346,9 @@ export default function History() {
                     <Typography
                       sx={{
                         color: "#888",
+                        fontFamily: "Montserrat",
                         fontSize: { xs: "0.85rem", sm: "0.9rem", md: "1rem" },
                         mb: { xs: 1.5, sm: 2 },
-                        fontFamily: "monospace",
                         wordBreak: "break-all",
                       }}
                     >
@@ -345,6 +371,7 @@ export default function History() {
                       sx={{
                         backgroundColor: "#A657AE",
                         color: "white",
+                        fontFamily: "Montserrat",
                         py: { xs: 1.2, sm: 1.5 },
                         borderRadius: { xs: "10px", sm: "12px" },
                         fontSize: {
@@ -384,13 +411,14 @@ export default function History() {
                   page={currentPage}
                   onChange={handlePageChange}
                   color="primary"
-                  size={{ xs: "medium", sm: "large" } as never}
-                  siblingCount={{ xs: 0, sm: 1 } as never}
-                  boundaryCount={{ xs: 1, sm: 1 } as never}
+                  size="large"
+                  siblingCount={1}
+                  boundaryCount={1}
                   sx={{
                     "& .MuiPaginationItem-root": {
                       color: "white",
-                      fontSize: { xs: "0.9rem", sm: "1rem" },
+                      fontFamily: "Montserrat",
+                      fontSize: { xs: "0.875rem", sm: "0.95rem", md: "1rem" },
                       fontWeight: 500,
                       minWidth: { xs: "32px", sm: "36px" },
                       height: { xs: "32px", sm: "36px" },
@@ -403,6 +431,9 @@ export default function History() {
                       },
                       "&:hover": {
                         backgroundColor: "rgba(166, 87, 174, 0.2)",
+                      },
+                      "&.Mui-disabled": {
+                        opacity: 0.5,
                       },
                     },
                   }}

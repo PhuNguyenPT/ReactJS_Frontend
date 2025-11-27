@@ -90,6 +90,7 @@ export default function ResultFilter({
               right: { xs: -4, sm: -5 },
               backgroundColor: "#f44336",
               color: "white",
+              fontFamily: "Montserrat",
               borderRadius: "50%",
               width: { xs: 20, sm: 24 },
               height: { xs: 20, sm: 24 },
@@ -154,6 +155,7 @@ export default function ResultFilter({
                 variant="h6"
                 sx={{
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   fontWeight: 600,
                   fontSize: { xs: "1.1rem", sm: "1.2rem", md: "1.25rem" },
                   flexShrink: 0,
@@ -161,6 +163,7 @@ export default function ResultFilter({
               >
                 {t("finalResult.filter.title")}
               </Typography>
+
               {activeFilterCount > 0 && (
                 <Chip
                   label={`${String(activeFilterCount)} ${t("finalResult.filter.active")}`}
@@ -168,6 +171,7 @@ export default function ResultFilter({
                   sx={{
                     backgroundColor: "#A657AE",
                     color: "white",
+                    fontFamily: "Montserrat",
                     fontWeight: 500,
                     fontSize: { xs: "0.7rem", sm: "0.8125rem" },
                     height: { xs: "24px", sm: "28px" },
@@ -229,6 +233,7 @@ export default function ResultFilter({
                 sx={{
                   mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
                   fontWeight: 500,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -264,6 +269,7 @@ export default function ResultFilter({
                       },
                       "& input": {
                         color: "#A657AE",
+                        fontFamily: "Montserrat",
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
@@ -275,8 +281,16 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                       height: { xs: "24px", sm: "28px" },
+                    },
+                  },
+                  paper: {
+                    sx: {
+                      "& .MuiAutocomplete-option": {
+                        fontFamily: "Montserrat",
+                      },
                     },
                   },
                 }}
@@ -292,6 +306,7 @@ export default function ResultFilter({
                 sx={{
                   mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
                   fontWeight: 500,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -327,6 +342,7 @@ export default function ResultFilter({
                       },
                       "& input": {
                         color: "#A657AE",
+                        fontFamily: "Montserrat",
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
@@ -338,8 +354,16 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                       height: { xs: "24px", sm: "28px" },
+                    },
+                  },
+                  paper: {
+                    sx: {
+                      "& .MuiAutocomplete-option": {
+                        fontFamily: "Montserrat",
+                      },
                     },
                   },
                 }}
@@ -355,6 +379,7 @@ export default function ResultFilter({
                 sx={{
                   mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
                   fontWeight: 500,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -390,6 +415,7 @@ export default function ResultFilter({
                       },
                       "& input": {
                         color: "#A657AE",
+                        fontFamily: "Montserrat",
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
@@ -401,8 +427,16 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                       height: { xs: "24px", sm: "28px" },
+                    },
+                  },
+                  paper: {
+                    sx: {
+                      "& .MuiAutocomplete-option": {
+                        fontFamily: "Montserrat",
+                      },
                     },
                   },
                 }}
@@ -418,6 +452,7 @@ export default function ResultFilter({
                 sx={{
                   mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
                   fontWeight: 500,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -453,6 +488,7 @@ export default function ResultFilter({
                       },
                       "& input": {
                         color: "#A657AE",
+                        fontFamily: "Montserrat",
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
@@ -464,8 +500,16 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                       height: { xs: "24px", sm: "28px" },
+                    },
+                  },
+                  paper: {
+                    sx: {
+                      "& .MuiAutocomplete-option": {
+                        fontFamily: "Montserrat",
+                      },
                     },
                   },
                 }}
@@ -481,6 +525,7 @@ export default function ResultFilter({
                 sx={{
                   mb: { xs: 0.75, sm: 1 },
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
                   fontWeight: 500,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -521,6 +566,7 @@ export default function ResultFilter({
                       },
                       "& input": {
                         color: "#A657AE",
+                        fontFamily: "Montserrat",
                         fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
@@ -532,8 +578,16 @@ export default function ResultFilter({
                     sx: {
                       backgroundColor: "rgba(166, 87, 174, 0.15)",
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                       height: { xs: "24px", sm: "28px" },
+                    },
+                  },
+                  paper: {
+                    sx: {
+                      "& .MuiAutocomplete-option": {
+                        fontFamily: "Montserrat",
+                      },
                     },
                   },
                 }}
@@ -551,6 +605,7 @@ export default function ResultFilter({
                 sx={{
                   mb: { xs: 1.5, sm: 2 },
                   color: "#A657AE",
+                  fontFamily: "Montserrat",
                   textAlign: "left",
                   fontWeight: 500,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -571,6 +626,7 @@ export default function ResultFilter({
                     sx={{
                       mb: 0.5,
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       display: "block",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                     }}
@@ -590,6 +646,15 @@ export default function ResultFilter({
                         ? `${parseInt(option, 10).toLocaleString()} VND`
                         : t("finalResult.filter.any")
                     }
+                    slotProps={{
+                      paper: {
+                        sx: {
+                          "& .MuiAutocomplete-option": {
+                            fontFamily: "Montserrat",
+                          },
+                        },
+                      },
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -611,6 +676,7 @@ export default function ResultFilter({
                           },
                           "& input": {
                             color: "#A657AE",
+                            fontFamily: "Montserrat",
                             fontSize: { xs: "0.875rem", sm: "1rem" },
                           },
                         }}
@@ -626,6 +692,7 @@ export default function ResultFilter({
                     sx={{
                       mb: 0.5,
                       color: "#A657AE",
+                      fontFamily: "Montserrat",
                       display: "block",
                       fontSize: { xs: "0.75rem", sm: "0.8125rem" },
                     }}
@@ -645,6 +712,15 @@ export default function ResultFilter({
                         ? `${parseInt(option, 10).toLocaleString()} VND`
                         : t("finalResult.filter.any")
                     }
+                    slotProps={{
+                      paper: {
+                        sx: {
+                          "& .MuiAutocomplete-option": {
+                            fontFamily: "Montserrat",
+                          },
+                        },
+                      },
+                    }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -666,6 +742,7 @@ export default function ResultFilter({
                           },
                           "& input": {
                             color: "#A657AE",
+                            fontFamily: "Montserrat",
                             fontSize: { xs: "0.875rem", sm: "1rem" },
                           },
                         }}
@@ -700,6 +777,7 @@ export default function ResultFilter({
               sx={{
                 borderColor: "#A657AE",
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 borderRadius: "20px",
                 height: { xs: "44px", sm: "48px" },
                 fontSize: { xs: "0.9rem", sm: "1rem" },
@@ -723,6 +801,7 @@ export default function ResultFilter({
               sx={{
                 backgroundColor: "#A657AE",
                 color: "white",
+                fontFamily: "Montserrat",
                 borderRadius: "20px",
                 height: { xs: "44px", sm: "48px" },
                 fontSize: { xs: "0.9rem", sm: "1rem" },

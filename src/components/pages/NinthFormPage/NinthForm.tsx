@@ -70,9 +70,11 @@ export default function NinthForm() {
                   },
                   "& .MuiInputBase-input.Mui-disabled": {
                     WebkitTextFillColor: "#A657AE",
+                    fontFamily: "Montserrat",
                   },
                   "& input": {
                     textAlign: "left",
+                    fontFamily: "Montserrat",
                     fontWeight: 500,
                     fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
                     padding: {
@@ -118,6 +120,7 @@ export default function NinthForm() {
               },
               "& input": {
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
                 padding: { xs: "0 8px", sm: "0 14px" },
                 textAlign: "left",
@@ -151,6 +154,15 @@ export default function NinthForm() {
               handleSubjectSelect(gradeKey, idx, newValue);
             }}
             getOptionLabel={(option) => getSubjectLabel(option)}
+            slotProps={{
+              paper: {
+                sx: {
+                  "& .MuiAutocomplete-option": {
+                    fontFamily: "Montserrat",
+                  },
+                },
+              },
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -173,6 +185,7 @@ export default function NinthForm() {
                   },
                   "& input": {
                     color: "#A657AE",
+                    fontFamily: "Montserrat",
                     textAlign: "left",
                     fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
                     padding: {
@@ -221,6 +234,7 @@ export default function NinthForm() {
               },
               "& input": {
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontSize: { xs: "0.75rem", sm: "0.9rem", md: "1rem" },
                 padding: { xs: "0 8px", sm: "0 14px" },
                 textAlign: "left",
@@ -258,6 +272,7 @@ export default function NinthForm() {
           onClose={handleCloseAlert}
           sx={{
             mb: 2,
+            fontFamily: "Montserrat",
             fontSize: { xs: "0.875rem", sm: "1rem" },
           }}
         >
@@ -272,6 +287,7 @@ export default function NinthForm() {
           onClose={handleCloseRetryAlert}
           sx={{
             mb: 2,
+            fontFamily: "Montserrat",
             fontSize: { xs: "0.875rem", sm: "1rem" },
           }}
         >
@@ -307,6 +323,7 @@ export default function NinthForm() {
               variant="h6"
               sx={{
                 color: "#A657AE",
+                fontFamily: "Montserrat",
                 fontWeight: 600,
                 fontSize: { xs: "1rem", sm: "1.15rem", md: "1.25rem" },
               }}
