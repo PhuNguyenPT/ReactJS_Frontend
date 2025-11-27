@@ -14,14 +14,22 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # Cloudflare SSL certificates (for external HTTPS)
       - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
       - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
       - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
-      # Nginx configuration
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Main nginx config
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Upstream definition (for backend mTLS)
+      - ./etc/nginx/conf.d/upstream.conf:/etc/nginx/conf.d/upstream.conf:ro
+      # PRODUCTION config (WITH Cloudflare SSL + mTLS)
+      - ./etc/nginx/sites-available/admission.edu.vn.conf:/etc/nginx/sites-enabled/admission.edu.vn.conf:ro
+      # Config snippets
+      - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
+      - ./etc/nginx/snippets/proxy-backend-mtls.conf:/etc/nginx/snippets/proxy-backend-mtls.conf:ro
+      # DH parameters
+      - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
+
     secrets:
-      # Backend mTLS certificates (for internal communication)
       - backend_ca
       - nginx_client_crt
       - nginx_client_key

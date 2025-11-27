@@ -30,3 +30,4 @@ coverage/
 !.env.example
 
 tls/
+etc/nginx/dhparam.pem
