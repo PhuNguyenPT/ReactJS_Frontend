@@ -59,10 +59,10 @@ export default function useLoginForm() {
     const validationErrors = await validateDTO(dto);
 
     if (Object.keys(validationErrors).length > 0) {
-      setErrorKeys(validationErrors); // Store keys, not translations
+      setErrorKeys(validationErrors);
       return;
     }
-    setErrorKeys({}); // Clear previous error keys
+    setErrorKeys({});
 
     try {
       setLoading(true);
@@ -147,7 +147,7 @@ export default function useLoginForm() {
     password,
     setEmail,
     setPassword,
-    errors, // Return translated errors that are reactive to language changes
+    errors,
     handleLogin,
     loading,
     apiError,

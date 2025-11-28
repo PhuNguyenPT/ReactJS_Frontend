@@ -51,6 +51,14 @@ export default function LoginForm() {
         }}
         error={!!errors.email}
         helperText={errors.email}
+        sx={{
+          "& input": {
+            fontFamily: "Montserrat",
+          },
+          "& .MuiFormHelperText-root": {
+            fontFamily: "Montserrat",
+          },
+        }}
       />
 
       <label className="form-label">{t("forms.password")}</label>
@@ -69,14 +77,26 @@ export default function LoginForm() {
 
       {/* Show API error here */}
       {apiError && (
-        <Alert severity="error" sx={{ mt: 2 }}>
+        <Alert
+          severity="error"
+          sx={{
+            mt: 2,
+            fontFamily: "Montserrat",
+          }}
+        >
           {apiError}
         </Alert>
       )}
 
       <Typography
         variant="body2"
-        sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
+        sx={{
+          mt: 2,
+          mb: 1,
+          textAlign: "left",
+          color: "#000",
+          fontFamily: "Montserrat",
+        }}
       >
         {t("loginForm.noAccount")}{" "}
         <Link
@@ -85,6 +105,7 @@ export default function LoginForm() {
             color: "#1976d2",
             textDecoration: "none",
             fontWeight: "bold",
+            fontFamily: "Montserrat",
           }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
@@ -102,6 +123,7 @@ export default function LoginForm() {
         sx={{
           mt: 2,
           backgroundColor: "#ff69b4",
+          fontFamily: "Montserrat",
           textTransform: "none",
           fontWeight: "bold",
           borderRadius: "8px",
@@ -114,7 +136,7 @@ export default function LoginForm() {
         {loading ? (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <CircularProgress size={20} color="inherit" />
-            {t("loginForm.logging_in")}
+            <span className="load-auth">{t("loginForm.logging_in")}</span>
           </Box>
         ) : (
           t("loginForm.login")

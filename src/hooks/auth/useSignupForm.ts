@@ -160,7 +160,7 @@ export function useSignupForm() {
     setPassword,
     confirmPassword,
     setConfirmPassword,
-    errors, // Return translated errors
+    errors,
     loading,
     apiError,
     showPassword,

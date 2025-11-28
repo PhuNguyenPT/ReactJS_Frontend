@@ -59,6 +59,14 @@ export default function SignupForm() {
           error={!!errors.email}
           helperText={errors.email}
           disabled={loading}
+          sx={{
+            "& input": {
+              fontFamily: "Montserrat",
+            },
+            "& .MuiFormHelperText-root": {
+              fontFamily: "Montserrat",
+            },
+          }}
         />
 
         {/* Password */}
@@ -95,7 +103,13 @@ export default function SignupForm() {
 
         <Typography
           variant="body2"
-          sx={{ mt: 2, mb: 1, textAlign: "left", color: "#000" }}
+          sx={{
+            mt: 2,
+            mb: 1,
+            textAlign: "left",
+            color: "#000",
+            fontFamily: "Montserrat",
+          }}
         >
           {t("signupForm.alreadyHaveAccount")}{" "}
           <Link
@@ -104,6 +118,7 @@ export default function SignupForm() {
               color: "#1976d2",
               textDecoration: "none",
               fontWeight: "bold",
+              fontFamily: "Montserrat",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "#0d47a1")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "#1976d2")}
@@ -114,7 +129,14 @@ export default function SignupForm() {
 
         {/* API Error Alert */}
         {apiError && (
-          <Alert severity="error" sx={{ mt: 1 }} onClose={clearApiError}>
+          <Alert
+            severity="error"
+            sx={{
+              mt: 1,
+              fontFamily: "Montserrat",
+            }}
+            onClose={clearApiError}
+          >
             {apiError}
           </Alert>
         )}
@@ -129,6 +151,7 @@ export default function SignupForm() {
           sx={{
             mt: 2,
             backgroundColor: loading ? "#ccc" : "#ff69b4",
+            fontFamily: "Montserrat",
             textTransform: "none",
             fontWeight: "bold",
             borderRadius: "8px",
@@ -145,7 +168,7 @@ export default function SignupForm() {
           {loading ? (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CircularProgress size={20} color="inherit" />
-              {t("signupForm.signingUp")}
+              <span className="load-auth">{t("signupForm.signingUp")}</span>
             </Box>
           ) : (
             t("signupForm.signUp")
