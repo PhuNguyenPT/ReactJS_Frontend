@@ -359,7 +359,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 }
 
 /* ============================================
-   8. SIGNUP PAGE
+   8. SIGNUP/LOGIN PAGE
    ============================================ */
 .signup-container {
   min-height: 100vh;
@@ -383,6 +383,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   color: #000000;
   font-weight: 600;
   text-align: left;
+  font-family: "Montserrat", sans-serif;
 }
 
 .subtitle {
@@ -390,6 +391,7 @@ body.scrolling::-webkit-scrollbar-thumb {
   font-size: 14px;
   color: #666;
   text-align: left;
+  font-family: "Montserrat", sans-serif;
 }
 
 .form {
@@ -403,6 +405,11 @@ body.scrolling::-webkit-scrollbar-thumb {
   color: #000000;
   text-align: left;
   margin-top: 20px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.load-auth {
+  font-family: "Montserrat", sans-serif;
 }
 
 /* ============================================

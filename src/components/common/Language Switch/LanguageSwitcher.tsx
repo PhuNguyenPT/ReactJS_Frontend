@@ -13,7 +13,6 @@ import {
 import LanguageIcon from "@mui/icons-material/Language";
 import { useTranslation } from "../../../hooks/locales/useTranslation";
 
-// Language options with proper typing
 const languages = [
   {
     code: "en" as const,
@@ -25,7 +24,6 @@ const languages = [
   },
 ] as const;
 
-// Extract language codes as a union type
 type LanguageCode = (typeof languages)[number]["code"];
 
 const LanguageSwitcher: React.FC = () => {
@@ -35,7 +33,7 @@ const LanguageSwitcher: React.FC = () => {
 
   // Responsive breakpoints
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // < 600px
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -58,7 +56,7 @@ const LanguageSwitcher: React.FC = () => {
   // Get current language details for display
   const currentLang = languages.find((lang) => lang.code === currentLanguage);
 
-  // Get language name based on current language - properly typed
+  // Get language name based on current language
   const getLanguageName = (code: LanguageCode) => {
     return t(`language.${code}` as const);
   };
@@ -67,9 +65,20 @@ const LanguageSwitcher: React.FC = () => {
     <>
       <Tooltip
         title={t("language.changeLanguage")}
-        // Disable tooltip on mobile for better UX
         disableHoverListener={isMobile}
         disableTouchListener={isMobile}
+        slotProps={{
+          tooltip: {
+            sx: {
+              fontFamily: "Neon80s",
+              fontSize: {
+                xs: "0.7rem",
+                sm: "0.8rem",
+                md: "1rem",
+              },
+            },
+          },
+        }}
       >
         <IconButton
           onClick={handleClick}
@@ -88,13 +97,11 @@ const LanguageSwitcher: React.FC = () => {
               outlineColor: "primary.main",
               outlineOffset: "2px",
             },
-            // Responsive padding with better touch targets
             padding: {
               xs: "6px",
               sm: "8px",
               md: "10px",
             },
-            // Minimum touch target size for mobile
             minWidth: {
               xs: 30,
               sm: 34,
@@ -115,13 +122,13 @@ const LanguageSwitcher: React.FC = () => {
           aria-label={`${t("language.currentLanguage")}: ${currentLang ? getLanguageName(currentLang.code) : t("language.unknown")}. ${t("language.clickToChange")}`}
           color="inherit"
         >
-          {/* Show current language code instead of flag */}
           {currentLang ? (
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                fontFamily: "Neon80s",
                 fontSize: {
                   xs: "0.75rem",
                   sm: "0.875rem",
@@ -192,7 +199,6 @@ const LanguageSwitcher: React.FC = () => {
             timeout: 200,
           },
         }}
-        // Adjust anchor position for better mobile display
         anchorOrigin={{
           horizontal: isMobile ? "right" : "left",
           vertical: "bottom",
@@ -265,7 +271,7 @@ const LanguageSwitcher: React.FC = () => {
                 <Box
                   sx={{
                     fontSize: {
-                      xs: "1.125rem",
+                      xs: "1rem",
                       sm: "1.25rem",
                       md: "1.5rem",
                     },
@@ -284,14 +290,15 @@ const LanguageSwitcher: React.FC = () => {
                 slotProps={{
                   primary: {
                     sx: {
+                      fontFamily: "Neon80s",
                       fontSize: {
-                        xs: "0.875rem",
-                        sm: "0.9375rem",
-                        md: "1rem",
+                        xs: "0.9rem",
+                        sm: "1rem",
+                        md: "1.5rem",
                       },
                       fontWeight: isSelected ? 600 : 400,
                       lineHeight: 1.5,
-                      color: isSelected ? "primary.main" : "text.primary",
+                      color: isSelected ? "#A657AE" : "text.primary",
                       userSelect: "none",
                       transition: "color 0.2s ease-in-out",
                     },
@@ -299,13 +306,18 @@ const LanguageSwitcher: React.FC = () => {
                 }}
               />
 
-              {/* Optional: Add checkmark for selected language on mobile */}
-              {isSelected && isMobile && (
+              {/* Checkmark for selected language on mobile */}
+              {isSelected && (
                 <Box
                   sx={{
                     ml: "auto",
-                    color: "primary.main",
-                    fontSize: "0.875rem",
+                    color: "#A657AE",
+                    fontFamily: "Neon80s",
+                    fontSize: {
+                      xs: "0.9rem",
+                      sm: "1rem",
+                      md: "1.5rem",
+                    },
                     display: "flex",
                     alignItems: "center",
                   }}

@@ -47,6 +47,14 @@ const PasswordField = ({
         error={!!error}
         helperText={helperText}
         disabled={disabled}
+        sx={{
+          "& input": {
+            fontFamily: "Montserrat",
+          },
+          "& .MuiFormHelperText-root": {
+            fontFamily: "Montserrat",
+          },
+        }}
         slotProps={{
           input: {
             endAdornment: (
