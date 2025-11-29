@@ -375,10 +375,19 @@
     "ocrLoadError": "Error loading OCR data. Please try uploading again or enter data manually.",
     "maxRetriesReached": "OCR processing completed after {{attempts}} attempts ({{time}}s). Please verify all data.",
     "ocrProcessing": "Processing transcripts... {{progress}}%",
+    "updatingScores": "Updating your scores...",
+    "checkingPredictionStatus": "Checking prediction status...",
+    "updateGrade": "Update Scores",
+    "updating": "Updating...",
+    "updateSuccess": "Scores updated successfully!",
+    "updateError": "Failed to update scores. Please try again.",
     "errors": {
+      "ocrIdNotFound": "OCR ID not found. Please try uploading your transcript again.",
+      "ocrUpdateFailed": "Failed to update your scores. Please try again.",
       "studentIdNotFound": "Student ID not found. Please complete previous steps.",
       "predictionTimeout": "Prediction is taking longer than expected. Please try again in a few moments.",
-      "submissionFailed": "Failed to process your submission. Please try again."
+      "submissionFailed": "Failed to process your submission. Please try again.",
+      "predictionNotReady": "Prediction is not ready yet. Please try again later."
     }
   },
   "popup": {

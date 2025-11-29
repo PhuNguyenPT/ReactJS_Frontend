@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useAuth from "../auth/useAuth";
 import { useAdmissionHandler } from "../studentAdmission/useAdmissionHandler";
+import { pollPredictionResult } from "../../services/predictionResult/predictionResultService";
 import { getFilterFieldsForStudent } from "../../services/studentAdmission/admissionFilterService";
 import type { StudentResponse } from "../../type/interface/profileTypes";
 import type { NinthFormNavigationState } from "../../type/interface/navigationTypes";
@@ -24,6 +25,7 @@ export function useNinthFormSubmission() {
     progress?: number;
   }>({ attempt: 0, maxAttempts: 0 });
 
+  // Get studentId from navigation state, sessionStorage, or user object
   useEffect(() => {
     const navigationState = location.state as
       | NinthFormNavigationState
@@ -65,24 +67,67 @@ export function useNinthFormSubmission() {
       setErrorMessage(t("errors.studentIdNotFound"));
       return;
     }
-
     setIsSubmitting(true);
     setErrorMessage(null);
-    setProcessingStatus(t("ninthForm.processingPrediction"));
+    setProcessingStatus(t("ninthForm.updatingScores"));
     setRetryProgress({ attempt: 0, maxAttempts: 0 });
 
     try {
-      // Step 1: Process admission with new RetryProgress interface
+      // STEP 1: Poll prediction result to check if status is "completed"
+      console.log(
+        "[NinthFormPage] Step 1: Checking prediction result status...",
+      );
+      setProcessingStatus(t("ninthForm.checkingPredictionStatus"));
+
+      const predictionResult = await pollPredictionResult(
+        studentId,
+        isAuthenticated,
+        {
+          maxAttempts: 10,
+          intervalMs: 2000,
+          onProgress: (attempt, maxAttempts) => {
+            setRetryProgress({
+              attempt,
+              maxAttempts,
+              progress: (attempt / maxAttempts) * 100,
+            });
+            setProcessingStatus(
+              t("ninthForm.checkingPredictionStatus") +
+                ` (${String(attempt)}/${String(maxAttempts)})`,
+            );
+          },
+        },
+      );
+
+      if (
+        !predictionResult.success ||
+        predictionResult.status !== "completed"
+      ) {
+        setErrorMessage(
+          predictionResult.message ?? t("ninthForm.errors.predictionNotReady"),
+        );
+        setIsSubmitting(false);
+        setProcessingStatus("");
+        return;
+      }
+
+      console.log(
+        "[NinthFormPage] Prediction result is ready (status: completed)",
+      );
+
+      // STEP 2: Process admission with retry logic
+      console.log("[NinthFormPage] Step 2: Processing admission...");
+      setProcessingStatus(t("ninthForm.processingPrediction"));
+      setRetryProgress({ attempt: 0, maxAttempts: 0 });
+
       const admissionData = await processAdmission(studentId, isAuthenticated, {
         onRetry: (progress) => {
-          // Update retry progress with new interface
           setRetryProgress({
             attempt: progress.attempt,
             maxAttempts: progress.maxAttempts,
             progress: progress.progress,
           });
 
-          // Update status message based on progress
           if (progress.statusMessage) {
             setProcessingStatus(progress.statusMessage);
           } else {
@@ -103,14 +148,15 @@ export function useNinthFormSubmission() {
         return;
       }
 
-      // Step 2: Fetch filter fields after successful admission
+      // STEP 3: Fetch filter fields after successful admission
+      console.log("[NinthFormPage] Step 3: Loading filter fields...");
       setProcessingStatus(t("ninthForm.loadingFilters"));
       const filterResponse = await getFilterFieldsForStudent(
         studentId,
         isAuthenticated,
       );
 
-      // Step 3: Navigate with both admission data and filter fields
+      // STEP 4: Navigate to results page
       setProcessingStatus(t("ninthForm.predictionCompleted"));
 
       const userData =
@@ -125,6 +171,7 @@ export function useNinthFormSubmission() {
 
       const userName = isAuthenticated ? userData?.name : undefined;
 
+      console.log("[NinthFormPage] Navigating to results page");
       void navigate("/result", {
         state: {
           userId,

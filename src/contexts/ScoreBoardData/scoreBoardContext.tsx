@@ -13,12 +13,14 @@ interface NinthFormState {
   scores: GradeScores;
   selectedSubjects: Record<string, (string | null)[]>;
   hasOcrData: boolean;
+  ocrIdMapping: Record<string, string>; // NEW: Add OCR ID mapping
 }
 
 interface NinthFormContextType {
   scores: GradeScores;
   selectedSubjects: Record<string, (string | null)[]>;
   hasOcrData: boolean;
+  ocrIdMapping: Record<string, string>; // NEW
   updateScore: (gradeKey: string, subject: string, value: string) => void;
   updateSelectedSubject: (
     gradeKey: string,
@@ -29,6 +31,7 @@ interface NinthFormContextType {
   loadOcrData: (
     scores: GradeScores,
     selectedSubjects: Record<string, (string | null)[]>,
+    ocrIdMapping: Record<string, string>,
   ) => void;
   clearAllData: () => void;
   resetToDefault: () => void;
@@ -54,6 +57,7 @@ const defaultState: NinthFormState = {
     "12-2": [null, null, null, null],
   },
   hasOcrData: false,
+  ocrIdMapping: {}, // NEW: Initialize empty mapping
 };
 
 const NinthFormContext = createContext<NinthFormContextType | undefined>(
@@ -86,6 +90,9 @@ function isValidNinthFormState(data: unknown): data is NinthFormState {
     return false;
   }
 
+  // ocrIdMapping is optional for backward compatibility
+  // If it doesn't exist, it will be set to {}
+
   return true;
 }
 
@@ -97,6 +104,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     Record<string, (string | null)[]>
   >(defaultState.selectedSubjects);
   const [hasOcrData, setHasOcrData] = useState(false);
+  const [ocrIdMapping, setOcrIdMapping] = useState<Record<string, string>>({});
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -110,6 +118,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
           setScores(parsed.scores);
           setSelectedSubjects(parsed.selectedSubjects);
           setHasOcrData(parsed.hasOcrData);
+          setOcrIdMapping(parsed.ocrIdMapping);
         } else {
           console.warn(
             "[NinthFormContext] Invalid data structure in localStorage, using defaults",
@@ -128,12 +137,13 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
         scores,
         selectedSubjects,
         hasOcrData,
+        ocrIdMapping, // NEW: Include OCR ID mapping
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (error) {
       console.error("[NinthFormContext] Error saving data:", error);
     }
-  }, [scores, selectedSubjects, hasOcrData]);
+  }, [scores, selectedSubjects, hasOcrData, ocrIdMapping]); // NEW: Add ocrIdMapping to dependency
 
   const updateScore = useCallback(
     (gradeKey: string, subject: string, value: string) => {
@@ -177,10 +187,12 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     (
       newScores: GradeScores,
       newSelectedSubjects: Record<string, (string | null)[]>,
+      newOcrIdMapping: Record<string, string>, // NEW: Add parameter
     ) => {
       setScores(newScores);
       setSelectedSubjects(newSelectedSubjects);
       setHasOcrData(true);
+      setOcrIdMapping(newOcrIdMapping); // NEW: Save OCR ID mapping
     },
     [],
   );
@@ -189,6 +201,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     setScores(defaultState.scores);
     setSelectedSubjects(defaultState.selectedSubjects);
     setHasOcrData(false);
+    setOcrIdMapping({}); // NEW: Clear OCR ID mapping
     localStorage.removeItem(STORAGE_KEY);
     console.log("[NinthFormContext] Cleared all data");
   }, []);
@@ -197,6 +210,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     setScores(defaultState.scores);
     setSelectedSubjects(defaultState.selectedSubjects);
     setHasOcrData(false);
+    setOcrIdMapping({}); // NEW: Reset OCR ID mapping
   }, []);
 
   const value: NinthFormContextType = useMemo(
@@ -204,6 +218,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
       scores,
       selectedSubjects,
       hasOcrData,
+      ocrIdMapping, // NEW: Expose OCR ID mapping
       updateScore,
       updateSelectedSubject,
       removeSubjectScore,
@@ -215,6 +230,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
       scores,
       selectedSubjects,
       hasOcrData,
+      ocrIdMapping, // NEW: Add to dependencies
       updateScore,
       updateSelectedSubject,
       removeSubjectScore,

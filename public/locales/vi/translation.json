@@ -375,10 +375,19 @@
     "ocrLoadError": "Lỗi khi tải dữ liệu OCR. Vui lòng thử tải lên lại hoặc nhập dữ liệu thủ công.",
     "maxRetriesReached": "Quá trình OCR hoàn thành sau {{attempts}} lần thử ({{time}}s). Vui lòng kiểm tra tất cả dữ liệu.",
     "ocrProcessing": "Đang xử lý bảng điểm... {{progress}}%",
+    "updatingScores": "Đang cập nhật điểm của bạn...",
+    "updateGrade": "Cập Nhật Điểm",
+    "updating": "Đang cập nhật...",
+    "updateSuccess": "Cập nhật điểm thành công!",
+    "updateError": "Không thể cập nhật điểm. Vui lòng thử lại.",
+    "checkingPredictionStatus": "Đang kiểm tra trạng thái dự đoán...",
     "errors": {
       "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
       "predictionTimeout": "Dự đoán mất nhiều thời gian hơn dự kiến. Vui lòng thử lại sau vài phút.",
-      "submissionFailed": "Không thể xử lý việc gửi của bạn. Vui lòng thử lại."
+      "submissionFailed": "Không thể xử lý việc gửi của bạn. Vui lòng thử lại.",
+      "ocrIdNotFound": "Không tìm thấy ID OCR. Vui lòng thử tải lên bảng điểm của bạn lại.",
+      "ocrUpdateFailed": "Không thể cập nhật điểm của bạn. Vui lòng thử lại.",
+      "predictionNotReady": "Dự đoán chưa sẵn sàng. Vui lòng thử lại sau."
     }
   },
   "popup": {

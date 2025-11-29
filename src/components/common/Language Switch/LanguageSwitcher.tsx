@@ -131,7 +131,7 @@ const LanguageSwitcher: React.FC = () => {
                 fontFamily: "Neon80s",
                 fontSize: {
                   xs: "0.75rem",
-                  sm: "0.875rem",
+                  sm: "1.25rem",
                   md: "1.75rem",
                 },
                 fontWeight: 700,
