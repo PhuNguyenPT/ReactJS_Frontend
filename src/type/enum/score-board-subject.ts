@@ -16,8 +16,7 @@ type ScordBoardSubjectTranslationKey =
   | "subjects.dia_ly"
   | "subjects.gdktpl"
   | "subjects.tin_hoc"
-  | "subjects.cong_nghe_cong_nghiep"
-  | "subjects.cong_nghe_nong_nghiep";
+  | "subjects.cong_nghe";
 
 // NationalExamSubjects enum with translation keys
 export const ScoreBoardSubjects = {
@@ -37,8 +36,7 @@ export const ScoreBoardSubjects = {
   DIA_LY: "subjects.dia_ly",
   GDKTPL: "subjects.gdktpl",
   TIN_HOC: "subjects.tin_hoc",
-  CONG_NGHE_CONG_NGHIEP: "subjects.cong_nghe_cong_nghiep",
-  CONG_NGHE_NONG_NGHIEP: "subjects.cong_nghe_nong_nghiep",
+  CONG_NGHE: "subjects.cong_nghe",
 } as const;
 
 // Export the type
@@ -65,8 +63,7 @@ export const ScoreBoardSubjectsVietnamese: Record<
   "subjects.dia_ly": "Địa Lý",
   "subjects.gdktpl": "GDKTPL",
   "subjects.tin_hoc": "Tin Học",
-  "subjects.cong_nghe_cong_nghiep": "Công nghệ Công nghiệp",
-  "subjects.cong_nghe_nong_nghiep": "Công nghệ Nông nghiệp",
+  "subjects.cong_nghe": "Công Nghệ",
 } as const;
 
 // Reverse mapping from Vietnamese values to translation keys
@@ -94,34 +91,11 @@ export const getAllScoreBoardSubjects =
   };
 
 export const getSelectableSubjects = (): ScordBoardSubjectTranslationKey[] => {
-  // Return all subjects except Math and Literature (which are mandatory)
   return Object.values(ScoreBoardSubjects).filter(
     (subject) =>
       subject !== ScoreBoardSubjects.TOAN &&
       subject !== ScoreBoardSubjects.NGU_VAN,
   );
-};
-
-// Check if a subject is a technology subject (Công nghệ)
-export const isTechnologySubject = (subject: string | null): boolean => {
-  if (!subject) return false;
-  return (
-    subject === ScoreBoardSubjects.CONG_NGHE_CONG_NGHIEP ||
-    subject === ScoreBoardSubjects.CONG_NGHE_NONG_NGHIEP
-  );
-};
-
-// Get the other technology subject
-export const getOtherTechnologySubject = (
-  subject: string,
-): ScordBoardSubjectTranslationKey | null => {
-  if (subject === ScoreBoardSubjects.CONG_NGHE_CONG_NGHIEP) {
-    return ScoreBoardSubjects.CONG_NGHE_NONG_NGHIEP;
-  }
-  if (subject === ScoreBoardSubjects.CONG_NGHE_NONG_NGHIEP) {
-    return ScoreBoardSubjects.CONG_NGHE_CONG_NGHIEP;
-  }
-  return null;
 };
 
 export const getNationalExamSubjectVietnameseValue = (
@@ -133,16 +107,13 @@ export const getNationalExamSubjectVietnameseValue = (
   return translationKey;
 };
 
-// ✅ FIX: Just return string and let the caller use type guard
 export const getNationalExamSubjectTranslationKey = (
   vietnameseValue: string,
 ): string => {
   if (vietnameseValue in VietnameseToScoreBoardSubjects) {
     return VietnameseToScoreBoardSubjects[vietnameseValue];
   }
-  // Return the original value if not found (fallback)
   return vietnameseValue;
 };
 
-// ✅ Helper to check if a translation key is valid (same as the type guard above)
 export const isValidSubjectKey = isScoreBoardSubjectTranslationKey;

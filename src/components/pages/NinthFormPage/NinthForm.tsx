@@ -7,8 +7,12 @@ import {
   TextField,
   Autocomplete,
   Alert,
+  Button,
+  CircularProgress,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SaveIcon from "@mui/icons-material/Save";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useNinthFormLogic } from "../../../hooks/formPages/useNinthForm";
 
 export default function NinthForm() {
@@ -18,15 +22,18 @@ export default function NinthForm() {
     scores,
     selectedSubjects,
     fixedSubjects,
-    optionalSubjects,
     gradeInfoList,
     handleScoreChange,
     handleSubjectSelect,
     handleCloseAlert,
     handleCloseRetryAlert,
+    handleUpdateGrade,
     getSubjectLabel,
     isScoreHighlighted,
     isSubjectHighlighted,
+    getAvailableSubjects, // NEW: Get the filtering function
+    isGradeUpdating,
+    gradeUpdateStatus,
     translations,
   } = useNinthFormLogic();
 
@@ -148,7 +155,7 @@ export default function NinthForm() {
           }}
         >
           <Autocomplete
-            options={optionalSubjects}
+            options={getAvailableSubjects(gradeKey, idx)}
             value={subjectKey}
             onChange={(_, newValue) => {
               handleSubjectSelect(gradeKey, idx, newValue);
@@ -319,17 +326,37 @@ export default function NinthForm() {
               },
             }}
           >
-            <Typography
-              variant="h6"
+            <Box
               sx={{
-                color: "#A657AE",
-                fontFamily: "Montserrat",
-                fontWeight: 600,
-                fontSize: { xs: "1rem", sm: "1.15rem", md: "1.25rem" },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                mr: 1,
               }}
             >
-              {translations.grade} {gradeInfo.grade} - {gradeInfo.semester}
-            </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "#A657AE",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  fontSize: { xs: "1rem", sm: "1.15rem", md: "1.25rem" },
+                }}
+              >
+                {translations.grade} {gradeInfo.grade} - {gradeInfo.semester}
+              </Typography>
+
+              {/* Status indicator */}
+              {gradeUpdateStatus[gradeInfo.key] === "success" && (
+                <CheckCircleIcon
+                  sx={{
+                    color: "#4caf50",
+                    fontSize: { xs: "1.2rem", sm: "1.5rem" },
+                  }}
+                />
+              )}
+            </Box>
           </AccordionSummary>
           <AccordionDetails
             sx={{
@@ -339,6 +366,74 @@ export default function NinthForm() {
           >
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               {renderSubjectInputs(gradeInfo.key)}
+
+              {/* Update Button for this grade/semester */}
+              <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  variant="contained"
+                  startIcon={
+                    isGradeUpdating[gradeInfo.key] ? (
+                      <CircularProgress size={20} sx={{ color: "white" }} />
+                    ) : (
+                      <SaveIcon />
+                    )
+                  }
+                  onClick={() => {
+                    void handleUpdateGrade(gradeInfo.key);
+                  }}
+                  disabled={isGradeUpdating[gradeInfo.key]}
+                  sx={{
+                    backgroundColor: "#A657AE",
+                    color: "white",
+                    fontFamily: "Montserrat",
+                    fontWeight: 600,
+                    fontSize: { xs: "0.8rem", sm: "0.9rem" },
+                    px: { xs: 2, sm: 3 },
+                    py: { xs: 1, sm: 1.2 },
+                    borderRadius: "25px",
+                    textTransform: "none",
+                    boxShadow: "0 4px 10px rgba(166, 87, 174, 0.3)",
+                    "&:hover": {
+                      backgroundColor: "#8B4A8F",
+                      boxShadow: "0 6px 15px rgba(166, 87, 174, 0.4)",
+                    },
+                    "&:disabled": {
+                      backgroundColor: "#D8B5DB",
+                      color: "white",
+                    },
+                  }}
+                >
+                  {isGradeUpdating[gradeInfo.key]
+                    ? translations.updating
+                    : translations.updateGrade}
+                </Button>
+              </Box>
+
+              {/* Update status message */}
+              {gradeUpdateStatus[gradeInfo.key] === "success" && (
+                <Alert
+                  severity="success"
+                  sx={{
+                    mt: 1,
+                    fontFamily: "Montserrat",
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  }}
+                >
+                  {translations.updateSuccess}
+                </Alert>
+              )}
+              {gradeUpdateStatus[gradeInfo.key] === "error" && (
+                <Alert
+                  severity="error"
+                  sx={{
+                    mt: 1,
+                    fontFamily: "Montserrat",
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  }}
+                >
+                  {translations.updateError}
+                </Alert>
+              )}
             </Box>
           </AccordionDetails>
         </Accordion>

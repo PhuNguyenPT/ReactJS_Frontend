@@ -10,6 +10,8 @@ import {
   type ScordBoardSubjectTranslationKey,
 } from "../../type/enum/score-board-subject";
 import { useNinthForm } from "../../contexts/ScoreBoardData/useScoreBoardContext";
+import { useOcrUpdate } from "../userProfile/useOcrUpdate";
+import useAuth from "../auth/useAuth";
 
 export type SubjectScores = Record<string, string>;
 export type GradeScores = Record<string, SubjectScores>;
@@ -54,6 +56,8 @@ const mapOcrResultsToGradeSemesters = (
 export const useNinthFormLogic = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const { updateSingleGrade } = useOcrUpdate();
   const navigationState = location.state as
     | NinthFormNavigationState
     | undefined;
@@ -63,6 +67,29 @@ export const useNinthFormLogic = () => {
     show: false,
     type: "info",
     message: "",
+  });
+
+  // Track update status for each grade
+  const [isGradeUpdating, setIsGradeUpdating] = useState<
+    Record<string, boolean>
+  >({
+    "10-1": false,
+    "10-2": false,
+    "11-1": false,
+    "11-2": false,
+    "12-1": false,
+    "12-2": false,
+  });
+
+  const [gradeUpdateStatus, setGradeUpdateStatus] = useState<
+    Record<string, "idle" | "success" | "error">
+  >({
+    "10-1": "idle",
+    "10-2": "idle",
+    "11-1": "idle",
+    "11-2": "idle",
+    "12-1": "idle",
+    "12-2": "idle",
   });
 
   // Use the context hook
@@ -97,8 +124,7 @@ export const useNinthFormLogic = () => {
         ScoreBoardSubjects.VAT_LY,
         ScoreBoardSubjects.HOA_HOC,
         ScoreBoardSubjects.SINH_HOC,
-        ScoreBoardSubjects.CONG_NGHE_CONG_NGHIEP,
-        ScoreBoardSubjects.CONG_NGHE_NONG_NGHIEP,
+        ScoreBoardSubjects.CONG_NGHE,
         ScoreBoardSubjects.TIN_HOC,
       ] as ScordBoardSubjectTranslationKey[],
     [],
@@ -129,11 +155,12 @@ export const useNinthFormLogic = () => {
   /**
    * FIXED: Process OCR data with proper position mapping
    * This ensures null scores stay in their correct grade/semester
+   * ALSO saves OCR IDs to localStorage for later PATCH requests
    */
   const processOcrData = useCallback(
     (ocrResults: OcrResultItem[]) => {
       try {
-        // STEP 1: Map results to their correct positions (DO NOT FILTER!)
+        // STEP 1: Map results to their correct positions
         const gradeSemesterMap = mapOcrResultsToGradeSemesters(ocrResults);
 
         // STEP 2: Initialize empty structures for all grades
@@ -155,6 +182,9 @@ export const useNinthFormLogic = () => {
           "12-2": [null, null, null, null],
         };
 
+        // STEP 2.5: Create OCR ID mapping for PATCH requests
+        const ocrIdMapping: Record<string, string> = {};
+
         const gradeKeys = ["10-1", "10-2", "11-1", "11-2", "12-1", "12-2"];
         let processedCount = 0;
 
@@ -172,6 +202,12 @@ export const useNinthFormLogic = () => {
           if (!result.scores || result.scores.length === 0) {
             console.log(`${gradeKey}: ⚠️  NULL or empty scores`);
             return;
+          }
+
+          // Save OCR ID for this grade/semester
+          if (result.id) {
+            ocrIdMapping[gradeKey] = result.id;
+            console.log(`${gradeKey}: Saved OCR ID ${result.id}`);
           }
 
           processedCount++;
@@ -221,8 +257,12 @@ export const useNinthFormLogic = () => {
           newSelectedSubjects[gradeKey] = optionalSubjectsForGrade;
         });
 
-        // STEP 4: Load into context
-        loadOcrData(newScores, newSelectedSubjects);
+        // STEP 4: Load into context (which will save to localStorage automatically)
+        loadOcrData(newScores, newSelectedSubjects, ocrIdMapping);
+        console.log(
+          "[NinthForm] Loaded OCR ID mapping to context:",
+          ocrIdMapping,
+        );
         setShowAlert(true);
 
         // Show warning if partial results
@@ -283,6 +323,8 @@ export const useNinthFormLogic = () => {
         (isValidScore && (isNaN(numValue) || (numValue >= 0 && numValue <= 10)))
       ) {
         updateScore(gradeKey, subject, value);
+        // Reset status when user makes changes
+        setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "idle" }));
       }
     },
     [updateScore],
@@ -298,8 +340,50 @@ export const useNinthFormLogic = () => {
       }
 
       updateSelectedSubject(gradeKey, index, newSubject);
+      // Reset status when user makes changes
+      setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "idle" }));
     },
     [selectedSubjects, removeSubjectScore, updateSelectedSubject],
+  );
+
+  /**
+   * NEW: Handle update for a specific grade/semester
+   */
+  const handleUpdateGrade = useCallback(
+    async (gradeKey: string) => {
+      console.log(`[NinthForm] Updating grade/semester: ${gradeKey}`);
+
+      // Set loading state
+      setIsGradeUpdating((prev) => ({ ...prev, [gradeKey]: true }));
+      setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "idle" }));
+
+      try {
+        // Call the update function for this specific grade
+        const result = await updateSingleGrade(gradeKey, isAuthenticated);
+
+        if (result.success) {
+          console.log(`[NinthForm] Successfully updated ${gradeKey}`);
+          setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "success" }));
+
+          // Auto-hide success message after 3 seconds
+          setTimeout(() => {
+            setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "idle" }));
+          }, 3000);
+        } else {
+          console.error(
+            `[NinthForm] Failed to update ${gradeKey}:`,
+            result.message,
+          );
+          setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "error" }));
+        }
+      } catch (error) {
+        console.error(`[NinthForm] Error updating ${gradeKey}:`, error);
+        setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "error" }));
+      } finally {
+        setIsGradeUpdating((prev) => ({ ...prev, [gradeKey]: false }));
+      }
+    },
+    [updateSingleGrade, isAuthenticated],
   );
 
   const handleCloseAlert = useCallback(() => {
@@ -330,6 +414,30 @@ export const useNinthFormLogic = () => {
       return hasOcrData && Boolean(subjectKey);
     },
     [hasOcrData],
+  );
+
+  /**
+   * NEW: Get available optional subjects for a specific dropdown
+   * Filters out subjects that are already selected in this grade/semester
+   */
+  const getAvailableSubjects = useCallback(
+    (
+      gradeKey: string,
+      currentIndex: number,
+    ): ScordBoardSubjectTranslationKey[] => {
+      const currentlySelected = selectedSubjects[gradeKey];
+      const currentSubject = currentlySelected[currentIndex];
+
+      // Filter out subjects that are already selected (except the current one)
+      return optionalSubjects.filter((subject) => {
+        // Keep the current subject in the list (so it can be displayed/cleared)
+        if (subject === currentSubject) return true;
+
+        // Filter out subjects that are already selected in other dropdowns
+        return !currentlySelected.includes(subject);
+      });
+    },
+    [optionalSubjects, selectedSubjects],
   );
 
   // Validation
@@ -378,6 +486,8 @@ export const useNinthFormLogic = () => {
     scores,
     selectedSubjects,
     hasOcrData,
+    isGradeUpdating,
+    gradeUpdateStatus,
 
     // Configuration
     fixedSubjects,
@@ -389,6 +499,7 @@ export const useNinthFormLogic = () => {
     // Handlers
     handleScoreChange,
     handleSubjectSelect,
+    handleUpdateGrade,
     handleCloseAlert,
     handleCloseRetryAlert,
 
@@ -396,6 +507,7 @@ export const useNinthFormLogic = () => {
     getSubjectLabel,
     isScoreHighlighted,
     isSubjectHighlighted,
+    getAvailableSubjects, // NEW: Added this function
 
     // Validation
     validateGradeScores,
@@ -410,6 +522,10 @@ export const useNinthFormLogic = () => {
       score: t("ninthForm.score"),
       chooseSubject: t("ninthForm.chooseSubject"),
       scoreBoardDataLoaded: t("ninthForm.scoreBoardDataLoaded"),
+      updateGrade: t("ninthForm.updateGrade"),
+      updating: t("ninthForm.updating"),
+      updateSuccess: t("ninthForm.updateSuccess"),
+      updateError: t("ninthForm.updateError"),
     },
   };
 };
