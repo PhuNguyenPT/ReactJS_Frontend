@@ -4,7 +4,7 @@ import {
   updateOcrData,
   type SubjectScorePayload,
   type OcrUpdatePayload,
-} from "../../services/fileUpload/OcrUpdateService";
+} from "../../services/fileUpload/ocrUpdateService";
 import { getVietnameseSubjectName } from "../../utils/scoreBoardSubjectHelper";
 import type { ScordBoardSubjectTranslationKey } from "../../type/enum/score-board-subject";
 
