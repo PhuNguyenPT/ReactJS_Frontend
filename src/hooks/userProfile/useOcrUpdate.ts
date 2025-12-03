@@ -2,25 +2,26 @@ import { useCallback } from "react";
 import { useNinthForm } from "../../contexts/ScoreBoardData/useScoreBoardContext";
 import {
   updateOcrData,
-  type SubjectScorePayload,
   type OcrUpdatePayload,
-} from "../../services/fileUpload/ocrUpdateService";
+  type OcrUpdateResponse,
+} from "../../services/fileUpload/ocrUpdateService"; // CHANGED
 import { getVietnameseSubjectName } from "../../utils/scoreBoardSubjectHelper";
 import type { ScordBoardSubjectTranslationKey } from "../../type/enum/score-board-subject";
+import type { SubjectScorePayload } from "../../type/interface/ocrServiceTypes";
 
 export interface UseOcrUpdateResult {
-  updateOcrScores: (
-    isAuthenticated: boolean,
-  ) => Promise<{ success: boolean; message?: string }>;
   updateSingleGrade: (
     gradeKey: string,
+    isAuthenticated: boolean,
+  ) => Promise<{ success: boolean; message?: string }>;
+  updateAllGrades: (
     isAuthenticated: boolean,
   ) => Promise<{ success: boolean; message?: string }>;
   transformScoreBoardToPayload: (gradeKey: string) => OcrUpdatePayload;
 }
 
 /**
- * Hook to handle OCR updates with multiple OCR IDs (one per grade/semester)
+ * Hook to handle OCR updates (PATCH) for existing OCR transcripts
  */
 export const useOcrUpdate = (): UseOcrUpdateResult => {
   const { scores, selectedSubjects, ocrIdMapping } = useNinthForm();
@@ -35,7 +36,6 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
       const gradeScores = scores[gradeKey];
       const gradeSelectedSubjects = selectedSubjects[gradeKey];
 
-      // gradeScores always exists in the default state, so this check is valid
       if (Object.keys(gradeScores).length === 0) {
         console.warn(`[useOcrUpdate] No scores found for grade ${gradeKey}`);
         return { subjectScores: [] };
@@ -49,7 +49,6 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
           );
           const numericScore = parseFloat(scoreValue);
 
-          // Only add valid scores
           if (!isNaN(numericScore) && numericScore >= 0 && numericScore <= 10) {
             subjectScores.push({
               name: vietnameseName,
@@ -60,7 +59,6 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
       });
 
       // Also check selected subjects to ensure they're included
-      // gradeSelectedSubjects always exists in the default state
       gradeSelectedSubjects.forEach((subjectKey) => {
         if (subjectKey) {
           const scoreValue = gradeScores[subjectKey];
@@ -68,7 +66,6 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
             subjectKey as ScordBoardSubjectTranslationKey,
           );
 
-          // Check if this subject is already added
           const alreadyAdded = subjectScores.some(
             (s) => s.name === vietnameseName,
           );
@@ -95,95 +92,8 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
   );
 
   /**
-   * Update OCR scores for all grade/semesters that have OCR IDs
-   */
-  const updateOcrScores = useCallback(
-    async (
-      isAuthenticated: boolean,
-    ): Promise<{ success: boolean; message?: string }> => {
-      try {
-        // Check if OCR ID mapping has any entries
-        if (Object.keys(ocrIdMapping).length === 0) {
-          console.warn("[useOcrUpdate] No OCR ID mapping found in context");
-          return {
-            success: false,
-            message: "No OCR data found. Please upload your transcript first.",
-          };
-        }
-
-        console.log("[useOcrUpdate] OCR ID mapping:", ocrIdMapping);
-
-        // Update each grade/semester that has an OCR ID
-        const gradeKeys = Object.keys(ocrIdMapping);
-
-        const updatePromises = gradeKeys.map(async (gradeKey) => {
-          const ocrId = ocrIdMapping[gradeKey];
-          const payload = transformScoreBoardToPayload(gradeKey);
-
-          // Only update if there are scores to send
-          if (payload.subjectScores.length === 0) {
-            console.log(`[useOcrUpdate] Skipping ${gradeKey} - no scores`);
-            return { success: true, gradeKey, skipped: true };
-          }
-
-          console.log(
-            `[useOcrUpdate] Updating ${gradeKey} (OCR ID: ${ocrId}) with payload:`,
-            JSON.stringify(payload, null, 2),
-          );
-
-          const result = await updateOcrData(ocrId, payload, isAuthenticated);
-
-          return {
-            success: result.success,
-            gradeKey,
-            message: result.message,
-            skipped: false,
-          };
-        });
-
-        // Wait for all updates to complete
-        const results = await Promise.all(updatePromises);
-
-        // Check if all updates were successful
-        const failed = results.filter((r) => !r.success && !r.skipped);
-        const succeeded = results.filter((r) => r.success && !r.skipped);
-        const skipped = results.filter((r) => r.skipped);
-
-        if (failed.length > 0) {
-          console.error(
-            "[useOcrUpdate] Some OCR updates failed:",
-            failed.map((f) => f.gradeKey),
-          );
-          return {
-            success: false,
-            message: `Failed to update ${String(failed.length)} grade/semester(s): ${failed.map((f) => f.gradeKey).join(", ")}`,
-          };
-        }
-
-        console.log(
-          `[useOcrUpdate] OCR update successful: ${String(succeeded.length)} updated, ${String(skipped.length)} skipped`,
-        );
-
-        return {
-          success: true,
-          message: `Successfully updated ${String(succeeded.length)} grade/semester(s)`,
-        };
-      } catch (error) {
-        console.error("[useOcrUpdate] Error updating OCR scores:", error);
-        return {
-          success: false,
-          message:
-            error instanceof Error
-              ? error.message
-              : "Failed to update OCR scores",
-        };
-      }
-    },
-    [ocrIdMapping, transformScoreBoardToPayload],
-  );
-
-  /**
-   * Update OCR scores for a single grade/semester
+   * Update existing OCR transcript for a single grade/semester
+   * PATCH /ocr/{id} or PATCH /ocr/guest/{id}
    */
   const updateSingleGrade = useCallback(
     async (
@@ -198,13 +108,14 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
           console.warn(`[useOcrUpdate] No OCR ID found for ${gradeKey}`);
           return {
             success: false,
-            message: `No OCR data found for ${gradeKey}. Please upload your transcript first.`,
+            message: `No existing record found for ${gradeKey}. Please create a new record first.`,
           };
         }
 
+        // Transform scores to payload
         const payload = transformScoreBoardToPayload(gradeKey);
 
-        // Only update if there are scores to send
+        // Validate payload
         if (payload.subjectScores.length === 0) {
           console.log(`[useOcrUpdate] No scores to update for ${gradeKey}`);
           return {
@@ -213,12 +124,18 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
           };
         }
 
+        console.log(`[useOcrUpdate] Updating ${gradeKey} (OCR ID: ${ocrId})`);
         console.log(
-          `[useOcrUpdate] Updating ${gradeKey} (OCR ID: ${ocrId}) with payload:`,
+          `[useOcrUpdate] Payload:`,
           JSON.stringify(payload, null, 2),
         );
 
-        const result = await updateOcrData(ocrId, payload, isAuthenticated);
+        // Call update API
+        const result: OcrUpdateResponse = await updateOcrData(
+          ocrId,
+          payload,
+          isAuthenticated,
+        );
 
         if (result.success) {
           console.log(`[useOcrUpdate] Successfully updated ${gradeKey}`);
@@ -244,9 +161,91 @@ export const useOcrUpdate = (): UseOcrUpdateResult => {
     [ocrIdMapping, transformScoreBoardToPayload],
   );
 
+  /**
+   * Update all grade/semesters that have OCR IDs
+   * Useful for bulk updates
+   */
+  const updateAllGrades = useCallback(
+    async (
+      isAuthenticated: boolean,
+    ): Promise<{ success: boolean; message?: string }> => {
+      try {
+        if (Object.keys(ocrIdMapping).length === 0) {
+          console.warn("[useOcrUpdate] No OCR ID mapping found in context");
+          return {
+            success: false,
+            message: "No OCR data found. Please create records first.",
+          };
+        }
+
+        console.log("[useOcrUpdate] Starting bulk update for all grades");
+        console.log("[useOcrUpdate] OCR ID mapping:", ocrIdMapping);
+
+        const gradeKeys = Object.keys(ocrIdMapping);
+
+        const updatePromises = gradeKeys.map(async (gradeKey) => {
+          const ocrId = ocrIdMapping[gradeKey];
+          const payload = transformScoreBoardToPayload(gradeKey);
+
+          if (payload.subjectScores.length === 0) {
+            console.log(`[useOcrUpdate] Skipping ${gradeKey} - no scores`);
+            return { success: true, gradeKey, skipped: true };
+          }
+
+          console.log(`[useOcrUpdate] Updating ${gradeKey} (OCR ID: ${ocrId})`);
+
+          const result = await updateOcrData(ocrId, payload, isAuthenticated);
+
+          return {
+            success: result.success,
+            gradeKey,
+            message: result.message,
+            skipped: false,
+          };
+        });
+
+        const results = await Promise.all(updatePromises);
+
+        const failed = results.filter((r) => !r.success && !r.skipped);
+        const succeeded = results.filter((r) => r.success && !r.skipped);
+        const skipped = results.filter((r) => r.skipped);
+
+        if (failed.length > 0) {
+          console.error(
+            "[useOcrUpdate] Some OCR updates failed:",
+            failed.map((f) => f.gradeKey),
+          );
+          return {
+            success: false,
+            message: `Failed to update ${String(failed.length)} grade/semester(s): ${failed.map((f) => f.gradeKey).join(", ")}`,
+          };
+        }
+
+        console.log(
+          `[useOcrUpdate] Bulk update complete: ${String(succeeded.length)} updated, ${String(skipped.length)} skipped`,
+        );
+
+        return {
+          success: true,
+          message: `Successfully updated ${String(succeeded.length)} grade/semester(s)`,
+        };
+      } catch (error) {
+        console.error("[useOcrUpdate] Error in bulk update:", error);
+        return {
+          success: false,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to update OCR scores",
+        };
+      }
+    },
+    [ocrIdMapping, transformScoreBoardToPayload],
+  );
+
   return {
-    updateOcrScores,
     updateSingleGrade,
+    updateAllGrades,
     transformScoreBoardToPayload,
   };
 };

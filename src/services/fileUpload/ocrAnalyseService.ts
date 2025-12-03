@@ -1,11 +1,8 @@
 import apiFetch from "../../utils/apiFetch";
-import type { OcrResultItem } from "../../type/interface/ocrTypes";
+import type { OcrResultItem, OcrResponse } from "../../type/interface/ocrTypes";
 
-export interface OcrResponse {
-  success: boolean;
-  message?: string;
-  data?: OcrResultItem[];
-}
+// Re-export types for convenience
+export type { OcrResultItem, OcrResponse } from "../../type/interface/ocrTypes";
 
 /**
  * Get student ID from localStorage
@@ -19,6 +16,27 @@ function getStudentIdFromStorage(): string {
     );
   }
   return studentId;
+}
+
+/**
+ * Normalize OCR response to ensure consistent structure
+ * The API returns an array directly: [{ id: "...", subjectScores: [...] }]
+ */
+function normalizeOcrResponse(
+  response: OcrResultItem[] | { data: OcrResultItem[] },
+): OcrResultItem[] {
+  // Handle array response (direct from API)
+  if (Array.isArray(response)) {
+    return response;
+  }
+
+  // Handle wrapped response with data property
+  if ("data" in response && Array.isArray(response.data)) {
+    return response.data;
+  }
+
+  // Unexpected structure - return empty array
+  return [];
 }
 
 /**
@@ -40,22 +58,11 @@ export async function triggerStudentOcr(
       requiresAuth: true,
     });
 
-    // Handle different response structures
-    let ocrResults: OcrResultItem[];
+    const ocrResults = normalizeOcrResponse(response);
 
-    // Check if response is wrapped in a data property
-    if (typeof response === "object" && "data" in response) {
-      ocrResults = response.data;
-    } else if (Array.isArray(response)) {
-      // Response is directly an array
-      ocrResults = response;
-    } else {
-      console.warn("[OCR] Unexpected response structure:", response);
-      ocrResults = [];
-    }
     // Count how many have actual scores
     const withScores = ocrResults.filter(
-      (item) => item.scores !== null && item.scores.length > 0,
+      (item) => item.subjectScores.length > 0,
     );
 
     return {
@@ -64,8 +71,11 @@ export async function triggerStudentOcr(
       data: ocrResults,
     };
   } catch (error) {
-    console.error("[OCR] Authenticated OCR error:", error);
-    throw error;
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "OCR processing failed",
+      data: undefined,
+    };
   }
 }
 
@@ -88,23 +98,11 @@ export async function triggerGuestStudentOcr(
       requiresAuth: false,
     });
 
-    // Handle different response structures
-    let ocrResults: OcrResultItem[];
-
-    // Check if response is wrapped in a data property
-    if (typeof response === "object" && "data" in response) {
-      ocrResults = response.data;
-    } else if (Array.isArray(response)) {
-      // Response is directly an array
-      ocrResults = response;
-    } else {
-      console.warn("[OCR] Unexpected response structure:", response);
-      ocrResults = [];
-    }
+    const ocrResults = normalizeOcrResponse(response);
 
     // Count how many have actual scores
     const withScores = ocrResults.filter(
-      (item) => item.scores !== null && item.scores.length > 0,
+      (item) => item.subjectScores.length > 0,
     );
 
     return {
@@ -113,8 +111,11 @@ export async function triggerGuestStudentOcr(
       data: ocrResults,
     };
   } catch (error) {
-    console.error("[OCR] Guest OCR error:", error);
-    throw error;
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "OCR processing failed",
+      data: undefined,
+    };
   }
 }
 
@@ -150,7 +151,7 @@ export function isOcrSuccessful(response: OcrResponse | null): boolean {
   // Check if we have data and at least some results with scores
   const hasData = response.data && response.data.length > 0;
   const hasScores = response.data?.some(
-    (item) => item.scores !== null && item.scores.length > 0,
+    (item) => item.subjectScores.length > 0,
   );
 
   return hasData === true && hasScores === true;
@@ -175,7 +176,7 @@ export function getOcrStatusMessage(
   if (response.success && response.data) {
     const totalFiles = response.data.length;
     const processedFiles = response.data.filter(
-      (item) => item.scores !== null && item.scores.length > 0,
+      (item) => item.subjectScores.length > 0,
     ).length;
     const pendingFiles = totalFiles - processedFiles;
 
