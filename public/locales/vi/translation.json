@@ -381,6 +381,8 @@
     "updateSuccess": "Cập nhật điểm thành công!",
     "updateError": "Không thể cập nhật điểm. Vui lòng thử lại.",
     "checkingPredictionStatus": "Đang kiểm tra trạng thái dự đoán...",
+    "saveScoreBoard": "Lưu bảng điểm",
+    "oldDataCleared": "Dữ liệu trước đã được xóa. Sẵn sàng nhập điểm mới.",
     "errors": {
       "studentIdNotFound": "Không tìm thấy ID sinh viên. Vui lòng hoàn thành các bước trước đó.",
       "predictionTimeout": "Dự đoán mất nhiều thời gian hơn dự kiến. Vui lòng thử lại sau vài phút.",

@@ -27,11 +27,12 @@ export default function NinthForm() {
     handleSubjectSelect,
     handleCloseAlert,
     handleCloseRetryAlert,
-    handleUpdateGrade,
+    handleSaveOrUpdateGrade, // NEW: Changed from handleUpdateGrade
     getSubjectLabel,
     isScoreHighlighted,
     isSubjectHighlighted,
-    getAvailableSubjects, // NEW: Get the filtering function
+    getAvailableSubjects,
+    getButtonText, // NEW: Dynamic button text
     isGradeUpdating,
     gradeUpdateStatus,
     translations,
@@ -367,7 +368,7 @@ export default function NinthForm() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               {renderSubjectInputs(gradeInfo.key)}
 
-              {/* Update Button for this grade/semester */}
+              {/* NEW: Save/Update Button with dynamic text */}
               <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   variant="contained"
@@ -379,7 +380,7 @@ export default function NinthForm() {
                     )
                   }
                   onClick={() => {
-                    void handleUpdateGrade(gradeInfo.key);
+                    void handleSaveOrUpdateGrade(gradeInfo.key); // CHANGED
                   }}
                   disabled={isGradeUpdating[gradeInfo.key]}
                   sx={{
@@ -405,7 +406,7 @@ export default function NinthForm() {
                 >
                   {isGradeUpdating[gradeInfo.key]
                     ? translations.updating
-                    : translations.updateGrade}
+                    : getButtonText(gradeInfo.key)}
                 </Button>
               </Box>
 

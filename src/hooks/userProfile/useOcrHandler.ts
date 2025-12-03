@@ -30,13 +30,9 @@ const hasAllValidScores = (response: OcrResponse | null): boolean => {
     return false;
   }
 
+  // ✅ FIXED: Changed 'scores' to 'subjectScores'
   // Check if ALL files have scores (not just some)
-  return response.data.every(
-    (item) =>
-      item.scores !== null &&
-      Array.isArray(item.scores) &&
-      item.scores.length > 0,
-  );
+  return response.data.every((item) => item.subjectScores.length > 0);
 };
 
 /**
@@ -50,17 +46,20 @@ const getOcrProgress = (
   }
 
   const totalFiles = response.data.length;
+
+  // ✅ FIXED: Changed 'scores' to 'subjectScores'
   const filesWithScores = response.data.filter(
-    (item) => item.scores !== null && item.scores.length > 0,
+    (item) => item.subjectScores.length > 0,
   ).length;
 
   // Build status message with pending files info
   let statusMessage = `Processing files (${String(filesWithScores)}/${String(totalFiles)})`;
 
   if (filesWithScores < totalFiles) {
+    // ✅ FIXED: Changed 'scores' to 'subjectScores'
     const pendingFiles = response.data
-      .filter((item) => !item.scores || item.scores.length === 0)
-      .map((item) => item.fileId);
+      .filter((item) => item.subjectScores.length === 0)
+      .map((item) => item.id);
 
     const pendingPreview =
       pendingFiles.length > 3

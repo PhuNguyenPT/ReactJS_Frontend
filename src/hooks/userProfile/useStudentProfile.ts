@@ -12,9 +12,11 @@ import {
   type FileUploadResponse,
 } from "./useFileUpload";
 import { useOcrHandler } from "./useOcrHandler";
+import { useNinthForm } from "../../contexts/ScoreBoardData/useScoreBoardContext";
 import { type NinthFormNavigationState } from "../../type/interface/navigationTypes";
 import { hasUserId } from "../../type/interface/profileTypes";
 import type { ErrorDetails } from "../../type/interface/error.details";
+import type { OcrResponse } from "../../type/interface/ocrTypes";
 import APIError from "../../utils/apiError";
 import { saveStudentId } from "../../utils/sessionManager";
 
@@ -39,6 +41,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
   const { getFormDataForApi } = useFormData();
   const { getAllEighthFormFiles, clearEighthFormFiles } = useFileData();
   const { processOcr, isOcrSuccessful } = useOcrHandler();
+  const { clearAllData } = useNinthForm();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,24 +66,25 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
     try {
       setProcessingStatus(t("studentProfile.status.uploadingFiles"));
+
       const filePayloads = files.map(({ grade, semester, file }) => ({
         grade,
         semester: semester + 1,
         file,
       }));
-
       const response = await uploadStudentFilesAuto(filePayloads);
 
       const statusMessage = getUploadStatusMessage(response, isAuthenticated);
+
       if (isUploadSuccessful(response)) {
         setProcessingStatus(t("studentProfile.status.filesUploaded"));
       } else {
-        console.warn(statusMessage);
+        console.warn("[useStudentProfile] File upload issues:", statusMessage);
       }
 
       return response;
     } catch (uploadError) {
-      console.error("File upload error:", uploadError);
+      console.error("[useStudentProfile] File upload error:", uploadError);
       return null;
     }
   };
@@ -102,15 +106,12 @@ export function useStudentProfile(): UseStudentProfileReturn {
                 maxAttempts: String(maxAttempts),
               }),
         );
-
         const response = await submitStudentProfile(formData);
 
-        // Reset retry progress on success
         setRetryProgress({ attempt: 0, maxAttempts });
         return response;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));
-
         if (attempt < maxAttempts) {
           const delayTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
           setProcessingStatus(
@@ -137,6 +138,9 @@ export function useStudentProfile(): UseStudentProfileReturn {
       const formData = getFormDataForApi();
       const isAuthenticated = isUserAuthenticated();
 
+      // Clear ninth form data BEFORE starting submission
+      clearAllData();
+
       // Step 1: Submit student profile with retry logic
       setUploadProgress(10);
       const response = await submitWithRetry(formData, 3);
@@ -151,24 +155,45 @@ export function useStudentProfile(): UseStudentProfileReturn {
           throw new Error(t("studentProfile.errors.noStudentId"));
         }
 
-        // Save studentId with proper tracking
         saveStudentId(studentId, !isAuthenticated);
 
-        // Step 2: Upload files
+        // Step 2: Upload files (if any)
         setUploadProgress(55);
         const fileUploadResponse = await handleFileUploads(isAuthenticated);
         setUploadProgress(70);
 
-        // Step 3: Trigger OCR processing
+        // Step 3: Trigger OCR processing (only if files were uploaded)
+        let ocrResponse: OcrResponse | null = null;
+
         if (isUploadSuccessful(fileUploadResponse)) {
           setProcessingStatus(t("studentProfile.status.processingOcr"));
+
+          try {
+            // ✅ FIXED: Proper null handling instead of type assertion
+            ocrResponse = await processOcr(isAuthenticated);
+
+            if (ocrResponse) {
+              console.log(
+                "[useStudentProfile] OCR processing completed:",
+                ocrResponse,
+              );
+            } else {
+              console.warn("[useStudentProfile] OCR processing returned null");
+            }
+          } catch (ocrError) {
+            console.error(
+              "[useStudentProfile] OCR processing failed:",
+              ocrError,
+            );
+            ocrResponse = null;
+          }
+
+          setUploadProgress(90);
+        } else {
+          setUploadProgress(90);
         }
 
-        const ocrResponse = isUploadSuccessful(fileUploadResponse)
-          ? await processOcr(isAuthenticated)
-          : null;
-        setUploadProgress(90);
-
+        // Step 4: Cleanup
         if (isUploadSuccessful(fileUploadResponse)) {
           clearEighthFormFiles();
           setProcessingStatus(t("studentProfile.status.cleaningUp"));
@@ -177,6 +202,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
         setUploadProgress(100);
         setProcessingStatus(t("studentProfile.status.complete"));
 
+        // Prepare navigation state
         const navigationState: NinthFormNavigationState = {
           submissionSuccess: true,
           responseData: response.data ?? response,
@@ -187,7 +213,6 @@ export function useStudentProfile(): UseStudentProfileReturn {
           ocrResults: ocrResponse?.data,
         };
 
-        // Small delay to show completion message
         await delay(500);
 
         void navigate("/ninthForm", { state: navigationState });
@@ -197,7 +222,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
         );
       }
     } catch (err: unknown) {
-      console.error("Error submitting form:", err);
+      console.error("[useStudentProfile] Error submitting form:", err);
 
       let message = t("studentProfile.errors.unexpectedError");
 

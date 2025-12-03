@@ -13,14 +13,14 @@ interface NinthFormState {
   scores: GradeScores;
   selectedSubjects: Record<string, (string | null)[]>;
   hasOcrData: boolean;
-  ocrIdMapping: Record<string, string>; // NEW: Add OCR ID mapping
+  ocrIdMapping: Record<string, string>;
 }
 
 interface NinthFormContextType {
   scores: GradeScores;
   selectedSubjects: Record<string, (string | null)[]>;
   hasOcrData: boolean;
-  ocrIdMapping: Record<string, string>; // NEW
+  ocrIdMapping: Record<string, string>;
   updateScore: (gradeKey: string, subject: string, value: string) => void;
   updateSelectedSubject: (
     gradeKey: string,
@@ -35,6 +35,7 @@ interface NinthFormContextType {
   ) => void;
   clearAllData: () => void;
   resetToDefault: () => void;
+  updateOcrId: (gradeKey: string, ocrId: string) => void; // ✅ ADD THIS LINE
 }
 
 const STORAGE_KEY = "ninthFormData";
@@ -57,7 +58,7 @@ const defaultState: NinthFormState = {
     "12-2": [null, null, null, null],
   },
   hasOcrData: false,
-  ocrIdMapping: {}, // NEW: Initialize empty mapping
+  ocrIdMapping: {},
 };
 
 const NinthFormContext = createContext<NinthFormContextType | undefined>(
@@ -72,12 +73,9 @@ function isValidNinthFormState(data: unknown): data is NinthFormState {
 
   const obj = data as Record<string, unknown>;
 
-  // Check if scores exists and is an object
   if (typeof obj.scores !== "object" || obj.scores === null) {
     return false;
   }
-
-  // Check if selectedSubjects exists and is an object
   if (
     typeof obj.selectedSubjects !== "object" ||
     obj.selectedSubjects === null
@@ -85,14 +83,9 @@ function isValidNinthFormState(data: unknown): data is NinthFormState {
     return false;
   }
 
-  // Check if hasOcrData exists and is a boolean
   if (typeof obj.hasOcrData !== "boolean") {
     return false;
   }
-
-  // ocrIdMapping is optional for backward compatibility
-  // If it doesn't exist, it will be set to {}
-
   return true;
 }
 
@@ -106,14 +99,12 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
   const [hasOcrData, setHasOcrData] = useState(false);
   const [ocrIdMapping, setOcrIdMapping] = useState<Record<string, string>>({});
 
-  // Load data from localStorage on mount
   useEffect(() => {
     try {
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
         const parsed: unknown = JSON.parse(savedData);
 
-        // Validate the parsed data before using it
         if (isValidNinthFormState(parsed)) {
           setScores(parsed.scores);
           setSelectedSubjects(parsed.selectedSubjects);
@@ -130,20 +121,19 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // Save data to localStorage whenever it changes
   useEffect(() => {
     try {
       const dataToSave: NinthFormState = {
         scores,
         selectedSubjects,
         hasOcrData,
-        ocrIdMapping, // NEW: Include OCR ID mapping
+        ocrIdMapping,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (error) {
       console.error("[NinthFormContext] Error saving data:", error);
     }
-  }, [scores, selectedSubjects, hasOcrData, ocrIdMapping]); // NEW: Add ocrIdMapping to dependency
+  }, [scores, selectedSubjects, hasOcrData, ocrIdMapping]);
 
   const updateScore = useCallback(
     (gradeKey: string, subject: string, value: string) => {
@@ -187,12 +177,12 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     (
       newScores: GradeScores,
       newSelectedSubjects: Record<string, (string | null)[]>,
-      newOcrIdMapping: Record<string, string>, // NEW: Add parameter
+      newOcrIdMapping: Record<string, string>,
     ) => {
       setScores(newScores);
       setSelectedSubjects(newSelectedSubjects);
       setHasOcrData(true);
-      setOcrIdMapping(newOcrIdMapping); // NEW: Save OCR ID mapping
+      setOcrIdMapping(newOcrIdMapping);
     },
     [],
   );
@@ -201,7 +191,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     setScores(defaultState.scores);
     setSelectedSubjects(defaultState.selectedSubjects);
     setHasOcrData(false);
-    setOcrIdMapping({}); // NEW: Clear OCR ID mapping
+    setOcrIdMapping({});
     localStorage.removeItem(STORAGE_KEY);
     console.log("[NinthFormContext] Cleared all data");
   }, []);
@@ -210,7 +200,16 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     setScores(defaultState.scores);
     setSelectedSubjects(defaultState.selectedSubjects);
     setHasOcrData(false);
-    setOcrIdMapping({}); // NEW: Reset OCR ID mapping
+    setOcrIdMapping({});
+  }, []);
+
+  // ✅ ADD THIS CALLBACK FUNCTION
+  const updateOcrId = useCallback((gradeKey: string, ocrId: string) => {
+    console.log(`[NinthFormContext] Updating OCR ID for ${gradeKey}: ${ocrId}`);
+    setOcrIdMapping((prev) => ({
+      ...prev,
+      [gradeKey]: ocrId,
+    }));
   }, []);
 
   const value: NinthFormContextType = useMemo(
@@ -218,30 +217,31 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
       scores,
       selectedSubjects,
       hasOcrData,
-      ocrIdMapping, // NEW: Expose OCR ID mapping
+      ocrIdMapping,
       updateScore,
       updateSelectedSubject,
       removeSubjectScore,
       loadOcrData,
       clearAllData,
       resetToDefault,
+      updateOcrId,
     }),
     [
       scores,
       selectedSubjects,
       hasOcrData,
-      ocrIdMapping, // NEW: Add to dependencies
+      ocrIdMapping,
       updateScore,
       updateSelectedSubject,
       removeSubjectScore,
       loadOcrData,
       clearAllData,
       resetToDefault,
+      updateOcrId,
     ],
   );
 
   return <NinthFormContext value={value}>{children}</NinthFormContext>;
 };
 
-// Export the context for the custom hook
 export { NinthFormContext };
