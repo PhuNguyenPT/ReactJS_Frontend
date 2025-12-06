@@ -74,9 +74,6 @@ export function useNinthFormSubmission() {
 
     try {
       // STEP 1: Poll prediction result to check if status is "completed"
-      console.log(
-        "[NinthFormPage] Step 1: Checking prediction result status...",
-      );
       setProcessingStatus(t("ninthForm.checkingPredictionStatus"));
 
       const predictionResult = await pollPredictionResult(
@@ -111,12 +108,7 @@ export function useNinthFormSubmission() {
         return;
       }
 
-      console.log(
-        "[NinthFormPage] Prediction result is ready (status: completed)",
-      );
-
       // STEP 2: Process admission with retry logic
-      console.log("[NinthFormPage] Step 2: Processing admission...");
       setProcessingStatus(t("ninthForm.processingPrediction"));
       setRetryProgress({ attempt: 0, maxAttempts: 0 });
 
@@ -149,7 +141,6 @@ export function useNinthFormSubmission() {
       }
 
       // STEP 3: Fetch filter fields after successful admission
-      console.log("[NinthFormPage] Step 3: Loading filter fields...");
       setProcessingStatus(t("ninthForm.loadingFilters"));
       const filterResponse = await getFilterFieldsForStudent(
         studentId,
@@ -171,7 +162,6 @@ export function useNinthFormSubmission() {
 
       const userName = isAuthenticated ? userData?.name : undefined;
 
-      console.log("[NinthFormPage] Navigating to results page");
       void navigate("/result", {
         state: {
           userId,
