@@ -4,7 +4,7 @@ import {
   createOcrData,
   type OcrCreatePayload,
   type OcrCreateResponse,
-} from "../../services/fileUpload/ocrCreateService"; // CHANGED
+} from "../../services/fileUpload/ocrCreateService";
 import { getVietnameseSubjectName } from "../../utils/scoreBoardSubjectHelper";
 import type { ScordBoardSubjectTranslationKey } from "../../type/enum/score-board-subject";
 import type { SubjectScorePayload } from "../../type/interface/ocrServiceTypes";
@@ -14,7 +14,7 @@ export interface UseOcrCreateResult {
     gradeKey: string,
     isAuthenticated: boolean,
   ) => Promise<{ success: boolean; message?: string; ocrId?: string }>;
-  transformScoreBoardToPayload: (gradeKey: string) => OcrCreatePayload;
+  transformScoreBoardToPayload: (gradeKey: string) => OcrCreatePayload | null;
 }
 
 /**
@@ -37,6 +37,44 @@ const getStudentIdFromStorage = (): string | null => {
 };
 
 /**
+ * Parse gradeKey to extract grade and semester
+ * @param gradeKey - Format: "10-1", "11-2", "12-1", etc.
+ * @returns Object with grade and semester numbers, or null if invalid
+ */
+const parseGradeKey = (
+  gradeKey: string,
+): { grade: number; semester: number } | null => {
+  try {
+    const parts = gradeKey.split("-");
+    if (parts.length !== 2) {
+      console.error(`[useOcrCreate] Invalid gradeKey format: ${gradeKey}`);
+      return null;
+    }
+
+    const grade = parseInt(parts[0], 10);
+    const semester = parseInt(parts[1], 10);
+
+    if (isNaN(grade) || isNaN(semester)) {
+      console.error(`[useOcrCreate] Invalid grade or semester in: ${gradeKey}`);
+      return null;
+    }
+
+    // Validate grade range (10-12) and semester range (1-2)
+    if (grade < 10 || grade > 12 || semester < 1 || semester > 2) {
+      console.error(
+        `[useOcrCreate] Grade or semester out of valid range: ${gradeKey}`,
+      );
+      return null;
+    }
+
+    return { grade, semester };
+  } catch (error) {
+    console.error(`[useOcrCreate] Error parsing gradeKey ${gradeKey}:`, error);
+    return null;
+  }
+};
+
+/**
  * Hook to handle OCR creation (POST) for manually entered scores
  */
 export const useOcrCreate = (): UseOcrCreateResult => {
@@ -45,34 +83,51 @@ export const useOcrCreate = (): UseOcrCreateResult => {
   /**
    * Transform score board data for a specific grade/semester to API payload
    * @param gradeKey - The grade/semester key (e.g., "10-1", "11-2")
+   * @returns Payload with grade, semester, and subject scores, or null if invalid
    */
   const transformScoreBoardToPayload = useCallback(
-    (gradeKey: string): OcrCreatePayload => {
+    (gradeKey: string): OcrCreatePayload | null => {
+      // Parse grade and semester from gradeKey
+      const parsedGrade = parseGradeKey(gradeKey);
+      if (!parsedGrade) {
+        console.error(`[useOcrCreate] Failed to parse gradeKey: ${gradeKey}`);
+        return null;
+      }
+
+      const { grade, semester } = parsedGrade;
       const subjectScores: SubjectScorePayload[] = [];
       const gradeScores = scores[gradeKey];
       const gradeSelectedSubjects = selectedSubjects[gradeKey];
 
-      if (Object.keys(gradeScores).length === 0) {
-        console.warn(`[useOcrCreate] No scores found for grade ${gradeKey}`);
-        return { subjectScores: [] };
-      }
-
       // Process all subjects that have scores
-      Object.entries(gradeScores).forEach(([subjectKey, scoreValue]) => {
-        if (scoreValue && scoreValue.trim() !== "") {
-          const vietnameseName = getVietnameseSubjectName(
-            subjectKey as ScordBoardSubjectTranslationKey,
-          );
-          const numericScore = parseFloat(scoreValue);
+      const scoreEntries = Object.entries(gradeScores);
+      if (scoreEntries.length > 0) {
+        scoreEntries.forEach(([subjectKey, scoreValue]) => {
+          if (scoreValue && scoreValue.trim() !== "") {
+            const vietnameseName = getVietnameseSubjectName(
+              subjectKey as ScordBoardSubjectTranslationKey,
+            );
+            const numericScore = parseFloat(scoreValue);
 
-          if (!isNaN(numericScore) && numericScore >= 0 && numericScore <= 10) {
-            subjectScores.push({
-              name: vietnameseName,
-              score: numericScore,
-            });
+            if (
+              !isNaN(numericScore) &&
+              numericScore >= 0 &&
+              numericScore <= 10
+            ) {
+              subjectScores.push({
+                name: vietnameseName,
+                score: numericScore,
+              });
+            } else {
+              console.warn(
+                `[useOcrCreate] Invalid score for ${subjectKey}: ${scoreValue}`,
+              );
+            }
           }
-        }
-      });
+        });
+      } else {
+        console.warn(`[useOcrCreate] No scores found for grade ${gradeKey}`);
+      }
 
       // Also check selected subjects to ensure they're included
       gradeSelectedSubjects.forEach((subjectKey) => {
@@ -102,7 +157,11 @@ export const useOcrCreate = (): UseOcrCreateResult => {
         }
       });
 
-      return { subjectScores };
+      return {
+        grade,
+        semester,
+        subjectScores,
+      };
     },
     [scores, selectedSubjects],
   );
@@ -133,21 +192,23 @@ export const useOcrCreate = (): UseOcrCreateResult => {
         const payload = transformScoreBoardToPayload(gradeKey);
 
         // Validate payload
+        if (!payload) {
+          console.error(
+            `[useOcrCreate] Failed to transform payload for ${gradeKey}`,
+          );
+          return {
+            success: false,
+            message: `Invalid grade/semester format: ${gradeKey}`,
+          };
+        }
+
         if (payload.subjectScores.length === 0) {
           console.log(`[useOcrCreate] No scores to save for ${gradeKey}`);
           return {
             success: false,
-            message: `No scores to save for ${gradeKey}. Please enter at least one subject score.`,
+            message: `No scores to save for Grade ${String(payload.grade)} - Semester ${String(payload.semester)}. Please enter at least one subject score.`,
           };
         }
-
-        console.log(
-          `[useOcrCreate] Creating new OCR for ${gradeKey} (Student ID: ${studentId})`,
-        );
-        console.log(
-          `[useOcrCreate] Payload:`,
-          JSON.stringify(payload, null, 2),
-        );
 
         // Call create API
         const result: OcrCreateResponse = await createOcrData(
@@ -158,13 +219,10 @@ export const useOcrCreate = (): UseOcrCreateResult => {
 
         if (result.success && result.ocrId) {
           updateOcrId(gradeKey, result.ocrId);
-          console.log(
-            `[useOcrCreate] Successfully created ${gradeKey} with OCR ID: ${result.ocrId}`,
-          );
 
           return {
             success: true,
-            message: `Successfully created grade record for ${gradeKey}`,
+            message: `Successfully created record for Grade ${String(payload.grade)} - Semester ${String(payload.semester)}`,
             ocrId: result.ocrId,
           };
         } else {
@@ -174,7 +232,9 @@ export const useOcrCreate = (): UseOcrCreateResult => {
           );
           return {
             success: false,
-            message: result.message ?? `Failed to create ${gradeKey}`,
+            message:
+              result.message ??
+              `Failed to create record for Grade ${String(payload.grade)} - Semester ${String(payload.semester)}`,
           };
         }
       } catch (error) {

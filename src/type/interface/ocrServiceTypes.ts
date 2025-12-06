@@ -8,6 +8,8 @@ export interface SubjectScorePayload {
 }
 
 export interface OcrPayloadBase {
+  grade: number;
+  semester: number;
   subjectScores: SubjectScorePayload[];
 }
 

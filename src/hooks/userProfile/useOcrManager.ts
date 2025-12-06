@@ -60,10 +60,6 @@ export const useOcrManager = (): UseOcrManagerResult => {
     ): Promise<{ success: boolean; message?: string }> => {
       const operationType = getOperationType(gradeKey);
 
-      console.log(
-        `[useOcrManager] Operation type for ${gradeKey}: ${operationType}`,
-      );
-
       if (operationType === "none") {
         return {
           success: false,
@@ -72,10 +68,8 @@ export const useOcrManager = (): UseOcrManagerResult => {
       }
 
       if (operationType === "create") {
-        console.log(`[useOcrManager] Creating new OCR for ${gradeKey}`);
         return createSingleGrade(gradeKey, isAuthenticated);
       } else {
-        console.log(`[useOcrManager] Updating existing OCR for ${gradeKey}`);
         return updateSingleGrade(gradeKey, isAuthenticated);
       }
     },
