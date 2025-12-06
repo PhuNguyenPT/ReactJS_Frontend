@@ -205,14 +205,12 @@ export const useNinthFormLogic = () => {
 
           if (result.id) {
             ocrIdMapping[gradeKey] = result.id;
-            console.log(`${gradeKey}: Saved OCR ID ${result.id}`);
           }
 
           processedCount++;
           newScores[gradeKey] = {};
           const optionalSubjectsForGrade: (string | null)[] = [];
 
-          // ✅ FIXED: Changed 'scores' to 'subjectScores'
           result.subjectScores.forEach((scoreItem) => {
             const subjectNameVietnamese = scoreItem.name;
             const scoreValue = scoreItem.score.toString();
@@ -254,10 +252,6 @@ export const useNinthFormLogic = () => {
         });
 
         loadOcrData(newScores, newSelectedSubjects, ocrIdMapping);
-        console.log(
-          "[NinthForm] Loaded OCR ID mapping to context:",
-          ocrIdMapping,
-        );
         setShowAlert(true);
 
         if (processedCount < 6 && processedCount > 0) {
@@ -289,7 +283,6 @@ export const useNinthFormLogic = () => {
       navigationState.ocrResults &&
       !hasOcrData
     ) {
-      console.log("[NinthForm] Loading new OCR data");
       processOcrData(navigationState.ocrResults);
     }
   }, [
@@ -340,9 +333,6 @@ export const useNinthFormLogic = () => {
   const handleSaveOrUpdateGrade = useCallback(
     async (gradeKey: string) => {
       const operationType = getOperationType(gradeKey);
-      console.log(
-        `[NinthForm] ${operationType === "create" ? "Creating" : operationType === "update" ? "Updating" : "Processing"} grade/semester: ${gradeKey}`,
-      );
 
       setIsGradeUpdating((prev) => ({ ...prev, [gradeKey]: true }));
       setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "idle" }));
@@ -351,9 +341,6 @@ export const useNinthFormLogic = () => {
         const result = await saveOrUpdateGrade(gradeKey, isAuthenticated);
 
         if (result.success) {
-          console.log(
-            `[NinthForm] Successfully ${operationType === "create" ? "created" : "updated"} ${gradeKey}`,
-          );
           setGradeUpdateStatus((prev) => ({ ...prev, [gradeKey]: "success" }));
 
           setTimeout(() => {

@@ -193,7 +193,6 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     setHasOcrData(false);
     setOcrIdMapping({});
     localStorage.removeItem(STORAGE_KEY);
-    console.log("[NinthFormContext] Cleared all data");
   }, []);
 
   const resetToDefault = useCallback(() => {
@@ -203,9 +202,7 @@ export const NinthFormProvider: React.FC<{ children: React.ReactNode }> = ({
     setOcrIdMapping({});
   }, []);
 
-  // ✅ ADD THIS CALLBACK FUNCTION
   const updateOcrId = useCallback((gradeKey: string, ocrId: string) => {
-    console.log(`[NinthFormContext] Updating OCR ID for ${gradeKey}: ${ocrId}`);
     setOcrIdMapping((prev) => ({
       ...prev,
       [gradeKey]: ocrId,
