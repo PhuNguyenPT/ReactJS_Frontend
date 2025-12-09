@@ -29,5 +29,8 @@ coverage/
 .env*
 !.env.example
 
-tls/
+tls/*.key
+tls/*.crt
+tls/*.pem
+!tls/README.md
 etc/nginx/dhparam.pem
