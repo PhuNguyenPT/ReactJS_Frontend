@@ -2,7 +2,9 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string;
-  readonly VITE_PORT: string;
+  readonly VITE_PORT: number;
+  readonly VITE_HTTP_PORT: number;
+  readonly VITE_ENABLE_HTTP_REDIRECT: boolean;
   readonly VITE_APP_NAME: string;
   readonly VITE_PAGINATION_DEFAULT_PAGE: string;
   readonly VITE_PAGINATION_DEFAULT_SIZE: string;
@@ -30,6 +32,20 @@ interface ImportMetaEnv {
   readonly VITE_VSAT_MIN_LIMIT: string;
   readonly VITE_VSAT_MAX_LIMIT: string;
   readonly VITE_NANG_KHIEU_LIMMIT: string;
+
+  // Backend Configuration
+  readonly VITE_USE_HTTPS_BACKEND: string;
+  readonly VITE_BACKEND_HTTP_PORT: string;
+  readonly VITE_BACKEND_HTTPS_PORT: string;
+
+  // TLS Certificate Paths (Frontend Server)
+  readonly VITE_TLS_KEY_PATH: string;
+  readonly VITE_TLS_CERT_PATH: string;
+  readonly VITE_TLS_CA_PATH: string;
+
+  // Client Certificate Paths (for mTLS with backend)
+  readonly VITE_TLS_CLIENT_KEY_PATH: string;
+  readonly VITE_TLS_CLIENT_CERT_PATH: string;
 
   // Add any other VITE_ variables you use
 }
