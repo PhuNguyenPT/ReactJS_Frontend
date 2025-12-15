@@ -17,7 +17,7 @@ COPY public ./public
 # Copy config files
 COPY tsconfig.app.json tsconfig.json tsconfig.node.json tsconfig.test.json vite.config.ts index.html .nvmrc .env.production ./
 
-# Type check and build
+# Type check and build once
 RUN npm run type-check && npm run build
 
 # Production image
@@ -26,11 +26,13 @@ FROM nginx:1.29-trixie AS runner
 # Remove default nginx configuration
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Create the DigitalOcean standard directory structure
+# Create the DigitalOcean standard directory structure for both apps
 RUN mkdir -p /var/www/admission.edu.vn/public
+RUN mkdir -p /var/www/galaxyfreedom.com/public
 
-# Copy static assets from builder stage to DigitalOcean standard path
+# Copy the same build output to both locations
 COPY --from=builder /app/dist /var/www/admission.edu.vn/public
+COPY --from=builder /app/dist /var/www/galaxyfreedom.com/public
 
 EXPOSE 80 443
 
