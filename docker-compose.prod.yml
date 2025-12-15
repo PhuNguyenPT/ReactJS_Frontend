@@ -35,8 +35,8 @@ services:
       - ./etc/nginx/sites-available/admission.edu.vn.conf:/etc/nginx/sites-enabled/admission.edu.vn.conf:ro
 
       # Avoid conflicts by mapping configuration snippets to unique destinations in the container
-      - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.admission.conf:ro
-      - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.admission.txt:ro
+      - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
+      - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.txt:ro
 
       # --- Site 2: galaxyfreedom.com Configuration ---
       - ./etc/nginx/sites-available/galaxyfreedom.com.conf:/etc/nginx/sites-enabled/galaxyfreedom.com.conf:ro
