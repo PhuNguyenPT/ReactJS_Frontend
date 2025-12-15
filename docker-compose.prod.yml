@@ -26,6 +26,7 @@ services:
       # Config snippets
       - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
       - ./etc/nginx/snippets/proxy-backend-mtls.conf:/etc/nginx/snippets/proxy-backend-mtls.conf:ro
+      - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.txt:ro
       # DH parameters
       - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
 
