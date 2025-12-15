@@ -10,7 +10,7 @@ services:
   frontend-prod:
     # Use the single, combined image tag
     image: phunpt01/react-frontend:latest
-    container_name: frontend-prod-combined
+    container_name: frontend-prod
 
     # Bind ports 80 and 443 ONCE to the host
     ports:
