@@ -7,24 +7,29 @@ secrets:
     file: ${TLS_CLIENT_KEY_PATH}
 
 services:
-  frontend-staging:
-    image: phunpt01/react-frontend:latest
-    container_name: frontend-staging
+  frontend-prod:
+    image: phunpt01/react-frontend:galaxyfreedom.com-latest
+    container_name: frontend-prod-galaxyfreedom
     ports:
-      - "8080:8080" # Simple HTTP port (no Cloudflare SSL)
+      - "80:80"
+      - "443:443"
     volumes:
+      - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
+      - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
+      - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
       # Main nginx config
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       # Upstream definition (for backend mTLS)
       - ./etc/nginx/conf.d/upstream.conf:/etc/nginx/conf.d/upstream.conf:ro
-      # STAGING config (NO Cloudflare SSL, BUT backend mTLS)
-      - ./etc/nginx/sites-available/admission.staging.conf:/etc/nginx/sites-enabled/admission.staging.conf:ro
+      # PRODUCTION config (WITH Cloudflare SSL + mTLS)
+      - ./etc/nginx/sites-available/galaxyfreedom.com.conf:/etc/nginx/sites-enabled/galaxyfreedom.com.conf:ro
       # Config snippets
-      - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
+      - ./etc/nginx/nginxconfig.io/security.galaxyfreedom.com.conf:/etc/nginx/nginxconfig.io/security.conf:ro
       - ./etc/nginx/snippets/proxy-backend-mtls.conf:/etc/nginx/snippets/proxy-backend-mtls.conf:ro
-      - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.txt:ro
+      - ./etc/nginx/nginxconfig.galaxyfreedom.com.txt:/etc/nginx/nginxconfig.txt:ro
       # DH parameters
       - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
+
     secrets:
       - backend_ca
       - nginx_client_crt
@@ -32,9 +37,8 @@ services:
     restart: unless-stopped
     networks:
       - frontend-network
-
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
