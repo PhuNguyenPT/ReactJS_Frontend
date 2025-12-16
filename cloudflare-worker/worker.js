@@ -5,9 +5,12 @@ export default {
     const url = new URL(request.url);
     const originUrl = `${AWS_ORIGIN}${url.pathname}${url.search}`;
 
+    const headers = new Headers(request.headers);
+    headers.set("Host", new URL(AWS_ORIGIN).hostname);
+
     const originResponse = await fetch(originUrl, {
       method: request.method,
-      headers: request.headers,
+      headers: headers,
       body: request.body,
       redirect: "manual",
     });
@@ -24,7 +27,7 @@ export default {
     const cspPolicy = [
       "default-src 'self'",
       `script-src 'self' 'nonce-${nonce}' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net`,
-      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+      `style-src 'self' 'unsafe-inline' 'nonce-${nonce}' https://fonts.googleapis.com`,
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https:",
       "connect-src 'self' https://api.admission.edu.vn https://api.galaxyfreedom.com",
@@ -43,6 +46,10 @@ export default {
       "Permissions-Policy",
       "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
     );
+    response.headers.set(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains",
+    );
 
     return new HTMLRewriter()
       .on('meta[name="csp-nonce"]', {
@@ -50,9 +57,14 @@ export default {
           element.setAttribute("content", nonce);
         },
       })
+      .on('meta[http-equiv="Content-Security-Policy"]', {
+        element(element) {
+          element.remove();
+        },
+      })
       .on("script", {
         element(element) {
-          if (!element.getAttribute("nonce")) {
+          if (!element.getAttribute("nonce") && !element.getAttribute("src")) {
             element.setAttribute("nonce", nonce);
           }
         },
