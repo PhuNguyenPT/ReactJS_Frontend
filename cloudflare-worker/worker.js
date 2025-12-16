@@ -30,7 +30,7 @@ export default {
       `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https:",
-      "connect-src 'self'",
+      "connect-src 'self' wss://www.galaxyfreedom.com wss://galaxyfreedom.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
