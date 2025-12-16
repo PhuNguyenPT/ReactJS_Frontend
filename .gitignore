@@ -36,3 +36,4 @@ tls/*.pem
 etc/nginx/dhparam.pem
 
 wrangler.toml
+.wrangler/
