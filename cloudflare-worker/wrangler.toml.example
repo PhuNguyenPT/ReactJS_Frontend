@@ -6,10 +6,9 @@ compatibility_date = "2024-12-16"
 AWS_ORIGIN = "https://YOUR_AWS_IP_OR_DOMAIN"
 
 [[routes]]
-pattern = "galaxyfreedom.com/*"
-zone_name = "galaxyfreedom.com"
+pattern = "your-domain.com/*"
+zone_name = "your-domain.com"
 
 [[routes]]
-pattern = "www.galaxyfreedom.com/*"
-zone_name = "galaxyfreedom.com"
-
+pattern = "www.your-domain.com/*"
+zone_name = "your-domain.com"
