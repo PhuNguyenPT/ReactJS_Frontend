@@ -1,7 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import cspPlugin from "vite-plugin-csp";
 import fs from "fs";
 import path from "path";
 import http from "http";
@@ -92,29 +91,7 @@ export default defineConfig(({ mode }) => {
   console.log("");
 
   return {
-    plugins: [
-      react({ tsDecorators: true }),
-      cspPlugin({
-        policy: {
-          "default-src": ["self"],
-          "script-src": ["self", "nonce-{NONCE}"],
-          "style-src": ["self", "nonce-{NONCE}"],
-          "font-src": ["self", "data:"],
-          "img-src": ["self", "data:", "https:"],
-          "connect-src": ["self"],
-          "frame-ancestors": ["none"],
-          "base-uri": ["self"],
-          "form-action": ["self"],
-          "object-src": ["none"],
-        },
-        hashEnabled: {
-          "script-src": true,
-          "style-src": true,
-          "script-src-attr": false,
-          "style-src-attr": false,
-        },
-      }),
-    ],
+    plugins: [react({ tsDecorators: true })],
 
     assetsInclude: [
       "**/*.png",

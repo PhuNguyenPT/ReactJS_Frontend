@@ -34,3 +34,6 @@ tls/*.crt
 tls/*.pem
 !tls/README.md
 etc/nginx/dhparam.pem
+
+wrangler.toml
+.wrangler/

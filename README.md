@@ -225,6 +225,27 @@ The optimized build files will be in the `dist/` directory.
 npm run preview
 ```
 
+### Cloudflare Worker - CSP Nonces
+
+#### Setup
+
+1. Copy the example config:
+
+```bash
+   cp wrangler.toml.example wrangler.toml
+```
+
+2. Edit `wrangler.toml` and update:
+   - `AWS_ORIGIN` - Your AWS server IP/domain
+   - `zone_name` - Your domain name
+
+3. Deploy:
+
+```bash
+   wrangler login
+   wrangler deploy
+```
+
 ### Docker Deployment
 
 #### Production Deployment

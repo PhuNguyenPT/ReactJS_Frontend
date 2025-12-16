@@ -1,0 +1,14 @@
+name = "galaxy-freedom-worker"
+main = "worker.js"
+compatibility_date = "2024-12-16"
+
+[vars]
+AWS_ORIGIN = "https://YOUR_AWS_IP_OR_DOMAIN"
+
+[[routes]]
+pattern = "your-domain.com/*"
+zone_name = "your-domain.com"
+
+[[routes]]
+pattern = "www.your-domain.com/*"
+zone_name = "your-domain.com"

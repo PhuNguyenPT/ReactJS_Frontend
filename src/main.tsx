@@ -1,6 +1,8 @@
 import { Suspense, StrictMode, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
 
 // Styles
 import "./styles/index.css";
@@ -60,6 +62,22 @@ const ResultPage = lazy(
   () => import("./components/pages/ResultPage/ResultPage"),
 );
 
+// CSP Nonce Configuration
+// Get nonce from meta tag injected by Cloudflare Pages Function
+const getNonce = (): string | undefined => {
+  const metaTag = document.querySelector('meta[name="csp-nonce"]');
+  return metaTag?.getAttribute("content") ?? undefined;
+};
+
+// Create Emotion cache with nonce for MUI inline styles
+// This ensures MUI's dynamically generated styles comply with CSP
+const nonce = getNonce();
+const emotionCache = createCache({
+  key: "css",
+  nonce,
+  prepend: true, // Insert styles at the beginning of <head>
+});
+
 // Initialize and render the application
 const rootElement = document.getElementById("root");
 
@@ -71,37 +89,42 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <ErrorBoundary>
-      <AuthProvider>
-        <FormDataProvider>
-          <FileDataProvider>
-            <NinthFormProvider>
-              <Suspense fallback={<LoadingComponent />}>
-                <BrowserRouter>
-                  <Routes>
-                    <Route element={<App />}>
-                      <Route index element={<LandingPage />} />
-                      <Route path="signup" element={<Signup />} />
-                      <Route path="login" element={<Login />} />
-                      <Route path="History" element={<HistoryPage />} />
-                      <Route path="firstForm" element={<FirstFormPage />} />
-                      <Route path="secondForm" element={<SecondFormPage />} />
-                      <Route path="thirdForm" element={<ThirdFormPage />} />
-                      <Route path="fourthForm" element={<FourthFormPage />} />
-                      <Route path="fifthForm" element={<FifthFormPage />} />
-                      <Route path="sixthForm" element={<SixthFormPage />} />
-                      <Route path="seventhForm" element={<SeventhFormPage />} />
-                      <Route path="eighthForm" element={<EighthFormPage />} />
-                      <Route path="ninthForm" element={<NinthFormPage />} />
-                      <Route path="result" element={<ResultPage />} />
-                    </Route>
-                  </Routes>
-                </BrowserRouter>
-              </Suspense>
-            </NinthFormProvider>
-          </FileDataProvider>
-        </FormDataProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+    <CacheProvider value={emotionCache}>
+      <ErrorBoundary>
+        <AuthProvider>
+          <FormDataProvider>
+            <FileDataProvider>
+              <NinthFormProvider>
+                <Suspense fallback={<LoadingComponent />}>
+                  <BrowserRouter>
+                    <Routes>
+                      <Route element={<App />}>
+                        <Route index element={<LandingPage />} />
+                        <Route path="signup" element={<Signup />} />
+                        <Route path="login" element={<Login />} />
+                        <Route path="History" element={<HistoryPage />} />
+                        <Route path="firstForm" element={<FirstFormPage />} />
+                        <Route path="secondForm" element={<SecondFormPage />} />
+                        <Route path="thirdForm" element={<ThirdFormPage />} />
+                        <Route path="fourthForm" element={<FourthFormPage />} />
+                        <Route path="fifthForm" element={<FifthFormPage />} />
+                        <Route path="sixthForm" element={<SixthFormPage />} />
+                        <Route
+                          path="seventhForm"
+                          element={<SeventhFormPage />}
+                        />
+                        <Route path="eighthForm" element={<EighthFormPage />} />
+                        <Route path="ninthForm" element={<NinthFormPage />} />
+                        <Route path="result" element={<ResultPage />} />
+                      </Route>
+                    </Routes>
+                  </BrowserRouter>
+                </Suspense>
+              </NinthFormProvider>
+            </FileDataProvider>
+          </FormDataProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+    </CacheProvider>
   </StrictMode>,
 );
