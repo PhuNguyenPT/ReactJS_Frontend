@@ -1,18 +1,18 @@
 export default {
   async fetch(request, env) {
-    const AWS_ORIGIN = env.AWS_ORIGIN;
-
     const url = new URL(request.url);
-    const originUrl = `${AWS_ORIGIN}${url.pathname}${url.search}`;
 
-    const headers = new Headers(request.headers);
-    headers.set("Host", new URL(AWS_ORIGIN).hostname);
+    // Use the same hostname but tell Cloudflare where to actually connect
+    const originUrl = `https://${url.hostname}${url.pathname}${url.search}`;
 
     const originResponse = await fetch(originUrl, {
       method: request.method,
-      headers: headers,
+      headers: request.headers,
       body: request.body,
       redirect: "manual",
+      cf: {
+        resolveOverride: "3.82.69.9",
+      },
     });
 
     const contentType = originResponse.headers.get("content-type") || "";
