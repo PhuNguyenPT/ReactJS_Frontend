@@ -16,12 +16,18 @@ echo "   - $IMAGE_NAME:$VERSION"
 echo ""
 
 echo "🔧 Ensuring multi-arch builder is active..."
-# Enable Docker buildx (multi-platform builds)
-# Check if builder exists, if not, create it. Then use it.
-if ! docker buildx ls | grep -q "multiarch-builder"; then
-    docker buildx create --use --name multiarch-builder
+# Check if mybuilder exists and is usable
+BUILDER_EXISTS=false
+if docker buildx inspect mybuilder >/dev/null 2>&1; then
+    BUILDER_EXISTS=true
+fi
+
+if [ "$BUILDER_EXISTS" = false ]; then
+    echo "📦 Creating buildx builder..."
+    docker buildx create --name mybuilder --driver docker-container --use --bootstrap
 else
-    docker buildx use multiarch-builder
+    echo "📦 Using existing buildx builder..."
+    docker buildx use mybuilder
 fi
 
 echo "📦 Building and pushing for linux/arm64 and linux/amd64..."
