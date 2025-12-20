@@ -9,6 +9,19 @@ CACHE_DIR="/tmp/docker-cache-frontend"
 echo "🏗️  Building React frontend for local testing..."
 mkdir -p "$CACHE_DIR"
 
+BUILDER_EXISTS=false
+if docker buildx inspect mybuilder >/dev/null 2>&1; then
+    BUILDER_EXISTS=true
+fi
+
+if [ "$BUILDER_EXISTS" = false ]; then
+    echo "📦 Creating buildx builder..."
+    docker buildx create --name mybuilder --driver docker-container --use --bootstrap
+else
+    echo "📦 Using existing buildx builder..."
+    docker buildx use mybuilder
+fi
+
 # Build for local testing (amd64) and tag as 'latest'
 docker buildx build \
   --platform linux/amd64 \
