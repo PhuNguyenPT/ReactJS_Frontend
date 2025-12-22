@@ -9,6 +9,8 @@ secrets:
 services:
   frontend-prod:
     image: phunpt01/react-frontend:latest
+    env_file:
+      - .env.production
     volumes:
       # --- Shared SSL/TLS Certificates (Common to both sites) ---
       - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro

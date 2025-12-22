@@ -9,6 +9,8 @@ secrets:
 services:
   frontend-staging:
     image: phunpt01/react-frontend:latest
+    env_file:
+      - .env.staging
     volumes:
       # --- Core Nginx Configuration Files ---
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
