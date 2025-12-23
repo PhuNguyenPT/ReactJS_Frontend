@@ -9,19 +9,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import ImageIcon from "@mui/icons-material/Image";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import DescriptionIcon from "@mui/icons-material/Description";
-
-// Supported file types configuration
-export const ACCEPTED_FILE_TYPES = {
-  images: ".jpg,.jpeg,.png,.gif,.bmp,.webp,.svg",
-  documents: ".pdf,.doc,.docx,.txt,.odt,.rtf",
-} as const;
-
-export const ALL_ACCEPTED_TYPES = `${ACCEPTED_FILE_TYPES.images},${ACCEPTED_FILE_TYPES.documents}`;
-
-// File size limits (in bytes)
-export const FILE_SIZE_LIMITS = {
-  maxSize: Number(import.meta.env.VITE_MAXSIZE_UPLOAD_MB), // You can add minSize or other limits if needed
-} as const;
+import { ALL_ACCEPTED_TYPES, FILE_SIZE_LIMITS } from "./useEighthFormConstants";
 
 export interface FileUploadData {
   grade: GradeKey;
