@@ -113,10 +113,10 @@ function buildQueryString(params: AdmissionParams): string {
 
   // Add pagination parameters
   if (params.page !== undefined) {
-    queryParams.append("page", params.page.toString());
+    queryParams.append("page", params.page);
   }
   if (params.size !== undefined) {
-    queryParams.append("size", params.size.toString());
+    queryParams.append("size", params.size);
   }
   if (params.sort) {
     queryParams.append("sort", params.sort);
