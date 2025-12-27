@@ -38,7 +38,7 @@ services:
       - nginx_client_key
     restart: unless-stopped
     networks:
-      - frontend-network
+      - frontend-network-staging
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
@@ -48,6 +48,7 @@ services:
       start_period: 10s
 
 networks:
-  frontend-network:
+  frontend-network-staging:
+    driver: bridge
     external: true
-    name: frontend-network
+    name: frontend-network-staging

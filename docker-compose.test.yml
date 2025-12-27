@@ -7,24 +7,12 @@ secrets:
     file: ${TLS_CLIENT_KEY_PATH}
 
 services:
-  frontend-prod:
-    # Use the single, combined image tag
+  frontend-test:
     image: phunpt01/react-frontend:latest
-    container_name: frontend-prod
-
-    # Bind ports 80 and 443 ONCE to the host
+    container_name: frontend-test
     ports:
-      - "80:80"
-      - "443:443"
-
+      - "8080:8080" # Simple HTTP port (no Cloudflare SSL)
     volumes:
-      # --- Shared SSL/TLS Certificates (Common to both sites) ---
-      - /etc/ssl/cert.pem:/etc/ssl/cert.pem:ro
-      - /etc/ssl/key.pem:/etc/ssl/key.pem:ro
-      - /etc/ssl/galaxyfreedom.com.cert.pem:/etc/ssl/galaxyfreedom.com.cert.pem:ro
-      - /etc/ssl/galaxyfreedom.com.key.pem:/etc/ssl/galaxyfreedom.com.key.pem:ro
-      - /etc/ssl/cloudflare.crt:/etc/ssl/cloudflare.crt:ro
-
       # --- Core Nginx Configuration Files (Common to both sites) ---
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./etc/nginx/conf.d/upstream.conf:/etc/nginx/conf.d/upstream.conf:ro
@@ -32,35 +20,34 @@ services:
       - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
 
       # --- Site 1: admission.edu.vn Configuration ---
-      - ./etc/nginx/sites-available/admission.edu.vn.conf:/etc/nginx/sites-enabled/admission.edu.vn.conf:ro
+      - ./etc/nginx/sites-available/admission.staging.conf:/etc/nginx/sites-enabled/admission.staging.conf:ro
 
       # Avoid conflicts by mapping configuration snippets to unique destinations in the container
       - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
       - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.txt:ro
 
       # --- Site 2: galaxyfreedom.com Configuration ---
-      - ./etc/nginx/sites-available/galaxyfreedom.com.conf:/etc/nginx/sites-enabled/galaxyfreedom.com.conf:ro
+      - ./etc/nginx/sites-available/galaxyfreedom.staging.conf:/etc/nginx/sites-enabled/galaxyfreedom.staging.conf:ro
 
       # Avoid conflicts by mapping configuration snippets to unique destinations in the container
       - ./etc/nginx/nginxconfig.io/security.galaxyfreedom.com.conf:/etc/nginx/nginxconfig.io/security.galaxyfreedom.com.conf:ro
       - ./etc/nginx/nginxconfig.galaxyfreedom.com.txt:/etc/nginx/nginxconfig.galaxyfreedom.com.txt:ro
-
     secrets:
       - backend_ca
       - nginx_client_crt
       - nginx_client_key
     restart: unless-stopped
     networks:
-      - frontend-network-prod
+      - frontend-network-test
+
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
 
 networks:
-  frontend-network-prod:
-    driver: bridge
+  frontend-network-test:
     external: true
-    name: frontend-network-prod
+    name: frontend-network-test
