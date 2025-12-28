@@ -22,7 +22,7 @@ services:
       # --- Core Nginx Configuration Files (Common to both sites) ---
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./etc/nginx/conf.d/upstream.conf:/etc/nginx/conf.d/upstream.conf:ro
-      - ./etc/nginx/snippets/proxy-backend-mtls.conf:/etc/nginx/snippets/proxy-backend-mtls.conf:ro
+      - ./etc/nginx/nginxconfig.io/proxy.conf:/etc/nginx/nginxconfig.io/proxy.conf:ro
       - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
 
       # --- Site 1: admission.edu.vn Configuration ---
@@ -40,6 +40,10 @@ services:
       - nginx_client_key
     networks:
       - frontend-swarm-network-prod
+    sysctls:
+      - net.ipv4.tcp_keepalive_time=600
+      - net.ipv4.tcp_keepalive_intvl=60
+      - net.ipv4.tcp_keepalive_probes=9
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/"]
       interval: 30s
