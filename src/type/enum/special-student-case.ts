@@ -2,14 +2,14 @@
 export type SpecialStudentCaseTranslationKey =
   | "specialCases.ethnic_minority_student"
   | "specialCases.heroes_and_contributors"
-  | "specialCases.transfer_student"
+  | "specialCases.gifted_student"
   | "specialCases.very_few_ethnic_minority";
 
 // SpecialStudentCase enum with translation keys
 export const SpecialStudentCase = {
   ETHNIC_MINORITY_STUDENT: "specialCases.ethnic_minority_student",
   HEROES_AND_CONTRIBUTORS: "specialCases.heroes_and_contributors",
-  TRANSFER_STUDENT: "specialCases.transfer_student",
+  GIFTED_STUDENT: "specialCases.transfer_student",
   VERY_FEW_ETHNIC_MINORITY: "specialCases.very_few_ethnic_minority",
 } as const;
 
@@ -22,7 +22,7 @@ export const SpecialStudentCaseValues: Record<
     "Học sinh thuộc huyện nghèo, vùng đặc biệt khó khăn",
   "specialCases.heroes_and_contributors":
     "Anh hùng Lao động, Anh hùng Lực lượng vũ trang Nhân dân, Chiến sĩ thi đua toàn quốc",
-  "specialCases.transfer_student": "Học sinh trường chuyên",
+  "specialCases.gifted_student": "Học sinh trường chuyên",
   "specialCases.very_few_ethnic_minority":
     "Dân tộc thiểu số rất ít người (Mông, La Ha,...)",
 } as const;
