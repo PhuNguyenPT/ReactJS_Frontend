@@ -9,7 +9,7 @@ export type SpecialStudentCaseTranslationKey =
 export const SpecialStudentCase = {
   ETHNIC_MINORITY_STUDENT: "specialCases.ethnic_minority_student",
   HEROES_AND_CONTRIBUTORS: "specialCases.heroes_and_contributors",
-  GIFTED_STUDENT: "specialCases.transfer_student",
+  GIFTED_STUDENT: "specialCases.gifted_student",
   VERY_FEW_ETHNIC_MINORITY: "specialCases.very_few_ethnic_minority",
 } as const;
 
