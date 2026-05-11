@@ -37,9 +37,9 @@ export const useSixthForm = () => {
       label: t(SpecialStudentCase.HEROES_AND_CONTRIBUTORS),
     },
     {
-      key: "TRANSFER_STUDENT",
-      value: SpecialStudentCase.TRANSFER_STUDENT,
-      label: t(SpecialStudentCase.TRANSFER_STUDENT),
+      key: "GIFTED_STUDENT",
+      value: SpecialStudentCase.GIFTED_STUDENT,
+      label: t(SpecialStudentCase.GIFTED_STUDENT),
     },
     {
       key: "ETHNIC_MINORITY_STUDENT",
