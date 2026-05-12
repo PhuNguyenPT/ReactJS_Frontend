@@ -24,13 +24,15 @@ services:
 
       # Avoid conflicts by mapping configuration snippets to unique destinations in the container
       - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
+      - ./etc/nginx/nginxconfig.io/security-headers.conf:/etc/nginx/nginxconfig.io/security-headers.conf:ro
       - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.txt:ro
 
       # --- Site 2: galaxyfreedom.com Configuration ---
       - ./etc/nginx/sites-available/galaxyfreedom.staging.conf:/etc/nginx/sites-enabled/galaxyfreedom.staging.conf:ro
 
       # Avoid conflicts by mapping configuration snippets to unique destinations in the container
-      - ./etc/nginx/nginxconfig.io/security.galaxyfreedom.com.conf:/etc/nginx/nginxconfig.io/security.galaxyfreedom.com.conf:ro
+      - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
+      - ./etc/nginx/nginxconfig.io/security-headers.galaxyfreedom.com.conf:/etc/nginx/nginxconfig.io/security-headers.galaxyfreedom.com.conf:ro
       - ./etc/nginx/nginxconfig.galaxyfreedom.com.txt:/etc/nginx/nginxconfig.galaxyfreedom.com.txt:ro
     secrets:
       - backend_ca
