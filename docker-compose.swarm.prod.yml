@@ -25,8 +25,8 @@ services:
       - ./etc/nginx/nginxconfig.io/proxy.conf:/etc/nginx/nginxconfig.io/proxy.conf:ro
       - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
 
-      # --- Site 1: admission.edu.vn Configuration ---
-      - ./etc/nginx/sites-available/admission.edu.vn.conf:/etc/nginx/sites-enabled/admission.edu.vn.conf:ro
+      # --- Site 1: admission-help.org Configuration ---
+      - ./etc/nginx/sites-available/admission-help.org.conf:/etc/nginx/sites-enabled/admission-help.org.conf:ro
       - ./etc/nginx/nginxconfig.io/security.conf:/etc/nginx/nginxconfig.io/security.conf:ro
       - ./etc/nginx/nginxconfig.txt:/etc/nginx/nginxconfig.txt:ro
 
