@@ -19,7 +19,7 @@ services:
       - ./etc/nginx/nginxconfig.io/proxy.conf:/etc/nginx/nginxconfig.io/proxy.conf:ro
       - ./etc/nginx/dhparam.pem:/etc/nginx/dhparam.pem:ro
 
-      # --- Site 1: admission.edu.vn Configuration ---
+      # --- Site 1: admission-help.org Configuration ---
       - ./etc/nginx/sites-available/admission.staging.conf:/etc/nginx/sites-enabled/admission.staging.conf:ro
 
       # Avoid conflicts by mapping configuration snippets to unique destinations in the container

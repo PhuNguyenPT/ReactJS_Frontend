@@ -26,9 +26,9 @@ authors:
     email: "ngoc.th@vgu.edu.vn"
     affiliation: "Vietnamese-German University"
 title: "SeaLab Project - Frontend"
-version: 0.0.3
+version: 0.1.1
 date-released: 2025-12-26
-url: "https://admission.edu.vn"
+url: "https://admission-help.org"
 repository-code: "https://github.com/PhuNguyenPT/ReactJS_Frontend.git"
 keywords:
   - "SeaLab"

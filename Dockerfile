@@ -27,11 +27,11 @@ FROM nginx:1.29-trixie AS runner
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Create the DigitalOcean standard directory structure for both apps
-RUN mkdir -p /var/www/admission.edu.vn/public
+RUN mkdir -p /var/admission-help.org/public
 RUN mkdir -p /var/www/galaxyfreedom.com/public
 
 # Copy the same build output to both locations
-COPY --from=builder /app/dist /var/www/admission.edu.vn/public
+COPY --from=builder /app/dist /var/admission-help.org/public
 COPY --from=builder /app/dist /var/www/galaxyfreedom.com/public
 
 EXPOSE 80 443
