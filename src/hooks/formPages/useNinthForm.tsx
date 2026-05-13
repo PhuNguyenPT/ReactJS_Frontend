@@ -100,7 +100,6 @@ export const useNinthFormLogic = () => {
     updateSelectedSubject,
     removeSubjectScore,
     loadOcrData,
-    clearAllData,
   } = useNinthForm();
 
   const fixedSubjects = useMemo(
@@ -147,19 +146,6 @@ export const useNinthFormLogic = () => {
     });
     return list;
   }, [grades, semesters]);
-
-  // ✅ SIMPLIFIED: Only clear if there's existing data AND no new OCR data coming
-  useEffect(() => {
-    const hasNavigatedWithOcr = Boolean(
-      navigationState?.ocrProcessed && navigationState.ocrResults,
-    );
-
-    // Only clear if we have old data but no new OCR data is coming
-    if (hasOcrData && !hasNavigatedWithOcr) {
-      console.log("[NinthForm] Detected stale data without new OCR - clearing");
-      clearAllData();
-    }
-  }, [clearAllData, hasOcrData, navigationState]);
 
   const processOcrData = useCallback(
     (ocrResults: OcrResultItem[]) => {
