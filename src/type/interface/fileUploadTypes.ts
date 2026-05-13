@@ -6,6 +6,7 @@ export interface FileUploadResponse {
     uploadedFiles?: {
       fileName: string;
       fileUrl: string;
+      previewUrl: string;
       grade: string;
       semester: string;
     }[];

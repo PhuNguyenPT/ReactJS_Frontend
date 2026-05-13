@@ -19,7 +19,10 @@ import type { ErrorDetails } from "../../type/interface/error.details";
 import type { OcrResponse } from "../../type/interface/ocrTypes";
 import APIError from "../../utils/apiError";
 import { saveStudentId } from "../../utils/sessionManager";
-
+import type {
+  GradeKey,
+  SemesterKey,
+} from "../../contexts/FileData/FileDataContext";
 interface RetryProgress {
   attempt: number;
   maxAttempts: number;
@@ -39,7 +42,7 @@ export function useStudentProfile(): UseStudentProfileReturn {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { getFormDataForApi } = useFormData();
-  const { getAllEighthFormFiles, clearEighthFormFiles } = useFileData();
+  const { getAllEighthFormFiles, updateEighthFormServerUrl } = useFileData();
   const { processOcr, isOcrSuccessful } = useOcrHandler();
   const { clearAllData } = useNinthForm();
 
@@ -78,6 +81,17 @@ export function useStudentProfile(): UseStudentProfileReturn {
 
       if (isUploadSuccessful(response)) {
         setProcessingStatus(t("studentProfile.status.filesUploaded"));
+
+        response.data?.uploadedFiles?.forEach(
+          ({ grade, semester, previewUrl }) => {
+            const semesterIndex = (parseInt(semester) - 1) as SemesterKey;
+            updateEighthFormServerUrl(
+              grade as GradeKey,
+              semesterIndex,
+              previewUrl,
+            );
+          },
+        );
       } else {
         console.warn("[useStudentProfile] File upload issues:", statusMessage);
       }
@@ -191,12 +205,6 @@ export function useStudentProfile(): UseStudentProfileReturn {
           setUploadProgress(90);
         } else {
           setUploadProgress(90);
-        }
-
-        // Step 4: Cleanup
-        if (isUploadSuccessful(fileUploadResponse)) {
-          clearEighthFormFiles();
-          setProcessingStatus(t("studentProfile.status.cleaningUp"));
         }
 
         setUploadProgress(100);
