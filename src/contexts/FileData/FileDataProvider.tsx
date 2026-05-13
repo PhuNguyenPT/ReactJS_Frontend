@@ -168,6 +168,7 @@ export function FileDataProvider({ children }: { children: ReactNode }) {
         newFileData.eighthForm.files[grade][semesterIndex] = {
           file,
           previewUrl,
+          serverPreviewUrl: null,
         };
 
         return newFileData;
@@ -187,9 +188,29 @@ export function FileDataProvider({ children }: { children: ReactNode }) {
   // Get a specific preview URL
   const getEighthFormPreviewUrl = useCallback(
     (grade: GradeKey, semesterIndex: SemesterKey): string | null => {
-      return fileData.eighthForm.files[grade][semesterIndex].previewUrl;
+      const entry = fileData.eighthForm.files[grade][semesterIndex];
+      // Prefer server URL (persistent) over blob URL (temporary)
+      if (entry.serverPreviewUrl) {
+        return `${import.meta.env.VITE_API_BASE_URL}${entry.serverPreviewUrl}`;
+      }
+      return entry.previewUrl;
     },
     [fileData],
+  );
+
+  // Update server preview URL after successful upload
+  const updateEighthFormServerUrl = useCallback(
+    (grade: GradeKey, semesterIndex: SemesterKey, serverPreviewUrl: string) => {
+      setFileData((prev) => {
+        const newFileData = { ...prev };
+        newFileData.eighthForm.files[grade][semesterIndex] = {
+          ...newFileData.eighthForm.files[grade][semesterIndex],
+          serverPreviewUrl,
+        };
+        return newFileData;
+      });
+    },
+    [],
   );
 
   // Get all uploaded files for API submission
@@ -303,6 +324,7 @@ export function FileDataProvider({ children }: { children: ReactNode }) {
       resetFileData,
       getFileDataForApi,
       getRemainingTime,
+      updateEighthFormServerUrl,
     }),
     [
       fileData,
@@ -314,6 +336,7 @@ export function FileDataProvider({ children }: { children: ReactNode }) {
       resetFileData,
       getFileDataForApi,
       getRemainingTime,
+      updateEighthFormServerUrl,
     ],
   );
 

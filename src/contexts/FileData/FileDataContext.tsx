@@ -6,6 +6,7 @@ export type SemesterKey = 0 | 1; // 0 for semester 1, 1 for semester 2
 export interface FileEntry {
   file: File | null;
   previewUrl: string | null;
+  serverPreviewUrl: string | null;
 }
 
 export interface FileData {
@@ -37,6 +38,11 @@ export interface FileDataContextType {
   clearEighthFormFiles: () => void;
   resetFileData: () => void;
   getFileDataForApi: () => FormData; // FormData for API submission
+  updateEighthFormServerUrl: (
+    grade: GradeKey,
+    semesterIndex: SemesterKey,
+    serverPreviewUrl: string,
+  ) => void;
 }
 
 export const FileDataContext = createContext<FileDataContextType | undefined>(
@@ -47,16 +53,16 @@ export const initialFileData: FileData = {
   eighthForm: {
     files: {
       "10": [
-        { file: null, previewUrl: null }, // Semester 1
-        { file: null, previewUrl: null }, // Semester 2
+        { file: null, previewUrl: null, serverPreviewUrl: null },
+        { file: null, previewUrl: null, serverPreviewUrl: null },
       ],
       "11": [
-        { file: null, previewUrl: null }, // Semester 1
-        { file: null, previewUrl: null }, // Semester 2
+        { file: null, previewUrl: null, serverPreviewUrl: null },
+        { file: null, previewUrl: null, serverPreviewUrl: null },
       ],
       "12": [
-        { file: null, previewUrl: null }, // Semester 1
-        { file: null, previewUrl: null }, // Semester 2
+        { file: null, previewUrl: null, serverPreviewUrl: null },
+        { file: null, previewUrl: null, serverPreviewUrl: null },
       ],
     },
   },
