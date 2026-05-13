@@ -378,6 +378,7 @@
     "updatingScores": "Updating your scores...",
     "checkingPredictionStatus": "Checking prediction status...",
     "saveScoreBoard": "Save Score Board",
+    "updateGrade": "Update Grade",
     "updating": "Updating...",
     "updateSuccess": "Grade updated successfully!",
     "updateError": "Failed to update grade. Please try again.",
